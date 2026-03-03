@@ -292,6 +292,12 @@
 .waitlist-input:focus { outline: none; border-color: var(--gold); }
 .waitlist-input::placeholder { color: var(--text3); }
 .waitlist-btn { width: 100%; justify-content: center; }
+.waitlist-error {
+  font-size: 13px; color: var(--red); margin-top: 8px; text-align: center;
+}
+.waitlist-input:disabled, .waitlist-btn:disabled {
+  opacity: 0.6; cursor: not-allowed;
+}
 .waitlist-submitted {
   padding: 14px 16px; border-radius: var(--radius);
   background: rgba(76,175,125,0.1); border: 1px solid rgba(76,175,125,0.3);

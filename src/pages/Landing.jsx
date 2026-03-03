@@ -85,6 +85,8 @@ export default function Landing() {
   const [openFaq, setOpenFaq] = useState(null)
   const [waitlistEmail, setWaitlistEmail] = useState('')
   const [waitlistSubmitted, setWaitlistSubmitted] = useState(false)
+  const [waitlistLoading, setWaitlistLoading] = useState(false)
+  const [waitlistError, setWaitlistError] = useState('')
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -99,9 +101,23 @@ export default function Landing() {
 
   const closeNav = () => setNavOpen(false)
 
-  const handleWaitlist = (e) => {
+  const handleWaitlist = async (e) => {
     e.preventDefault()
-    if (waitlistEmail.trim()) setWaitlistSubmitted(true)
+    if (!waitlistEmail.trim()) return
+    setWaitlistLoading(true)
+    setWaitlistError('')
+    try {
+      await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: waitlistEmail }),
+      })
+      setWaitlistSubmitted(true)
+    } catch {
+      setWaitlistError('Something went wrong. Please try again.')
+    } finally {
+      setWaitlistLoading(false)
+    }
   }
 
   return (
@@ -279,7 +295,7 @@ export default function Landing() {
               </ul>
               {waitlistSubmitted ? (
                 <div className="waitlist-submitted">
-                  You're on the list! We'll email you when Unlimited launches.
+                  ✓ You're on the list! Check your inbox — we'll email you when Unlimited launches.
                 </div>
               ) : (
                 <form className="waitlist-form" onSubmit={handleWaitlist}>
@@ -289,11 +305,13 @@ export default function Landing() {
                     placeholder="your@email.com"
                     value={waitlistEmail}
                     onChange={e => setWaitlistEmail(e.target.value)}
+                    disabled={waitlistLoading}
                     required
                   />
-                  <button type="submit" className="btn-outline waitlist-btn">
-                    Notify me when available
+                  <button type="submit" className="btn-outline waitlist-btn" disabled={waitlistLoading}>
+                    {waitlistLoading ? 'Saving...' : 'Notify me when available'}
                   </button>
+                  {waitlistError && <p className="waitlist-error">{waitlistError}</p>}
                 </form>
               )}
             </div>
