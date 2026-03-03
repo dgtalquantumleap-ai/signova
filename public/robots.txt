@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.getsignova.com/sitemap.xml
+
+# No need to crawl API routes
+Disallow: /api/

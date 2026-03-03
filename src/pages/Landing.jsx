@@ -154,7 +154,7 @@ export default function Landing() {
             AI-Powered · No Account Required · First Document Free
           </div>
           <h1 className="hero-title">
-            Generate professional
+            Free legal document generator
             <br />
             <span className={`hero-accent ${tickerVisible ? 'visible' : ''}`}>
               {TICKER_ITEMS[ticker]}
@@ -190,7 +190,7 @@ export default function Landing() {
         <div className="section-inner">
           <div className="section-header">
             <p className="section-label">Choose your document</p>
-            <h2 className="section-title">What do you need today?</h2>
+            <h2 className="section-title">Generate your legal document free</h2>
           </div>
           <div className="docs-grid">
             {DOCS.map(doc => (
@@ -216,7 +216,7 @@ export default function Landing() {
         <div className="section-inner">
           <div className="section-header">
             <p className="section-label">The process</p>
-            <h2 className="section-title">Three steps to done.</h2>
+            <h2 className="section-title">How the legal document generator works</h2>
           </div>
           <div className="steps">
             {[
@@ -240,7 +240,7 @@ export default function Landing() {
         <div className="section-inner">
           <div className="section-header">
             <p className="section-label">Pricing</p>
-            <h2 className="section-title">Simple and honest.</h2>
+            <h2 className="section-title">Simple, honest pricing</h2>
           </div>
           <div className="pricing-grid">
             <div className="price-card">
@@ -323,7 +323,7 @@ export default function Landing() {
         <div className="section-inner">
           <div className="section-header">
             <p className="section-label">Questions</p>
-            <h2 className="section-title">Everything you need to know.</h2>
+            <h2 className="section-title">Frequently asked questions</h2>
           </div>
           <div className="faq-list">
             {FAQS.map((item, i) => (
