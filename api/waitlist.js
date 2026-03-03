@@ -23,7 +23,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Signova Waitlist <info@ebenova.net>',
+        from: 'Signova Waitlist <info@getsignova.com>',
         to: ['info@ebenova.net'],
         subject: `🎉 New waitlist signup: ${email}`,
         html: `
@@ -49,7 +49,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Signova <info@ebenova.net>',
+        from: 'Signova <info@getsignova.com>',
         to: [email],
         subject: "You're on the Signova Unlimited waitlist",
         html: `
