@@ -187,6 +187,7 @@ export default function Landing() {
                 </div>
                 <div className="doc-footer">
                   <span className="doc-time">⏱ {doc.time}</span>
+                  <span className="doc-price">$4.99</span>
                   <span className="doc-go">Generate →</span>
                 </div>
               </button>
