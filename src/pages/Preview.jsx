@@ -116,6 +116,9 @@ export default function Preview() {
               ✓ Payment confirmed — your document is ready to download
             </div>
           )}
+          <div className="preview-disclaimer">
+            ⚖️ <strong>Not legal advice.</strong> This document is an AI-generated starting point. Signova is not a law firm and no attorney-client relationship is created. Review with a qualified attorney before signing or relying on this document.
+          </div>
           <div className={`preview-doc ${!paid ? 'watermarked' : ''}`} ref={contentRef}>
             {!paid && <div className="watermark-overlay"><span>PREVIEW ONLY · SIGNOVA</span></div>}
             <div className="doc-content">
