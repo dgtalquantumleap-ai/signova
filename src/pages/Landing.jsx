@@ -65,7 +65,7 @@ const FAQS = [
   },
   {
     q: 'What countries and jurisdictions are supported?',
-    a: 'Signova generates documents suitable for use in the US, UK, Canada, Australia, and most other common-law countries. During generation you can specify your jurisdiction so the document is tailored accordingly.',
+    a: 'Signova generates documents suitable for use globally — including the US, UK, Canada, Australia, EU, Nigeria, South Africa, Kenya, Ghana, Brazil, Colombia, Mexico, India, Singapore, UAE, and more. During generation you can specify your jurisdiction so the document is tailored accordingly.',
   },
   {
     q: 'Is my information stored or shared?',
