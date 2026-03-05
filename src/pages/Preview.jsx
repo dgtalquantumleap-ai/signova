@@ -65,11 +65,44 @@ export default function Preview() {
   }
 
   // Check if returning from Polar payment success
+  // If so, regenerate with Anthropic for premium quality
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    if (params.get('payment') === 'success') {
+    if (params.get('payment') !== 'success') return
+
+    const raw = sessionStorage.getItem('signova_doc')
+    if (!raw) return
+    const savedDoc = JSON.parse(raw)
+
+    // Only regenerate if we have the prompt saved
+    if (!savedDoc.prompt) {
       setPaid(true)
+      return
     }
+
+    // Regenerate with Anthropic (premium)
+    const regenerate = async () => {
+      try {
+        const res = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: savedDoc.prompt, paid: true }),
+        })
+        if (!res.ok) throw new Error('Regeneration failed')
+        const data = await res.json()
+        if (data.text) {
+          const upgraded = { ...savedDoc, content: data.text, isPremium: true }
+          sessionStorage.setItem('signova_doc', JSON.stringify(upgraded))
+          setDoc(upgraded)
+        }
+      } catch (e) {
+        console.error('Premium regeneration failed, using preview version:', e)
+      } finally {
+        setPaid(true)
+      }
+    }
+
+    regenerate()
   }, [])
 
   if (!doc) return (

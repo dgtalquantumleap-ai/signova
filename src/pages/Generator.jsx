@@ -124,7 +124,7 @@ Requirements:
 
 Output the complete document only, no preamble or explanation.`
 
-      const response = await fetch('/api/generate', {
+      const response = await fetch('/api/generate-preview', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt }),
@@ -132,6 +132,10 @@ Output the complete document only, no preamble or explanation.`
 
       if (!response.ok) {
         const err = await response.json()
+        // Handle rate limiting gracefully
+        if (response.status === 429) {
+          throw new Error('You have used your 3 free previews this hour. Pay $4.99 to generate and download your document directly.')
+        }
         throw new Error(err.error || 'Generation failed')
       }
 
@@ -144,6 +148,7 @@ Output the complete document only, no preamble or explanation.`
         docName: config.name,
         content: text,
         answers,
+        prompt, // stored for premium regeneration after payment
         generatedAt: new Date().toISOString(),
       }))
       navigate('/preview')
