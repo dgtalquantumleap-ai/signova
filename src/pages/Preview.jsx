@@ -64,7 +64,7 @@ export default function Preview() {
     printWindow.print()
   }
 
-  // Check if returning from Lemon Squeezy success
+  // Check if returning from Polar payment success
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get('payment') === 'success') {
