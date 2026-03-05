@@ -151,15 +151,15 @@
 .doc-icon { font-size: 36px; }
 .doc-name {
   font-family: var(--font-display); font-size: 20px; font-weight: 800;
-  color: #ffffff; margin-bottom: 8px; letter-spacing: -0.2px;
+  color: #ffffff !important; margin-bottom: 8px; letter-spacing: -0.2px;
 }
-.doc-desc { font-size: 15px; color: #c9c4bb; line-height: 1.65; font-weight: 500; }
+.doc-desc { font-size: 15px; color: #ffffff !important; line-height: 1.65; font-weight: 500; }
 .doc-footer {
   display: flex; align-items: center; justify-content: space-between;
   margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.07);
 }
-.doc-time { font-size: 13px; color: var(--text3); }
-.doc-price { font-size: 13px; color: var(--text3); }
+.doc-time { font-size: 13px; color: #d0cbc2 !important; }
+.doc-price { font-size: 13px; color: #d0cbc2 !important; }
 .doc-go {
   font-size: 13px; font-weight: 700; color: var(--gold);
   letter-spacing: 0.2px;
