@@ -4,5 +4,5 @@ Allow: /
 # Sitemap location
 Sitemap: https://www.getsignova.com/sitemap.xml
 
-# No need to crawl API routes
+# Disallow API routes from indexing
 Disallow: /api/

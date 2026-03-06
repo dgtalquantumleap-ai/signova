@@ -1,24 +1,55 @@
 // api/generate.js
 // PAID ONLY — Uses Anthropic Claude for premium quality documents
-// Only called after Polar payment success is confirmed
-// Do NOT call this for free previews — use api/generate-preview.js instead
+// Verifies Polar payment server-side before generating
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
-  const { prompt, paid } = req.body
+  const { prompt, checkoutId } = req.body
   if (!prompt) return res.status(400).json({ error: 'Missing prompt' })
 
-  // Safety check — must include paid flag
-  // Note: for stronger security, verify Polar webhook signature here in future
-  if (!paid) {
+  // Verify payment with Polar API — no more trusting client-side flags
+  if (!checkoutId) {
     return res.status(403).json({
-      error: 'Premium generation requires payment. Use /api/generate-preview for free previews.',
+      error: 'Payment verification required. Use /api/generate-preview for free previews.',
     })
   }
 
+  const polarToken = process.env.POLAR_ACCESS_TOKEN
+  if (!polarToken) {
+    return res.status(500).json({ error: 'Server misconfigured — missing Polar token' })
+  }
+
+  try {
+    // Verify the checkout is actually paid
+    const checkoutRes = await fetch(`https://api.polar.sh/v1/checkouts/${checkoutId}`, {
+      headers: {
+        'Authorization': `Bearer ${polarToken}`,
+        'Content-Type': 'application/json',
+      },
+    })
+
+    if (!checkoutRes.ok) {
+      console.error('Polar checkout lookup failed:', checkoutRes.status)
+      return res.status(403).json({ error: 'Invalid checkout. Payment could not be verified.' })
+    }
+
+    const checkout = await checkoutRes.json()
+
+    if (checkout.status !== 'succeeded' && checkout.status !== 'confirmed') {
+      console.warn(`Checkout ${checkoutId} status: ${checkout.status}`)
+      return res.status(403).json({
+        error: `Payment not completed (status: ${checkout.status}). Please complete payment first.`,
+      })
+    }
+  } catch (verifyErr) {
+    console.error('Payment verification failed:', verifyErr)
+    return res.status(500).json({ error: 'Payment verification failed. Please try again.' })
+  }
+
+  // Payment verified — generate premium document with Anthropic
   const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) return res.status(500).json({ error: 'Server misconfigured' })
+  if (!apiKey) return res.status(500).json({ error: 'Server misconfigured — missing Anthropic key' })
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {

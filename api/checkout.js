@@ -13,7 +13,8 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         products: [process.env.POLAR_PRODUCT_ID],
-        success_url: `${origin}/preview?payment=success`,
+        // Include {CHECKOUT_ID} placeholder — Polar replaces it with the real ID
+        success_url: `${origin}/preview?payment=success&checkout_id={CHECKOUT_ID}`,
         metadata: { docType, docName },
       }),
     })

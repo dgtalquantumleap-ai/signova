@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import { Helmet } from 'react-helmet-async'
 import './Landing.css'
 
 const DOCS = [
@@ -43,11 +44,188 @@ const DOCS = [
     time: '3 min',
     popular: false,
   },
+  {
+    id: 'hire-purchase',
+    icon: '🚗',
+    name: 'Hire Purchase Agreement',
+    desc: 'Finance any asset — vehicle, equipment, machinery — with structured instalment payments.',
+    time: '3 min',
+    popular: true,
+  },
+  {
+    id: 'purchase-agreement',
+    icon: '🛒',
+    name: 'Basic Purchase Agreement',
+    desc: 'Document the one-time sale of goods, assets, or property between a buyer and seller.',
+    time: '2 min',
+    popular: false,
+  },
+  {
+    id: 'service-agreement',
+    icon: '📝',
+    name: 'Service Agreement',
+    desc: 'Define scope, fees, and terms between a service provider and client — for any industry.',
+    time: '3 min',
+    popular: true,
+  },
+  {
+    id: 'consulting-agreement',
+    icon: '💼',
+    name: 'Consulting Agreement',
+    desc: 'Formalise advisory or consulting engagements with clear deliverables, rates and IP terms.',
+    time: '3 min',
+    popular: false,
+  },
+  {
+    id: 'employment-offer-letter',
+    icon: '👔',
+    name: 'Employment Offer Letter',
+    desc: 'Professionally extend a job offer with salary, benefits, start date and terms clearly documented.',
+    time: '3 min',
+    popular: true,
+  },
+  {
+    id: 'non-compete-agreement',
+    icon: '🚫',
+    name: 'Non-Compete Agreement',
+    desc: 'Protect your business by restricting employees or contractors from working with competitors.',
+    time: '2 min',
+    popular: false,
+  },
+  {
+    id: 'payment-terms-agreement',
+    icon: '💳',
+    name: 'Payment Terms Agreement',
+    desc: 'Document agreed repayment schedules, due dates, and late penalty terms between buyer and seller.',
+    time: '2 min',
+    popular: false,
+  },
+  {
+    id: 'business-partnership',
+    icon: '🤝',
+    name: 'Business Partnership Agreement',
+    desc: 'Formally structure a business partnership — capital, profit sharing, roles and exit terms.',
+    time: '4 min',
+    popular: true,
+  },
+  {
+    id: 'joint-venture',
+    icon: '🏗️',
+    name: 'Joint Venture Agreement',
+    desc: 'Two companies joining forces for a specific project — ownership, management, and profit sharing.',
+    time: '4 min',
+    popular: false,
+  },
+  {
+    id: 'loan-agreement',
+    icon: '💰',
+    name: 'Loan Agreement',
+    desc: 'Document personal or business loans — amount, interest, repayment schedule, and collateral.',
+    time: '3 min',
+    popular: true,
+  },
+  {
+    id: 'shareholder-agreement',
+    icon: '📊',
+    name: 'Shareholder Agreement',
+    desc: 'Define rights between company shareholders — voting, dividends, transfers, and protections.',
+    time: '4 min',
+    popular: false,
+  },
+  {
+    id: 'mou',
+    icon: '🗒️',
+    name: 'Memorandum of Understanding (MOU)',
+    desc: 'Document a formal understanding between two organisations before a full contract is signed.',
+    time: '3 min',
+    popular: true,
+  },
+  {
+    id: 'letter-of-intent',
+    icon: '✉️',
+    name: 'Letter of Intent (LOI)',
+    desc: 'Signal serious intent to acquire, invest, partner, or lease — before formal negotiations begin.',
+    time: '3 min',
+    popular: false,
+  },
+  {
+    id: 'distribution-agreement',
+    icon: '📦',
+    name: 'Distribution / Reseller Agreement',
+    desc: 'Appoint distributors or resellers for your products — territory, exclusivity, margin and terms.',
+    time: '3 min',
+    popular: false,
+  },
+  {
+    id: 'supply-agreement',
+    icon: '🏭',
+    name: 'Supply Agreement',
+    desc: 'Contract between supplier and buyer for regular goods — pricing, delivery, quality and volume.',
+    time: '3 min',
+    popular: false,
+  },
+  {
+    id: 'business-proposal',
+    icon: '🚀',
+    name: 'Business Proposal',
+    desc: 'Win clients with a professional proposal — problem, solution, deliverables, timeline and pricing.',
+    time: '5 min',
+    popular: true,
+  },
+  {
+    id: 'tenancy-agreement',
+    icon: '🏠',
+    name: 'Tenancy Agreement',
+    desc: 'Legally binding rental contract between landlord and tenant for any residential or commercial property.',
+    time: '3 min',
+    popular: true,
+  },
+  {
+    id: 'quit-notice',
+    icon: '💮',
+    name: 'Quit Notice',
+    desc: 'Formal notice to vacate a property — for expired tenancy, non-payment, or breach of terms.',
+    time: '2 min',
+    popular: false,
+  },
+  {
+    id: 'deed-of-assignment',
+    icon: '📜',
+    name: 'Deed of Assignment',
+    desc: 'Transfer property ownership from seller to buyer with full legal documentation.',
+    time: '3 min',
+    popular: true,
+  },
+  {
+    id: 'power-of-attorney',
+    icon: '⚖️',
+    name: 'Power of Attorney',
+    desc: 'Legally authorise another person to act on your behalf for property, financial, or business matters.',
+    time: '3 min',
+    popular: false,
+  },
+  {
+    id: 'landlord-agent-agreement',
+    icon: '🤝',
+    name: 'Landlord & Agent Agreement',
+    desc: 'Define terms between a property owner and their estate agent — commissions, duties, and authority.',
+    time: '3 min',
+    popular: false,
+  },
+  {
+    id: 'facility-manager-agreement',
+    icon: '🏗️',
+    name: 'Facility Manager Agreement',
+    desc: 'Formal contract between property owner and facility management company covering all services and fees.',
+    time: '3 min',
+    popular: false,
+  },
 ]
 
 const TICKER_ITEMS = [
-  'Privacy Policies', 'NDAs', 'Freelance Contracts', 'Terms of Service',
-  'Contractor Agreements',
+  'Business Proposals', 'NDAs', 'Freelance Contracts', 'Terms of Service',
+  'Loan Agreements', 'Tenancy Agreements', 'MOUs', 'Deeds of Assignment',
+  'Partnership Agreements', 'Employment Offer Letters', 'Supply Agreements', 'Power of Attorney',
 ]
 
 const FAQS = [
@@ -107,11 +285,12 @@ export default function Landing() {
     setWaitlistLoading(true)
     setWaitlistError('')
     try {
-      await fetch('/api/waitlist', {
+      const res = await fetch('/api/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: waitlistEmail }),
       })
+      if (!res.ok) throw new Error('Signup failed')
       setWaitlistSubmitted(true)
     } catch {
       setWaitlistError('Something went wrong. Please try again.')
@@ -122,6 +301,12 @@ export default function Landing() {
 
   return (
     <div className="landing">
+      <Helmet>
+        <title>Signova — Free Legal Document Generator | 27 Documents for Nigeria, Africa, Asia & Global</title>
+        <meta name="description" content="Generate professional legal documents in minutes — tenancy agreements, NDAs, business proposals, loan agreements, deeds of assignment, MOUs and 21 more. Free preview, $4.99 to download. Serving Nigeria, Ghana, Kenya, India, Philippines, UAE and 180+ countries." />
+        <meta name="keywords" content="legal document generator Nigeria, tenancy agreement Nigeria, NDA template, freelance contract, deed of assignment Nigeria, loan agreement template, business proposal template, MOU template, hire purchase agreement Nigeria, power of attorney Nigeria, employment offer letter, shareholder agreement, joint venture agreement, service agreement, distribution agreement" />
+        <link rel="canonical" href="https://www.getsignova.com/" />
+      </Helmet>
       <nav className="nav">
         <div className="nav-inner">
           <div className="logo">
@@ -174,10 +359,16 @@ export default function Landing() {
               Generate your document
               <span className="btn-arrow">→</span>
             </button>
-            <span className="hero-note">No credit card · No account · First preview free</span>
+            <button
+              className="btn-outline"
+              onClick={() => document.getElementById('how').scrollIntoView({ behavior: 'smooth' })}
+            >
+              How it works
+            </button>
           </div>
+          <span className="hero-note">No credit card · No account · First preview free</span>
           <div className="hero-stats">
-            <div className="stat"><span className="stat-num">5</span><span className="stat-label">Document types</span></div>
+            <div className="stat"><span className="stat-num">27</span><span className="stat-label">Document types</span></div>
             <div className="stat-div" />
             <div className="stat"><span className="stat-num">~2 min</span><span className="stat-label">Average time</span></div>
             <div className="stat-div" />
@@ -220,7 +411,7 @@ export default function Landing() {
           </div>
           <div className="steps">
             {[
-              { n: '01', title: 'Choose your document', body: 'Select from Privacy Policy, Terms of Service, NDA, Freelance Contract, or Independent Contractor Agreement.' },
+              { n: '01', title: 'Choose your document', body: 'Pick from 27 document types — Privacy Policy, NDA, Freelance Contract, Tenancy Agreement, Loan Agreement, Business Proposal, and more.' },
               { n: '02', title: 'Answer a few questions', body: 'Tell us about your business, jurisdiction, and needs. Takes about 2 minutes. No legal knowledge required.' },
               { n: '03', title: 'Preview free, pay to download', body: 'See your complete document instantly. Pay $4.99 to download the clean, watermark-free PDF.' },
             ].map(s => (
@@ -386,7 +577,7 @@ export default function Landing() {
           </div>
           <div className="footer-links">
             <a href="/privacy">Privacy Policy</a>
-            <a href="/terms">Terms of Use</a>
+            <a href="/terms">Terms of Service</a>
             <a href="mailto:hello@getsignova.com">Contact</a>
           </div>
           <p className="footer-disc">

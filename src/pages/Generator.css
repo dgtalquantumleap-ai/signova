@@ -37,7 +37,7 @@
 .field-input, .field-select, .field-textarea {
   background: var(--bg2); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 12px 16px;
-  color: var(--text); font-size: 15px;
+  color: var(--text); font-size: 16px; /* 16px prevents iOS auto-zoom */
   transition: border-color 0.2s;
   width: 100%;
 }
@@ -102,3 +102,45 @@
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .gen-note { text-align: center; font-size: 13px; color: var(--text3); }
+
+/* ── Progress bar ── */
+.gen-progress-wrap {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px 16px;
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 4px;
+}
+.gen-progress-bar {
+  flex: 1; height: 4px; background: var(--border);
+  border-radius: 100px; overflow: hidden;
+}
+.gen-progress-fill {
+  height: 100%; background: var(--gold);
+  border-radius: 100px;
+  transition: width 0.3s ease;
+}
+.gen-progress-label {
+  font-size: 12px; color: var(--text3); white-space: nowrap;
+}
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  .gen-inner { padding: 32px 16px 60px; }
+  .gen-title { font-size: 24px; }
+  .gen-sub { font-size: 14px; }
+  .gen-icon { font-size: 36px; }
+  .gen-header { margin-bottom: 32px; }
+
+  .form-card { padding: 20px 16px; }
+  .form-group label { font-size: 13px; }
+  .form-input, .form-select, .form-textarea { font-size: 16px; /* prevent iOS zoom */ padding: 10px 12px; }
+  .form-textarea { min-height: 80px; }
+
+  .radio-group, .checkbox-group { gap: 10px; }
+  .radio-label, .checkbox-label { padding: 12px 14px; font-size: 13px; }
+
+  .btn-generate { padding: 14px 24px; font-size: 15px; width: 100%; }
+
+  .gen-nav { padding: 0 16px; }
+  .logo-text { font-size: 17px; }
+}

@@ -8,6 +8,7 @@ export default function Preview() {
   const [doc, setDoc] = useState(null)
   const [paying, setPaying] = useState(false)
   const [paid, setPaid] = useState(false)
+  const [verifying, setVerifying] = useState(false)
   const [error, setError] = useState('')
   const contentRef = useRef(null)
 
@@ -15,6 +16,7 @@ export default function Preview() {
     const raw = sessionStorage.getItem('signova_doc')
     if (!raw) { navigate('/'); return }
     setDoc(JSON.parse(raw))
+    window.scrollTo(0, 0)
   }, [])
 
   const handleDownload = async () => {
@@ -65,50 +67,93 @@ export default function Preview() {
   }
 
   // Check if returning from Polar payment success
-  // If so, regenerate with Anthropic for premium quality
+  // Verify the payment server-side, then regenerate with Anthropic
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get('payment') !== 'success') return
+
+    const checkoutId = params.get('checkout_id')
+    if (!checkoutId) {
+      console.error('No checkout_id in return URL')
+      setError('Payment could not be verified — missing checkout reference. Please contact hello@getsignova.com.')
+      return
+    }
 
     const raw = sessionStorage.getItem('signova_doc')
     if (!raw) return
     const savedDoc = JSON.parse(raw)
 
-    // Only regenerate if we have the prompt saved
-    if (!savedDoc.prompt) {
-      setPaid(true)
-      return
-    }
+    setVerifying(true)
 
-    // Regenerate with Anthropic (premium)
-    const regenerate = async () => {
+    const verifyAndRegenerate = async () => {
       try {
-        const res = await fetch('/api/generate', {
+        // Step 1: Verify payment server-side
+        const verifyRes = await fetch('/api/verify-payment', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: savedDoc.prompt, paid: true }),
+          body: JSON.stringify({ checkoutId }),
         })
-        if (!res.ok) throw new Error('Regeneration failed')
-        const data = await res.json()
-        if (data.text) {
-          const upgraded = { ...savedDoc, content: data.text, isPremium: true }
-          sessionStorage.setItem('signova_doc', JSON.stringify(upgraded))
-          setDoc(upgraded)
+
+        const verifyData = await verifyRes.json()
+
+        if (!verifyRes.ok || !verifyData.verified) {
+          console.error('Payment verification failed:', verifyData)
+          setError('Payment could not be verified. If you were charged, please contact hello@getsignova.com with your checkout reference.')
+          setVerifying(false)
+          return
         }
-      } catch (e) {
-        console.error('Premium regeneration failed, using preview version:', e)
-      } finally {
+
+        // Step 2: Payment verified — regenerate with Anthropic (premium)
+        if (savedDoc.prompt) {
+          try {
+            const genRes = await fetch('/api/generate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ prompt: savedDoc.prompt, checkoutId }),
+            })
+
+            if (genRes.ok) {
+              const genData = await genRes.json()
+              if (genData.text) {
+                const upgraded = { ...savedDoc, content: genData.text, isPremium: true, checkoutId }
+                sessionStorage.setItem('signova_doc', JSON.stringify(upgraded))
+                setDoc(upgraded)
+              }
+            } else {
+              console.warn('Premium regeneration failed, using preview version')
+            }
+          } catch (genErr) {
+            console.error('Premium regeneration error:', genErr)
+            // Still mark as paid — they paid, let them download the preview version
+          }
+        }
+
         setPaid(true)
+
+        // Clean up URL params so refreshing doesn't re-verify
+        window.history.replaceState({}, '', '/preview')
+      } catch (err) {
+        console.error('Verification error:', err)
+        setError('Something went wrong verifying your payment. Please contact hello@getsignova.com.')
+      } finally {
+        setVerifying(false)
       }
     }
 
-    regenerate()
+    verifyAndRegenerate()
   }, [])
 
   if (!doc) return (
     <div className="preview-loading">
       <div className="spinner-large" />
       <p>Loading your document…</p>
+    </div>
+  )
+
+  if (verifying) return (
+    <div className="preview-loading">
+      <div className="spinner-large" />
+      <p>Verifying your payment…</p>
     </div>
   )
 
@@ -198,6 +243,22 @@ export default function Preview() {
               <li>✓ Instant download</li>
               <li>✓ Yours to keep forever</li>
             </ul>
+
+            {/* WhatsApp fallback for Nigeria / Africa / Asia */}
+            {!paid && (
+              <div className="sidebar-whatsapp">
+                <p className="wa-label">Card not working?</p>
+                <a
+                  href="https://wa.me/14032742793?text=Hi%2C%20I%20want%20to%20pay%20for%20a%20Signova%20document%20via%20bank%20transfer"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-whatsapp"
+                >
+                  💬 Pay via WhatsApp
+                </a>
+                <p className="wa-sub">Bank transfer available for Nigeria &amp; Africa</p>
+              </div>
+            )}
           </div>
 
           <div className="sidebar-need-more">
