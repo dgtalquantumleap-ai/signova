@@ -1,15 +1,12 @@
 /* Blog.css — clean, readable, on-brand with Signova */
 
+/* Blog-specific variables — do NOT redefine globals like --gold, --bg, --border here
+   as that would override the main site's design tokens on blog pages */
 :root {
-  --gold: #C8972B;
-  --navy: #1B2A72;
   --teal: #0E7C7B;
-  --bg: #0a0a14;
-  --surface: #111128;
-  --surface2: #181830;
-  --text: #e8e8f0;
+  --surface: #111116;
+  --surface2: #181818;
   --text-muted: #9090aa;
-  --border: rgba(255,255,255,0.08);
 }
 
 /* ── Page wrapper ── */
