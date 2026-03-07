@@ -20,10 +20,10 @@ export default function PrivacyPage() {
         <p>Signova does not require you to create an account. When you generate a document, the information you enter into the form fields is sent to our server solely to produce your document. It is not stored in any database, logged, or associated with any identifier.</p>
 
         <h2>How your data is used</h2>
-        <p>Your form inputs are passed to an AI language model (Anthropic Claude) to generate your document. Anthropic's data handling is governed by their own <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>. We do not use your data for training, analytics, or any other purpose.</p>
+        <p>Your form inputs are passed to an AI language model to generate your document. Free previews use Groq (governed by their <a href="https://groq.com/privacy-policy/" target="_blank" rel="noopener noreferrer">Privacy Policy</a>). Paid documents use Anthropic Claude (governed by their <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>). We do not use your data for training, analytics, or any other purpose.</p>
 
         <h2>Payments</h2>
-        <p>Payment processing is handled entirely by Lemon Squeezy. Signova never sees or stores your card number or payment details. Lemon Squeezy's privacy practices are described in their <a href="https://www.lemonsqueezy.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</p>
+        <p>Payment processing is handled entirely by Polar. Signova never sees or stores your card number or payment details. Polar's privacy practices are described in their <a href="https://polar.sh/legal/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</p>
 
         <h2>Cookies and tracking</h2>
         <p>We do not use tracking cookies, analytics services, or advertising pixels. The only browser storage we use is <code>sessionStorage</code> to pass your generated document from the generator page to the preview page within the same browser tab. This data is cleared when the tab is closed.</p>
