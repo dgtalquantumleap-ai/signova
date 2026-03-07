@@ -4,6 +4,8 @@ import Generator from './pages/Generator'
 import Preview from './pages/Preview'
 import PrivacyPage from './pages/PrivacyPage'
 import TermsPage from './pages/TermsPage'
+import BlogIndex from './pages/blog/BlogIndex'
+import BlogPost from './pages/blog/BlogPost'
 
 export default function App() {
   return (
@@ -13,6 +15,8 @@ export default function App() {
       <Route path="/preview" element={<Preview />} />
       <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="/terms" element={<TermsPage />} />
+      <Route path="/blog" element={<BlogIndex />} />
+      <Route path="/blog/:slug" element={<BlogPost />} />
     </Routes>
   )
 }

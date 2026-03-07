@@ -153,4 +153,26 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- Blog -->
+  <url>
+    <loc>https://www.getsignova.com/blog</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.getsignova.com/blog/tenancy-agreement-template-nigeria</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.getsignova.com/blog/deed-of-assignment-nigeria</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.getsignova.com/blog/nda-template-free</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
 </urlset>
