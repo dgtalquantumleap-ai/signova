@@ -580,8 +580,9 @@ Requirements:
 - Tailor the content to the specific business details provided
 - Do not include any placeholder text like [INSERT NAME] — use the actual values provided
 - End with a signature block
+- Do NOT add any disclaimers, footnotes, notes, or suggestions to seek legal advice at the end of the document. The document should end cleanly after the signature block.
 
-Output the complete document only, no preamble or explanation.`
+Output the complete document only, no preamble, explanation, or closing notes.`
 
       const response = await fetch('/api/generate-preview', {
         method: 'POST',
