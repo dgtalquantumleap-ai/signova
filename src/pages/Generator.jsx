@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import './Generator.css'
 
@@ -494,7 +494,7 @@ const DOC_CONFIG = {
   },
   'independent-contractor': {
     name: 'Independent Contractor Agreement',
-    icon: '🏢',
+    icon: '📋',
     fields: [
       { id: 'company', label: 'Company / hiring party', type: 'text', placeholder: 'e.g. Acme Inc.' },
       { id: 'contractor', label: 'Contractor name / company', type: 'text', placeholder: 'e.g. John Smith / Smith Consulting' },
@@ -530,10 +530,12 @@ export default function Generator() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  if (!config) {
-    navigate('/')
-    return null
-  }
+  // Redirect during render is a React anti-pattern — use useEffect
+  useEffect(() => {
+    if (!config) navigate('/')
+  }, [config, navigate])
+
+  if (!config) return null
 
   const update = (id, val) => setAnswers(p => ({ ...p, [id]: val }))
 

@@ -336,7 +336,7 @@ export default function Landing() {
         <div className="hero-inner">
           <div className="hero-badge">
             <span className="badge-dot" />
-            AI-Powered · No Account Required · First Document Free
+            AI-Powered · No Account Required · Free Preview
           </div>
           <h1 className="hero-title">
             Free legal document generator
