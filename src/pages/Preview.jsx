@@ -119,6 +119,7 @@ export default function Preview() {
       if (!raw) return
       const savedDoc = JSON.parse(raw)
       setVerifying(true)
+      const verifyOxaPay = async () => {
       try {
         const verifyRes = await fetch('/api/oxapay-verify', {
           method: 'POST',
@@ -160,6 +161,8 @@ export default function Preview() {
       } finally {
         setVerifying(false)
       }
+      }
+      verifyOxaPay()
       return
     }
 
