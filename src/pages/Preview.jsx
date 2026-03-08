@@ -16,6 +16,7 @@ export default function Preview() {
   const [showBypass, setShowBypass] = useState(false)
   const [bypassLoading, setBypassLoading] = useState(false)
   const [bypassError, setBypassError] = useState('')
+  const [payingUsdt, setPayingUsdt] = useState(false)
   const contentRef = useRef(null)
 
   useEffect(() => {
@@ -118,10 +119,85 @@ export default function Preview() {
     printWindow.print()
   }
 
+  const handleUsdtCheckout = async () => {
+    setPayingUsdt(true)
+    setError('')
+    try {
+      const res = await fetch('/api/oxapay-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ docType: doc.docType, docName: doc.docName }),
+      })
+      if (!res.ok) throw new Error('Could not start USDT payment. Please try again.')
+      const { url, trackId } = await res.json()
+      // Store trackId so we can verify on return
+      sessionStorage.setItem('oxapay_trackId', trackId)
+      window.location.href = url
+    } catch (e) {
+      setError(e.message)
+      setPayingUsdt(false)
+    }
+  }
+
   // Check if returning from Polar payment success
   // Verify the payment server-side, then regenerate with Anthropic
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
+    // Handle OxaPay (USDT) return
+    if (params.get('payment') === 'oxapay_success') {
+      const trackId = sessionStorage.getItem('oxapay_trackId')
+      if (!trackId) {
+        setError('Payment reference missing. If you paid, please contact hello@getsignova.com.')
+        return
+      }
+      const raw = sessionStorage.getItem('signova_doc')
+      if (!raw) return
+      const savedDoc = JSON.parse(raw)
+      setVerifying(true)
+      try {
+        const verifyRes = await fetch('/api/oxapay-verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trackId }),
+        })
+        const verifyData = await verifyRes.json()
+        if (!verifyRes.ok || !verifyData.verified) {
+          setError('Payment not confirmed yet. If you just paid, wait a moment and refresh. Need help? Email hello@getsignova.com.')
+          setVerifying(false)
+          return
+        }
+        // Payment verified — regenerate with Anthropic
+        if (savedDoc.prompt) {
+          try {
+            const genRes = await fetch('/api/generate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ prompt: savedDoc.prompt, checkoutId: trackId }),
+            })
+            if (genRes.ok) {
+              const genData = await genRes.json()
+              if (genData.text) {
+                const upgraded = { ...savedDoc, content: genData.text, isPremium: true, trackId }
+                sessionStorage.setItem('signova_doc', JSON.stringify(upgraded))
+                setDoc(upgraded)
+              }
+            }
+          } catch (genErr) {
+            console.error('Premium regen error:', genErr)
+          }
+        }
+        sessionStorage.removeItem('oxapay_trackId')
+        setPaid(true)
+        window.history.replaceState({}, '', '/preview')
+      } catch (err) {
+        console.error('OxaPay verify error:', err)
+        setError('Something went wrong verifying your USDT payment. Please contact hello@getsignova.com.')
+      } finally {
+        setVerifying(false)
+      }
+      return
+    }
+
     if (params.get('payment') !== 'success') return
 
     const checkoutId = params.get('checkout_id')
@@ -294,24 +370,26 @@ export default function Preview() {
               <li>✓ Yours to keep forever</li>
             </ul>
 
-            {/* WhatsApp fallback for Nigeria / Africa / Asia */}
+            {/* USDT payment option for Nigeria / Africa */}
             {!paid && (
-              <div className="sidebar-whatsapp">
-                <p className="wa-label">Card not working?</p>
-                <a
-                  href="https://wa.me/5878372617?text=Hi%2C%20I%20want%20to%20pay%20for%20a%20Signova%20document%20via%20bank%20transfer"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-whatsapp"
+              <div className="sidebar-usdt">
+                <div className="usdt-divider"><span>or</span></div>
+                <p className="usdt-label">Card not working? Pay with USDT</p>
+                <button
+                  className="btn-usdt"
+                  onClick={handleUsdtCheckout}
+                  disabled={payingUsdt}
                 >
-                  💬 Pay via WhatsApp
-                </a>
-                <p className="wa-sub">Bank transfer available for Nigeria &amp; Africa</p>
+                  {payingUsdt
+                    ? <><span className="spinner-sm" /> Preparing invoice…</>
+                    : <>⬡ Pay $4.99 in USDT →</>}
+                </button>
+                <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · instant confirmation</p>
 
-                {/* Bypass code entry — shown after customer pays via WhatsApp */}
+                {/* Bypass code — for customers who already paid via old WhatsApp flow */}
                 {!showBypass ? (
                   <button className="bypass-toggle" onClick={() => setShowBypass(true)}>
-                    Already paid? Enter your code →
+                    Have a payment code? Enter it here →
                   </button>
                 ) : (
                   <div className="bypass-box">
