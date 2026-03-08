@@ -3,6 +3,8 @@ import { useEffect, useState, useRef } from 'react'
 import './Preview.css'
 
 
+
+
 export default function Preview() {
   const navigate = useNavigate()
   const [doc, setDoc] = useState(null)
@@ -10,6 +12,10 @@ export default function Preview() {
   const [paid, setPaid] = useState(false)
   const [verifying, setVerifying] = useState(false)
   const [error, setError] = useState('')
+  const [bypassCode, setBypassCode] = useState('')
+  const [showBypass, setShowBypass] = useState(false)
+  const [bypassLoading, setBypassLoading] = useState(false)
+  const [bypassError, setBypassError] = useState('')
   const contentRef = useRef(null)
 
   useEffect(() => {
@@ -35,6 +41,37 @@ export default function Preview() {
     } catch (e) {
       setError(e.message)
       setPaying(false)
+    }
+  }
+
+  const handleBypassRedeem = async () => {
+    const trimmed = bypassCode.trim().toUpperCase()
+    if (!trimmed) { setBypassError('Please enter your code.'); return }
+    setBypassLoading(true)
+    setBypassError('')
+    try {
+      const raw = sessionStorage.getItem('signova_doc')
+      const savedDoc = raw ? JSON.parse(raw) : doc
+      const res = await fetch('/api/redeem-bypass', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: trimmed, prompt: savedDoc.prompt }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setBypassError(data.error || 'Invalid code. Please check and try again.')
+        return
+      }
+      // Upgrade the stored doc to premium
+      const upgraded = { ...savedDoc, content: data.text, isPremium: true, bypassUsed: true }
+      sessionStorage.setItem('signova_doc', JSON.stringify(upgraded))
+      setDoc(upgraded)
+      setPaid(true)
+      setShowBypass(false)
+    } catch {
+      setBypassError('Something went wrong. Please try again.')
+    } finally {
+      setBypassLoading(false)
     }
   }
 
@@ -270,6 +307,38 @@ export default function Preview() {
                   💬 Pay via WhatsApp
                 </a>
                 <p className="wa-sub">Bank transfer available for Nigeria &amp; Africa</p>
+
+                {/* Bypass code entry — shown after customer pays via WhatsApp */}
+                {!showBypass ? (
+                  <button className="bypass-toggle" onClick={() => setShowBypass(true)}>
+                    Already paid? Enter your code →
+                  </button>
+                ) : (
+                  <div className="bypass-box">
+                    <p className="bypass-label">Enter your payment code</p>
+                    <input
+                      className="bypass-input"
+                      type="text"
+                      placeholder="SIG-XXXXX"
+                      value={bypassCode}
+                      onChange={e => { setBypassCode(e.target.value.toUpperCase()); setBypassError('') }}
+                      onKeyDown={e => e.key === 'Enter' && handleBypassRedeem()}
+                      maxLength={9}
+                      autoFocus
+                    />
+                    {bypassError && <p className="bypass-error">{bypassError}</p>}
+                    <button
+                      className="bypass-submit"
+                      onClick={handleBypassRedeem}
+                      disabled={bypassLoading}
+                    >
+                      {bypassLoading ? <><span className="spinner-sm" /> Verifying…</> : 'Unlock my document'}
+                    </button>
+                    <button className="bypass-cancel" onClick={() => { setShowBypass(false); setBypassError('') }}>
+                      Cancel
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
