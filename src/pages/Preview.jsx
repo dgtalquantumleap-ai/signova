@@ -262,7 +262,7 @@ export default function Preview() {
               <div className="sidebar-whatsapp">
                 <p className="wa-label">Card not working?</p>
                 <a
-                  href="https://wa.me/14032742793?text=Hi%2C%20I%20want%20to%20pay%20for%20a%20Signova%20document%20via%20bank%20transfer"
+                  href="https://wa.me/5878372617?text=Hi%2C%20I%20want%20to%20pay%20for%20a%20Signova%20document%20via%20bank%20transfer"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-whatsapp"
