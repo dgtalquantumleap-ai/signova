@@ -6,6 +6,7 @@ import PrivacyPage from './pages/PrivacyPage'
 import TermsPage from './pages/TermsPage'
 import BlogIndex from './pages/blog/BlogIndex'
 import BlogPost from './pages/blog/BlogPost'
+import AdminPage from './pages/AdminPage'
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/blog" element={<BlogIndex />} />
       <Route path="/blog/:slug" element={<BlogPost />} />
+      <Route path="/admin" element={<AdminPage />} />
     </Routes>
   )
 }
