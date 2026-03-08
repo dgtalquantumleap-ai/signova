@@ -7,6 +7,7 @@ import TermsPage from './pages/TermsPage'
 import BlogIndex from './pages/blog/BlogIndex'
 import BlogPost from './pages/blog/BlogPost'
 import AdminPage from './pages/AdminPage'
+import NDALanding from './pages/NDALanding'
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
       <Route path="/blog" element={<BlogIndex />} />
       <Route path="/blog/:slug" element={<BlogPost />} />
       <Route path="/admin" element={<AdminPage />} />
+      <Route path="/nda-generator" element={<NDALanding />} />
     </Routes>
   )
 }

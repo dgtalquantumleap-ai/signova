@@ -1,0 +1,197 @@
+/* ── NDA Landing Page ── */
+
+.nda-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 140px 24px 80px;
+  text-align: center;
+}
+.nda-hero-inner {
+  max-width: 760px;
+  margin: 0 auto;
+}
+.nda-badge {
+  display: inline-block;
+  background: rgba(201,168,76,0.12);
+  border: 1px solid rgba(201,168,76,0.3);
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+.nda-h1 {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+.nda-sub {
+  font-size: clamp(16px, 2vw, 19px);
+  color: var(--text2);
+  line-height: 1.7;
+  max-width: 600px;
+  margin: 0 auto 32px;
+}
+.nda-cta {
+  background: var(--gold);
+  color: #0e0e0e;
+  border: none;
+  border-radius: 10px;
+  padding: 16px 36px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.nda-cta:hover { opacity: 0.9; transform: translateY(-1px); }
+.nda-cta-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 12px;
+}
+.nda-trust {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px 32px;
+  margin-top: 48px;
+  font-size: 14px;
+  color: var(--text2);
+}
+
+/* ── Sections ── */
+.nda-section {
+  padding: 80px 24px;
+}
+.nda-section-alt {
+  background: #111;
+}
+.nda-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.nda-section-title {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3vw, 36px);
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+/* ── How it works steps ── */
+.nda-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+.nda-step {
+  background: #161616;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px 24px;
+}
+.nda-step-num {
+  width: 36px; height: 36px;
+  background: var(--gold);
+  color: #0e0e0e;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+}
+.nda-step h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.nda-step p {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ── NDA type cards ── */
+.nda-types {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.nda-type-card {
+  background: #161616;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px 24px;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.nda-type-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+.nda-type-icon {
+  font-size: 24px;
+  color: var(--gold);
+  margin-bottom: 14px;
+  font-weight: 700;
+}
+.nda-type-card h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.nda-type-card p {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.7;
+  margin: 0 0 16px;
+}
+.nda-type-cta {
+  font-size: 13px;
+  color: var(--gold);
+  font-weight: 600;
+}
+
+/* ── CTA band ── */
+.nda-cta-band {
+  background: linear-gradient(135deg, #161616 0%, #1a1506 100%);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 72px 24px;
+}
+
+/* ── FAQ ── */
+.nda-faq-wrap { max-width: 740px; }
+.nda-faqs { display: flex; flex-direction: column; gap: 0; }
+.nda-faq {
+  padding: 28px 0;
+  border-bottom: 1px solid var(--border);
+}
+.nda-faq:last-child { border-bottom: none; }
+.nda-faq-q {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.nda-faq-a {
+  font-size: 15px;
+  color: var(--text2);
+  line-height: 1.75;
+  margin: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 700px) {
+  .nda-steps, .nda-types { grid-template-columns: 1fr; }
+  .nda-trust { gap: 12px 20px; font-size: 13px; }
+}
