@@ -1,7 +1,28 @@
 // api/redeem-bypass.js
-// Called when a customer enters their WhatsApp bypass code on the preview page.
-// Validates the code, generates the premium document with Anthropic Claude,
-// marks the code as used (single-use), and returns the document.
+// Verifies a bypass code by recomputing the expected HMAC — no Redis required.
+// Codes are valid for the current UTC day and expire at midnight.
+
+import { createHmac } from 'crypto'
+
+function encodeBase32(num) {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  let result = ''
+  let n = Math.abs(num)
+  for (let i = 0; i < 5; i++) {
+    result = chars[n % 32] + result
+    n = Math.floor(n / 32)
+  }
+  return result
+}
+
+function getExpectedCode(secret) {
+  const dayToken = Math.floor(Date.now() / 86400000)
+  const hmac = createHmac('sha256', secret)
+    .update(String(dayToken))
+    .digest()
+  const num = hmac.readUInt32BE(0)
+  return 'SIG-' + encodeBase32(num)
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
@@ -9,57 +30,35 @@ export default async function handler(req, res) {
   const { code, prompt } = req.body
 
   if (!code || typeof code !== 'string') {
-    return res.status(400).json({ error: 'Missing bypass code' })
+    return res.status(400).json({ error: 'Missing bypass code.' })
   }
   if (!prompt) {
-    return res.status(400).json({ error: 'Missing prompt' })
+    return res.status(400).json({ error: 'Missing document prompt.' })
+  }
+
+  const adminSecret = process.env.BYPASS_ADMIN_SECRET
+  if (!adminSecret) {
+    return res.status(500).json({ error: 'Server misconfigured — contact hello@getsignova.com.' })
   }
 
   const normalised = code.trim().toUpperCase()
+  const expected = getExpectedCode(adminSecret)
 
-  // Validate format — must look like SIG-XXXXX
-  if (!/^SIG-[A-Z0-9]{5}$/.test(normalised)) {
-    return res.status(400).json({ error: 'Invalid code format. Codes look like SIG-7X9K2.' })
+  if (normalised !== expected) {
+    return res.status(400).json({
+      error: 'Invalid or expired code. Codes expire at midnight — contact hello@getsignova.com if you need a new one.',
+    })
   }
 
-  const redisUrl = process.env.UPSTASH_REDIS_REST_URL
-  const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN
+  console.log(`[Bypass] Code redeemed: ${normalised}`)
 
-  if (!redisUrl || !redisToken) {
-    return res.status(500).json({ error: 'Server misconfigured' })
+  // Generate premium document with Anthropic Claude
+  const apiKey = process.env.ANTHROPIC_API_KEY
+  if (!apiKey) {
+    return res.status(500).json({ error: 'Server misconfigured — contact hello@getsignova.com.' })
   }
 
   try {
-    const { Redis } = await import('@upstash/redis')
-    const redis = new Redis({ url: redisUrl, token: redisToken })
-
-    const value = await redis.get(`bypass:${normalised}`)
-
-    if (!value) {
-      return res.status(400).json({
-        error: 'Code not found or expired. Codes are valid for 24 hours — contact hello@getsignova.com if you need a new one.',
-      })
-    }
-
-    if (value === 'used') {
-      return res.status(400).json({
-        error: 'This code has already been used. Each code is single-use. Contact hello@getsignova.com if you need help.',
-      })
-    }
-
-    // Mark as used immediately before generating — prevents race conditions
-    await redis.set(`bypass:${normalised}`, 'used', { ex: 86400 })
-
-    console.log(`[Bypass] Code redeemed: ${normalised}`)
-
-    // Generate premium document with Anthropic Claude
-    const apiKey = process.env.ANTHROPIC_API_KEY
-    if (!apiKey) {
-      // Roll back the used flag if generation is going to fail anyway
-      await redis.set(`bypass:${normalised}`, 'unused', { ex: 86400 })
-      return res.status(500).json({ error: 'Server misconfigured — contact hello@getsignova.com' })
-    }
-
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -77,8 +76,6 @@ export default async function handler(req, res) {
     })
 
     if (!response.ok) {
-      // Roll back so customer can try again
-      await redis.set(`bypass:${normalised}`, 'unused', { ex: 86400 })
       const err = await response.json()
       return res.status(500).json({ error: err.error?.message || 'Document generation failed. Please try again.' })
     }
@@ -88,7 +85,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ text, isPremium: true, bypassUsed: true })
   } catch (err) {
-    console.error('redeem-bypass error:', err)
+    console.error('[Bypass] Generation error:', err)
     return res.status(500).json({ error: 'Something went wrong. Please try again or contact hello@getsignova.com.' })
   }
 }

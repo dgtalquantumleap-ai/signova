@@ -1,21 +1,32 @@
 // api/create-bypass.js
-// Password-protected admin endpoint — you call this after a WhatsApp payment is confirmed.
-// Returns a single-use bypass code that the customer can enter on the preview page.
-//
-// Usage:
-//   POST https://getsignova.com/api/create-bypass
-//   Body: { "secret": "YOUR_BYPASS_ADMIN_SECRET" }
-//   Response: { "code": "SIG-7X9K2" }
-//
-// The code is stored in Upstash Redis with a 24-hour TTL and is deleted after one use.
+// Generates a cryptographically signed bypass code — no Redis required.
+// The code encodes today's date so it expires at midnight UTC automatically.
+// Verification is done in redeem-bypass.js by recomputing the HMAC.
 
-function generateCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // no 0/O/1/I confusion
-  let code = 'SIG-'
+import { createHmac } from 'crypto'
+
+// Encode a number as a compact uppercase alphanumeric string
+function encodeBase32(num) {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // 32 chars, no 0/O/1/I
+  let result = ''
+  let n = Math.abs(num)
   for (let i = 0; i < 5; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)]
+    result = chars[n % 32] + result
+    n = Math.floor(n / 32)
   }
-  return code
+  return result
+}
+
+function generateCode(secret) {
+  // Day token — changes every UTC day so codes expire at midnight
+  const dayToken = Math.floor(Date.now() / 86400000)
+  // HMAC of the day token with the admin secret — unique and unguessable
+  const hmac = createHmac('sha256', secret)
+    .update(String(dayToken))
+    .digest()
+  // Take first 4 bytes as a number and encode as 5 base-32 chars
+  const num = hmac.readUInt32BE(0)
+  return 'SIG-' + encodeBase32(num)
 }
 
 export default async function handler(req, res) {
@@ -25,48 +36,20 @@ export default async function handler(req, res) {
   const adminSecret = process.env.BYPASS_ADMIN_SECRET
 
   if (!adminSecret) {
-    console.error('BYPASS_ADMIN_SECRET not set in environment')
-    return res.status(500).json({ error: 'Server misconfigured' })
+    console.error('[Bypass] BYPASS_ADMIN_SECRET not set in environment')
+    return res.status(500).json({ error: 'Server misconfigured — contact support.' })
   }
 
   if (!secret || secret !== adminSecret) {
-    return res.status(401).json({ error: 'Unauthorised' })
+    return res.status(401).json({ error: 'Incorrect password.' })
   }
 
-  // Store in Upstash Redis — same instance used for rate limiting
-  const redisUrl = process.env.UPSTASH_REDIS_REST_URL
-  const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN
+  const code = generateCode(adminSecret)
+  console.log(`[Bypass] Generated code: ${code}`)
 
-  if (!redisUrl || !redisToken) {
-    return res.status(500).json({ error: 'Redis not configured' })
-  }
-
-  try {
-    const { Redis } = await import('@upstash/redis')
-    const redis = new Redis({ url: redisUrl, token: redisToken })
-
-    // Generate a unique code (retry if collision, extremely unlikely)
-    let code
-    let attempts = 0
-    do {
-      code = generateCode()
-      attempts++
-      if (attempts > 10) throw new Error('Could not generate unique code')
-    } while (await redis.exists(`bypass:${code}`))
-
-    // Store with 24-hour TTL
-    // Value 'unused' — will be set to 'used' on redemption
-    await redis.set(`bypass:${code}`, 'unused', { ex: 86400 })
-
-    console.log(`[Bypass] Created code: ${code}`)
-
-    return res.status(200).json({
-      code,
-      expiresIn: '24 hours',
-      instructions: `WhatsApp this code to your customer: ${code}. They enter it on the preview page to unlock their download.`,
-    })
-  } catch (err) {
-    console.error('create-bypass error:', err)
-    return res.status(500).json({ error: 'Failed to create bypass code' })
-  }
+  return res.status(200).json({
+    code,
+    expiresAt: 'Midnight UTC tonight',
+    instructions: `Send this code to your customer: ${code}`,
+  })
 }
