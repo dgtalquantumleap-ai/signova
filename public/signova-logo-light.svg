@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50" width="200" height="50">
+  <rect width="200" height="50" rx="8" fill="#0e0e0e"/>
+  <rect x="8" y="8" width="34" height="34" rx="7" fill="#c9a84c"/>
+  <text x="25" y="31" font-family="Georgia, serif" font-size="20" font-weight="700" fill="#0e0e0e" text-anchor="middle">S</text>
+  <text x="56" y="32" font-family="Georgia, serif" font-size="18" font-weight="700" fill="#f5f0e8" letter-spacing="0.5">Signova</text>
+</svg>
