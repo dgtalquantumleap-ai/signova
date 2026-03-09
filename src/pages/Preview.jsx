@@ -13,6 +13,9 @@ export default function Preview() {
   const [verifying, setVerifying] = useState(false)
   const [error, setError] = useState('')
   const [payingUsdt, setPayingUsdt] = useState(false)
+  const [buyerEmail, setBuyerEmail] = useState('')
+  const [emailSubmitted, setEmailSubmitted] = useState(false)
+  const [emailLoading, setEmailLoading] = useState(false)
   const contentRef = useRef(null)
 
   useEffect(() => {
@@ -82,6 +85,20 @@ export default function Preview() {
     `)
     printWindow.document.close()
     printWindow.print()
+  }
+
+  const handleEmailCapture = async () => {
+    if (!buyerEmail || !buyerEmail.includes('@')) return
+    setEmailLoading(true)
+    try {
+      await fetch('/api/capture-buyer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: buyerEmail, docName: doc?.docName }),
+      })
+    } catch {}
+    setEmailSubmitted(true)
+    setEmailLoading(false)
   }
 
   const handleUsdtCheckout = async () => {
@@ -321,9 +338,42 @@ export default function Preview() {
             </div>
             {error && <div className="sidebar-error">{error}</div>}
             {paid ? (
-              <button className="btn-download-full" onClick={downloadPDF}>
-                ⬇ Download clean PDF
-              </button>
+              <>
+                <button className="btn-download-full" onClick={downloadPDF}>
+                  ⬇ Download clean PDF
+                </button>
+                {/* Post-purchase email capture */}
+                {!emailSubmitted ? (
+                  <div className="buyer-capture">
+                    <p className="buyer-capture-label">
+                      📋 Get your free checklist
+                    </p>
+                    <p className="buyer-capture-sub">
+                      5 ways to protect your document after signing — sent to your inbox instantly.
+                    </p>
+                    <input
+                      className="buyer-capture-input"
+                      type="email"
+                      placeholder="your@email.com"
+                      value={buyerEmail}
+                      onChange={e => setBuyerEmail(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && handleEmailCapture()}
+                    />
+                    <button
+                      className="buyer-capture-btn"
+                      onClick={handleEmailCapture}
+                      disabled={emailLoading || !buyerEmail.includes('@')}
+                    >
+                      {emailLoading ? 'Sending…' : 'Send me the checklist →'}
+                    </button>
+                    <p className="buyer-capture-privacy">No spam. Unsubscribe anytime.</p>
+                  </div>
+                ) : (
+                  <div className="buyer-capture-done">
+                    ✓ Checklist sent — check your inbox
+                  </div>
+                )}
+              </>
             ) : (
               <button className="btn-pay-full" onClick={handleDownload} disabled={paying}>
                 {paying
