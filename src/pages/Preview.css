@@ -421,3 +421,32 @@
   font-weight: 600;
   text-align: center;
 }
+
+/* ── Promo Code ── */
+.promo-box { margin-top: 14px; }
+.promo-row { display: flex; gap: 8px; }
+.promo-input {
+  flex: 1; padding: 9px 12px; border-radius: 8px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+  color: var(--text); font-size: 14px; letter-spacing: 0.04em;
+  outline: none; transition: border 0.2s;
+}
+.promo-input:focus { border-color: var(--gold); }
+.promo-input::placeholder { color: var(--text2); }
+.promo-btn {
+  padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer;
+  background: rgba(255,255,255,0.1); color: var(--text);
+  font-size: 14px; font-weight: 600; transition: background 0.2s;
+}
+.promo-btn:hover:not(:disabled) { background: rgba(255,255,255,0.18); }
+.promo-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.promo-success {
+  margin-top: 8px; padding: 8px 12px; border-radius: 6px;
+  background: rgba(38, 161, 123, 0.15); border: 1px solid rgba(38, 161, 123, 0.3);
+  color: #26a17b; font-size: 13px;
+}
+.promo-error {
+  margin-top: 8px; padding: 8px 12px; border-radius: 6px;
+  background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2);
+  color: #f87171; font-size: 13px;
+}

@@ -16,6 +16,11 @@ export default function Preview() {
   const [buyerEmail, setBuyerEmail] = useState('')
   const [emailSubmitted, setEmailSubmitted] = useState(false)
   const [emailLoading, setEmailLoading] = useState(false)
+  const [promoCode, setPromoCode] = useState('')
+  const [promoToken, setPromoToken] = useState(null)
+  const [promoLoading, setPromoLoading] = useState(false)
+  const [promoMsg, setPromoMsg] = useState('')
+  const [promoError, setPromoError] = useState('')
   const contentRef = useRef(null)
 
   useEffect(() => {
@@ -118,6 +123,33 @@ export default function Preview() {
     } catch (e) {
       setError(e.message)
       setPayingUsdt(false)
+    }
+  }
+
+  const handlePromoApply = async () => {
+    if (!promoCode.trim()) return
+    setPromoLoading(true)
+    setPromoError('')
+    setPromoMsg('')
+    try {
+      const res = await fetch('/api/promo-redeem', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: promoCode, docType: doc?.docType, docName: doc?.docName }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.valid) {
+        setPromoError(data.error || 'Invalid promo code.')
+      } else {
+        setPromoToken(data.token)
+        setPromoMsg(data.message)
+        // Unlock immediately — no payment needed
+        setPaid(true)
+      }
+    } catch {
+      setPromoError('Could not apply code. Please try again.')
+    } finally {
+      setPromoLoading(false)
     }
   }
 
@@ -337,6 +369,26 @@ export default function Preview() {
               <span className="price-label">one-time download</span>
             </div>
             {error && <div className="sidebar-error">{error}</div>}
+            {/* Promo code input */}
+            {!paid && (
+              <div className="promo-box">
+                <div className="promo-row">
+                  <input
+                    className="promo-input"
+                    type="text"
+                    placeholder="Promo code"
+                    value={promoCode}
+                    onChange={e => { setPromoCode(e.target.value.toUpperCase()); setPromoError(''); setPromoMsg('') }}
+                    onKeyDown={e => e.key === 'Enter' && handlePromoApply()}
+                  />
+                  <button className="promo-btn" onClick={handlePromoApply} disabled={promoLoading}>
+                    {promoLoading ? '…' : 'Apply'}
+                  </button>
+                </div>
+                {promoMsg && <div className="promo-success">{promoMsg}</div>}
+                {promoError && <div className="promo-error">{promoError}</div>}
+              </div>
+            )}
             {paid ? (
               <>
                 <button className="btn-download-full" onClick={downloadPDF}>
