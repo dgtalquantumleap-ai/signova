@@ -47,7 +47,7 @@ export default function NDALanding() {
         />
         <meta property="og:title" content="Free NDA Generator | Signova" />
         <meta property="og:description" content="Create a legally sound NDA in minutes. Free preview — pay only to download." />
-        <link rel="canonical" href="https://getsignova.com/nda-generator" />
+        <link rel="canonical" href="https://www.getsignova.com/nda-generator" />
       </Helmet>
 
       {/* Nav */}

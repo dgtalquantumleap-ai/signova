@@ -29,7 +29,7 @@ export default function DocLanding() {
         <meta name="description" content={metaDesc} />
         <meta property="og:title" content={titleTag} />
         <meta property="og:description" content={metaDesc} />
-        <link rel="canonical" href={`https://getsignova.com/${slug}`} />
+        <link rel="canonical" href={`https://www.getsignova.com/${slug}`} />
       </Helmet>
 
       {/* Nav */}
