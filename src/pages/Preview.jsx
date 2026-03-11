@@ -392,7 +392,7 @@ export default function Preview() {
             {paid ? (
               <>
                 <button className="btn-download-full" onClick={downloadPDF}>
-                  ⬇ Download clean PDF
+                  ⬇ Download clean PDF — ready now
                 </button>
                 {/* Post-purchase email capture */}
                 {!emailSubmitted ? (
@@ -427,36 +427,36 @@ export default function Preview() {
                 )}
               </>
             ) : (
-              <button className="btn-pay-full" onClick={handleDownload} disabled={paying}>
-                {paying
-                  ? <><span className="spinner-sm" /> Processing…</>
-                  : <>Pay $4.99 &amp; Download →</>
-                }
-              </button>
+              <>
+                <button className="btn-pay-full" onClick={handleDownload} disabled={paying}>
+                  {paying
+                    ? <><span className="spinner-sm" /> Processing…</>
+                    : <>💳 Pay $4.99 by Card →</>
+                  }
+                </button>
+                <p className="trust-line">🔒 Secure checkout · Instant delivery · No account needed</p>
+
+                {/* USDT — equal option, not fallback */}
+                <div className="sidebar-usdt">
+                  <div className="usdt-divider"><span>or pay with crypto</span></div>
+                  <button
+                    className="btn-usdt"
+                    onClick={handleUsdtCheckout}
+                    disabled={payingUsdt}
+                  >
+                    {payingUsdt
+                      ? <><span className="spinner-sm" /> Preparing invoice…</>
+                      : <>⬡ Pay $4.99 in USDT / Crypto →</>}
+                  </button>
+                  <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Works for Nigeria & Africa · Instant confirmation</p>
+                </div>
+              </>
             )}
             <ul className="sidebar-perks">
               <li>✓ Clean PDF, no watermark</li>
               <li>✓ Instant download</li>
               <li>✓ Yours to keep forever</li>
             </ul>
-
-            {/* USDT payment option for Nigeria / Africa */}
-            {!paid && (
-              <div className="sidebar-usdt">
-                <div className="usdt-divider"><span>or</span></div>
-                <p className="usdt-label">Card not working? Pay with USDT</p>
-                <button
-                  className="btn-usdt"
-                  onClick={handleUsdtCheckout}
-                  disabled={payingUsdt}
-                >
-                  {payingUsdt
-                    ? <><span className="spinner-sm" /> Preparing invoice…</>
-                    : <>⬡ Pay $4.99 in USDT →</>}
-                </button>
-                <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · instant confirmation</p>
-              </div>
-            )}
           </div>
 
           <div className="sidebar-need-more">
