@@ -144,3 +144,39 @@
   .gen-nav { padding: 0 16px; }
   .logo-text { font-size: 17px; }
 }
+
+/* ── Email gate modal ─────────────────────────────── */
+.email-gate-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; padding: 20px;
+  animation: fadeIn 0.15s ease;
+}
+.email-gate-modal {
+  background: #fff; border-radius: 16px; padding: 40px 36px;
+  max-width: 440px; width: 100%; text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  animation: slideUp 0.2s ease;
+}
+.email-gate-icon { font-size: 40px; margin-bottom: 16px; }
+.email-gate-title { font-size: 22px; font-weight: 700; color: #0C1F3F; margin: 0 0 10px; }
+.email-gate-sub { font-size: 14px; color: #6B7280; margin: 0 0 24px; line-height: 1.5; }
+.email-gate-input {
+  width: 100%; padding: 13px 16px; border: 1.5px solid #E5E7EB;
+  border-radius: 8px; font-size: 15px; outline: none;
+  box-sizing: border-box; margin-bottom: 8px; transition: border 0.15s;
+}
+.email-gate-input:focus { border-color: #C9A84C; }
+.email-gate-error { font-size: 13px; color: #DC2626; margin: 0 0 8px; }
+.email-gate-btn {
+  width: 100%; padding: 14px; background: #0C1F3F; color: #fff;
+  border: none; border-radius: 8px; font-size: 15px; font-weight: 600;
+  cursor: pointer; margin-bottom: 12px; transition: background 0.15s;
+}
+.email-gate-btn:hover { background: #1a3460; }
+.email-gate-skip {
+  background: none; border: none; color: #9CA3AF; font-size: 13px;
+  cursor: pointer; text-decoration: underline; padding: 0;
+}
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }

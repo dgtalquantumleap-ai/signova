@@ -529,6 +529,9 @@ export default function Generator() {
   const [answers, setAnswers] = useState({})
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showEmailGate, setShowEmailGate] = useState(false)
+  const [leadEmail, setLeadEmail] = useState('')
+  const [emailError, setEmailError] = useState('')
 
   // Redirect during render is a React anti-pattern — use useEffect
   useEffect(() => {
@@ -557,7 +560,37 @@ export default function Generator() {
   const filledCount = requiredFields.filter(f => answers[f.id] && answers[f.id].trim && answers[f.id].trim() !== '').length
   const progressPct = requiredFields.length > 0 ? Math.round((filledCount / requiredFields.length) * 100) : 0
 
-  const handleGenerate = async () => {
+  const handleGenerateClick = () => {
+    if (!isValid()) { setError('Please fill in all required fields.'); return }
+    setError('')
+    // Check if we already have email (returning user in session)
+    const cachedEmail = sessionStorage.getItem('signova_lead_email')
+    if (cachedEmail) {
+      setLeadEmail(cachedEmail)
+      handleGenerate(cachedEmail)
+    } else {
+      setShowEmailGate(true)
+    }
+  }
+
+  const handleEmailGateSubmit = async () => {
+    if (!leadEmail || !leadEmail.includes('@')) {
+      setEmailError('Please enter a valid email address.')
+      return
+    }
+    setEmailError('')
+    sessionStorage.setItem('signova_lead_email', leadEmail)
+    // Fire and forget — capture lead async, don't block generation
+    fetch('/api/capture-buyer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: leadEmail, docName: config?.name, source: 'pre-generate' }),
+    }).catch(() => {})
+    setShowEmailGate(false)
+    handleGenerate(leadEmail)
+  }
+
+  const handleGenerate = async (email) => {
     if (!isValid()) { setError('Please fill in all required fields.'); return }
     setError('')
     setLoading(true)
@@ -744,7 +777,7 @@ Output the complete document only, no preamble, explanation, or closing notes.`
 
           <button
             className={`btn-generate ${loading ? 'loading' : ''}`}
-            onClick={handleGenerate}
+            onClick={handleGenerateClick}
             disabled={loading}
           >
             {loading ? (
@@ -762,6 +795,33 @@ Output the complete document only, no preamble, explanation, or closing notes.`
           <p className="gen-note">Preview is free · $4.99 to download clean PDF</p>
         </div>
       </div>
+
+      {/* Email gate modal */}
+      {showEmailGate && (
+        <div className="email-gate-overlay" onClick={() => setShowEmailGate(false)}>
+          <div className="email-gate-modal" onClick={e => e.stopPropagation()}>
+            <div className="email-gate-icon">📄</div>
+            <h2 className="email-gate-title">Where should we send updates?</h2>
+            <p className="email-gate-sub">Enter your email to preview your {config.name}. No spam — we'll only send relevant legal templates and updates.</p>
+            <input
+              className="email-gate-input"
+              type="email"
+              placeholder="your@email.com"
+              value={leadEmail}
+              autoFocus
+              onChange={e => { setLeadEmail(e.target.value); setEmailError('') }}
+              onKeyDown={e => e.key === 'Enter' && handleEmailGateSubmit()}
+            />
+            {emailError && <p className="email-gate-error">{emailError}</p>}
+            <button className="email-gate-btn" onClick={handleEmailGateSubmit}>
+              Generate my document →
+            </button>
+            <button className="email-gate-skip" onClick={() => { setShowEmailGate(false); handleGenerate('') }}>
+              Skip for now
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
