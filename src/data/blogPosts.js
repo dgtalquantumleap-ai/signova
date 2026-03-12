@@ -99,6 +99,72 @@ export const BLOG_POSTS = [
     ],
     cta: { label: 'Generate Your Free NDA →', href: '/generate/nda' }
   },
+
+  {
+    slug: 'freelance-contract-template-nigeria',
+    title: 'Freelance Contract Template Nigeria 2026 — What to Include to Protect Yourself',
+    description: 'A freelance contract is the only thing standing between you and an unpaid invoice. This guide covers exactly what a Nigerian freelance contract must contain, common traps to avoid, and how to generate one free in minutes.',
+    date: '2026-03-10',
+    readTime: '7 min read',
+    category: 'Freelance',
+    keywords: 'freelance contract Nigeria, freelance agreement template Nigeria, client contract freelancer Lagos, freelance invoice contract Nigeria 2026',
+    sections: [
+      {
+        heading: 'Why Every Nigerian Freelancer Needs a Written Contract',
+        body: `If you have ever chased a client for payment, had a client demand more work than agreed, or lost a project to scope creep — you did not have a proper contract in place.\n\nFreelancing in Nigeria without a written contract is the single most common way talented people lose money. The client memory of what was agreed always differs from yours when money is involved. A contract is not about distrust — it is about clarity. It documents what was agreed before the disagreement happens.\n\nUnder Nigerian contract law, oral agreements are valid but nearly impossible to enforce without evidence. A signed written contract is your evidence.`
+      },
+      {
+        heading: 'What a Freelance Contract Must Cover',
+        body: `1. Scope of work — describe exactly what you will deliver. Be specific. "Logo design" is not enough. "Three logo concepts, two rounds of revision, final files delivered in PNG, SVG, and AI format" is a scope.\n\n2. Payment amount and schedule — state the total fee, deposit requirement (typically 50% upfront), and payment due date for the balance. Specify the currency and payment method.\n\n3. Timeline — project start date, milestone dates if applicable, and final delivery date. Include a clause that delays caused by the client extend the deadline accordingly.\n\n4. Revision policy — how many rounds of revisions are included. What happens if the client requests changes beyond that — quote for additional work.\n\n5. Ownership and intellectual property — who owns the work? Typically the client owns final deliverables upon full payment. You retain ownership of unused concepts, working files, and your portfolio right to show the work.\n\n6. Kill fee — if the client cancels mid-project, they owe you a kill fee (typically 50% of remaining balance). Without this clause, a client can cancel after you have spent weeks working and owe you nothing.\n\n7. Late payment — specify a late payment fee (e.g., 5% per month) on overdue invoices. This is legal under Nigerian contract law and incentivises timely payment.\n\n8. Governing law — which state's laws govern the contract.`
+      },
+      {
+        heading: 'The Scope Creep Problem — and How a Contract Stops It',
+        body: `Scope creep is when a client keeps adding tasks beyond the original agreement — "can you also do the social media graphics?" "Can you just make this one more change?" "While you\'re at it..." Each addition is small. Together they can double the work without doubling the pay.\n\nA contract with a clear scope of work and a defined change request process stops this. When a client asks for something outside scope, you point to the contract: "That falls outside what we agreed. I can do it for an additional X." Without a contract, you have no reference point and the conversation becomes a dispute.`
+      },
+      {
+        heading: 'The Deposit Clause — Non-Negotiable',
+        body: `Never begin work without a deposit. This is the single most important financial protection in any freelance contract.\n\nA 50% deposit before work begins does two things: it filters out clients who were never serious, and it ensures you are compensated for time spent even if the project falls apart.\n\nYour contract should state clearly: "Work commences upon receipt of the 50% deposit. The deposit is non-refundable if the project is cancelled after work has commenced."\n\nClients who resist paying a deposit are the clients most likely to ghost you after delivery.`
+      },
+      {
+        heading: 'Generate Your Freelance Contract Free',
+        body: `Signova generates a complete, professional freelance contract in under 3 minutes. Fill in your name, client name, scope of work, project fee, payment schedule, and delivery timeline — Signova generates a properly structured contract you can send for signing before you start a single line of work.\n\nWorks for designers, developers, writers, marketers, photographers, consultants, and any freelancer or service provider in Nigeria or internationally. Preview free, download for $4.99.`
+      },
+    ],
+    cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
+  },
+
+  {
+    slug: 'service-agreement-template-free',
+    title: 'Service Agreement Template — Protect Your Business From Unpaid Work (2026)',
+    description: 'A service agreement is the foundation of any professional service relationship. This guide explains what it must include, how it differs from a freelance contract, and how to generate one free.',
+    date: '2026-03-11',
+    readTime: '6 min read',
+    category: 'Business',
+    keywords: 'service agreement template free, service contract template, service agreement Nigeria, professional services contract 2026, service agreement generator',
+    sections: [
+      {
+        heading: 'What Is a Service Agreement and Who Needs One?',
+        body: `A service agreement (also called a service contract or professional services agreement) is a legally binding contract between a service provider and a client that sets out the terms under which services will be delivered.\n\nAny business or individual that provides services for payment needs a service agreement. This includes:\n\n- Cleaning companies\n- IT consultants and software developers\n- Marketing agencies\n- Event planners\n- Caterers\n- Accountants and bookkeepers\n- Security companies\n- Maintenance and repair businesses\n- Tutors and trainers\n\nIf your business does not have a signed service agreement before starting work, you are trusting that the client will pay you and honour what was discussed verbally. That trust fails more often than it should.`
+      },
+      {
+        heading: 'Service Agreement vs. Freelance Contract — What Is the Difference?',
+        body: `The terms are often used interchangeably, but there is a meaningful difference:\n\nA freelance contract is typically for project-based, one-time engagements — a logo design, a website build, a written report. The relationship ends when the project ends.\n\nA service agreement is typically for ongoing or recurring services — monthly accounting, weekly cleaning, quarterly maintenance. It covers a continuing relationship and may auto-renew.\n\nIf you provide services on an ongoing basis, you need a service agreement, not just a one-off contract.`
+      },
+      {
+        heading: 'What a Service Agreement Must Include',
+        body: `1. Description of services — what exactly will you provide? Be specific about what is and is not included.\n\n2. Service schedule — when will services be delivered? For recurring services, specify frequency and timing.\n\n3. Fees and payment terms — your rate, whether it is per hour, per month, or per project. Payment due date. Accepted payment methods.\n\n4. Contract duration — start date, end date (or indefinite with notice period).\n\n5. Termination clause — how much notice either party must give to end the agreement. Typically 30 days for ongoing service contracts.\n\n6. Liability limitation — limits your financial exposure if something goes wrong during service delivery.\n\n7. Independent contractor clause — confirms that you are a service provider, not an employee. Critical for tax and legal purposes.\n\n8. Confidentiality — if you will have access to the client's sensitive information, include a confidentiality clause.\n\n9. Dispute resolution — how disputes will be handled. Specify the governing law and whether you prefer mediation or arbitration before litigation.`
+      },
+      {
+        heading: 'The Termination Clause — Why It Matters More Than People Think',
+        body: `Most service providers focus on the payment terms and ignore the termination clause. This is a mistake.\n\nWithout a proper termination clause, a client can end the relationship with no notice, at any time, and owe you nothing for work already scheduled or in progress.\n\nA good termination clause specifies:\n- Minimum notice period (30 days is standard for monthly service contracts)\n- What happens to work in progress — you are paid for work completed up to the termination date\n- Whether the deposit or retainer is refundable upon termination\n- Circumstances where you can terminate immediately (non-payment, client breach)`
+      },
+      {
+        heading: 'Generate Your Service Agreement Free',
+        body: `Signova generates a complete service agreement customised to your business in under 3 minutes. Describe the services you provide, set your rates and payment terms, and specify the contract duration — Signova structures a professional agreement ready for your client to sign.\n\nFree preview. $4.99 to download. No account needed. Works for businesses in Nigeria, the UK, Canada, the US, Kenya, Ghana, South Africa, and 180+ countries.`
+      },
+    ],
+    cta: { label: 'Generate Service Agreement Free →', href: '/generate/service-agreement' }
+  },
 ]
 
 export function getPostBySlug(slug) {
