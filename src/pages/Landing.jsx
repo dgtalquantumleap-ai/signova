@@ -292,6 +292,18 @@ export default function Landing() {
   const [waitlistSubmitted, setWaitlistSubmitted] = useState(false)
   const [waitlistLoading, setWaitlistLoading] = useState(false)
   const [waitlistError, setWaitlistError] = useState('')
+  const [showAllDocs, setShowAllDocs] = useState(false)
+  const [heroVisible, setHeroVisible] = useState(true)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setHeroVisible(entry.isIntersecting),
+      { threshold: 0.1 }
+    )
+    const heroEl = document.querySelector('.hero')
+    if (heroEl) observer.observe(heroEl)
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -393,15 +405,17 @@ export default function Landing() {
           </h1>
           <p className="hero-sub">
             Stop paying $300/hr for standard legal documents. Answer a few questions,
-            get a professional-grade document instantly — for any country, any industry.
-            Preview free, pay $4.99 to download. Supports USDT crypto payment.
+            get a professional-grade document instantly
+            <span className="mobile-hide"> — for any country, any industry.
+            Preview free, $4.99 to download. Supports USDT crypto payment.</span>
+            <span className="mobile-show"> — free preview, $4.99 to download.</span>
           </p>
           <div className="hero-actions">
             <button
               className="btn-primary"
-              onClick={() => navigate('/generate/nda')}
+              onClick={() => document.getElementById('documents').scrollIntoView({ behavior: 'smooth' })}
             >
-              Generate your first document free
+              Preview my document free
               <span className="btn-arrow">→</span>
             </button>
             <button
@@ -433,7 +447,7 @@ export default function Landing() {
             <h2 className="section-title">Generate your legal document free</h2>
           </div>
           <div className="docs-grid">
-            {DOCS.map(doc => (
+            {(showAllDocs ? DOCS : DOCS.filter(d => d.popular)).map(doc => (
               <button key={doc.id} className="doc-card" onClick={() => navigate(`/generate/${doc.id}`)}>
                 {doc.popular && <span className="doc-popular">Popular</span>}
                 <div className="doc-icon">{doc.icon}</div>
@@ -449,8 +463,31 @@ export default function Landing() {
               </button>
             ))}
           </div>
+          {!showAllDocs && (
+            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+              <button
+                className="btn-outline"
+                onClick={() => setShowAllDocs(true)}
+              >
+                Show all 27 document types ↓
+              </button>
+            </div>
+          )}
         </div>
       </section>
+
+      {/* Mobile sticky CTA — appears once hero scrolls away */}
+      {!heroVisible && (
+        <div className="mobile-sticky-cta">
+          <span className="sticky-label">Pick a document — free preview</span>
+          <button
+            className="btn-primary btn-sticky"
+            onClick={() => document.getElementById('documents').scrollIntoView({ behavior: 'smooth' })}
+          >
+            Choose document →
+          </button>
+        </div>
+      )}
 
       <section className="how-section" id="how">
         <div className="section-inner">
