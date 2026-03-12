@@ -300,15 +300,23 @@ export default function Landing() {
     return () => clearInterval(t)
   }, [])
 
-  // Keep tickerVisible always true — CSS transition handles the fade
-  const tickerVisible = true
-
-  const [docsToday, setDocsToday] = useState(47)
+  const [docsToday, setDocsToday] = useState(() => {
+    // Persist across re-renders in the session; randomise per day
+    const key = 'sig_docs_' + new Date().toDateString()
+    const stored = sessionStorage.getItem(key)
+    if (stored) return parseInt(stored, 10)
+    const start = Math.floor(Math.random() * 40) + 30 // 30–69
+    sessionStorage.setItem(key, start)
+    return start
+  })
 
   useEffect(() => {
-    // Simulate live counter ticking up every 45-90 seconds
     const interval = setInterval(() => {
-      setDocsToday(n => n + 1)
+      setDocsToday(n => {
+        const next = n + 1
+        sessionStorage.setItem('sig_docs_' + new Date().toDateString(), next)
+        return next
+      })
     }, Math.floor(Math.random() * 45000) + 45000)
     return () => clearInterval(interval)
   }, [])
@@ -377,7 +385,7 @@ export default function Landing() {
           <h1 className="hero-title">
             Free legal document generator
             <br />
-            <span className={`hero-accent ${tickerVisible ? 'visible' : ''}`}>
+            <span key={ticker} className="hero-accent">
               {TICKER_ITEMS[ticker]}
             </span>
             <br />

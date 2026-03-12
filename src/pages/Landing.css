@@ -155,11 +155,13 @@
   color: var(--gold);
   display: inline-block;
   min-width: 200px;
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.3s, transform 0.3s;
+  animation: accentIn 0.35s ease forwards;
 }
-.hero-accent.visible { opacity: 1; transform: translateY(0); }
+@keyframes accentIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* Remove old .visible class — no longer used */
 
 .hero-sub {
   font-size: 18px; color: var(--text2); line-height: 1.7;

@@ -462,7 +462,7 @@ export default function Preview() {
           <div className="sidebar-need-more">
             <p>Need multiple documents?</p>
             <strong>Unlimited plan — $9.99/month</strong>
-            <button className="btn-unlimited" onClick={() => navigate('/#pricing')}>
+            <button className="btn-unlimited" onClick={() => { navigate('/'); setTimeout(() => { document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }) }, 100) }}>
               View unlimited plan
             </button>
           </div>
