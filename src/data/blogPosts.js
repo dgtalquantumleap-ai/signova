@@ -165,6 +165,114 @@ export const BLOG_POSTS = [
     ],
     cta: { label: 'Generate Service Agreement Free →', href: '/generate/service-agreement' }
   },
+
+  {
+    slug: 'freelance-contract-template-free',
+    title: 'Free Freelance Contract Template 2026 — Protect Every Project Before You Start',
+    description: 'No contract means no protection. This guide covers exactly what a freelance contract must include to protect freelancers in the US, UK, Canada, Australia, and globally — and how to generate one free in minutes.',
+    date: '2026-03-11',
+    readTime: '8 min read',
+    category: 'Freelance',
+    keywords: 'freelance contract template free, freelance contract template, freelance agreement template, client contract template freelancer, freelance contract generator 2026',
+    sections: [
+      {
+        heading: 'Why Every Freelancer Needs a Written Contract — No Exceptions',
+        body: `A freelance contract is not a formality. It is the only document standing between you and a client who decides not to pay, changes the scope mid-project, or disputes what was originally agreed.\n\nThe freelance economy is enormous — over 1.5 billion people worldwide do some form of freelance work, and disputes over payment and scope are among the most common professional problems freelancers face. The solution is not to trust the client more carefully. The solution is a signed contract before any work begins.\n\nWithout a written contract, you have no enforceable reference point. With one, the conversation stops being "he said, she said" and becomes "here is what we both agreed and signed."\n\nThis applies whether you are a designer in Toronto, a developer in London, a marketer in Sydney, or a consultant in New York. The contract is the foundation of every professional freelance relationship.`
+      },
+      {
+        heading: 'The 8 Clauses Every Freelance Contract Must Have',
+        body: `1. Scope of work — the most important section. Describe precisely what you will deliver. Not "website design" — instead: "Five-page website including homepage, about, services, portfolio, and contact pages. Designed in Figma, developed in Webflow. Two rounds of revisions included." Vague scope is an invitation to scope creep.\n\n2. Project fee and payment schedule — the total fee, any deposit required (50% upfront is standard), when the balance is due, and what payment methods are accepted. Never begin work without a deposit.\n\n3. Revision policy — how many rounds of revisions are included, and what happens when the client requests changes beyond that. State clearly that additional revisions are billed at your hourly rate.\n\n4. Timeline — start date, any milestone dates, and final delivery date. Include a clause that delays caused by the client (late feedback, late content) automatically extend the deadline.\n\n5. Intellectual property — who owns the work? Standard practice: the client owns final deliverables upon full payment. You retain ownership until then, and you always retain rights to show the work in your portfolio.\n\n6. Kill fee — if the client cancels the project after work has started, they owe a kill fee (typically 25–50% of the remaining balance). Without this clause, a client can walk away after weeks of your work owing you nothing beyond the deposit.\n\n7. Late payment — a late payment penalty (1–5% per month on overdue invoices) is legal and standard. It incentivises clients to pay on time and compensates you for chasing.\n\n8. Governing law — which country or state's laws govern the contract. Critical if you work internationally.`
+      },
+      {
+        heading: 'The Scope Creep Problem — How to Stop It Before It Starts',
+        body: `Scope creep is the number one way freelancers undervalue their work. A client asks for "one small change" — then another — then three more. Each feels minor. Together they represent hours of unbilled work.\n\nA contract with a defined scope and a clear change request process stops this. When a client asks for something outside the original scope, your response is simple: "That is outside what we agreed. Here is the additional cost." The contract makes that conversation professional, not adversarial.\n\nPractically, include this in your contract: "Any work outside the agreed scope of work will be quoted separately and requires written approval before proceeding." Written approval means email or message — a paper trail.`
+      },
+      {
+        heading: 'Deposits — Why 50% Upfront Is Non-Negotiable',
+        body: `The deposit serves two purposes: it filters out clients who are not serious, and it ensures you are compensated for time spent even if the project falls apart.\n\nA client who refuses to pay a deposit is telling you something important: they do not value your time enough to commit financially before you begin. That client is statistically more likely to dispute payment, ghost you after delivery, or demand endless revisions.\n\nYour contract should include language like: "A 50% deposit is required before work commences. This deposit is non-refundable if the project is cancelled after work has begun."\n\nFor long projects, consider milestone payments: 50% upfront, 25% at midpoint, 25% on delivery. This limits your exposure and keeps the client engaged throughout.`
+      },
+      {
+        heading: 'International Freelancing — What Changes and What Does Not',
+        body: `If you work with international clients — which most freelancers do — there are a few additional considerations.\n\nGoverning law: specify which country's law governs the contract. For most freelancers, this should be your home country. A designer in the UK should specify English law. A developer in Canada should specify their province.\n\nCurrency: state the currency explicitly. "$5,000" is ambiguous. "USD 5,000" or "GBP 3,500" is not.\n\nTax: specify whether your rate is inclusive or exclusive of applicable taxes (VAT, GST, HST, etc.).\n\nPayment method: for international clients, specifying accepted payment methods (bank transfer, PayPal, Wise, USDT) avoids delays and disputes at invoice time.\n\nOther than these additions, the fundamental structure of a freelance contract is the same globally.`
+      },
+      {
+        heading: 'Generate Your Freelance Contract Free',
+        body: `Signova generates a complete, professionally worded freelance contract customised to your project in under 3 minutes. Enter your name, client name, scope of work, project fee, payment schedule, revision policy, and governing jurisdiction — Signova structures the full contract ready to send.\n\nWorks for freelancers in the US, UK, Canada, Australia, Europe, Africa, Asia, and 180+ countries. Free preview, $4.99 to download. No account required.`
+      },
+    ],
+    cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
+  },
+
+  {
+    slug: 'nda-template-free-download',
+    title: 'Free NDA Template 2026 — Non-Disclosure Agreement for Startups, Freelancers & Businesses',
+    description: 'An NDA is the first document you need before sharing any business idea, hiring a contractor, or entering a partnership. This complete guide covers mutual vs one-way NDAs, what must be in them to be enforceable, and how to generate one free.',
+    date: '2026-03-12',
+    readTime: '7 min read',
+    category: 'Business',
+    keywords: 'NDA template free download, non-disclosure agreement template free, NDA generator free, mutual NDA template, one way NDA template, confidentiality agreement template 2026',
+    sections: [
+      {
+        heading: 'What Is an NDA and When Do You Actually Need One?',
+        body: `A Non-Disclosure Agreement (NDA) — also called a Confidentiality Agreement (CA) or Confidential Disclosure Agreement (CDA) — is a legally binding contract that restricts one or both parties from sharing confidential information with third parties.\n\nYou need an NDA in these situations:\n\n— Before pitching your startup idea to a potential investor, co-founder, or partner. If they sign an NDA first, any theft of your concept has legal consequences.\n\n— Before hiring a freelancer or contractor who will access sensitive information: source code, client data, pricing, business strategy.\n\n— Before entering merger, acquisition, or partnership discussions that require sharing financial data, operational details, or trade secrets.\n\n— Before sharing your product with a beta tester, pilot customer, or vendor who will see your proprietary processes.\n\nThe NDA does not guarantee your ideas cannot be stolen. It creates a legal consequence if they are — and more practically, it signals to the other party that you are serious and professional.`
+      },
+      {
+        heading: 'One-Way NDA vs. Mutual NDA — Which Do You Need?',
+        body: `One-way (unilateral) NDA — only one party is disclosing confidential information, and only the receiving party is bound by confidentiality obligations. Use this when:\n- A startup is sharing information with an investor\n- An employer is sharing proprietary processes with a new hire\n- A business is sharing product details with a contractor or vendor\n\nMutual (bilateral) NDA — both parties disclose confidential information, and both are bound by confidentiality. Use this when:\n- Two companies are exploring a partnership or joint venture\n- Two startups are discussing a merger or acquisition\n- A co-founder arrangement where both parties share proprietary ideas\n\nFor most freelancer and startup situations, a one-way NDA is appropriate. When both parties are sharing sensitive information, use a mutual NDA.`
+      },
+      {
+        heading: 'What an NDA Must Include to Be Enforceable',
+        body: `Courts have invalidated NDAs that were too vague, too broad, or missing key elements. Here is what an enforceable NDA requires:\n\n1. Clear identification of parties — full legal names and addresses of the disclosing and receiving party.\n\n2. Definition of confidential information — this is critical. Vague language like "all information shared" has been struck down. Be specific: "business plans, financial projections, technical specifications, source code, client lists, pricing data, and marketing strategies."\n\n3. Standard exclusions — information that is already public, information the recipient already knew, information received from a legitimate third party, and information that must be disclosed by law. These exclusions are standard and necessary for the NDA to be enforceable.\n\n4. Obligations of the receiving party — what they must do (keep information confidential, use it only for the defined purpose) and what they must not do (share with third parties, use for their own benefit).\n\n5. Duration — how long the confidentiality obligation lasts. Typical: 2–5 years. Perpetual NDAs are sometimes enforceable for true trade secrets.\n\n6. Remedies — most NDAs specify that a breach entitles the disclosing party to seek injunctive relief (a court order to stop the breach) without having to prove financial damages. This is important because financial damages in IP cases are hard to quantify.\n\n7. Governing law — which jurisdiction's laws apply.`
+      },
+      {
+        heading: 'What an NDA Cannot Protect',
+        body: `Knowing the limits of an NDA is as important as knowing what it covers.\n\nAn NDA cannot protect a general business concept or idea that is not clearly defined. "I had an idea for a social network" is not protectable. "My algorithm for matching users based on X criteria, documented in the attached technical spec" is.\n\nAn NDA does not replace a patent, trademark, or copyright. If your competitive advantage is a specific invention, process, or creative work, you need appropriate IP protection beyond an NDA.\n\nAn NDA cannot prevent a party from using general knowledge and skills they already had before your relationship. It protects your specific confidential information, not their ability to work in your industry.\n\nAn NDA signed after the disclosure is largely useless. Sign it before you share anything.`
+      },
+      {
+        heading: 'NDA Best Practices for Startups',
+        body: `Most investors will not sign an NDA before an initial pitch. This is standard practice — investors see hundreds of pitches and cannot be bound by NDAs on general concepts. Do not let this stop you from pitching.\n\nWhere NDAs matter most for startups: contractors, developers, designers, and employees who will access your actual technical implementation, source code, client data, or proprietary processes. These people should always sign before starting work.\n\nKeep your NDA reasonable. An NDA that attempts to classify everything as confidential, lasts forever, and prohibits the other party from working in your entire industry is likely unenforceable and will deter legitimate partners.`
+      },
+      {
+        heading: 'Generate Your NDA Free',
+        body: `Signova generates a complete NDA customised to your situation in under 3 minutes — one-way or mutual, the specific type of information you are protecting, duration, and your governing jurisdiction.\n\nUsed by freelancers, startups, and businesses in the US, UK, Canada, Australia, EU, and 180+ countries. Free preview, $4.99 to download. No account required.`
+      },
+    ],
+    cta: { label: 'Generate NDA Free →', href: '/generate/nda' }
+  },
+
+  {
+    slug: 'independent-contractor-agreement-template',
+    title: 'Independent Contractor Agreement Template — Free Download 2026',
+    description: 'Hiring a contractor without a proper agreement is one of the most expensive mistakes a business can make. This guide explains what an independent contractor agreement must include, the employee vs. contractor distinction, and how to generate one free.',
+    date: '2026-03-12',
+    readTime: '7 min read',
+    category: 'Business',
+    keywords: 'independent contractor agreement template, independent contractor agreement free, contractor agreement template, 1099 contractor agreement, self-employed contract template 2026',
+    sections: [
+      {
+        heading: 'What Is an Independent Contractor Agreement?',
+        body: `An independent contractor agreement (also called a contractor agreement, 1099 agreement in the US, or self-employed contract) is a legally binding contract between a business and a self-employed individual or entity that defines the terms of their working relationship.\n\nUnlike an employment contract, an independent contractor agreement establishes that the worker is not an employee — they are a business providing services. This distinction matters enormously for tax, benefits, liability, and legal obligations.\n\nAny business that pays a contractor for services needs a signed independent contractor agreement before work begins. This includes:\n- Hiring a developer to build or maintain software\n- Engaging a marketing consultant\n- Contracting a designer, writer, or photographer\n- Using a specialist for a defined project\n- Any ongoing service relationship with a self-employed individual`
+      },
+      {
+        heading: 'Employee vs. Independent Contractor — Why the Distinction Matters',
+        body: `Misclassifying an employee as an independent contractor is one of the most common and costly legal mistakes a business can make. In the US, misclassification can result in back taxes, penalties, and liability for unpaid benefits. In the UK, HMRC has significant powers to reclassify working relationships and pursue back tax. Similar rules apply across Canada, Australia, and the EU.\n\nThe key tests for contractor status (which vary by jurisdiction, but share common principles):\n\nControl — does the business control how and when the work is done, or just the outcome? Employees are told how to work. Contractors determine their own methods.\n\nIntegration — is the worker integral to the business, or providing a discrete service? Core functions are typically employees.\n\nFinancial independence — does the worker operate their own business, serve multiple clients, and bear financial risk? Contractors do.\n\nEquipment — does the worker use their own tools and equipment? Contractors typically do.\n\nA well-drafted independent contractor agreement explicitly addresses these factors and establishes the nature of the relationship in writing.`
+      },
+      {
+        heading: 'What an Independent Contractor Agreement Must Include',
+        body: `1. Identification of parties — legal names and addresses of the business and the contractor.\n\n2. Services to be provided — detailed description of what the contractor will deliver, including deliverables and standards.\n\n3. Term — start date and end date (or conditions for termination).\n\n4. Compensation — rate (hourly, per project, or retainer), payment schedule, and payment method. For US contractors, include a note about 1099 responsibility.\n\n5. Independent contractor status — an explicit clause stating the contractor is not an employee, is responsible for their own taxes, is not entitled to employee benefits, and may work with other clients.\n\n6. Intellectual property — work-for-hire language if you need to own the IP. Without this clause, a contractor may retain copyright over work they create for you.\n\n7. Confidentiality — if the contractor will access proprietary information, include confidentiality obligations.\n\n8. Non-solicitation — a clause preventing the contractor from soliciting your employees or clients for a defined period after the contract ends.\n\n9. Termination — notice required by either party to end the agreement, and what happens to work in progress.\n\n10. Governing law — which jurisdiction's laws apply.`
+      },
+      {
+        heading: 'The IP Clause — Most Businesses Get This Wrong',
+        body: `In most countries, including the US and UK, work created by an independent contractor belongs to the contractor by default — not the business that paid for it.\n\nThis means if you hire a developer to build your app without a proper IP assignment clause in the contract, the developer legally owns the code. If you hire a designer to create your brand identity, they own the designs.\n\nTo transfer ownership to your business, you need either:\n- A work-for-hire clause (in jurisdictions where this applies to contractors, primarily the US for certain categories)\n- An IP assignment clause — the contractor assigns all IP rights to your business upon full payment\n\nThis clause should be in every contractor agreement you sign, without exception.`
+      },
+      {
+        heading: 'Generate Your Independent Contractor Agreement Free',
+        body: `Signova generates a complete independent contractor agreement in under 3 minutes — services description, compensation terms, IP assignment, confidentiality, non-solicitation, termination, and governing law.\n\nWorks for businesses and contractors in the US, UK, Canada, Australia, EU, and 180+ countries. Free preview, $4.99 to download. No account required.`
+      },
+    ],
+    cta: { label: 'Generate Contractor Agreement Free →', href: '/generate/independent-contractor' }
+  },
+
 ]
 
 export function getPostBySlug(slug) {
