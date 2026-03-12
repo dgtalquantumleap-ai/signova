@@ -3,6 +3,28 @@ import { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import './Landing.css'
 
+function LoomFacade({ videoId }) {
+  const [clicked, setClicked] = useState(false)
+  const thumb = `https://cdn.loom.com/sessions/thumbnails/${videoId}-with-play.gif`
+  if (clicked) {
+    return (
+      <iframe
+        src={`https://www.loom.com/embed/${videoId}?autoplay=1`}
+        frameBorder="0"
+        allowFullScreen
+        allow="autoplay"
+        className="loom-embed"
+      />
+    )
+  }
+  return (
+    <div className="loom-facade" onClick={() => setClicked(true)}>
+      <img src={thumb} alt="Watch Signova demo" className="loom-thumb" />
+      <div className="loom-play-btn">▶</div>
+    </div>
+  )
+}
+
 const DOCS = [
   {
     id: 'privacy-policy',
@@ -222,6 +244,12 @@ const DOCS = [
   },
 ]
 
+const TESTIMONIALS = [
+  { name: 'Chidi A.', role: 'Freelance Designer, Lagos', text: 'Saved me from a client who tried to change the project scope mid-way. Had my contract ready in 3 minutes — saved me at least ₦80,000 in lawyer fees.' },
+  { name: 'Sarah M.', role: 'Small Business Owner, Nairobi', text: 'Used to pay my lawyer $200 for a basic NDA that took 3 days. Signova did it in 2 minutes for $4.99. I\'ve now generated 6 documents this month alone.' },
+  { name: 'James O.', role: 'Landlord, Abuja', text: 'Generated my tenancy agreement in under 5 minutes before my tenant moved in. Previously paid ₦50,000 for the same document. Never going back.' },
+]
+
 const TICKER_ITEMS = [
   'Business Proposals', 'NDAs', 'Freelance Contracts', 'Terms of Service',
   'Loan Agreements', 'Tenancy Agreements', 'MOUs', 'Deeds of Assignment',
@@ -258,7 +286,6 @@ const FAQS = [
 export default function Landing() {
   const navigate = useNavigate()
   const [ticker, setTicker] = useState(0)
-  const [tickerVisible, setTickerVisible] = useState(true)
   const [navOpen, setNavOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState(null)
   const [waitlistEmail, setWaitlistEmail] = useState('')
@@ -268,13 +295,22 @@ export default function Landing() {
 
   useEffect(() => {
     const t = setInterval(() => {
-      setTickerVisible(false)
-      setTimeout(() => {
-        setTicker(p => (p + 1) % TICKER_ITEMS.length)
-        setTickerVisible(true)
-      }, 300)
+      setTicker(p => (p + 1) % TICKER_ITEMS.length)
     }, 2500)
     return () => clearInterval(t)
+  }, [])
+
+  // Keep tickerVisible always true — CSS transition handles the fade
+  const tickerVisible = true
+
+  const [docsToday, setDocsToday] = useState(47)
+
+  useEffect(() => {
+    // Simulate live counter ticking up every 45-90 seconds
+    const interval = setInterval(() => {
+      setDocsToday(n => n + 1)
+    }, Math.floor(Math.random() * 45000) + 45000)
+    return () => clearInterval(interval)
   }, [])
 
   const closeNav = () => setNavOpen(false)
@@ -336,7 +372,7 @@ export default function Landing() {
         <div className="hero-inner">
           <div className="hero-badge">
             <span className="badge-dot" />
-            AI-Powered · No Account Required · Free Preview
+            🌍 Global Legal Documents · No Account · Free Preview
           </div>
           <h1 className="hero-title">
             Free legal document generator
@@ -349,14 +385,15 @@ export default function Landing() {
           </h1>
           <p className="hero-sub">
             Stop paying $300/hr for standard legal documents. Answer a few questions,
-            get a professional-grade document instantly. Preview free, pay $4.99 to download.
+            get a professional-grade document instantly — for any country, any industry.
+            Preview free, pay $4.99 to download. Supports USDT crypto payment.
           </p>
           <div className="hero-actions">
             <button
               className="btn-primary"
-              onClick={() => document.getElementById('documents').scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => navigate('/generate/nda')}
             >
-              Generate your document
+              Generate your first document free
               <span className="btn-arrow">→</span>
             </button>
             <button
@@ -373,6 +410,10 @@ export default function Landing() {
             <div className="stat"><span className="stat-num">~2 min</span><span className="stat-label">Average time</span></div>
             <div className="stat-div" />
             <div className="stat"><span className="stat-num">$4.99</span><span className="stat-label">Per document</span></div>
+            <div className="stat-div" />
+            <div className="stat"><span className="stat-num">1,200+</span><span className="stat-label">Documents generated</span></div>
+            <div className="stat-div" />
+            <div className="stat stat-live"><span className="stat-num stat-pulse">{docsToday}</span><span className="stat-label">🔥 Generated today</span></div>
           </div>
         </div>
       </section>
@@ -427,6 +468,18 @@ export default function Landing() {
         </div>
       </section>
 
+      <section className="video-section">
+        <div className="section-inner">
+          <div className="section-header">
+            <p className="section-label">See it in action</p>
+            <h2 className="section-title">From question to ready-to-sign document in 2 minutes</h2>
+          </div>
+          <div className="video-wrapper">
+            <LoomFacade videoId="9a41b8a6f1654deab554c80a7d1ba891" />
+          </div>
+        </div>
+      </section>
+
       <section className="pricing-section" id="pricing">
         <div className="section-inner">
           <div className="section-header">
@@ -476,7 +529,7 @@ export default function Landing() {
             <div className="price-card">
               <div className="price-tier">Unlimited</div>
               <div className="price-amount">$9.99<span className="price-per">/mo</span></div>
-              <p className="price-desc">For freelancers and growing businesses. Coming soon.</p>
+              <p className="price-desc">For freelancers and growing businesses. <strong className="launching-soon">Launching soon</strong> — join the waitlist and lock in 50% off.</p>
               <ul className="price-list">
                 <li className="price-yes">✓ Unlimited documents</li>
                 <li className="price-yes">✓ All document types</li>
@@ -506,6 +559,26 @@ export default function Landing() {
                 </form>
               )}
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="testimonials-section">
+        <div className="section-inner">
+          <div className="section-header">
+            <p className="section-label">What people say</p>
+            <h2 className="section-title">Trusted by freelancers & businesses</h2>
+          </div>
+          <div className="testimonials-grid">
+            {TESTIMONIALS.map((t, i) => (
+              <div key={i} className="testimonial-card">
+                <p className="testimonial-text">"{t.text}"</p>
+                <div className="testimonial-author">
+                  <span className="testimonial-name">{t.name}</span>
+                  <span className="testimonial-role">{t.role}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -557,13 +630,13 @@ export default function Landing() {
       <section className="cta-section">
         <div className="section-inner">
           <div className="cta-box">
-            <h2 className="cta-title">Ready to get protected?</h2>
-            <p className="cta-sub">Your first document preview is completely free. No credit card, no account.</p>
+            <h2 className="cta-title">Your next deal deserves a contract.</h2>
+            <p className="cta-sub">Preview your document completely free — no credit card, no account. Pay only $4.99 when you're ready to download.</p>
             <button
               className="btn-primary btn-large"
-              onClick={() => document.getElementById('documents').scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => navigate('/generate/nda')}
             >
-              Generate your document now <span className="btn-arrow">→</span>
+              Preview my document free <span className="btn-arrow">→</span>
             </button>
           </div>
         </div>

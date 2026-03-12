@@ -196,6 +196,13 @@
   .btn-pay { padding: 8px 14px; font-size: 13px; }
   .btn-download { padding: 8px 14px; font-size: 13px; }
 
+  /* Full-width CTAs on mobile — easier tap targets */
+  .btn-pay-full { width: 100%; justify-content: center; font-size: 16px; padding: 16px; min-height: 52px; }
+  .btn-usdt { width: 100%; justify-content: center; font-size: 15px; padding: 14px; min-height: 48px; }
+  .btn-download-full { width: 100%; justify-content: center; font-size: 16px; padding: 16px; min-height: 52px; }
+  .trust-line { font-size: 12px; }
+  .sidebar-card { padding: 20px 16px; }
+
   .preview-layout { padding: 16px 12px; }
   .preview-doc { padding: 24px 16px; }
   .doc-content h1 { font-size: 20px; }
@@ -449,4 +456,12 @@
   margin-top: 8px; padding: 8px 12px; border-radius: 6px;
   background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2);
   color: #f87171; font-size: 13px;
+}
+
+/* ── Trust Line ── */
+.trust-line {
+  margin-top: 10px; text-align: center;
+  font-size: 11.5px; color: var(--text2);
+  letter-spacing: 0.01em; line-height: 1.5;
+  opacity: 0.75;
 }
