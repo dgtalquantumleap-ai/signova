@@ -273,7 +273,89 @@ export const BLOG_POSTS = [
     cta: { label: 'Generate Contractor Agreement Free →', href: '/generate/independent-contractor' }
   },
 
-]
+  ,
+  {
+    slug: 'nda-generator-nigeria-freelancers',
+    title: 'Free NDA Generator for Nigerian Freelancers — No Lawyer Needed',
+    description: 'Most Nigerian freelancers skip contracts entirely or spend ₦50,000–₦150,000 on a lawyer for a standard NDA. Here is how to generate one free in 2 minutes — no lawyer, no account, no USD billing.',
+    date: '2026-03-12',
+    readTime: '5 min read',
+    category: 'Freelance',
+    keywords: 'NDA generator Nigeria, free NDA Nigeria, non-disclosure agreement Nigeria, NDA template Nigeria, freelance contract Nigeria, confidentiality agreement Nigeria, NDA maker Nigeria',
+    sections: [
+      {
+        heading: 'Why Nigerian Freelancers Skip Contracts — And Why That Is Costing You Money',
+        body: `If you are a Nigerian freelancer, you have probably shared a business idea with a client, pitched a concept to a potential partner, or started work on a project with nothing but a WhatsApp agreement.
+
+You are not alone. The majority of Nigerian freelancers — designers, developers, writers, marketers, consultants — work without a signed contract. The reasons are always the same: getting a lawyer is expensive (₦50,000–₦150,000 for a standard document), templates online are in US English with dollar amounts and US legal clauses that do not apply, and most tools charge in USD through payment methods that do not work with Nigerian cards.
+
+The result is predictable. Clients dispute payment. Scope creep goes unchecked. Ideas get taken without consequence. And the freelancer has no legal ground to stand on.
+
+An NDA — a Non-Disclosure Agreement — is the first document every Nigerian freelancer needs before sharing any business idea, creative concept, or proprietary process with a client or partner.`
+      },
+      {
+        heading: 'What Is an NDA and When Does a Nigerian Freelancer Need One?',
+        body: `A Non-Disclosure Agreement (NDA) is a legally binding contract that prevents the other party from sharing or using your confidential information without your permission.
+
+As a Nigerian freelancer, you need an NDA in these situations:
+
+— Before pitching a creative concept, brand strategy, or product idea to a potential client. If they like your idea and use it without hiring you, an NDA gives you legal recourse.
+
+— Before sharing source code, design files, or proprietary methodologies with a client or business partner.
+
+— Before entering a partnership, joint venture, or co-founder discussion where both parties share sensitive information.
+
+— Before hiring a subcontractor who will work on a project that involves your client's confidential data.
+
+An NDA does not just protect you from dishonest clients — it signals to clients that you are a professional who takes their work and relationships seriously.`
+      },
+      {
+        heading: 'What a Nigerian NDA Must Include to Be Valid',
+        body: `A valid NDA in Nigeria — enforceable under Nigerian contract law — must contain:
+
+1. Names and details of both parties — your full name and the client or partner's full name and contact details.
+
+2. Definition of confidential information — specify exactly what is being protected. Do not leave this vague. Examples: "creative briefs, design concepts, source code, client lists, marketing strategies, pricing models."
+
+3. Obligations — what the receiving party must do (keep information confidential, use it only for the agreed purpose) and must not do (share with third parties, use for competing projects).
+
+4. Duration — how long the confidentiality obligation lasts. For most freelance NDAs, 2–3 years is appropriate.
+
+5. Exclusions — standard carve-outs for information already publicly known, information the other party already had, or information required to be disclosed by law. These exclusions are standard and expected in any professional NDA.
+
+6. Governing law — specify Nigerian law and the state (e.g., Lagos State, FCT Abuja) as the governing jurisdiction.
+
+7. Signatures — both parties must sign. A witnessed signature carries more weight if the agreement is ever disputed in court.`
+      },
+      {
+        heading: 'Why Most Free NDA Templates Do Not Work for Nigerian Freelancers',
+        body: `If you have tried to use a free NDA template from a US or UK legal website, you already know the problem. The documents reference US law, US dollar amounts, American legal clauses, and terminology that does not reflect how business is done in Nigeria.
+
+Beyond the legal mismatch, the payment problem is just as frustrating. Most document platforms charge in USD through Stripe or PayPal — payment methods that regularly decline Nigerian Naira cards. So even when a Nigerian freelancer finds a decent template, they often cannot pay for it.
+
+Signova was built specifically to solve both problems. Every NDA generated by Signova is drafted with Nigerian law in mind, uses clear and appropriate language for Nigerian business relationships, and supports USDT payment for users who cannot pay with international cards. You can also pay with a standard card if that works for you.`
+      },
+      {
+        heading: 'How to Generate Your NDA Free in 2 Minutes',
+        body: `Signova generates a complete, professional NDA customised to your situation in under 2 minutes. Here is how:
+
+1. Go to getsignova.com and select NDA from the document list.
+2. Enter your name and the other party's name.
+3. Describe the type of information being protected (creative work, source code, business strategy, etc.).
+4. Choose mutual or one-way NDA.
+5. Select Nigeria as the governing law.
+6. Click Generate — preview your complete NDA instantly, free.
+7. Pay ₦4.99 equivalent in USDT or by card to download the clean, watermark-free PDF.
+
+No account required. No lawyer fees. No USD billing problem. The document is yours to use, customise, and send for signing immediately.
+
+The next time you share a concept with a client, do not do it on trust alone. It takes 2 minutes to protect your work properly.`
+      },
+    ],
+    cta: { label: 'Generate Your Free NDA →', href: '/generate/nda' }
+  },
+
+];
 
 export function getPostBySlug(slug) {
   return BLOG_POSTS.find(p => p.slug === slug) || null
