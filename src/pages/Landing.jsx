@@ -590,7 +590,7 @@ export default function Landing() {
             {[
               { n: '01', title: 'Choose your document', body: 'Pick from 27 document types — Privacy Policy, NDA, Freelance Contract, Tenancy Agreement, Loan Agreement, Business Proposal, and more.' },
               { n: '02', title: 'Answer a few questions', body: 'Tell us about your business, jurisdiction, and needs. Takes about 2 minutes. No legal knowledge required.' },
-              { n: '03', title: 'Preview free, pay to download', body: 'See your complete document instantly. Pay $4.99 to download the clean, watermark-free PDF.' },
+              { n: '03', title: 'Preview free, pay to download', body: `See your complete document instantly. Pay ${currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} to download the clean, watermark-free PDF.` },
             ].map(s => (
               <div key={s.n} className="step">
                 <span className="step-num">{s.n}</span>
