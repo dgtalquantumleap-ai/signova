@@ -701,7 +701,7 @@ export default function Landing() {
           <p className="footer-disc">
             Signova is a document generation tool, not a law firm. Documents are AI-generated starting points — not legal advice. No attorney-client relationship is created by using this service. For complex or high-stakes matters, consult a qualified attorney before signing or relying on any document.
           </p>
-          <p className="footer-copy">© 2026 Signova · Ebenova Solutions</p>
+          <p className="footer-copy">© 2026 Signova™ · Ebenova Solutions</p>
         </div>
       </footer>
     </div>

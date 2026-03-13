@@ -425,9 +425,15 @@
 }
 
 @media (max-width: 640px) {
+  /* ── Prevent horizontal scroll ── */
+  .landing { padding-bottom: 72px; overflow-x: hidden; }
+
+  /* ── Sticky CTA ── */
   .mobile-sticky-cta { display: flex; }
-  /* add padding to page bottom so content isn't hidden behind sticky bar */
-  .landing { padding-bottom: 72px; }
+
+  /* ── Nav ── */
+  .nav { position: fixed; }
+  .hamburger { display: flex; }
   .nav-links {
     display: none;
     position: absolute; top: 64px; left: 0; right: 0;
@@ -439,31 +445,75 @@
   .nav-links a {
     padding: 16px 24px; font-size: 16px; border-bottom: 1px solid var(--border);
   }
-  .nav { position: fixed; }
-  .hamburger { display: flex; }
-  .hero { padding: 120px 16px 80px; }
-  .hero-stats { flex-direction: column; gap: 16px; }
-  .stat-div { width: 40px; height: 1px; }
-  .cta-box { padding: 40px 24px; }
-  .faq-question { font-size: 15px; }
 
-  /* Stack document cards to 1 column on mobile */
-  .docs-grid { grid-template-columns: 1fr !important; }
-  .doc-card { padding: 20px; }
-
-  /* Stack pricing to 1 column on mobile */
-  .pricing-grid { grid-template-columns: 1fr !important; }
-
-  /* How it works steps */
-  .steps-grid { grid-template-columns: 1fr !important; }
-
-  /* Trust section */
-  .trust-items { flex-direction: column; gap: 12px; }
-
-  /* Section padding */
-  .docs-section, .how-section, .pricing-section { padding: 60px 0; }
-  .section-title { font-size: 26px !important; }
-  /* Shorten hero sub on mobile to avoid text wall */
+  /* ── Hero ── */
+  .hero { padding: 110px 16px 64px; }
+  .hero-title { font-size: clamp(30px, 8vw, 42px) !important; }
+  .hero-sub { font-size: 15px !important; margin-bottom: 28px; }
   .hero-sub .mobile-hide { display: none; }
   .hero-sub .mobile-show { display: inline; }
+  .hero-actions { flex-direction: column; width: 100%; gap: 12px; }
+  .hero-actions .btn-primary,
+  .hero-actions .btn-outline { width: 100%; justify-content: center; font-size: 15px; padding: 14px 20px; }
+  .hero-actions .btn-large { font-size: 15px !important; padding: 14px 20px !important; }
+  .hero-badge { font-size: 11px; padding: 5px 12px; text-align: center; }
+  /* hero stats — full width block on mobile */
+  .hero-stats {
+    display: flex !important; flex-direction: row !important;
+    flex-wrap: wrap; gap: 0;
+    width: 100%; padding: 16px 12px;
+    justify-content: center;
+  }
+  .stat { min-width: 80px; padding: 8px 4px; }
+  .stat-num { font-size: 20px; }
+  .stat-div { display: none; }
+
+  /* ── Section headings ── */
+  .section-title { font-size: 24px !important; }
+  .section-header { margin-bottom: 32px; }
+  .section-inner { padding: 0 16px; }
+
+  /* ── Docs grid ── */
+  .docs-section { padding: 60px 0; }
+  .docs-grid { grid-template-columns: 1fr !important; gap: 12px; }
+  .doc-card { padding: 20px; grid-column: span 1 !important; }
+  .doc-name { font-size: 17px !important; }
+  .doc-desc { font-size: 14px !important; }
+
+  /* ── How it works ── */
+  .how-section { padding: 60px 0; }
+  .step { gap: 16px; padding: 24px 0; }
+  .step-num { font-size: 36px; width: 44px; }
+  .step-title { font-size: 17px; }
+  .step-body { font-size: 14px; }
+
+  /* ── Video ── */
+  .video-section { padding: 60px 0; }
+  .video-wrapper { border-radius: 10px; }
+
+  /* ── Pricing ── */
+  .pricing-section { padding: 60px 0; }
+  .pricing-grid { grid-template-columns: 1fr !important; }
+
+  /* ── Trust ── */
+  .trust-section { padding: 48px 0; }
+  .trust-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 20px; }
+
+  /* ── Testimonials ── */
+  .testimonials-section { padding: 60px 0; }
+
+  /* ── FAQ ── */
+  .faq-section { padding: 60px 0; }
+  .faq-question { font-size: 14px; }
+
+  /* ── CTA box ── */
+  .cta-section { padding: 60px 0; }
+  .cta-box { padding: 36px 20px; border-radius: 14px; }
+  .cta-title { font-size: 24px !important; }
+  .cta-sub { font-size: 14px; }
+  .cta-box .btn-primary { width: 100%; justify-content: center; }
+
+  /* ── Footer ── */
+  .footer-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
+  .footer-disc { font-size: 11px; padding: 0 8px; }
 }

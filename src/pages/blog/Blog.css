@@ -290,4 +290,15 @@
   .blog-grid { grid-template-columns: 1fr; }
   .blog-cta-box { flex-direction: column; align-items: flex-start; }
   .blog-post-nav { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .blog-header { padding: 80px 16px 40px; }
+  .blog-title { font-size: 1.8rem; }
+  .blog-subtitle { font-size: 0.9rem; }
+  .blog-grid-wrap { padding: 0 16px; }
+  .blog-article { padding: 0 16px; }
+  .blog-article-title { font-size: 1.6rem; }
+  .blog-section h2 { font-size: 1.15rem; }
+  .blog-section p { font-size: 0.93rem; }
+  .blog-cta-box { padding: 20px 16px; }
+  .btn-blog-cta { width: 100%; text-align: center; justify-content: center; }
+  .blog-related { padding: 0 16px; }
 }
