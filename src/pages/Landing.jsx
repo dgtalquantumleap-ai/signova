@@ -533,20 +533,49 @@ export default function Landing() {
             <p className="section-subtitle">No subscription trap. No auto-charge. Pay $4.99 for the document you need — nothing more.</p>
           </div>
           <div className="competitor-callout">
-            <div className="competitor-item competitor-bad">
-              <span className="competitor-name">LawDepot</span>
-              <span className="competitor-price">$35/month</span>
-              <span className="competitor-note">auto-charges after free trial</span>
+            <div className="competitor-col competitor-col-bad">
+              <div className="competitor-header">
+                <span className="competitor-name-bad">LawDepot &amp; LegalTemplates</span>
+                <span className="competitor-price-bad">$35–$49.95/month</span>
+                <span className="competitor-subtext">auto-charged after free trial</span>
+              </div>
+              <div className="competitor-reviews">
+                <div className="comp-review">
+                  <span className="comp-stars">★☆☆☆☆</span>
+                  <p className="comp-quote">&ldquo;I cancelled the same day I signed up. They proceeded to charge me for 4 months — total of $200. They are scammers.&rdquo;</p>
+                  <span className="comp-source">— Laryssa S., Trustpilot</span>
+                </div>
+                <div className="comp-review">
+                  <span className="comp-stars">★☆☆☆☆</span>
+                  <p className="comp-quote">&ldquo;This company has been charging me $49 per month for a service I used once, and refuses to refund anything. Buyer beware.&rdquo;</p>
+                  <span className="comp-source">— Pam, Trustpilot</span>
+                </div>
+                <div className="comp-review">
+                  <span className="comp-stars">★☆☆☆☆</span>
+                  <p className="comp-quote">&ldquo;Another B.S. site that claims you can download ‘free’ documents. Of course it throws you into a free trial and charges your card.&rdquo;</p>
+                  <span className="comp-source">— Daisy, Trustpilot</span>
+                </div>
+              </div>
             </div>
-            <div className="competitor-item competitor-bad">
-              <span className="competitor-name">LegalTemplates</span>
-              <span className="competitor-price">$49.95/month</span>
-              <span className="competitor-note">auto-charges after free trial</span>
-            </div>
-            <div className="competitor-item competitor-good">
-              <span className="competitor-name">Signova</span>
-              <span className="competitor-price">$4.99</span>
-              <span className="competitor-note">per document · no subscription · ever</span>
+            <div className="competitor-col competitor-col-good">
+              <div className="competitor-header">
+                <span className="competitor-name-good">Signova</span>
+                <span className="competitor-price-good">$4.99</span>
+                <span className="competitor-subtext">per document · no subscription · ever</span>
+              </div>
+              <ul className="competitor-good-list">
+                <li>✓ No credit card required to preview</li>
+                <li>✓ Pay once, download once</li>
+                <li>✓ No free trial. No auto-charge.</li>
+                <li>✓ No account required</li>
+                <li>✓ Cancel? There’s nothing to cancel.</li>
+              </ul>
+              <button
+                className="btn-primary"
+                onClick={() => document.getElementById('documents').scrollIntoView({ behavior: 'smooth' })}
+              >
+                Generate my document free →
+              </button>
             </div>
           </div>
           <div className="pricing-grid">
