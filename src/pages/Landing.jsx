@@ -5,6 +5,8 @@ import './Landing.css'
 
 function LoomFacade({ videoId }) {
   const [clicked, setClicked] = useState(false)
+  const [thumbLoaded, setThumbLoaded] = useState(false)
+  const [thumbError, setThumbError] = useState(false)
   const thumb = `https://cdn.loom.com/sessions/thumbnails/${videoId}-with-play.gif`
   if (clicked) {
     return (
@@ -18,9 +20,28 @@ function LoomFacade({ videoId }) {
     )
   }
   return (
-    <div className="loom-facade" onClick={() => setClicked(true)}>
-      <img src={thumb} alt="Watch Signova demo" className="loom-thumb" />
-      <div className="loom-play-btn">▶</div>
+    <div className="loom-facade" onClick={() => setClicked(true)} role="button" aria-label="Play demo video">
+      {!thumbLoaded && !thumbError && (
+        <div className="loom-placeholder">
+          <div className="loom-play-btn">▶</div>
+          <p className="loom-loading-text">Loading preview…</p>
+        </div>
+      )}
+      {thumbError && (
+        <div className="loom-placeholder loom-placeholder-error">
+          <div className="loom-play-btn">▶</div>
+          <p className="loom-loading-text">Click to watch demo</p>
+        </div>
+      )}
+      <img
+        src={thumb}
+        alt="Watch Signova demo"
+        className="loom-thumb"
+        style={{ display: thumbLoaded ? 'block' : 'none' }}
+        onLoad={() => setThumbLoaded(true)}
+        onError={() => setThumbError(true)}
+      />
+      {thumbLoaded && <div className="loom-play-btn">▶</div>}
     </div>
   )
 }
@@ -413,7 +434,14 @@ export default function Landing() {
           <div className="hero-actions">
             <button
               className="btn-primary"
-              onClick={() => document.getElementById('documents').scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => {
+                if (window.innerWidth < 640) {
+                  // Mobile: go directly to generate — documents are below fold and users don't scroll
+                  navigate('/generate/freelance-contract')
+                } else {
+                  document.getElementById('documents').scrollIntoView({ behavior: 'smooth' })
+                }
+              }}
             >
               Preview my document free
               <span className="btn-arrow">→</span>
