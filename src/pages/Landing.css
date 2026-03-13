@@ -376,6 +376,30 @@
   display: flex; flex-direction: column; gap: 20px;
 }
 .price-featured { border-color: var(--gold); background: linear-gradient(135deg, rgba(201,168,76,0.06), var(--bg2)); }
+.price-payment-note {
+  font-size: 12px;
+  color: var(--text3);
+  text-align: center;
+  margin-top: -8px;
+  letter-spacing: 0.3px;
+}
+.price-coming-soon {
+  opacity: 0.85;
+}
+.price-soon-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 100px;
+  background: rgba(201,168,76,0.15);
+  color: var(--gold);
+  border: 1px solid rgba(201,168,76,0.3);
+  margin-left: 8px;
+  vertical-align: middle;
+  text-transform: uppercase;
+}
 .price-top-badge {
   position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
   background: var(--gold); color: #0e0e0e;

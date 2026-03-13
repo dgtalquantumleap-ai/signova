@@ -600,7 +600,7 @@ export default function Landing() {
               </ul>
               <button
                 className="btn-primary"
-                onClick={() => document.getElementById('documents').scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => navigate('/generate/freelance-contract')}
               >
                 Generate my document free →
               </button>
@@ -613,10 +613,10 @@ export default function Landing() {
               <p className="price-desc">See your complete document before paying anything.</p>
               <ul className="price-list">
                 <li className="price-yes">✓ Full document generated</li>
-                <li className="price-yes">✓ Preview in browser</li>
+                <li className="price-yes">✓ Complete preview in browser</li>
                 <li className="price-yes">✓ No account needed</li>
-                <li className="price-no">✗ Watermarked PDF</li>
-                <li className="price-no">✗ No download</li>
+                <li className="price-yes">✓ No credit card required</li>
+                <li className="price-yes">✓ See exactly what you get before paying</li>
               </ul>
               <button
                 className="btn-outline"
@@ -636,8 +636,9 @@ export default function Landing() {
                 <li className="price-yes">✓ Clean PDF, no watermark</li>
                 <li className="price-yes">✓ Instant download</li>
                 <li className="price-yes">✓ Attorney-drafted template base</li>
-                <li className="price-yes">✓ No subscription</li>
+                <li className="price-yes">✓ No subscription — ever</li>
               </ul>
+              <p className="price-payment-note">Accepts card · USDT crypto · Wise</p>
               <button
                 className="btn-primary"
                 onClick={() => document.getElementById('documents').scrollIntoView({ behavior: 'smooth' })}
@@ -646,20 +647,20 @@ export default function Landing() {
               </button>
             </div>
 
-            <div className="price-card">
-              <div className="price-tier">Unlimited</div>
+            <div className="price-card price-coming-soon">
+              <div className="price-tier">Unlimited <span className="price-soon-badge">Coming Soon</span></div>
               <div className="price-amount">$9.99<span className="price-per">/mo</span></div>
-              <p className="price-desc">For freelancers and growing businesses. <strong className="launching-soon">Launching soon</strong> — join the waitlist and lock in 50% off.</p>
+              <p className="price-desc">For freelancers and growing businesses who need documents regularly. Join the waitlist and lock in 50% off at launch.</p>
               <ul className="price-list">
                 <li className="price-yes">✓ Unlimited documents</li>
-                <li className="price-yes">✓ All document types</li>
+                <li className="price-yes">✓ All 27 document types</li>
                 <li className="price-yes">✓ Clean PDFs always</li>
-                <li className="price-yes">✓ Priority generation</li>
+                <li className="price-yes">✓ Priority AI generation</li>
                 <li className="price-yes">✓ Cancel anytime</li>
               </ul>
               {waitlistSubmitted ? (
                 <div className="waitlist-submitted">
-                  ✓ You're on the list! Check your inbox — we'll email you when Unlimited launches.
+                  ✓ You're on the list! We'll email you 24hrs before launch with your 50% off code.
                 </div>
               ) : (
                 <form className="waitlist-form" onSubmit={handleWaitlist}>
@@ -673,7 +674,7 @@ export default function Landing() {
                     required
                   />
                   <button type="submit" className="btn-outline waitlist-btn" disabled={waitlistLoading}>
-                    {waitlistLoading ? 'Saving...' : 'Notify me when available'}
+                    {waitlistLoading ? 'Saving...' : 'Get 50% off at launch →'}
                   </button>
                   {waitlistError && <p className="waitlist-error">{waitlistError}</p>}
                 </form>
