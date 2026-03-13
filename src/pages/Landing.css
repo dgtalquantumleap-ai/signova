@@ -383,6 +383,21 @@
   margin-top: -8px;
   letter-spacing: 0.3px;
 }
+.price-naira {
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text3);
+  margin-top: 6px;
+  letter-spacing: 0.2px;
+}
+.price-guarantee {
+  font-size: 12px;
+  color: var(--green);
+  text-align: center;
+  margin-top: -4px;
+  letter-spacing: 0.2px;
+}
 .price-coming-soon {
   opacity: 0.85;
 }
