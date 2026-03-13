@@ -563,14 +563,8 @@ export default function Generator() {
   const handleGenerateClick = () => {
     if (!isValid()) { setError('Please fill in all required fields.'); return }
     setError('')
-    // Check if we already have email (returning user in session)
-    const cachedEmail = sessionStorage.getItem('signova_lead_email')
-    if (cachedEmail) {
-      setLeadEmail(cachedEmail)
-      handleGenerate(cachedEmail)
-    } else {
-      setShowEmailGate(true)
-    }
+    // Go straight to generation — email captured post-purchase on preview page
+    handleGenerate('')
   }
 
   const handleEmailGateSubmit = async () => {
@@ -796,32 +790,7 @@ Output the complete document only, no preamble, explanation, or closing notes.`
         </div>
       </div>
 
-      {/* Email gate modal */}
-      {showEmailGate && (
-        <div className="email-gate-overlay" onClick={() => setShowEmailGate(false)}>
-          <div className="email-gate-modal" onClick={e => e.stopPropagation()}>
-            <div className="email-gate-icon">📄</div>
-            <h2 className="email-gate-title">Where should we send updates?</h2>
-            <p className="email-gate-sub">Enter your email to preview your {config.name}. No spam — we'll only send relevant legal templates and updates.</p>
-            <input
-              className="email-gate-input"
-              type="email"
-              placeholder="your@email.com"
-              value={leadEmail}
-              autoFocus
-              onChange={e => { setLeadEmail(e.target.value); setEmailError('') }}
-              onKeyDown={e => e.key === 'Enter' && handleEmailGateSubmit()}
-            />
-            {emailError && <p className="email-gate-error">{emailError}</p>}
-            <button className="email-gate-btn" onClick={handleEmailGateSubmit}>
-              Generate my document →
-            </button>
-            <button className="email-gate-skip" onClick={() => { setShowEmailGate(false); handleGenerate('') }}>
-              Skip for now
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Email captured post-purchase on /preview instead */}
     </div>
   )
 }
