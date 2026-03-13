@@ -452,6 +452,8 @@ export default function Landing() {
             <a href="#how" onClick={closeNav}>How it works</a>
             <a href="#pricing" onClick={closeNav}>Pricing</a>
             <a href="#faq" onClick={closeNav}>FAQ</a>
+            <a href="/blog" onClick={closeNav}>Blog</a>
+            <a href="#documents" onClick={closeNav} className="nav-cta-link">Start free →</a>
           </div>
           <button
             className="hamburger"

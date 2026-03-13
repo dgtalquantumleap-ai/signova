@@ -635,4 +635,12 @@
   /* ── Footer ── */
   .footer-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
   .footer-disc { font-size: 11px; padding: 0 8px; }
+
+  /* ── Mobile nav CTA ── */
+  .nav-cta-link {
+    color: var(--gold) !important;
+    font-weight: 700 !important;
+    background: rgba(201,168,76,0.08);
+    border-top: 1px solid rgba(201,168,76,0.2) !important;
+  }
 }
