@@ -515,6 +515,10 @@ export default function Landing() {
           <span className="hero-note">No credit card · No account · No subscription ·{' '}
             {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()} (${currency.code})`} flat
           </span>
+          <div className="hero-scroll-nudge" onClick={() => document.getElementById('documents').scrollIntoView({ behavior: 'smooth' })}>
+            <span>27 documents ready to generate</span>
+            <span className="nudge-arrow">↓</span>
+          </div>
           <div className="hero-stats">
             <div className="stat"><span className="stat-num">27</span><span className="stat-label">Document types</span></div>
             <div className="stat-div" />

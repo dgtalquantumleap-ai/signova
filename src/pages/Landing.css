@@ -494,6 +494,21 @@
 .faq-item.open .faq-answer { max-height: 600px; padding-bottom: 20px; }
 .faq-answer p { font-size: 15px; color: var(--text2); line-height: 1.75; }
 
+/* ── Scroll nudge ── */
+.hero-scroll-nudge {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin: 20px auto 0; cursor: pointer;
+  font-size: 13px; color: var(--text3);
+  transition: color 0.2s;
+  animation: nudgeBounce 2s ease-in-out infinite;
+}
+.hero-scroll-nudge:hover { color: var(--gold); }
+.nudge-arrow { font-size: 16px; }
+@keyframes nudgeBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
 /* ── Waitlist ── */
 .waitlist-form { display: flex; flex-direction: column; gap: 10px; }
 .waitlist-input {
@@ -568,9 +583,13 @@
   }
 
   /* ── Hero ── */
-  .hero { padding: 110px 16px 40px; }
-  .hero-title { font-size: clamp(30px, 8vw, 42px) !important; }
-  .hero-sub { font-size: 15px !important; margin-bottom: 28px; }
+  .hero { padding: 100px 16px 32px; }
+  .hero-title { font-size: clamp(28px, 8vw, 40px) !important; margin-bottom: 16px !important; }
+  .hero-sub { font-size: 14px !important; margin-bottom: 20px !important; line-height: 1.6 !important; }
+  .hero-badge { margin-bottom: 16px !important; }
+  /* hide secondary btn on mobile — sticky bar covers navigation */
+  .hero-actions .btn-outline { display: none; }
+  .hero-note { display: none; }
   .hero-sub .mobile-hide { display: none; }
   .hero-sub .mobile-show { display: inline; }
   .hero-actions { flex-direction: column; width: 100%; gap: 12px; }
@@ -584,8 +603,9 @@
   }
   .hero-actions .btn-large { font-size: 15px !important; padding: 16px 20px !important; }
   .hero-badge { font-size: 11px; padding: 5px 12px; text-align: center; }
-  /* hero stats — hide on mobile to reduce hero height and push docs above fold */
+  /* hero stats + scroll nudge — hide on mobile to keep CTA above fold */
   .hero-stats { display: none !important; }
+  .hero-scroll-nudge { display: none !important; }
 
   /* ── Section headings ── */
   .section-title { font-size: 24px !important; }
