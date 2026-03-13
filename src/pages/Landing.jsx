@@ -425,7 +425,7 @@ export default function Landing() {
               How it works
             </button>
           </div>
-          <span className="hero-note">No credit card · No account · First preview free</span>
+          <span className="hero-note">No credit card · No account · No subscription · $4.99 flat</span>
           <div className="hero-stats">
             <div className="stat"><span className="stat-num">27</span><span className="stat-label">Document types</span></div>
             <div className="stat-div" />
@@ -530,6 +530,24 @@ export default function Landing() {
           <div className="section-header">
             <p className="section-label">Pricing</p>
             <h2 className="section-title">Simple, honest pricing</h2>
+            <p className="section-subtitle">No subscription trap. No auto-charge. Pay $4.99 for the document you need — nothing more.</p>
+          </div>
+          <div className="competitor-callout">
+            <div className="competitor-item competitor-bad">
+              <span className="competitor-name">LawDepot</span>
+              <span className="competitor-price">$35/month</span>
+              <span className="competitor-note">auto-charges after free trial</span>
+            </div>
+            <div className="competitor-item competitor-bad">
+              <span className="competitor-name">LegalTemplates</span>
+              <span className="competitor-price">$49.95/month</span>
+              <span className="competitor-note">auto-charges after free trial</span>
+            </div>
+            <div className="competitor-item competitor-good">
+              <span className="competitor-name">Signova</span>
+              <span className="competitor-price">$4.99</span>
+              <span className="competitor-note">per document · no subscription · ever</span>
+            </div>
           </div>
           <div className="pricing-grid">
             <div className="price-card">
