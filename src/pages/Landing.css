@@ -228,6 +228,8 @@
   display: flex; flex-direction: column; gap: 16px;
   transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s, background 0.2s;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 .doc-card * { color: #ffffff; }
 .doc-card:hover {
@@ -454,8 +456,14 @@
   .hero-sub .mobile-show { display: inline; }
   .hero-actions { flex-direction: column; width: 100%; gap: 12px; }
   .hero-actions .btn-primary,
-  .hero-actions .btn-outline { width: 100%; justify-content: center; font-size: 15px; padding: 14px 20px; }
-  .hero-actions .btn-large { font-size: 15px !important; padding: 14px 20px !important; }
+  .hero-actions .btn-outline {
+    width: 100%; justify-content: center;
+    font-size: 15px; padding: 16px 20px;
+    min-height: 52px; /* iOS tap target minimum */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .hero-actions .btn-large { font-size: 15px !important; padding: 16px 20px !important; }
   .hero-badge { font-size: 11px; padding: 5px 12px; text-align: center; }
   /* hero stats — full width block on mobile */
   .hero-stats {

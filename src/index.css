@@ -22,6 +22,18 @@
 html { scroll-behavior: smooth; overflow-x: hidden; }
 body { overflow-x: hidden; }
 
+/* Safari iOS fixes */
+@supports (-webkit-touch-callout: none) {
+  /* Fix position:fixed on iOS Safari (address bar height issue) */
+  .nav { position: -webkit-sticky; }
+  /* Fix backdrop-filter on older Safari */
+  .nav, .mobile-sticky-cta {
+    -webkit-backdrop-filter: blur(12px);
+  }
+  /* Fix 100vh on iOS (excludes browser chrome) */
+  .landing { min-height: -webkit-fill-available; }
+}
+
 body {
   background: var(--bg);
   color: var(--text);
