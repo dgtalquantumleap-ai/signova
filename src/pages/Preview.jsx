@@ -21,6 +21,7 @@ export default function Preview() {
   const [promoLoading, setPromoLoading] = useState(false)
   const [promoMsg, setPromoMsg] = useState('')
   const [promoError, setPromoError] = useState('')
+  const [promoOpen, setPromoOpen] = useState(false)
   const contentRef = useRef(null)
 
   useEffect(() => {
@@ -369,24 +370,33 @@ export default function Preview() {
               <span className="price-label">one-time download</span>
             </div>
             {error && <div className="sidebar-error">{error}</div>}
-            {/* Promo code input */}
+            {/* Promo code — hidden behind toggle so it doesn't distract the pay button */}
             {!paid && (
               <div className="promo-box">
-                <div className="promo-row">
-                  <input
-                    className="promo-input"
-                    type="text"
-                    placeholder="Promo code"
-                    value={promoCode}
-                    onChange={e => { setPromoCode(e.target.value.toUpperCase()); setPromoError(''); setPromoMsg('') }}
-                    onKeyDown={e => e.key === 'Enter' && handlePromoApply()}
-                  />
-                  <button className="promo-btn" onClick={handlePromoApply} disabled={promoLoading}>
-                    {promoLoading ? '…' : 'Apply'}
+                {!promoOpen ? (
+                  <button className="promo-toggle" onClick={() => setPromoOpen(true)}>
+                    Have a promo code?
                   </button>
-                </div>
-                {promoMsg && <div className="promo-success">{promoMsg}</div>}
-                {promoError && <div className="promo-error">{promoError}</div>}
+                ) : (
+                  <>
+                    <div className="promo-row">
+                      <input
+                        className="promo-input"
+                        type="text"
+                        placeholder="Promo code"
+                        value={promoCode}
+                        autoFocus
+                        onChange={e => { setPromoCode(e.target.value.toUpperCase()); setPromoError(''); setPromoMsg('') }}
+                        onKeyDown={e => e.key === 'Enter' && handlePromoApply()}
+                      />
+                      <button className="promo-btn" onClick={handlePromoApply} disabled={promoLoading}>
+                        {promoLoading ? '…' : 'Apply'}
+                      </button>
+                    </div>
+                    {promoMsg && <div className="promo-success">{promoMsg}</div>}
+                    {promoError && <div className="promo-error">{promoError}</div>}
+                  </>
+                )}
               </div>
             )}
             {paid ? (
