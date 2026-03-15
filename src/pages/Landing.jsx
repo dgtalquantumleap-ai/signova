@@ -484,23 +484,13 @@ export default function Landing() {
             in under 3 minutes.
           </h1>
           <p className="hero-sub">
-            Stop paying $300/hr for standard legal documents. Answer a few questions,
-            get a professional-grade document instantly
-            <span className="mobile-hide"> — for any country, any industry.
-            Preview free, {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} to download. Supports USDT crypto payment.</span>
-            <span className="mobile-show"> — free preview, {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} to download.</span>
+            Answer a few questions, get a professional-grade document instantly.
+            Free preview — {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} to download. No account needed.
           </p>
           <div className="hero-actions">
             <button
               className="btn-primary"
-              onClick={() => {
-                if (window.innerWidth < 640) {
-                  // Mobile: go directly to generate — documents are below fold and users don't scroll
-                  navigate('/generate/freelance-contract')
-                } else {
-                  document.getElementById('documents').scrollIntoView({ behavior: 'smooth' })
-                }
-              }}
+              onClick={() => document.getElementById('documents').scrollIntoView({ behavior: 'smooth' })}
             >
               Preview my document free
               <span className="btn-arrow">→</span>
@@ -515,9 +505,36 @@ export default function Landing() {
           <span className="hero-note">No credit card · No account · No subscription ·{' '}
             {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()} (${currency.code})`} flat
           </span>
-          <div className="hero-scroll-nudge" onClick={() => document.getElementById('documents').scrollIntoView({ behavior: 'smooth' })}>
-            <span>27 documents ready to generate</span>
-            <span className="nudge-arrow">↓</span>
+          {/* Quick-pick document grid — above the fold for instant engagement */}
+          <div className="hero-quickpick">
+            <p className="quickpick-label">Pick your document — preview free instantly</p>
+            <div className="quickpick-grid">
+              {[
+                { id: 'nda', icon: '🤝', name: 'NDA' },
+                { id: 'tenancy-agreement', icon: '🏠', name: 'Tenancy Agreement' },
+                { id: 'freelance-contract', icon: '✍️', name: 'Freelance Contract' },
+                { id: 'business-proposal', icon: '🚀', name: 'Business Proposal' },
+                { id: 'privacy-policy', icon: '🔒', name: 'Privacy Policy' },
+                { id: 'loan-agreement', icon: '💰', name: 'Loan Agreement' },
+                { id: 'deed-of-assignment', icon: '📜', name: 'Deed of Assignment' },
+                { id: 'service-agreement', icon: '📝', name: 'Service Agreement' },
+              ].map(d => (
+                <button
+                  key={d.id}
+                  className="quickpick-btn"
+                  onClick={() => navigate(`/generate/${d.id}`)}
+                >
+                  <span className="qp-icon">{d.icon}</span>
+                  <span className="qp-name">{d.name}</span>
+                </button>
+              ))}
+            </div>
+            <button
+              className="quickpick-more"
+              onClick={() => document.getElementById('documents').scrollIntoView({ behavior: 'smooth' })}
+            >
+              See all 27 documents ↓
+            </button>
           </div>
           <div className="hero-stats">
             <div className="stat"><span className="stat-num">27</span><span className="stat-label">Document types</span></div>
