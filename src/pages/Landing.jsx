@@ -56,22 +56,107 @@ const CURRENCY_MAP = {
 }
 const DEFAULT_CURRENCY = { symbol: '$', amount: 4.99, code: 'USD', local: null }
 
-function useCurrency() {
+function useGeo() {
   const [currency, setCurrency] = useState(DEFAULT_CURRENCY)
+  const [countryCode, setCountryCode] = useState(null)
   useEffect(() => {
-    // Cache in sessionStorage — only call API once per session
-    const cached = sessionStorage.getItem('sig_currency')
-    if (cached) { setCurrency(JSON.parse(cached)); return }
+    const cached = sessionStorage.getItem('sig_geo')
+    if (cached) {
+      const parsed = JSON.parse(cached)
+      setCurrency(parsed.currency)
+      setCountryCode(parsed.countryCode)
+      return
+    }
     fetch('https://ipapi.co/json/')
       .then(r => r.json())
       .then(data => {
         const c = CURRENCY_MAP[data.country_code] || DEFAULT_CURRENCY
-        sessionStorage.setItem('sig_currency', JSON.stringify(c))
+        const cc = data.country_code || null
+        sessionStorage.setItem('sig_geo', JSON.stringify({ currency: c, countryCode: cc }))
         setCurrency(c)
+        setCountryCode(cc)
       })
-      .catch(() => { /* silent fail — stays USD */ })
+      .catch(() => {})
   }, [])
-  return currency
+  return { currency, countryCode }
+}
+
+// ── Geo-prioritised quick-pick documents ────────────────────────────────────
+const QUICKPICK_DEFAULT = [
+  { id: 'nda', icon: '🤝', name: 'NDA' },
+  { id: 'freelance-contract', icon: '✍️', name: 'Freelance Contract' },
+  { id: 'privacy-policy', icon: '🔒', name: 'Privacy Policy' },
+  { id: 'business-proposal', icon: '🚀', name: 'Business Proposal' },
+  { id: 'service-agreement', icon: '📝', name: 'Service Agreement' },
+  { id: 'loan-agreement', icon: '💰', name: 'Loan Agreement' },
+  { id: 'tenancy-agreement', icon: '🏠', name: 'Tenancy Agreement' },
+  { id: 'employment-offer-letter', icon: '👔', name: 'Offer Letter' },
+]
+const QUICKPICK_REGIONS = {
+  NG: [
+    { id: 'tenancy-agreement', icon: '🏠', name: 'Tenancy Agreement' },
+    { id: 'deed-of-assignment', icon: '📜', name: 'Deed of Assignment' },
+    { id: 'business-proposal', icon: '🚀', name: 'Business Proposal' },
+    { id: 'quit-notice', icon: '💮', name: 'Quit Notice' },
+    { id: 'loan-agreement', icon: '💰', name: 'Loan Agreement' },
+    { id: 'hire-purchase', icon: '🚗', name: 'Hire Purchase' },
+    { id: 'power-of-attorney', icon: '⚖️', name: 'Power of Attorney' },
+    { id: 'nda', icon: '🤝', name: 'NDA' },
+  ],
+  GH: 'NG', KE: 'NG', ZA: 'NG', TZ: 'NG', UG: 'NG', ET: 'NG',
+  SN: 'NG', CI: 'NG', CM: 'NG', EG: 'NG', ZW: 'NG',
+  IN: [
+    { id: 'nda', icon: '🤝', name: 'NDA' },
+    { id: 'freelance-contract', icon: '✍️', name: 'Freelance Contract' },
+    { id: 'service-agreement', icon: '📝', name: 'Service Agreement' },
+    { id: 'employment-offer-letter', icon: '👔', name: 'Offer Letter' },
+    { id: 'consulting-agreement', icon: '💼', name: 'Consulting Agreement' },
+    { id: 'business-proposal', icon: '🚀', name: 'Business Proposal' },
+    { id: 'loan-agreement', icon: '💰', name: 'Loan Agreement' },
+    { id: 'mou', icon: '🗒️', name: 'MOU' },
+  ],
+  PK: 'IN', BD: 'IN', PH: 'IN', ID: 'IN', MY: 'IN', SG: 'IN',
+  US: [
+    { id: 'privacy-policy', icon: '🔒', name: 'Privacy Policy' },
+    { id: 'terms-of-service', icon: '📋', name: 'Terms of Service' },
+    { id: 'nda', icon: '🤝', name: 'NDA' },
+    { id: 'freelance-contract', icon: '✍️', name: 'Freelance Contract' },
+    { id: 'independent-contractor', icon: '🏢', name: 'Contractor Agreement' },
+    { id: 'employment-offer-letter', icon: '👔', name: 'Offer Letter' },
+    { id: 'consulting-agreement', icon: '💼', name: 'Consulting Agreement' },
+    { id: 'service-agreement', icon: '📝', name: 'Service Agreement' },
+  ],
+  CA: 'US', GB: 'US', AU: 'US', NZ: 'US',
+  DE: 'US', FR: 'US', IT: 'US', ES: 'US', NL: 'US', PT: 'US',
+  AE: [
+    { id: 'mou', icon: '🗒️', name: 'MOU' },
+    { id: 'business-partnership', icon: '🤝', name: 'Partnership Agreement' },
+    { id: 'nda', icon: '🤝', name: 'NDA' },
+    { id: 'service-agreement', icon: '📝', name: 'Service Agreement' },
+    { id: 'distribution-agreement', icon: '📦', name: 'Distribution Agreement' },
+    { id: 'supply-agreement', icon: '🏭', name: 'Supply Agreement' },
+    { id: 'joint-venture', icon: '🏗️', name: 'Joint Venture' },
+    { id: 'business-proposal', icon: '🚀', name: 'Business Proposal' },
+  ],
+  SA: 'AE',
+  BR: [
+    { id: 'freelance-contract', icon: '✍️', name: 'Freelance Contract' },
+    { id: 'service-agreement', icon: '📝', name: 'Service Agreement' },
+    { id: 'nda', icon: '🤝', name: 'NDA' },
+    { id: 'employment-offer-letter', icon: '👔', name: 'Offer Letter' },
+    { id: 'business-proposal', icon: '🚀', name: 'Business Proposal' },
+    { id: 'loan-agreement', icon: '💰', name: 'Loan Agreement' },
+    { id: 'business-partnership', icon: '🤝', name: 'Partnership Agreement' },
+    { id: 'tenancy-agreement', icon: '🏠', name: 'Tenancy Agreement' },
+  ],
+  MX: 'BR', CO: 'BR', AR: 'BR',
+}
+function getQuickPicks(cc) {
+  if (!cc) return QUICKPICK_DEFAULT
+  let p = QUICKPICK_REGIONS[cc]
+  if (!p) return QUICKPICK_DEFAULT
+  if (typeof p === 'string') p = QUICKPICK_REGIONS[p]
+  return p || QUICKPICK_DEFAULT
 }
 
 function LoomFacade({ videoId }) {
@@ -381,7 +466,8 @@ const FAQS = [
 
 export default function Landing() {
   const navigate = useNavigate()
-  const currency = useCurrency()
+  const { currency, countryCode } = useGeo()
+  const quickPicks = getQuickPicks(countryCode)
   const [ticker, setTicker] = useState(0)
   const [navOpen, setNavOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState(null)
@@ -509,16 +595,7 @@ export default function Landing() {
           <div className="hero-quickpick">
             <p className="quickpick-label">Pick your document — preview free instantly</p>
             <div className="quickpick-grid">
-              {[
-                { id: 'nda', icon: '🤝', name: 'NDA' },
-                { id: 'tenancy-agreement', icon: '🏠', name: 'Tenancy Agreement' },
-                { id: 'freelance-contract', icon: '✍️', name: 'Freelance Contract' },
-                { id: 'business-proposal', icon: '🚀', name: 'Business Proposal' },
-                { id: 'privacy-policy', icon: '🔒', name: 'Privacy Policy' },
-                { id: 'loan-agreement', icon: '💰', name: 'Loan Agreement' },
-                { id: 'deed-of-assignment', icon: '📜', name: 'Deed of Assignment' },
-                { id: 'service-agreement', icon: '📝', name: 'Service Agreement' },
-              ].map(d => (
+              {quickPicks.map(d => (
                 <button
                   key={d.id}
                   className="quickpick-btn"
