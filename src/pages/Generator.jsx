@@ -532,6 +532,7 @@ export default function Generator() {
   const [showEmailGate, setShowEmailGate] = useState(false)
   const [leadEmail, setLeadEmail] = useState('')
   const [emailError, setEmailError] = useState('')
+  const [currentStep, setCurrentStep] = useState(0)
 
   // Redirect during render is a React anti-pattern — use useEffect
   useEffect(() => {
@@ -559,6 +560,34 @@ export default function Generator() {
   const requiredFields = config.fields.filter(f => f.type === 'text' || f.type === 'textarea' || f.type === 'select')
   const filledCount = requiredFields.filter(f => answers[f.id] && answers[f.id].trim && answers[f.id].trim() !== '').length
   const progressPct = requiredFields.length > 0 ? Math.round((filledCount / requiredFields.length) * 100) : 0
+
+  const totalSteps = config.fields.length
+  const currentField = config.fields[currentStep]
+  const isLastStep = currentStep >= totalSteps - 1
+
+  const canAdvance = () => {
+    if (!currentField) return false
+    const val = answers[currentField.id]
+    if (currentField.type === 'checkbox') return true // optional
+    if (currentField.type === 'radio') return !!val
+    if (currentField.type === 'select') return !!val
+    return val && val.trim && val.trim() !== ''
+  }
+
+  const handleNext = () => {
+    if (isLastStep) {
+      handleGenerateClick()
+    } else {
+      setCurrentStep(s => s + 1)
+    }
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && canAdvance() && currentField?.type !== 'textarea') {
+      e.preventDefault()
+      handleNext()
+    }
+  }
 
   const handleGenerateClick = () => {
     if (!isValid()) { setError('Please fill in all required fields.'); return }
@@ -683,110 +712,99 @@ Output the complete document only, no preamble, explanation, or closing notes.`
         </div>
 
         <div className="gen-form">
-          {requiredFields.length > 0 && (
-            <div className="gen-progress-wrap">
-              <div className="gen-progress-bar">
-                <div className="gen-progress-fill" style={{ width: `${progressPct}%` }} />
+          {/* Progress dots */}
+          <div className="gen-steps-dots">
+            {config.fields.map((_, i) => (
+              <span key={i} className={`step-dot ${i < currentStep ? 'done' : i === currentStep ? 'active' : ''}`} onClick={() => i < currentStep && setCurrentStep(i)} />
+            ))}
+          </div>
+
+          {/* Answered questions (chat history) */}
+          <div className="gen-chat-history">
+            {config.fields.slice(0, currentStep).map(field => (
+              <div key={field.id} className="chat-answered" onClick={() => setCurrentStep(config.fields.indexOf(field))}>
+                <span className="chat-q">{field.label}</span>
+                <span className="chat-a">{Array.isArray(answers[field.id]) ? answers[field.id].join(', ') : answers[field.id] || '—'}</span>
               </div>
-              <span className="gen-progress-label">{filledCount}/{requiredFields.length} fields</span>
+            ))}
+          </div>
+
+          {/* Current question */}
+          {currentField && !loading && (
+            <div className="gen-chat-current" onKeyDown={handleKeyDown}>
+              <label className="chat-question">{currentField.label}</label>
+
+              {currentField.type === 'text' && (
+                <input
+                  className="chat-input"
+                  type="text"
+                  placeholder={currentField.placeholder}
+                  value={answers[currentField.id] || ''}
+                  onChange={e => update(currentField.id, e.target.value)}
+                  autoFocus
+                />
+              )}
+
+              {currentField.type === 'textarea' && (
+                <textarea
+                  className="chat-textarea"
+                  placeholder={currentField.placeholder}
+                  value={answers[currentField.id] || ''}
+                  onChange={e => update(currentField.id, e.target.value)}
+                  rows={3}
+                  autoFocus
+                />
+              )}
+
+              {currentField.type === 'select' && (
+                <div className="chat-options">
+                  {currentField.options.map(o => (
+                    <button key={o} className={`chat-option ${answers[currentField.id] === o ? 'selected' : ''}`} onClick={() => { update(currentField.id, o); if (!isLastStep) setTimeout(() => setCurrentStep(s => s + 1), 200) }}>
+                      {o}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {currentField.type === 'radio' && (
+                <div className="chat-options">
+                  {currentField.options.map(o => (
+                    <button key={o} className={`chat-option ${answers[currentField.id] === o ? 'selected' : ''}`} onClick={() => { update(currentField.id, o); if (!isLastStep) setTimeout(() => setCurrentStep(s => s + 1), 200) }}>
+                      {o}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {currentField.type === 'checkbox' && (
+                <div className="chat-options chat-options-multi">
+                  {currentField.options.map(o => (
+                    <button key={o} className={`chat-option ${(answers[currentField.id] || []).includes(o) ? 'selected' : ''}`} onClick={() => toggleCheckbox(currentField.id, o)}>
+                      {(answers[currentField.id] || []).includes(o) ? '✓ ' : ''}{o}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <div className="chat-actions">
+                {currentStep > 0 && (
+                  <button className="chat-back" onClick={() => setCurrentStep(s => s - 1)}>← Back</button>
+                )}
+                <button className={`chat-next ${!canAdvance() ? 'disabled' : ''}`} onClick={handleNext} disabled={!canAdvance()}>
+                  {isLastStep ? 'Generate →' : 'Next →'}
+                </button>
+              </div>
             </div>
           )}
-          {config.fields.map(field => (
-            <div key={field.id} className="field-group">
-              <label className="field-label">
-                {field.label}
-                {(field.type === 'text' || field.type === 'textarea' || field.type === 'select') && (
-                  <span className="field-required">*</span>
-                )}
-              </label>
-
-              {field.type === 'text' && (
-                <input
-                  className="field-input"
-                  type="text"
-                  placeholder={field.placeholder}
-                  value={answers[field.id] || ''}
-                  onChange={e => update(field.id, e.target.value)}
-                />
-              )}
-
-              {field.type === 'textarea' && (
-                <textarea
-                  className="field-textarea"
-                  placeholder={field.placeholder}
-                  value={answers[field.id] || ''}
-                  onChange={e => update(field.id, e.target.value)}
-                  rows={4}
-                />
-              )}
-
-              {field.type === 'select' && (
-                <select
-                  className="field-select"
-                  value={answers[field.id] || ''}
-                  onChange={e => update(field.id, e.target.value)}
-                >
-                  <option value="">Select an option</option>
-                  {field.options.map(o => <option key={o} value={o}>{o}</option>)}
-                </select>
-              )}
-
-              {field.type === 'radio' && (
-                <div className="field-radios">
-                  {field.options.map(o => (
-                    <label key={o} className="radio-label">
-                      <input
-                        type="radio"
-                        name={field.id}
-                        value={o}
-                        checked={answers[field.id] === o}
-                        onChange={() => update(field.id, o)}
-                      />
-                      <span className="radio-custom" />
-                      {o}
-                    </label>
-                  ))}
-                </div>
-              )}
-
-              {field.type === 'checkbox' && (
-                <div className="field-checkboxes">
-                  {field.options.map(o => (
-                    <label key={o} className="checkbox-label">
-                      <input
-                        type="checkbox"
-                        checked={(answers[field.id] || []).includes(o)}
-                        onChange={() => toggleCheckbox(field.id, o)}
-                      />
-                      <span className="checkbox-custom" />
-                      {o}
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
 
           {error && <div className="gen-error">{error}</div>}
 
-          <button
-            className={`btn-generate ${loading ? 'loading' : ''}`}
-            onClick={handleGenerateClick}
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <span className="spinner" />
-                Generating your document…
-              </>
-            ) : (
-              <>
-                Generate {config.name}
-                <span className="btn-arrow">→</span>
-              </>
-            )}
-          </button>
-          <p className="gen-note">Preview is free · $4.99 to download clean PDF</p>
+          {loading && (
+            <div className="gen-loading">
+              <span className="spinner" />
+              <p>Generating your {config.name}…</p>
+            </div>
+          )}
         </div>
       </div>
 
