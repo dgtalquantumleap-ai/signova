@@ -536,7 +536,6 @@ export default function Landing() {
           <div className={`nav-links ${navOpen ? 'open' : ''}`}>
             <a href="#documents" onClick={closeNav}>Documents</a>
             <a href="#how" onClick={closeNav}>How it works</a>
-            <a href="#pricing" onClick={closeNav}>Pricing</a>
             <a href="#faq" onClick={closeNav}>FAQ</a>
             <a href="/blog" onClick={closeNav}>Blog</a>
             <a href="#documents" onClick={closeNav} className="nav-cta-link">Start free →</a>
@@ -556,142 +555,48 @@ export default function Landing() {
       <section className="hero">
         <div className="hero-glow" />
         <div className="hero-inner">
-          <div className="hero-badge">
-            <span className="badge-dot" />
-            🌍 Global Legal Documents · No Account · Free Preview
-          </div>
           <h1 className="hero-title">
-            Free legal document generator
-            <br />
-            <span key={ticker} className="hero-accent">
-              {TICKER_ITEMS[ticker]}
-            </span>
-            <br />
-            in under 3 minutes.
+            What document do you need?
           </h1>
           <p className="hero-sub">
-            Answer a few questions, get a professional-grade document instantly.
-            Free preview — {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} to download. No account needed.
+            Answer a few questions. Get a professional legal document in under 3 minutes. Free preview — no account needed.
           </p>
-          <div className="hero-actions">
-            <button
-              className="btn-primary"
-              onClick={() => document.getElementById('documents').scrollIntoView({ behavior: 'smooth' })}
-            >
-              Preview my document free
-              <span className="btn-arrow">→</span>
-            </button>
-            <button
-              className="btn-outline"
-              onClick={() => document.getElementById('how').scrollIntoView({ behavior: 'smooth' })}
-            >
-              How it works
-            </button>
-          </div>
-          <span className="hero-note">No credit card · No account · No subscription ·{' '}
-            {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()} (${currency.code})`} flat
-          </span>
-          {/* Quick-pick document grid — above the fold for instant engagement */}
-          <div className="hero-quickpick">
-            <p className="quickpick-label">Pick your document — preview free instantly</p>
-            <div className="quickpick-grid">
-              {quickPicks.map(d => (
-                <button
-                  key={d.id}
-                  className="quickpick-btn"
-                  onClick={() => navigate(`/generate/${d.id}`)}
-                >
-                  <span className="qp-icon">{d.icon}</span>
-                  <span className="qp-name">{d.name}</span>
-                </button>
-              ))}
-            </div>
-            <button
-              className="quickpick-more"
-              onClick={() => document.getElementById('documents').scrollIntoView({ behavior: 'smooth' })}
-            >
-              See all 27 documents ↓
-            </button>
-          </div>
-          <div className="hero-stats">
-            <div className="stat"><span className="stat-num">27</span><span className="stat-label">Document types</span></div>
-            <div className="stat-div" />
-            <div className="stat"><span className="stat-num">~2 min</span><span className="stat-label">Average time</span></div>
-            <div className="stat-div" />
-            <div className="stat"><span className="stat-num">
-                {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`}
-              </span><span className="stat-label">Per document</span></div>
-            <div className="stat-div" />
-            <div className="stat"><span className="stat-num">1,200+</span><span className="stat-label">Documents generated</span></div>
-            <div className="stat-div" />
-            <div className="stat"><span className="stat-num">180+</span><span className="stat-label">Countries supported</span></div>
-          </div>
-        </div>
-      </section>
 
-      <section className="docs-section" id="documents">
-        <div className="section-inner">
-          <div className="section-header">
-            <p className="section-label">Choose your document</p>
-            <h2 className="section-title">
-              {countryCode && QUICKPICK_REGIONS[countryCode]
-                ? `Most requested in ${countryCode === 'NG' ? 'Nigeria' : countryCode === 'IN' ? 'India' : countryCode === 'GH' ? 'Ghana' : countryCode === 'KE' ? 'Kenya' : countryCode === 'AE' ? 'UAE' : countryCode === 'GB' ? 'the UK' : countryCode === 'CA' ? 'Canada' : countryCode === 'AU' ? 'Australia' : countryCode === 'BR' ? 'Brazil' : 'your region'}`
-                : 'Generate your legal document free'
-              }
-            </h2>
-          </div>
-          <div className="docs-grid">
-            {(showAllDocs ? DOCS : (() => {
-              // Geo-sort: put quick-pick IDs first, rest after
-              const qpIds = quickPicks.map(q => q.id)
-              const inQp = DOCS.filter(d => qpIds.includes(d.id))
-                .sort((a, b) => qpIds.indexOf(a.id) - qpIds.indexOf(b.id))
-              const notInQp = DOCS.filter(d => !qpIds.includes(d.id) && d.popular)
-              return [...inQp, ...notInQp].slice(0, 9)
-            })()).map(doc => (
-              <button key={doc.id} className="doc-card" onClick={() => navigate(`/generate/${doc.id}`)}>
-                {doc.popular && <span className="doc-popular">Popular</span>}
-                <div className="doc-icon">{doc.icon}</div>
-                <div className="doc-content">
-                  <h3 className="doc-name">{doc.name}</h3>
-                  <p className="doc-desc">{doc.desc}</p>
-                </div>
-                <div className="doc-footer">
-                  <span className="doc-time">⏱ {doc.time}</span>
-                  <span className="doc-price">
-                    {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`}
-                  </span>
-                  <span className="doc-go">Generate →</span>
-                </div>
+          {/* Top 3 geo-detected documents — big, bold, tappable */}
+          <div className="hero-top3" id="documents">
+            {quickPicks.slice(0, 3).map(d => (
+              <button
+                key={d.id}
+                className="top3-card"
+                onClick={() => navigate(`/generate/${d.id}`)}
+              >
+                <span className="top3-icon">{d.icon}</span>
+                <span className="top3-name">{d.name}</span>
+                <span className="top3-go">Generate Free →</span>
               </button>
             ))}
           </div>
-          {!showAllDocs && (
-            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-              <button
-                className="btn-outline"
-                onClick={() => setShowAllDocs(true)}
-              >
-                Show all 27 document types ↓
-              </button>
+
+          <button
+            className="more-docs-link"
+            onClick={() => setShowAllDocs(true)}
+          >
+            {showAllDocs ? '' : 'More documents ↓'}
+          </button>
+
+          {showAllDocs && (
+            <div className="all-docs-grid">
+              {DOCS.filter(d => !quickPicks.slice(0, 3).some(qp => qp.id === d.id)).map(doc => (
+                <button key={doc.id} className="all-doc-btn" onClick={() => navigate(`/generate/${doc.id}`)}>
+                  <span>{doc.icon}</span> {doc.name}
+                </button>
+              ))}
             </div>
           )}
         </div>
       </section>
 
-      {/* Mobile sticky CTA — appears once hero scrolls away */}
-      {!heroVisible && (
-        <div className="mobile-sticky-cta">
-          <span className="sticky-label">Pick a document — free preview</span>
-          <button
-            className="btn-primary btn-sticky"
-            onClick={() => document.getElementById('documents').scrollIntoView({ behavior: 'smooth' })}
-          >
-            Choose document →
-          </button>
-        </div>
-      )}
-
+      {/* How it works section */}
       <section className="how-section" id="how">
         <div className="section-inner">
           <div className="section-header">
@@ -728,145 +633,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="pricing-section" id="pricing">
-        <div className="section-inner">
-          <div className="section-header">
-            <p className="section-label">Pricing</p>
-            <h2 className="section-title">Simple, honest pricing</h2>
-            <p className="section-subtitle">No subscription trap. No auto-charge. Pay{' '}
-              {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} for the document you need — nothing more.</p>
-          </div>
-          <div className="competitor-callout">
-            <div className="competitor-col competitor-col-bad">
-              <div className="competitor-header">
-                <span className="competitor-name-bad">LawDepot &amp; LegalTemplates</span>
-                <span className="competitor-price-bad">$35–$49.95/month</span>
-                <span className="competitor-subtext">auto-charged after free trial</span>
-              </div>
-              <div className="competitor-reviews">
-                <div className="comp-review">
-                  <span className="comp-stars">★☆☆☆☆</span>
-                  <p className="comp-quote">&ldquo;I cancelled the same day I signed up. They proceeded to charge me for 4 months — total of $200. They are scammers.&rdquo;</p>
-                  <span className="comp-source">— Laryssa S., Trustpilot</span>
-                </div>
-                <div className="comp-review">
-                  <span className="comp-stars">★☆☆☆☆</span>
-                  <p className="comp-quote">&ldquo;This company has been charging me $49 per month for a service I used once, and refuses to refund anything. Buyer beware.&rdquo;</p>
-                  <span className="comp-source">— Pam, Trustpilot</span>
-                </div>
-                <div className="comp-review">
-                  <span className="comp-stars">★☆☆☆☆</span>
-                  <p className="comp-quote">&ldquo;Another B.S. site that claims you can download ‘free’ documents. Of course it throws you into a free trial and charges your card.&rdquo;</p>
-                  <span className="comp-source">— Daisy, Trustpilot</span>
-                </div>
-              </div>
-            </div>
-            <div className="competitor-col competitor-col-good">
-              <div className="competitor-header">
-                <span className="competitor-name-good">Signova</span>
-                <span className="competitor-price-good">
-                  {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`}
-                </span>
-                <span className="competitor-subtext">per document · no subscription · ever</span>
-              </div>
-              <ul className="competitor-good-list">
-                <li>✓ No credit card required to preview</li>
-                <li>✓ Pay once, download once</li>
-                <li>✓ No free trial. No auto-charge.</li>
-                <li>✓ No account required</li>
-                <li>✓ Cancel? There’s nothing to cancel.</li>
-              </ul>
-              <button
-                className="btn-primary"
-                onClick={() => navigate('/generate/freelance-contract')}
-              >
-                Generate my document free →
-              </button>
-            </div>
-          </div>
-          <div className="pricing-grid">
-            <div className="price-card">
-              <div className="price-tier">Free Preview</div>
-              <div className="price-amount">$0</div>
-              <p className="price-desc">See your complete document before paying anything.</p>
-              <ul className="price-list">
-                <li className="price-yes">✓ Full document generated</li>
-                <li className="price-yes">✓ Complete preview in browser</li>
-                <li className="price-yes">✓ No account needed</li>
-                <li className="price-yes">✓ No credit card required</li>
-                <li className="price-yes">✓ See exactly what you get before paying</li>
-              </ul>
-              <button
-                className="btn-outline"
-                onClick={() => document.getElementById('documents').scrollIntoView({ behavior: 'smooth' })}
-              >
-                Try for free
-              </button>
-            </div>
-
-            <div className="price-card price-featured">
-              <div className="price-top-badge">Most popular</div>
-              <div className="price-tier">Single Document</div>
-              <div className="price-amount">
-                {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`}
-                {currency.local && (
-                  <span className="price-naira">(≈ $4.99 USD)</span>
-                )}
-              </div>
-              <p className="price-desc">Pay once, download once. Clean PDF, yours to keep.</p>
-              <ul className="price-list">
-                <li className="price-yes">✓ Full document generated</li>
-                <li className="price-yes">✓ Clean PDF, no watermark</li>
-                <li className="price-yes">✓ Instant download</li>
-                <li className="price-yes">✓ Attorney-drafted template base</li>
-                <li className="price-yes">✓ No subscription — ever</li>
-              </ul>
-              <p className="price-payment-note">Accepts card · USDT crypto · Wise</p>
-              <button
-                className="btn-primary"
-                onClick={() => document.getElementById('documents').scrollIntoView({ behavior: 'smooth' })}
-              >
-                Get started <span className="btn-arrow">→</span>
-              </button>
-              <p className="price-guarantee">🔒 30-day money-back guarantee</p>
-            </div>
-
-            <div className="price-card price-coming-soon">
-              <div className="price-tier">Unlimited <span className="price-soon-badge">Coming Soon</span></div>
-              <div className="price-amount">$9.99<span className="price-per">/mo</span></div>
-              <p className="price-desc">For freelancers and growing businesses who need documents regularly. Join the waitlist and lock in 50% off at launch.</p>
-              <ul className="price-list">
-                <li className="price-yes">✓ Unlimited documents</li>
-                <li className="price-yes">✓ All 27 document types</li>
-                <li className="price-yes">✓ Clean PDFs always</li>
-                <li className="price-yes">✓ Priority AI generation</li>
-                <li className="price-yes">✓ Cancel anytime</li>
-              </ul>
-              {waitlistSubmitted ? (
-                <div className="waitlist-submitted">
-                  ✓ You're on the list! We'll email you 24hrs before launch with your 50% off code.
-                </div>
-              ) : (
-                <form className="waitlist-form" onSubmit={handleWaitlist}>
-                  <input
-                    className="waitlist-input"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={waitlistEmail}
-                    onChange={e => setWaitlistEmail(e.target.value)}
-                    disabled={waitlistLoading}
-                    required
-                  />
-                  <button type="submit" className="btn-outline waitlist-btn" disabled={waitlistLoading}>
-                    {waitlistLoading ? 'Saving...' : 'Get 50% off at launch →'}
-                  </button>
-                  {waitlistError && <p className="waitlist-error">{waitlistError}</p>}
-                </form>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Pricing removed — price reveals on Preview page after user feels the value */}
 
       <section className="testimonials-section">
         <div className="section-inner">
@@ -877,7 +644,7 @@ export default function Landing() {
           <div className="testimonials-grid">
             {TESTIMONIALS.map((t, i) => (
               <div key={i} className="testimonial-card">
-                <p className="testimonial-text">"{t.text}"</p>
+                <p className="testimonial-text">{`"${t.text}"`}</p>
                 <div className="testimonial-author">
                   <span className="testimonial-name">{t.name}</span>
                   <span className="testimonial-role">{t.role}</span>
