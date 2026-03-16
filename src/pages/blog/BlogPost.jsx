@@ -48,12 +48,22 @@ export default function BlogPost() {
 
           <div className="blog-article-body">
             {post.sections.map((section, i) => (
-              <div key={i} className="blog-section">
-                <h2>{section.heading}</h2>
-                {section.body.split('\n\n').map((para, j) => (
-                  <p key={j}>{para}</p>
-                ))}
-              </div>
+              <>
+                <div key={i} className="blog-section">
+                  <h2>{section.heading}</h2>
+                  {section.body.split('\n\n').map((para, j) => (
+                    <p key={j}>{para}</p>
+                  ))}
+                </div>
+                {/* Mid-article CTA — fires after section 2 (index 1) */}
+                {i === 1 && (
+                  <Link key="mid-cta" to={post.cta.href} className="blog-mid-cta">
+                    <span className="blog-mid-cta-label">Skip the reading — </span>
+                    <strong>{post.cta.label}</strong>
+                    <span className="blog-mid-cta-note">Free preview · $4.99 to download</span>
+                  </Link>
+                )}
+              </>
             ))}
           </div>
 
