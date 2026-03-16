@@ -468,7 +468,6 @@ export default function Landing() {
   const navigate = useNavigate()
   const { currency, countryCode } = useGeo()
   const quickPicks = getQuickPicks(countryCode)
-  const [ticker, setTicker] = useState(0)
   const [navOpen, setNavOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState(null)
   const [waitlistEmail, setWaitlistEmail] = useState('')
@@ -476,24 +475,6 @@ export default function Landing() {
   const [waitlistLoading, setWaitlistLoading] = useState(false)
   const [waitlistError, setWaitlistError] = useState('')
   const [showAllDocs, setShowAllDocs] = useState(false)
-  const [heroVisible, setHeroVisible] = useState(true)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => setHeroVisible(entry.isIntersecting),
-      { threshold: 0.1 }
-    )
-    const heroEl = document.querySelector('.hero')
-    if (heroEl) observer.observe(heroEl)
-    return () => observer.disconnect()
-  }, [])
-
-  useEffect(() => {
-    const t = setInterval(() => {
-      setTicker(p => (p + 1) % TICKER_ITEMS.length)
-    }, 2500)
-    return () => clearInterval(t)
-  }, [])
 
   // docsToday counter removed — was fake/randomised, hurts trust
 
@@ -607,7 +588,7 @@ export default function Landing() {
             {[
               { n: '01', title: 'Choose your document', body: 'Pick from 27 document types — Privacy Policy, NDA, Freelance Contract, Tenancy Agreement, Loan Agreement, Business Proposal, and more.' },
               { n: '02', title: 'Answer a few questions', body: 'Tell us about your business, jurisdiction, and needs. Takes about 2 minutes. No legal knowledge required.' },
-              { n: '03', title: 'Preview free, pay to download', body: `See your complete document instantly. Pay ${currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} to download the clean, watermark-free PDF.` },
+              { n: '03', title: 'Preview free, download when ready', body: 'See your complete document instantly. When you\'re happy, download the clean, watermark-free PDF.' },
             ].map(s => (
               <div key={s.n} className="step">
                 <span className="step-num">{s.n}</span>
