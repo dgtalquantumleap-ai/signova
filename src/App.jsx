@@ -11,6 +11,7 @@ const BlogPost   = lazy(() => import('./pages/blog/BlogPost'))
 const AdminPage  = lazy(() => import('./pages/AdminPage'))
 const NDALanding = lazy(() => import('./pages/NDALanding'))
 const DocLanding = lazy(() => import('./pages/DocLanding'))
+const NotFound = lazy(() => import('./pages/NotFound'))
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/nda-generator" element={<NDALanding />} />
         <Route path="/:slug" element={<DocLanding />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
   )

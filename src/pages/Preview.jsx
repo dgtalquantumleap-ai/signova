@@ -2,11 +2,26 @@ import { useNavigate } from 'react-router-dom'
 import { useEffect, useState, useRef } from 'react'
 import './Preview.css'
 
+// Geo detect — same sessionStorage key used by Landing.jsx
+function useIsNigeria() {
+  const [isNG, setIsNG] = useState(false)
+  useEffect(() => {
+    const cached = sessionStorage.getItem('sig_currency')
+    if (cached) { setIsNG(JSON.parse(cached).code === 'NGN'); return }
+    fetch('https://ipapi.co/json/')
+      .then(r => r.json())
+      .then(d => setIsNG(d.country_code === 'NG'))
+      .catch(() => {})
+  }, [])
+  return isNG
+}
+
 
 
 
 export default function Preview() {
   const navigate = useNavigate()
+  const isNigeria = useIsNigeria()
   const [doc, setDoc] = useState(null)
   const [paying, setPaying] = useState(false)
   const [paid, setPaid] = useState(false)
@@ -438,28 +453,56 @@ export default function Preview() {
               </>
             ) : (
               <>
-                <button className="btn-pay-full" onClick={handleDownload} disabled={paying}>
-                  {paying
-                    ? <><span className="spinner-sm" /> Processing…</>
-                    : <>💳 Pay $4.99 by Card →</>
-                  }
-                </button>
-                <p className="trust-line">🔒 Secure checkout · Instant delivery · No account needed</p>
-
-                {/* USDT — equal option, not fallback */}
-                <div className="sidebar-usdt">
-                  <div className="usdt-divider"><span>or pay with crypto</span></div>
-                  <button
-                    className="btn-usdt"
-                    onClick={handleUsdtCheckout}
-                    disabled={payingUsdt}
-                  >
-                    {payingUsdt
-                      ? <><span className="spinner-sm" /> Preparing invoice…</>
-                      : <>⬡ Pay $4.99 in USDT / Crypto →</>}
-                  </button>
-                  <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Works for Nigeria & Africa · Instant confirmation</p>
-                </div>
+                {isNigeria ? (
+                  // Nigeria: crypto first — card success rates are low
+                  <>
+                    <div className="nigeria-notice">
+                      🇳🇬 <strong>Nigeria tip:</strong> Crypto / USDT works best — Nigerian cards are sometimes declined on international platforms.
+                    </div>
+                    <button
+                      className="btn-usdt btn-usdt-primary"
+                      onClick={handleUsdtCheckout}
+                      disabled={payingUsdt}
+                    >
+                      {payingUsdt
+                        ? <><span className="spinner-sm" /> Preparing invoice…</>
+                        : <>⬡ Pay $4.99 in USDT / Crypto →</>}
+                    </button>
+                    <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Instant confirmation</p>
+                    <div className="usdt-divider"><span>or try card payment</span></div>
+                    <button className="btn-pay-full btn-pay-secondary" onClick={handleDownload} disabled={paying}>
+                      {paying
+                        ? <><span className="spinner-sm" /> Processing…</>
+                        : <>💳 Pay $4.99 by Card →</>
+                      }
+                    </button>
+                    <p className="trust-line">🔒 Secure checkout · Instant delivery · No account needed</p>
+                  </>
+                ) : (
+                  // Everyone else: card first, crypto below
+                  <>
+                    <button className="btn-pay-full" onClick={handleDownload} disabled={paying}>
+                      {paying
+                        ? <><span className="spinner-sm" /> Processing…</>
+                        : <>💳 Pay $4.99 by Card →</>
+                      }
+                    </button>
+                    <p className="trust-line">🔒 Secure checkout · Instant delivery · No account needed</p>
+                    <div className="sidebar-usdt">
+                      <div className="usdt-divider"><span>or pay with crypto</span></div>
+                      <button
+                        className="btn-usdt"
+                        onClick={handleUsdtCheckout}
+                        disabled={payingUsdt}
+                      >
+                        {payingUsdt
+                          ? <><span className="spinner-sm" /> Preparing invoice…</>
+                          : <>⬡ Pay $4.99 in USDT / Crypto →</>}
+                      </button>
+                      <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Works for Nigeria & Africa · Instant confirmation</p>
+                    </div>
+                  </>
+                )}
               </>
             )}
             <ul className="sidebar-perks">
