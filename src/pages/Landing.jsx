@@ -633,10 +633,22 @@ export default function Landing() {
         <div className="section-inner">
           <div className="section-header">
             <p className="section-label">Choose your document</p>
-            <h2 className="section-title">Generate your legal document free</h2>
+            <h2 className="section-title">
+              {countryCode && QUICKPICK_REGIONS[countryCode]
+                ? `Most requested in ${countryCode === 'NG' ? 'Nigeria' : countryCode === 'IN' ? 'India' : countryCode === 'GH' ? 'Ghana' : countryCode === 'KE' ? 'Kenya' : countryCode === 'AE' ? 'UAE' : countryCode === 'GB' ? 'the UK' : countryCode === 'CA' ? 'Canada' : countryCode === 'AU' ? 'Australia' : countryCode === 'BR' ? 'Brazil' : 'your region'}`
+                : 'Generate your legal document free'
+              }
+            </h2>
           </div>
           <div className="docs-grid">
-            {(showAllDocs ? DOCS : DOCS.filter(d => d.popular)).map(doc => (
+            {(showAllDocs ? DOCS : (() => {
+              // Geo-sort: put quick-pick IDs first, rest after
+              const qpIds = quickPicks.map(q => q.id)
+              const inQp = DOCS.filter(d => qpIds.includes(d.id))
+                .sort((a, b) => qpIds.indexOf(a.id) - qpIds.indexOf(b.id))
+              const notInQp = DOCS.filter(d => !qpIds.includes(d.id) && d.popular)
+              return [...inQp, ...notInQp].slice(0, 9)
+            })()).map(doc => (
               <button key={doc.id} className="doc-card" onClick={() => navigate(`/generate/${doc.id}`)}>
                 {doc.popular && <span className="doc-popular">Popular</span>}
                 <div className="doc-icon">{doc.icon}</div>
