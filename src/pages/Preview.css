@@ -466,6 +466,67 @@
 }
 .promo-toggle:hover { color: var(--text2); }
 
+/* ── Pre-purchase Email Capture ── */
+.pre-capture-box {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  animation: fadeInUp 0.4s ease;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.pre-capture-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  margin: 0 0 4px;
+}
+.pre-capture-sub {
+  font-size: 12px;
+  color: var(--text3);
+  line-height: 1.5;
+  margin: 0 0 10px;
+}
+.pre-capture-input {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  margin-bottom: 8px;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+.pre-capture-input:focus { border-color: rgba(201,168,76,0.5); }
+.pre-capture-input::placeholder { color: var(--text3); }
+.pre-capture-btn {
+  width: 100%;
+  padding: 9px;
+  border-radius: 8px;
+  border: 1px solid rgba(201,168,76,0.3);
+  background: rgba(201,168,76,0.08);
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+.pre-capture-btn:hover:not(:disabled) { background: rgba(201,168,76,0.15); }
+.pre-capture-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.pre-capture-done {
+  font-size: 13px;
+  color: var(--green);
+  text-align: center;
+  padding: 6px 0;
+}
+
 /* ── Trust Line ── */
 .trust-line {
   margin-top: 10px; text-align: center;

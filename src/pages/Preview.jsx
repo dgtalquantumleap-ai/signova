@@ -31,6 +31,10 @@ export default function Preview() {
   const [buyerEmail, setBuyerEmail] = useState('')
   const [emailSubmitted, setEmailSubmitted] = useState(false)
   const [emailLoading, setEmailLoading] = useState(false)
+  const [preEmail, setPreEmail] = useState('')
+  const [preEmailSubmitted, setPreEmailSubmitted] = useState(false)
+  const [preEmailLoading, setPreEmailLoading] = useState(false)
+  const [showPreCapture, setShowPreCapture] = useState(false)
   const [promoCode, setPromoCode] = useState('')
   const [promoToken, setPromoToken] = useState(null)
   const [promoLoading, setPromoLoading] = useState(false)
@@ -45,6 +49,27 @@ export default function Preview() {
     setDoc(JSON.parse(raw))
     window.scrollTo(0, 0)
   }, [])
+
+  // Show pre-purchase capture after 20 seconds — user is warm but hasn't paid
+  useEffect(() => {
+    if (paid) return
+    const t = setTimeout(() => setShowPreCapture(true), 20000)
+    return () => clearTimeout(t)
+  }, [paid])
+
+  const handlePreCapture = async () => {
+    if (!preEmail || !preEmail.includes('@')) return
+    setPreEmailLoading(true)
+    try {
+      await fetch('/api/capture-buyer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: preEmail, docName: doc?.docName, source: 'preview' }),
+      })
+    } catch {}
+    setPreEmailSubmitted(true)
+    setPreEmailLoading(false)
+  }
 
   const handleDownload = async () => {
     if (paid) { downloadPDF(); return }
@@ -414,6 +439,39 @@ export default function Preview() {
                 )}
               </div>
             )}
+            {/* Pre-purchase email capture — appears after 20s for non-paying visitors */}
+            {!paid && showPreCapture && (
+              <div className="pre-capture-box">
+                {preEmailSubmitted ? (
+                  <div className="pre-capture-done">
+                    ✓ Saved — check your inbox for a link to return
+                  </div>
+                ) : (
+                  <>
+                    <p className="pre-capture-label">Not ready to pay?</p>
+                    <p className="pre-capture-sub">
+                      Enter your email and we’ll send you a link to come back to this document.
+                    </p>
+                    <input
+                      className="pre-capture-input"
+                      type="email"
+                      placeholder="your@email.com"
+                      value={preEmail}
+                      onChange={e => setPreEmail(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && handlePreCapture()}
+                    />
+                    <button
+                      className="pre-capture-btn"
+                      onClick={handlePreCapture}
+                      disabled={preEmailLoading || !preEmail.includes('@')}
+                    >
+                      {preEmailLoading ? 'Saving…' : 'Save my document →'}
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+
             {paid ? (
               <>
                 <button className="btn-download-full" onClick={downloadPDF}>

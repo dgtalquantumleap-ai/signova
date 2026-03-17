@@ -1,9 +1,9 @@
-// api/capture-buyer.js — post-purchase email capture
-// Stores buyer email and sends them the Scope Guard checklist
+// api/capture-buyer.js — email capture (pre-purchase preview leads + post-purchase buyers)
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
-  const { email, docName } = req.body
+  const { email, docName, source } = req.body
+  // source: 'preview' = not yet paid, 'purchase' = just paid (default)
   if (!email || !email.includes('@')) {
     return res.status(400).json({ error: 'Valid email required' })
   }
@@ -14,8 +14,10 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true })
   }
 
+  const isPreview = source === 'preview'
+
   try {
-    // 1. Notify founder of buyer email
+    // 1. Notify founder
     await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -23,23 +25,67 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Signova Buyers <info@getsignova.com>',
+        from: 'Signova <info@getsignova.com>',
         to: ['info@ebenova.net'],
-        subject: `💰 Buyer email captured: ${email}`,
+        subject: isPreview
+          ? `📧 Preview lead captured: ${email}`
+          : `💰 Buyer email captured: ${email}`,
         html: `
           <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;">
-            <h2 style="color:#c9a84c;">New buyer email captured</h2>
+            <h2 style="color:#c9a84c;">${isPreview ? 'New preview lead' : 'New buyer email captured'}</h2>
             <p style="font-size:20px;font-weight:bold;color:#111;">${email}</p>
             <p style="color:#666;font-size:14px;">
-              Document purchased: <strong>${docName || 'Unknown'}</strong><br/>
-              This person is a paying customer. They're your hottest Pro lead.
+              Document: <strong>${docName || 'Unknown'}</strong><br/>
+              ${isPreview ? 'This person previewed but did not pay. Follow up opportunity.' : "This person is a paying customer. They're your hottest Pro lead."}
             </p>
           </div>
         `,
       }),
     })
 
-    // 2. Send buyer the Scope Guard checklist (value-add email)
+    // 2. Send user email based on source
+    if (isPreview) {
+      // Pre-purchase: "Your document is waiting" nudge email
+      await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: 'Signova <info@getsignova.com>',
+          to: [email],
+          subject: `Your ${docName || 'document'} is ready — complete your download`,
+          html: `
+            <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px;background:#0e0e0e;color:#f0ece4;">
+              <div style="margin-bottom:28px;">
+                <div style="display:inline-flex;align-items:center;gap:10px;">
+                  <div style="width:32px;height:32px;border-radius:8px;background:#c9a84c;color:#0e0e0e;font-size:18px;font-weight:700;text-align:center;line-height:32px;">S</div>
+                  <span style="font-size:18px;font-weight:600;">Signova</span>
+                </div>
+              </div>
+              <h2 style="color:#c9a84c;font-size:20px;margin-bottom:8px;">Your document is still waiting</h2>
+              <p style="color:#9a9690;font-size:14px;line-height:1.7;margin-bottom:24px;">
+                You generated a <strong style="color:#f0ece4;">${docName || 'document'}</strong> on Signova and previewed it. It only needs one more step.
+              </p>
+              <div style="background:#1a1500;border:1px solid #c9a84c55;border-radius:10px;padding:20px 24px;margin-bottom:24px;">
+                <p style="margin:0 0 6px;color:#c9a84c;font-weight:700;font-size:13px;">One payment. Yours forever.</p>
+                <p style="margin:0;color:#9a9690;font-size:13px;line-height:1.6;">Pay $4.99 (or ₦7,400) once and download a clean, watermark-free PDF immediately. No account. No subscription. No auto-charge.</p>
+              </div>
+              <a href="https://www.getsignova.com" style="display:inline-block;background:#c9a84c;color:#0e0e0e;font-weight:700;font-size:15px;padding:14px 28px;border-radius:8px;text-decoration:none;margin-bottom:24px;">Complete my download →</a>
+              <p style="color:#9a9690;font-size:13px;line-height:1.7;">
+                Your document will regenerate fresh when you return. Takes under 30 seconds.
+              </p>
+              <hr style="border:none;border-top:1px solid #2a2a2a;margin:28px 0;" />
+              <p style="color:#5a5754;font-size:11px;">Signova · Ebenova Solutions · <a href="mailto:hello@getsignova.com" style="color:#5a5754;">hello@getsignova.com</a></p>
+            </div>
+          `,
+        }),
+      })
+      return res.status(200).json({ ok: true })
+    }
+
+    // Post-purchase: send the Scope Guard checklist (value-add email)
     await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
