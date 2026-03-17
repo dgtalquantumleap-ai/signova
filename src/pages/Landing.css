@@ -257,6 +257,7 @@
   padding: 24px 32px;
   border: 1px solid var(--border); border-radius: var(--radius);
   background: var(--bg2); display: inline-flex;
+  cursor: default; user-select: none;
 }
 .stat { text-align: center; }
 .stat-num { display: block; font-family: var(--font-display); font-size: 24px; font-weight: 700; color: var(--gold); }

@@ -26,6 +26,11 @@ export default function App() {
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/nda-generator" element={<NDALanding />} />
+        {/* Common URLs people type — redirect to relevant sections */}
+        <Route path="/about" element={<Landing />} />
+        <Route path="/contact" element={<Landing />} />
+        <Route path="/team" element={<Landing />} />
+        <Route path="/pricing" element={<Landing />} />
         <Route path="/:slug" element={<DocLanding />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
