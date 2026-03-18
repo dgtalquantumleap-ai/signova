@@ -533,6 +533,11 @@ export default function Generator() {
   const [leadEmail, setLeadEmail] = useState('')
   const [emailError, setEmailError] = useState('')
   const [currentStep, setCurrentStep] = useState(0)
+  const [showExtract, setShowExtract] = useState(false)
+  const [conversation, setConversation] = useState('')
+  const [extracting, setExtracting] = useState(false)
+  const [extractMsg, setExtractMsg] = useState('')
+  const [extractError, setExtractError] = useState('')
 
   // Redirect during render is a React anti-pattern — use useEffect
   useEffect(() => {
@@ -549,6 +554,44 @@ export default function Generator() {
       update(id, current.filter(x => x !== option))
     } else {
       update(id, [...current, option])
+    }
+  }
+
+  const handleExtract = async () => {
+    if (!conversation.trim()) return
+    setExtracting(true)
+    setExtractMsg('')
+    setExtractError('')
+    try {
+      const res = await fetch('/api/extract-terms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ conversation, docType }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.fields) {
+        setExtractError(data.error || 'Extraction failed. Please fill the form manually.')
+        return
+      }
+      // Merge extracted values into answers — existing manual answers are NOT overwritten
+      // unless the field is still empty, so user edits are preserved
+      setAnswers(prev => {
+        const merged = { ...prev }
+        for (const [key, val] of Object.entries(data.fields)) {
+          if (!merged[key] || merged[key] === '' || (Array.isArray(merged[key]) && merged[key].length === 0)) {
+            merged[key] = val
+          }
+        }
+        return merged
+      })
+      setExtractMsg(data.message)
+      // Jump to first step so user can review answers from the start
+      setCurrentStep(0)
+      setShowExtract(false)
+    } catch {
+      setExtractError('Something went wrong. Please fill the form manually.')
+    } finally {
+      setExtracting(false)
     }
   }
 
@@ -712,6 +755,45 @@ Output the complete document only, no preamble, explanation, or closing notes.`
         </div>
 
         <div className="gen-form">
+          {/* ── Auto-fill from conversation ── */}
+          {!showExtract ? (
+            <button className="extract-toggle" onClick={() => setShowExtract(true)}>
+              💬 Have a WhatsApp or email conversation? Auto-fill this form →
+            </button>
+          ) : (
+            <div className="extract-box">
+              <div className="extract-header">
+                <span className="extract-title">Paste your conversation</span>
+                <button className="extract-close" onClick={() => { setShowExtract(false); setExtractError('') }}>✕</button>
+              </div>
+              <p className="extract-hint">
+                Paste any WhatsApp chat, email thread, or message exchange. We'll extract the key details and auto-fill the form.
+              </p>
+              <textarea
+                className="extract-textarea"
+                placeholder="Paste your conversation here…"
+                value={conversation}
+                onChange={e => setConversation(e.target.value)}
+                rows={7}
+                autoFocus
+              />
+              {extractError && <div className="extract-error">{extractError}</div>}
+              <button
+                className="extract-btn"
+                onClick={handleExtract}
+                disabled={extracting || !conversation.trim()}
+              >
+                {extracting ? <><span className="spinner-sm" /> Extracting…</> : 'Extract & auto-fill →'}
+              </button>
+            </div>
+          )}
+
+          {extractMsg && (
+            <div className="extract-success">
+              ✓ {extractMsg}
+            </div>
+          )}
+
           {/* Progress dots */}
           <div className="gen-steps-dots">
             {config.fields.map((_, i) => (

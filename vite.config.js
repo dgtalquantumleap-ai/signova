@@ -6,11 +6,9 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          // React core in its own chunk — cached until React version changes
-          'react-vendor': ['react', 'react-dom'],
-          // Router separately
-          'router': ['react-router-dom'],
+        manualChunks: (id) => {
+          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) return 'react-vendor'
+          if (id.includes('node_modules/react-router')) return 'router'
         },
       },
     },
