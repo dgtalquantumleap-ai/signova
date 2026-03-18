@@ -1,3 +1,4 @@
+// Preview page — v2 PDF renderer
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState, useRef } from 'react'
 import './Preview.css'
