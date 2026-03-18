@@ -8,6 +8,13 @@
     <priority>1.0</priority>
   </url>
 
+  <!-- WhatsApp landing page -->
+  <url>
+    <loc>https://www.getsignova.com/whatsapp</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
   <!-- SEO Landing Pages -->
   <url><loc>https://www.getsignova.com/nda-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://www.getsignova.com/privacy-policy-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
@@ -230,6 +237,61 @@
   </url>
   <url>
     <loc>https://www.getsignova.com/blog/nda-generator-nigeria-freelancers</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.getsignova.com/blog/whatsapp-tenancy-agreement-nigeria</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.getsignova.com/blog/loan-agreement-template-nigeria</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.getsignova.com/blog/business-proposal-template-nigeria</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.getsignova.com/blog/privacy-policy-generator-free</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.getsignova.com/blog/employment-contract-template-nigeria</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.getsignova.com/blog/how-to-write-nda-nigeria</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.getsignova.com/blog/tenancy-agreement-lagos-landlord-guide</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.getsignova.com/blog/partnership-agreement-template-nigeria</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.getsignova.com/blog/caution-fee-nigeria-tenancy</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.getsignova.com/blog/invoice-vs-contract-nigeria</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.getsignova.com/blog/how-to-write-freelance-contract-nigeria</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>

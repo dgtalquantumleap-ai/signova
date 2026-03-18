@@ -544,6 +544,20 @@ export default function Generator() {
     if (!config) navigate('/')
   }, [config, navigate])
 
+  // Pre-fill from /whatsapp page extraction
+  useEffect(() => {
+    const raw = sessionStorage.getItem('signova_prefill')
+    if (!raw) return
+    try {
+      const prefill = JSON.parse(raw)
+      if (prefill.docType === docType && prefill.fields) {
+        setAnswers(prefill.fields)
+        setExtractMsg(`${Object.keys(prefill.fields).length} fields auto-filled from your conversation — review and adjust before generating`)
+      }
+    } catch {}
+    sessionStorage.removeItem('signova_prefill')
+  }, [docType])
+
   if (!config) return null
 
   const update = (id, val) => setAnswers(p => ({ ...p, [id]: val }))
