@@ -585,6 +585,7 @@ export default function Preview() {
                         : <>💳 Pay $4.99 by Card →</>
                       }
                     </button>
+                    <div className="trust-badge">🔒 SSL encrypted · Secure checkout · Instant delivery</div>
                     <p className="trust-line">🔒 Secure checkout · Instant delivery · No account needed</p>
                   </>
                 ) : (
@@ -596,7 +597,8 @@ export default function Preview() {
                         : <>💳 Pay $4.99 by Card →</>
                       }
                     </button>
-                    <p className="trust-line">🔒 Secure checkout · Instant delivery · No account needed</p>
+                    <div className="trust-badge">🔒 SSL encrypted · Secure checkout · Instant delivery</div>
+                    <p className="trust-line">No account needed · 30-day money-back guarantee</p>
                     <div className="sidebar-usdt">
                       <div className="usdt-divider"><span>or pay with crypto</span></div>
                       <button

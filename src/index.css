@@ -2,9 +2,12 @@
 
 :root {
   --bg: #0e0e0e;
-  --bg2: #161616;
-  --bg3: #1e1e1e;
-  --border: #2a2a2a;
+  --bg2: #1a1a1a;
+  --bg3: #222222;
+  --border: #333333;
+  --trust-blue: #1B4FC4;
+  --trust-blue-hover: #1640a8;
+  --trust-blue-dim: rgba(27,79,196,0.15);
   --gold: #c9a84c;
   --gold-light: #e8c97a;
   --gold-dim: rgba(201,168,76,0.15);
