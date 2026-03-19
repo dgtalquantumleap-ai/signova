@@ -147,9 +147,9 @@
   position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
   width: 800px; height: 600px; border-radius: 50%;
   background: radial-gradient(ellipse, rgba(201,168,76,0.12) 0%, transparent 70%);
-  pointer-events: none;
+  pointer-events: none; z-index: 0;
 }
-.hero-inner { position: relative; max-width: 760px; margin: 0 auto; }
+.hero-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
 .hero-badge {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 6px 16px; border-radius: 100px;
@@ -608,7 +608,7 @@
 .footer-links a { font-size: 14px; color: var(--text3); transition: color 0.2s; }
 .footer-links a:hover { color: var(--text2); }
 .footer-disc { font-size: 12px; color: var(--text3); max-width: 540px; line-height: 1.6; }
-.footer-copy { font-size: 12px; color: var(--text3); }
+.footer-copy { font-size: 12px; color: var(--text3); cursor: default; user-select: none; }
 
 /* ── Hamburger ── */
 .hamburger {

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Helmet } from 'react-helmet-async'
 import './Landing.css'
 
@@ -476,6 +476,16 @@ export default function Landing() {
   const [waitlistError, setWaitlistError] = useState('')
   const [showAllDocs, setShowAllDocs] = useState(false)
 
+  // Memoised docs — only recomputes when geo or showAll changes, not on every ticker tick
+  const docsToShow = useMemo(() => {
+    if (showAllDocs) return DOCS
+    const qpIds = quickPicks.map(q => q.id)
+    const inQp = DOCS.filter(d => qpIds.includes(d.id))
+      .sort((a, b) => qpIds.indexOf(a.id) - qpIds.indexOf(b.id))
+    const notInQp = DOCS.filter(d => !qpIds.includes(d.id) && d.popular)
+    return [...inQp, ...notInQp].slice(0, 9)
+  }, [quickPicks, showAllDocs])
+
   // docsToday counter removed — was fake/randomised, hurts trust
 
   const closeNav = () => setNavOpen(false)
@@ -567,7 +577,7 @@ export default function Landing() {
 
           {showAllDocs && (
             <div className="all-docs-grid">
-              {DOCS.filter(d => !quickPicks.slice(0, 3).some(qp => qp.id === d.id)).map(doc => (
+              {docsToShow.filter(d => !quickPicks.slice(0, 3).some(qp => qp.id === d.id)).map(doc => (
                 <button key={doc.id} className="all-doc-btn" onClick={() => navigate(`/generate/${doc.id}`)}>
                   <span>{doc.icon}</span> {doc.name}
                 </button>
