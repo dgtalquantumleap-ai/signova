@@ -604,6 +604,265 @@ export const BLOG_POSTS = [
     cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
   },
 
+
+  // ── 16 new posts — one per missing doc type ──────────────────────────────
+
+  {
+    slug: 'terms-of-service-template-free',
+    title: 'Free Terms of Service Template 2026 — Generate in 2 Minutes',
+    description: 'Everything you need to know about Terms of Service — what to include, why every website and app needs one, and how to generate a free, professional Terms of Service in under 2 minutes.',
+    date: '2026-03-18', readTime: '5 min read', category: 'Legal Basics',
+    keywords: 'terms of service template free, terms and conditions generator, website terms of service, SaaS terms of service, free terms of service 2026',
+    sections: [
+      { heading: 'What Is a Terms of Service Agreement?', body: `A Terms of Service (also called Terms and Conditions or Terms of Use) is a legal agreement between a business or website operator and its users. It sets out the rules users must agree to when accessing your product, service, or platform.\n\nIf you run a website, mobile app, SaaS product, e-commerce store, or any online service, you need a Terms of Service. Without one, you have no legal basis to remove users who abuse your platform, no disclaimer limiting your liability, and no governing law clause if a dispute arises.` },
+      { heading: 'What Must a Terms of Service Include?', body: `A complete Terms of Service should cover: acceptance of terms (how users agree), description of services, user conduct rules (what is and is not allowed), payment and subscription terms (if applicable), intellectual property ownership, disclaimers and limitations of liability, account suspension and termination rights, and governing law and dispute resolution.\n\nFor SaaS products, add clauses covering data handling, uptime commitments, and what happens to user data on cancellation.` },
+      { heading: 'Do I Need a Lawyer to Write Terms of Service?', body: `For standard websites, apps, and online services — no. A professionally generated Terms of Service covering the standard clauses is sufficient for the vast majority of businesses. Where you do need a lawyer is for complex regulated industries (healthcare, finance, legal services), high-value enterprise contracts, or if you are facing an active dispute.\n\nFor early-stage businesses and independent operators, a generated Terms of Service is far better than no Terms of Service, which is what most people have.` },
+      { heading: 'Terms of Service vs Privacy Policy — What Is the Difference?', body: `These are two separate documents that every website needs.\n\nTerms of Service governs the relationship between you and your users — what they can and cannot do, your liability, your right to terminate accounts.\n\nPrivacy Policy governs how you collect, use, store, and share user data — required by GDPR, CCPA, NDPR, and most other data protection laws.\n\nYou need both. They work together but serve different legal purposes.` },
+      { heading: 'Generate Your Terms of Service Free', body: `Signova generates a complete, jurisdiction-aware Terms of Service in under 2 minutes. Answer questions about your service type, governing law, and subscription model — get a professional document ready to publish. Free preview, $4.99 to download.` },
+    ],
+    cta: { label: 'Generate Terms of Service Free →', href: '/generate/terms-of-service' }
+  },
+
+  {
+    slug: 'hire-purchase-agreement-template',
+    title: 'Hire Purchase Agreement Template — Free Generator 2026',
+    description: 'A complete guide to hire purchase agreements — how they work, what they must contain, and how to generate one free for vehicles, equipment, and machinery in Nigeria and globally.',
+    date: '2026-03-18', readTime: '5 min read', category: 'Finance',
+    keywords: 'hire purchase agreement Nigeria, hire purchase template, asset finance agreement, vehicle hire purchase, equipment financing agreement Nigeria',
+    sections: [
+      { heading: 'What Is a Hire Purchase Agreement?', body: `A hire purchase agreement is a financing arrangement where a buyer acquires an asset — typically a vehicle, equipment, or machinery — by paying an initial deposit and then making regular instalments over an agreed period. Ownership of the asset transfers to the buyer only after the final payment is made.\n\nIn Nigeria, hire purchase is one of the most common ways individuals and businesses acquire vehicles and industrial equipment without paying the full price upfront. It is governed by the Hire Purchase Act Cap H4 LFN 2004.` },
+      { heading: 'What Must a Hire Purchase Agreement Contain?', body: `A valid hire purchase agreement must include: full names of the seller/finance company and buyer, complete description of the asset (make, model, serial number), total cash price of the asset, deposit amount paid upfront, number and amount of each instalment, total hire purchase price (cash price + interest/charges), interest rate if applicable, what happens on default (repossession rights), and when legal ownership transfers to the buyer.` },
+      { heading: 'What Happens If You Miss Payments?', body: `This is the most important clause in any hire purchase agreement. Typically, if a buyer misses payments, the seller has the right to repossess the asset. However, under Nigerian law (and most jurisdictions), the seller must give reasonable notice before repossession — usually 14 to 30 days.\n\nSome agreements include a clause stating that if more than one-third of the total price has been paid, the seller cannot repossess without a court order. Make sure your agreement specifies the exact repossession process.` },
+      { heading: 'Hire Purchase vs Lease — Key Differences', body: `In a hire purchase, you will own the asset at the end of the agreement once all payments are made. In a lease, you are paying for the use of the asset and typically return it at the end.\n\nHire purchase is better when you want eventual ownership. Leasing is better when you want to upgrade regularly or preserve working capital. Make sure your agreement clearly states which arrangement applies.` },
+      { heading: 'Generate Your Hire Purchase Agreement Free', body: `Signova generates a complete hire purchase agreement covering deposit, instalments, interest rate, repossession terms, and ownership transfer — for any asset, any country. Free preview, $4.99 to download. Ready in 2 minutes.` },
+    ],
+    cta: { label: 'Generate Hire Purchase Agreement Free →', href: '/generate/hire-purchase' }
+  },
+
+  {
+    slug: 'consulting-agreement-template-free',
+    title: 'Free Consulting Agreement Template 2026 — Generate in 3 Minutes',
+    description: 'What every consultant needs in their agreement — scope, rate, exclusivity, IP rights, and termination. Generate a professional consulting agreement free in 3 minutes.',
+    date: '2026-03-18', readTime: '5 min read', category: 'Business',
+    keywords: 'consulting agreement template, consultant contract free, consulting agreement Nigeria, management consulting contract, advisory agreement template',
+    sections: [
+      { heading: 'What Is a Consulting Agreement?', body: `A consulting agreement is a contract between a consultant (or advisory firm) and a client, defining the scope of advisory services, compensation, duration, confidentiality obligations, and intellectual property ownership.\n\nConsultants across all industries — management, IT, legal, financial, marketing — need a consulting agreement before starting any engagement. Without one, disputes over scope creep, unpaid invoices, and IP ownership are almost inevitable.` },
+      { heading: 'Consulting Agreement vs Service Agreement — What Is the Difference?', body: `A service agreement covers the delivery of a specific service or output — a website, a report, a physical installation. A consulting agreement covers advisory work — analysis, strategy, recommendations, and guidance — where the deliverable is expertise and judgment, not a physical product.\n\nIf you are being paid to think, advise, and recommend — you need a consulting agreement. If you are being paid to build or deliver something specific — a service agreement is more appropriate.` },
+      { heading: 'Key Clauses Every Consulting Agreement Needs', body: `Scope of work — define precisely what advice and services you are providing and what is explicitly excluded. Compensation — your rate (daily, monthly, or project), payment schedule, and late payment terms. Exclusivity — whether you can work with competitors during the engagement. IP ownership — who owns the deliverables, reports, and recommendations you produce. Confidentiality — protecting the client's business information. Termination — how either party exits the agreement and what notice is required.` },
+      { heading: 'Protecting Yourself on IP Ownership', body: `This is the clause most consultants overlook. If your contract is silent on IP, courts in many jurisdictions will assume work created during the engagement belongs to the client. If you want to retain any rights to methodologies, frameworks, or tools you develop, your agreement must say so explicitly.\n\nA standard clause: "All pre-existing intellectual property of the Consultant remains the property of the Consultant. Work product specifically created for this engagement transfers to the Client upon receipt of full payment."` },
+      { heading: 'Generate Your Consulting Agreement Free', body: `Signova generates a complete consulting agreement covering scope, rate, exclusivity, IP, and termination — for any industry, any country. Free preview, $4.99 to download. Ready in 3 minutes.` },
+    ],
+    cta: { label: 'Generate Consulting Agreement Free →', href: '/generate/consulting-agreement' }
+  },
+
+  {
+    slug: 'non-compete-agreement-template',
+    title: 'Non-Compete Agreement Template — Free Generator 2026',
+    description: 'What makes a non-compete enforceable, what courts look for, and how to generate a professionally drafted non-compete agreement free in 2 minutes.',
+    date: '2026-03-18', readTime: '5 min read', category: 'Employment',
+    keywords: 'non-compete agreement template, non-compete clause, non-compete agreement Nigeria, employee non-compete, non-solicitation agreement template',
+    sections: [
+      { heading: 'What Is a Non-Compete Agreement?', body: `A non-compete agreement is a contract in which an employee or contractor agrees not to work for a competitor, start a competing business, or solicit the employer's clients for a defined period after leaving the company.\n\nNon-competes are commonly used to protect business relationships, trade secrets, and competitive advantage — particularly in industries where employees have direct access to client lists, pricing strategies, or proprietary technology.` },
+      { heading: 'Is a Non-Compete Enforceable?', body: `This depends heavily on jurisdiction. In many US states, including California, non-competes are largely unenforceable. In Nigeria, UK, Canada, and most other common law jurisdictions, non-competes are enforceable — but courts will only uphold them if they are reasonable in scope, duration, and geography.\n\nA non-compete that says "you cannot work in any business globally for 10 years" will not survive court scrutiny. One that says "you cannot solicit our existing clients in Lagos for 12 months" likely will.` },
+      { heading: 'What Makes a Non-Compete Reasonable?', body: `Courts evaluate three things: duration (typically 6–24 months is considered reasonable), geographic scope (limited to the areas where the employer actually operates), and activity scope (limited to genuinely competing activities, not all employment).\n\nThe narrower and more specific your non-compete, the more likely it is to be enforced. A narrow, enforceable agreement is more valuable than a broad agreement that a court will strike down entirely.` },
+      { heading: 'Non-Compete vs Non-Solicitation — Key Difference', body: `A non-compete restricts working for competitors broadly. A non-solicitation clause specifically restricts approaching the employer's clients or staff — and is generally easier to enforce because it is narrower.\n\nFor most businesses, a non-solicitation clause combined with a confidentiality clause provides more practical protection than a broad non-compete that may not hold up in court.` },
+      { heading: 'Generate Your Non-Compete Agreement Free', body: `Signova generates a jurisdiction-aware non-compete agreement with appropriate duration, geographic scope, and activity restrictions. Free preview, $4.99 to download. Ready in 2 minutes.` },
+    ],
+    cta: { label: 'Generate Non-Compete Agreement Free →', href: '/generate/non-compete-agreement' }
+  },
+
+  {
+    slug: 'mou-template-free',
+    title: 'Free MOU Template 2026 — Memorandum of Understanding Generator',
+    description: 'What an MOU is, when to use one instead of a full contract, whether it is legally binding, and how to generate a professional MOU free in 3 minutes.',
+    date: '2026-03-18', readTime: '5 min read', category: 'Business',
+    keywords: 'MOU template free, memorandum of understanding template, MOU Nigeria, MOU generator, non-binding MOU, MOU vs contract',
+    sections: [
+      { heading: 'What Is a Memorandum of Understanding (MOU)?', body: `A Memorandum of Understanding (MOU) is a formal document that records the agreed intentions between two or more parties before a binding contract is signed. It is commonly used in government partnerships, NGO collaborations, academic research agreements, and business negotiations.\n\nAn MOU signals serious intent and provides a framework for the relationship — without creating the full legal obligations of a contract. Think of it as a detailed handshake.` },
+      { heading: 'Is an MOU Legally Binding?', body: `This depends on how the MOU is drafted. MOUs can be non-binding (purely a statement of intent), partially binding (specific clauses like confidentiality and exclusivity are binding, but the main terms are not), or fully binding (treated as a contract in all respects).\n\nIn most cases, parties choose a non-binding MOU to maintain flexibility while negotiations continue. However, courts in many jurisdictions will examine the language carefully — if the MOU uses mandatory language ("the parties shall" rather than "the parties intend to"), it may be treated as binding.` },
+      { heading: 'MOU vs Contract — When to Use Each', body: `Use an MOU when: negotiations are ongoing and final terms are not yet agreed, you want to signal commitment before due diligence is complete, you are working with government agencies or institutions that require formal documentation before approvals, or you want a record of agreed principles before drafting a full contract.\n\nUse a full contract when: you are exchanging money, transferring assets, or taking on specific obligations with defined consequences for non-performance.` },
+      { heading: 'What Should an MOU Include?', body: `A well-drafted MOU should cover: names and descriptions of all parties, the purpose and background of the collaboration, each party's roles and contributions, the timeline or duration of the arrangement, whether it is binding or non-binding, confidentiality obligations, and how disputes will be handled. It should be dated and signed by authorised representatives of each party.` },
+      { heading: 'Generate Your MOU Free', body: `Signova generates a complete MOU for government, NGO, academic, and business partnerships — with options for non-binding, partially binding, or fully binding terms. Free preview, $4.99 to download. Ready in 3 minutes.` },
+    ],
+    cta: { label: 'Generate MOU Free →', href: '/generate/mou' }
+  },
+
+  {
+    slug: 'shareholder-agreement-template',
+    title: 'Shareholder Agreement Template — Free Generator for Startups 2026',
+    description: 'Everything founders and investors need in a shareholder agreement — voting rights, dividends, share transfers, and exit terms. Generate a professional shareholder agreement free.',
+    date: '2026-03-18', readTime: '6 min read', category: 'Business',
+    keywords: 'shareholder agreement template, startup shareholder agreement, shareholder agreement Nigeria, equity agreement, investor rights agreement, drag along tag along',
+    sections: [
+      { heading: 'What Is a Shareholder Agreement?', body: `A shareholder agreement is a contract between the shareholders of a company that governs how the company is managed, how decisions are made, how shares can be transferred, and what happens when shareholders disagree or want to exit.\n\nIt sits alongside the company's articles of association (or memorandum and articles in some jurisdictions) and typically covers matters that are too sensitive or detailed for a public document — such as founder vesting schedules, investor protections, and exit rights.` },
+      { heading: 'Why Every Startup Needs One Before Raising Money', body: `Most founder disputes happen because there was no shareholder agreement when the company was formed. When two founders who started as friends need to make decisions about dilution, role changes, or a potential acquisition, the absence of a written agreement turns every conversation into a negotiation.\n\nGet your shareholder agreement in place before you take your first investment, before you add a co-founder, and before you give equity to anyone. It costs far less to do it now than to fix it later.` },
+      { heading: 'Key Clauses: Drag-Along and Tag-Along Rights', body: `Drag-along rights allow majority shareholders to force minority shareholders to join a sale of the company on the same terms. This prevents a minority shareholder from blocking an acquisition.\n\nTag-along rights allow minority shareholders to join a sale initiated by majority shareholders on the same terms — protecting them from being left behind when the majority exits.\n\nBoth clauses are standard in venture-backed companies and should be included in any shareholder agreement where there are multiple investors or founders.` },
+      { heading: 'Vesting Schedules and Founder Lockup', body: `Equity should vest over time, not be granted all at once. A standard founder vesting schedule is 4 years with a 1-year cliff — meaning no shares vest until the founder has been with the company for 12 months, then 25% vest at the cliff and the remaining shares vest monthly over the next 3 years.\n\nThis protects the company if a founder leaves early and prevents one founder from walking away with a large equity stake after minimal contribution.` },
+      { heading: 'Generate Your Shareholder Agreement Free', body: `Signova generates a complete shareholder agreement covering voting rights, dividends, share transfers, drag-along, tag-along, and anti-dilution provisions. Free preview, $4.99 to download. Ready in 4 minutes.` },
+    ],
+    cta: { label: 'Generate Shareholder Agreement Free →', href: '/generate/shareholder-agreement' }
+  },
+
+  {
+    slug: 'letter-of-intent-template-free',
+    title: 'Free Letter of Intent Template 2026 — LOI Generator',
+    description: 'What a Letter of Intent is, when to use one, whether it binds you legally, and how to generate a professional LOI free in 3 minutes for acquisitions, investments, and property.',
+    date: '2026-03-18', readTime: '5 min read', category: 'Business',
+    keywords: 'letter of intent template, LOI template free, letter of intent acquisition, LOI real estate, letter of intent investment, LOI generator Nigeria',
+    sections: [
+      { heading: 'What Is a Letter of Intent (LOI)?', body: `A Letter of Intent (LOI) is a document that signals one party's serious intention to enter into a transaction with another — typically before full negotiations are complete. It is commonly used in business acquisitions, property purchases, investment rounds, joint ventures, and commercial leases.\n\nAn LOI is not a final contract. Its purpose is to establish the key commercial terms both parties have agreed in principle, create a framework for detailed negotiations, and sometimes grant a period of exclusivity during due diligence.` },
+      { heading: 'Is a Letter of Intent Legally Binding?', body: `Most LOIs are intentionally non-binding on the main transaction — meaning neither party is obligated to complete the deal. However, specific clauses within an LOI are often binding: the exclusivity clause (preventing the seller from negotiating with others during due diligence), the confidentiality clause, and any cost-allocation provisions.\n\nIf you are signing an LOI as a buyer or investor, read the exclusivity and break-fee clauses carefully. These are the parts that have real legal teeth.` },
+      { heading: 'LOI vs MOU — What Is the Difference?', body: `An LOI is typically used between two parties in a commercial transaction — an acquisition, investment, or lease — where one party is making a specific offer to another. It tends to include proposed valuation, deal structure, and timeline.\n\nAn MOU is more commonly used between organisations entering a collaborative arrangement — a partnership, a programme, a research initiative — where the focus is on roles and responsibilities rather than price and deal terms.` },
+      { heading: 'What to Include in an LOI', body: `A well-drafted LOI should cover: identification of the parties, description of the proposed transaction, key financial terms (price, valuation, structure), exclusivity period, conditions for completing the deal (subject to due diligence, board approval, financing), timeline for completing negotiations, confidentiality obligations, and a clear statement of which provisions are binding and which are not.` },
+      { heading: 'Generate Your Letter of Intent Free', body: `Signova generates a professional Letter of Intent for acquisitions, investments, property purchases, and commercial leases — with clear binding/non-binding clauses. Free preview, $4.99 to download. Ready in 3 minutes.` },
+    ],
+    cta: { label: 'Generate Letter of Intent Free →', href: '/generate/letter-of-intent' }
+  },
+
+  {
+    slug: 'quit-notice-template-nigeria',
+    title: 'Quit Notice Template Nigeria 2026 — Free Generator',
+    description: 'How to issue a valid quit notice in Nigeria, the legal requirements, notice periods under Nigerian law, and how to generate a legally sound quit notice free in 2 minutes.',
+    date: '2026-03-18', readTime: '5 min read', category: 'Real Estate',
+    keywords: 'quit notice Nigeria, notice to vacate Nigeria, quit notice template Lagos, tenant eviction notice Nigeria, quit notice letter Nigeria 2026',
+    sections: [
+      { heading: 'What Is a Quit Notice in Nigeria?', body: `A quit notice is a formal written notice from a landlord to a tenant, requiring the tenant to vacate a property by a specified date. In Nigeria, a valid quit notice is a legal prerequisite before a landlord can pursue eviction through the courts — without it, any eviction proceeding can be dismissed.\n\nQuit notices in Nigeria are governed by state tenancy laws. Lagos State follows the Lagos State Tenancy Law 2011; Abuja follows the FCT Tenancy Act. These laws specify the required notice periods and the proper form of notice.` },
+      { heading: 'What Are the Required Notice Periods in Nigeria?', body: `Under Nigerian tenancy law, the required notice period depends on the tenancy type:\n\nWeek-to-week tenancies: 1 week notice.\nMonth-to-month tenancies: 1 month notice.\nQuarterly tenancies: 3 months notice.\nYearly tenancies: 6 months notice.\n\nThese are minimum periods. If your tenancy agreement specifies longer notice periods, those govern. The notice period begins from when the tenant actually receives the notice — not when it was written or posted.` },
+      { heading: 'Valid Reasons for Issuing a Quit Notice', body: `A landlord can validly issue a quit notice for: expiration of the tenancy term, non-payment of rent, breach of tenancy conditions (subletting without permission, keeping prohibited pets, conducting business from a residential property), the landlord requiring the property for personal use, or demolition or redevelopment of the property.\n\nThe reason must be stated clearly in the quit notice. A notice that does not state a valid reason can be challenged in court.` },
+      { heading: 'Common Mistakes That Invalidate a Quit Notice', body: `Not giving sufficient notice — the notice must give the tenant the legally required period to vacate. Not stating the reason — particularly for yearly tenancies, the reason for termination must be stated. Not serving it properly — a quit notice should be personally delivered or sent by registered post. A WhatsApp message or verbal notice is not sufficient. Not following up with a 7-day owner's notice — in Lagos, after the quit notice period expires and the tenant has not vacated, the landlord must serve a separate 7-day notice before applying to court.` },
+      { heading: 'Generate Your Quit Notice Free', body: `Signova generates a legally sound Nigerian quit notice — covering the correct notice period, reason for termination, and proper service requirements for Lagos, Abuja, and other states. Free preview, $4.99 to download. Ready in 2 minutes.` },
+    ],
+    cta: { label: 'Generate Quit Notice Free →', href: '/generate/quit-notice' }
+  },
+
+  {
+    slug: 'power-of-attorney-template-free',
+    title: 'Free Power of Attorney Template 2026 — Nigeria & Global',
+    description: 'What a Power of Attorney is, the different types, when you need one, and how to generate a professionally drafted POA free in 3 minutes for property, financial, and business matters.',
+    date: '2026-03-18', readTime: '5 min read', category: 'Legal Basics',
+    keywords: 'power of attorney Nigeria, power of attorney template free, POA generator, general power of attorney, property power of attorney Nigeria',
+    sections: [
+      { heading: 'What Is a Power of Attorney?', body: `A Power of Attorney (POA) is a legal document that authorises one person (the attorney or agent) to act on behalf of another person (the donor or principal) in legal, financial, or business matters. The attorney can sign contracts, manage property, operate bank accounts, or conduct business — depending on the scope granted in the document.\n\nA POA is commonly used when a property owner is abroad and needs someone to handle a sale or rental, when a business owner needs a representative to sign agreements, or when an elderly or incapacitated person needs someone to manage their affairs.` },
+      { heading: 'General Power of Attorney vs Specific Power of Attorney', body: `A General Power of Attorney grants broad authority to act across all financial and legal matters. It is powerful and should only be given to someone with complete trust.\n\nA Specific (or Limited) Power of Attorney restricts authority to a defined transaction or purpose — for example, "authorised to sell Plot 7, Lekki Phase 2 on my behalf" or "authorised to operate my First Bank account number 1234567890 for 6 months."\n\nFor most situations, a Specific POA is the safer and more appropriate choice.` },
+      { heading: 'Does a Power of Attorney Need to Be Notarised in Nigeria?', body: `For a POA to be used for property transactions in Nigeria, it must be notarised and in some cases stamped and registered. A POA executed abroad for use in Nigeria must be authenticated by a Nigerian High Commission or Embassy in the country where it was signed.\n\nFor POAs executed within Nigeria for property matters, registration at the Land Registry or Stamp Duties Office may be required to make the document admissible in evidence.` },
+      { heading: 'When Does a Power of Attorney Expire?', body: `A POA can be time-limited (expiring after a specified period), transaction-limited (expiring when a specific act is completed), or open-ended (remaining valid until revoked by the donor).\n\nImportantly, a standard POA is automatically revoked if the donor loses mental capacity or dies. A "Durable" or "Enduring" POA (available in some jurisdictions) remains valid even if the donor loses capacity — and must be prepared with specific language to that effect.` },
+      { heading: 'Generate Your Power of Attorney Free', body: `Signova generates a professional Power of Attorney — general or specific — for property, financial, or business matters across Nigeria, UK, Canada, UAE, and globally. Free preview, $4.99 to download. Ready in 3 minutes.` },
+    ],
+    cta: { label: 'Generate Power of Attorney Free →', href: '/generate/power-of-attorney' }
+  },
+
+  {
+    slug: 'joint-venture-agreement-template',
+    title: 'Joint Venture Agreement Template — Free Generator 2026',
+    description: 'What every joint venture agreement needs — equity split, management structure, profit sharing, and exit terms. Generate a professional JV agreement free in 4 minutes.',
+    date: '2026-03-18', readTime: '5 min read', category: 'Business',
+    keywords: 'joint venture agreement template, JV agreement Nigeria, joint venture contract, joint venture Africa, business collaboration agreement template',
+    sections: [
+      { heading: 'What Is a Joint Venture Agreement?', body: `A joint venture (JV) agreement is a contract between two or more businesses or individuals who agree to collaborate on a specific project or business activity while remaining independent entities. Unlike a partnership, a joint venture is typically project-specific and time-limited.\n\nJoint ventures are common in construction (two firms bidding together for a government contract), oil and gas (international companies partnering with local operators), real estate development, technology projects, and international trade.` },
+      { heading: 'Joint Venture vs Partnership — Key Differences', body: `A partnership is an ongoing business relationship with shared profits, shared liabilities, and no defined end date. A joint venture is typically structured around a single project or purpose, with a clear end date or completion trigger.\n\nIn a JV, each party retains their separate legal identity and liability is generally limited to their JV contribution — unlike a general partnership where partners are jointly and severally liable for each other's actions.` },
+      { heading: 'Essential Clauses in a Joint Venture Agreement', body: `Every JV agreement needs: names and descriptions of all parties, the purpose and scope of the joint venture, equity or ownership split, capital contributions (who puts in what), management structure (who makes day-to-day decisions, who has veto rights), profit and loss sharing mechanism, duration and termination triggers, confidentiality obligations, and what happens to assets and liabilities on dissolution.` },
+      { heading: 'How to Structure the Management Committee', body: `Most JV agreements establish a joint management committee with representatives from each party. Decisions are typically classified as routine (can be made by either party's representative) and major (requiring unanimous or majority committee approval).\n\nMajor decisions should include: entering into contracts above a certain value, hiring senior staff, changing the JV's scope or purpose, and distributing profits. Get this structure right in the agreement — ambiguity here causes the most disputes.` },
+      { heading: 'Generate Your Joint Venture Agreement Free', body: `Signova generates a complete joint venture agreement covering equity split, management structure, profit sharing, confidentiality, and dissolution terms. Free preview, $4.99 to download. Ready in 4 minutes.` },
+    ],
+    cta: { label: 'Generate Joint Venture Agreement Free →', href: '/generate/joint-venture' }
+  },
+
+  {
+    slug: 'payment-terms-agreement-template',
+    title: 'Payment Terms Agreement Template — Free Generator 2026',
+    description: 'How to document repayment schedules, late payment penalties, and instalment plans in a legally binding payment terms agreement. Generate one free in 2 minutes.',
+    date: '2026-03-18', readTime: '4 min read', category: 'Finance',
+    keywords: 'payment terms agreement template, payment schedule template, debt repayment agreement, payment plan agreement Nigeria, payment agreement template free',
+    sections: [
+      { heading: 'What Is a Payment Terms Agreement?', body: `A payment terms agreement (also called a payment plan agreement or debt repayment agreement) is a contract that documents an agreed schedule for paying money owed from one party to another. It is used when a debt already exists and both parties need a formal record of how and when it will be repaid.\n\nCommon use cases include: a supplier agreeing to let a buyer pay over three months, a business deferring payment to a contractor, friends or family formalising a loan repayment schedule, or a landlord allowing a tenant to pay rent arrears in instalments.` },
+      { heading: 'What Must a Payment Terms Agreement Include?', body: `A complete payment terms agreement should cover: names of both parties (creditor and debtor), the total amount owed, the reason for the debt or obligation, the payment schedule (dates and amounts of each instalment), accepted payment methods, what constitutes a default, late payment penalties, and what the creditor can do if payments stop (demand full balance, take legal action, etc.).` },
+      { heading: 'Why Late Payment Penalties Matter', body: `A payment terms agreement without a late payment clause has no teeth. If the debtor misses a payment and there is no agreed consequence, the creditor has to renegotiate from scratch.\n\nA well-drafted late payment clause specifies: a grace period (e.g. 3 days after due date), the penalty rate (e.g. 5% of the overdue amount per month), and acceleration — meaning if the debtor misses two consecutive payments, the entire outstanding balance becomes immediately due.` },
+      { heading: 'When to Use This Instead of a Loan Agreement', body: `A loan agreement is used when money is being lent and will be repaid over time — typically with interest. A payment terms agreement is used when a debt already exists and you are agreeing on a repayment structure.\n\nIf goods have been delivered, services have been rendered, or a prior agreement has resulted in an outstanding balance — a payment terms agreement is the right document. If you are lending money that has not yet been transferred — use a loan agreement.` },
+      { heading: 'Generate Your Payment Terms Agreement Free', body: `Signova generates a complete payment terms agreement with instalment schedule, late payment penalties, and default consequences. Free preview, $4.99 to download. Ready in 2 minutes.` },
+    ],
+    cta: { label: 'Generate Payment Terms Agreement Free →', href: '/generate/payment-terms-agreement' }
+  },
+
+  {
+    slug: 'distribution-agreement-template-free',
+    title: 'Free Distribution Agreement Template 2026 — Reseller Contract Generator',
+    description: 'What every distribution agreement needs — territory, exclusivity, margins, minimum purchases, and termination. Generate a professional distribution agreement free in 3 minutes.',
+    date: '2026-03-18', readTime: '5 min read', category: 'Business',
+    keywords: 'distribution agreement template, reseller agreement, distributor contract Nigeria, exclusive distribution agreement, distribution agreement Africa, reseller contract template',
+    sections: [
+      { heading: 'What Is a Distribution Agreement?', body: `A distribution agreement is a contract between a supplier or manufacturer (the principal) and a distributor or reseller who agrees to market and sell the principal's products within a defined territory. The distributor buys the products from the supplier and resells them to end customers — they are not an agent, they are an independent business.\n\nDistribution agreements are common in FMCG, electronics, pharmaceuticals, industrial equipment, and software — anywhere a supplier wants to reach markets they cannot serve directly.` },
+      { heading: 'Exclusive vs Non-Exclusive Distribution', body: `In an exclusive distribution agreement, the supplier grants one distributor the sole right to sell their products in a defined territory. The supplier cannot appoint other distributors and usually cannot sell directly to customers in that territory either.\n\nIn a non-exclusive agreement, the supplier can appoint multiple distributors in the same territory and can also sell directly. Non-exclusive terms are more flexible for the supplier but give the distributor less protection for their investment in marketing and infrastructure.` },
+      { heading: 'Minimum Purchase Commitments', body: `Most suppliers require distributors to commit to a minimum purchase quantity per quarter or year. This protects the supplier from appointing a distributor who then does nothing with the territory.\n\nNegotiate this carefully as a distributor — minimum commitments that are too high create pressure to push products at the wrong price point. Commitments should be tied to realistic market projections, not the supplier's ideal scenario.` },
+      { heading: 'Termination and Post-Termination Obligations', body: `Distribution agreements should clearly state: how long the agreement lasts, whether it auto-renews, the notice period required for termination, and what happens to existing stock and orders if the agreement ends.\n\nPost-termination, key questions include: Can the distributor sell remaining stock? Who owns the customer relationships built during the agreement? Is there a transition period? These details should be agreed upfront.` },
+      { heading: 'Generate Your Distribution Agreement Free', body: `Signova generates a complete distribution agreement covering territory, exclusivity, minimum purchases, margin, returns, and termination — for any product, any country. Free preview, $4.99 to download. Ready in 3 minutes.` },
+    ],
+    cta: { label: 'Generate Distribution Agreement Free →', href: '/generate/distribution-agreement' }
+  },
+
+  {
+    slug: 'supply-agreement-template-free',
+    title: 'Free Supply Agreement Template 2026 — Supplier Contract Generator',
+    description: 'What every supply agreement needs — pricing, delivery schedule, quality standards, and default terms. Generate a professional supply agreement free in 3 minutes.',
+    date: '2026-03-18', readTime: '5 min read', category: 'Business',
+    keywords: 'supply agreement template, supplier contract, supply agreement Nigeria, goods supply agreement, supply chain contract, procurement agreement template',
+    sections: [
+      { heading: 'What Is a Supply Agreement?', body: `A supply agreement is a contract between a supplier and a buyer that governs the ongoing purchase and delivery of goods over a defined period. Unlike a one-time purchase agreement, a supply agreement covers a recurring relationship — weekly deliveries of raw materials, monthly stock replenishment, or a long-term contract for industrial components.\n\nSupply agreements are essential in manufacturing, retail, food and beverage, construction, and any business that depends on a consistent supply of goods from external vendors.` },
+      { heading: 'Fixed Price vs Market-Indexed Pricing', body: `One of the most important decisions in a supply agreement is how price is determined. Fixed pricing gives both parties certainty — the buyer knows their cost, the supplier knows their revenue. But in volatile commodity markets (food, fuel, metals), a fixed price can quickly become unworkable.\n\nMarket-indexed pricing ties the price to a reference rate (the price of crude oil, commodity exchange rates, or an agreed index) and adjusts quarterly. This is fairer in volatile markets but requires clear language on which index is used and how adjustments are calculated.` },
+      { heading: 'Quality Standards and Rejection Rights', body: `Your supply agreement must specify the quality standard for every delivery — and the buyer's right to reject non-conforming goods. Without this, a supplier can deliver substandard goods and argue that acceptance was implied.\n\nKey clauses: inspection period (how long the buyer has to inspect and reject after delivery), what constitutes a defect or non-conformity, whether rejected goods must be replaced or refunded, and who bears the cost of return shipping.` },
+      { heading: 'Force Majeure and Delivery Failures', body: `A force majeure clause excuses a party from performance when events beyond their control — floods, strikes, government actions, pandemics — prevent delivery. This clause became extremely important during COVID-19 supply chain disruptions.\n\nDraft force majeure carefully: specify which events qualify, require prompt written notice, limit the duration before the other party can terminate, and make clear that force majeure does not excuse payment obligations already incurred.` },
+      { heading: 'Generate Your Supply Agreement Free', body: `Signova generates a complete supply agreement covering pricing, delivery schedule, quality standards, rejection rights, force majeure, and termination. Free preview, $4.99 to download. Ready in 3 minutes.` },
+    ],
+    cta: { label: 'Generate Supply Agreement Free →', href: '/generate/supply-agreement' }
+  },
+
+  {
+    slug: 'landlord-agent-agreement-nigeria',
+    title: 'Landlord and Agent Agreement Nigeria 2026 — Free Template',
+    description: 'What every Nigerian landlord should put in writing with their estate agent — commission, duties, authority, and termination. Generate a professional landlord-agent agreement free.',
+    date: '2026-03-18', readTime: '5 min read', category: 'Real Estate',
+    keywords: 'landlord agent agreement Nigeria, estate agent agreement, property management agreement Nigeria, real estate agent contract Nigeria, letting agent agreement',
+    sections: [
+      { heading: 'Why You Need a Written Landlord-Agent Agreement', body: `Most Nigerian landlords appoint estate agents informally — a phone call, a WhatsApp message, a handshake. The agent finds a tenant, collects one or two years rent upfront, pays the landlord, and takes their commission. Nobody writes anything down.\n\nProblems arise when: the agent collects rent and delays remitting to the landlord, the landlord disputes the commission rate, the agent allows a tenant to move in before the landlord approves them, or the landlord wants to change agents but the current agent claims they are still the appointed representative. A written agreement prevents all of these.` },
+      { heading: 'What Commission Rate Is Standard in Nigeria?', body: `In Lagos and most major Nigerian cities, the standard estate agent commission is:\n\n10% of annual rent for new tenancies sourced by the agent.\n5–7.5% for tenancy renewals where the agent facilitated the renewal.\n\nThese are market norms, not legal requirements — your agreement can specify any rate. What matters is that the rate is written down and agreed before the agent begins work.` },
+      { heading: 'Defining the Agent\'s Authority', body: `Your agreement must specify exactly what the agent is and is not authorised to do. Typical authority granted: marketing the property, conducting viewings, screening prospective tenants, collecting the first year's rent on signing, and serving routine notices.\n\nTypically not granted without specific approval: accepting tenants below the asking rent, agreeing to structural modifications, entering into any agreement on behalf of the landlord, or handling legal disputes with tenants.` },
+      { heading: 'Handling Rent Collection and Remittance', body: `If your agent collects rent on your behalf, your agreement must specify: the remittance timeline (how quickly after collection must the landlord receive funds), the agent's handling fee if different from the initial commission, and what records the agent must keep and provide to the landlord.\n\nMany landlord-agent disputes in Nigeria arise specifically from agents collecting rent and being slow to remit — or deducting unauthorised fees. A written agreement with a clear 7-day remittance clause resolves this.` },
+      { heading: 'Generate Your Landlord-Agent Agreement Free', body: `Signova generates a professional landlord and estate agent agreement covering commission, authority, rent collection, reporting, and termination — tailored for Nigeria, Ghana, Kenya, and the UK. Free preview, $4.99 to download. Ready in 3 minutes.` },
+    ],
+    cta: { label: 'Generate Landlord-Agent Agreement Free →', href: '/generate/landlord-agent-agreement' }
+  },
+
+  {
+    slug: 'purchase-agreement-template-free',
+    title: 'Free Purchase Agreement Template 2026 — Sale of Goods Contract',
+    description: 'What every purchase agreement needs — item description, price, delivery, warranty, and dispute resolution. Generate a professional purchase agreement free in 2 minutes.',
+    date: '2026-03-18', readTime: '4 min read', category: 'Business',
+    keywords: 'purchase agreement template free, sale of goods contract, asset purchase agreement, goods sale contract Nigeria, bill of sale template, purchase and sale agreement',
+    sections: [
+      { heading: 'What Is a Purchase Agreement?', body: `A purchase agreement (also called a sale and purchase agreement or bill of sale) is a legal contract documenting the sale of goods, assets, or property between a buyer and a seller. It records what is being sold, the agreed price, payment method, delivery terms, and the condition of the goods.\n\nA purchase agreement is different from an invoice — an invoice is a payment request. A purchase agreement is the binding contract that creates the legal obligation to buy and sell.` },
+      { heading: 'When Do You Need a Purchase Agreement?', body: `You need a written purchase agreement whenever: you are selling high-value goods (vehicles, equipment, electronics), you are buying second-hand assets where condition matters, payment will be made in instalments, delivery will happen at a future date, there is a warranty or guarantee involved, or either party needs a record for accounting or legal purposes.\n\nFor small, immediate cash transactions — buying a market item, paying for a service on the spot — a receipt may be sufficient. For anything above a few hundred dollars, a written agreement protects both parties.` },
+      { heading: 'Condition and "As-Is" Sales', body: `One of the most important clauses in any purchase agreement for second-hand goods is the condition clause. "Sold as-is" means the buyer accepts the goods in their current condition with no warranty — the seller is not responsible for defects discovered after the sale.\n\nIf you are the seller, always specify "sold as-is" for second-hand goods. If you are the buyer, insist on a warranty clause or a right to inspect before finalising payment.` },
+      { heading: 'Delivery Terms and Risk of Loss', body: `When does responsibility for the goods transfer from seller to buyer? This matters especially when goods are shipped — if they are damaged in transit, who bears the loss?\n\nClearly specify: where delivery will take place (seller's premises, buyer's premises, a neutral location), who arranges transport, who pays for shipping and insurance, and at what point risk transfers from seller to buyer.` },
+      { heading: 'Generate Your Purchase Agreement Free', body: `Signova generates a complete purchase agreement covering item description, price, payment method, delivery terms, condition, and warranty — for any goods, any country. Free preview, $4.99 to download. Ready in 2 minutes.` },
+    ],
+    cta: { label: 'Generate Purchase Agreement Free →', href: '/generate/purchase-agreement' }
+  },
+
+  {
+    slug: 'facility-management-agreement-template',
+    title: 'Facility Management Agreement Template — Free Generator 2026',
+    description: 'What every facility management contract needs — services scope, management fee, liability, and SLAs. Generate a professional facility manager agreement free in 3 minutes.',
+    date: '2026-03-18', readTime: '5 min read', category: 'Real Estate',
+    keywords: 'facility management agreement, facility manager contract, FM agreement Nigeria, property maintenance contract, facility management Nigeria, FM contract template',
+    sections: [
+      { heading: 'What Is a Facility Management Agreement?', body: `A facility management agreement is a contract between a property owner (or occupier) and a professional facility management company, defining the services to be provided, the fee structure, performance standards, and liability framework.\n\nFacility management covers the day-to-day operation and maintenance of buildings — cleaning, security, electrical and plumbing maintenance, HVAC management, waste disposal, and vendor coordination. It is common for commercial office buildings, shopping malls, industrial facilities, residential estates, and hotels.` },
+      { heading: 'What Services Should Be Covered?', body: `A facility management agreement should explicitly list all services included — and just as importantly, all services excluded. Common inclusions: routine preventive maintenance, cleaning and sanitation, security management, utility management, emergency repairs up to a specified cost, and vendor coordination.\n\nCommon exclusions: major structural repairs, capital expenditure items, tenant fit-out works, and specialist technical services (elevators, fire suppression systems) unless specifically included. Ambiguity about scope leads to disputes about who pays for unexpected repairs.` },
+      { heading: 'Fee Structures — Fixed vs Percentage of Revenue', body: `Facility management fees are typically structured as either a fixed monthly management fee, a percentage of the property's rental income (common for residential estates), or a combination of both.\n\nFor commercial properties, a fixed monthly fee provides budget certainty. For residential estates or mixed-use developments where income varies, a percentage model aligns the FM's incentive with occupancy performance.` },
+      { heading: 'Service Level Agreements (SLAs) and Performance Standards', body: `Your agreement should include measurable performance standards — response time for emergency repairs (e.g. 2 hours for loss of power, 4 hours for water leaks), routine maintenance frequency, cleaning standards, and reporting requirements.\n\nWithout SLAs, you have no basis to hold the FM company accountable when performance falls short. With SLAs, you can tie payment deductions or termination rights to specific performance failures.` },
+      { heading: 'Generate Your Facility Management Agreement Free', body: `Signova generates a complete facility management agreement covering services scope, fee structure, SLAs, liability cap, and termination rights — for commercial and residential properties in Nigeria, Ghana, Kenya, and globally. Free preview, $4.99 to download. Ready in 3 minutes.` },
+    ],
+    cta: { label: 'Generate Facility Manager Agreement Free →', href: '/generate/facility-manager-agreement' }
+  },
+
 ]
 
 export function getPostBySlug(slug) {
