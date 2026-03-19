@@ -13,6 +13,7 @@ const NDALanding = lazy(() => import('./pages/NDALanding'))
 const DocLanding = lazy(() => import('./pages/DocLanding'))
 const WhatsApp = lazy(() => import('./pages/WhatsApp'))
 const NotFound = lazy(() => import('./pages/NotFound'))
+const AboutPage = lazy(() => import('./pages/AboutPage'))
 
 export default function App() {
   return (
@@ -28,10 +29,10 @@ export default function App() {
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/nda-generator" element={<NDALanding />} />
         <Route path="/whatsapp" element={<WhatsApp />} />
-        {/* Common URLs people type — redirect to relevant sections */}
-        <Route path="/about" element={<Landing />} />
-        <Route path="/contact" element={<Landing />} />
-        <Route path="/team" element={<Landing />} />
+        {/* About + contact pages */}
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<AboutPage />} />
+        <Route path="/team" element={<AboutPage />} />
         <Route path="/pricing" element={<Landing />} />
         <Route path="/:slug" element={<DocLanding />} />
         <Route path="*" element={<NotFound />} />
