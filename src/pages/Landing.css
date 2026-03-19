@@ -825,3 +825,92 @@
     border-top: 1px solid rgba(201,168,76,0.2) !important;
   }
 }
+
+/* ── WhatsApp Feature Banner ── */
+.wa-banner-section {
+  padding: 64px 24px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(37,211,102,0.04) 0%, rgba(201,168,76,0.04) 100%);
+}
+.wa-banner-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 48px; align-items: center;
+}
+.wa-banner-badge {
+  display: inline-block; padding: 5px 14px; border-radius: 99px;
+  background: rgba(37,211,102,0.1); border: 1px solid rgba(37,211,102,0.25);
+  color: #25D366; font-size: 12px; font-weight: 600;
+  margin-bottom: 16px; letter-spacing: 0.02em;
+}
+.wa-banner-title {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3vw, 36px);
+  font-weight: 700; color: var(--text);
+  line-height: 1.2; margin-bottom: 16px;
+}
+.wa-banner-body {
+  font-size: 15px; color: var(--text2);
+  line-height: 1.7; margin-bottom: 24px;
+}
+.wa-banner-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 24px; border-radius: 10px;
+  background: #25D366; color: #fff;
+  border: none; font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: background 0.2s, transform 0.15s;
+}
+.wa-banner-btn:hover { background: #1fba58; transform: translateY(-1px); }
+
+/* Right side — chat mockup */
+.wa-banner-right {
+  display: flex; flex-direction: column; gap: 12px;
+}
+.wa-banner-chat {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px 20px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.wa-msg {
+  max-width: 85%; padding: 8px 12px;
+  border-radius: 10px; font-size: 13px;
+  line-height: 1.5;
+}
+.wa-msg-them {
+  background: rgba(255,255,255,0.07);
+  color: var(--text2);
+  border-radius: 10px 10px 10px 2px;
+  align-self: flex-start;
+}
+.wa-msg-me {
+  background: rgba(37,211,102,0.12);
+  color: var(--text);
+  border-radius: 10px 10px 2px 10px;
+  align-self: flex-end;
+}
+.wa-banner-arrow {
+  text-align: center; font-size: 20px;
+  color: var(--text3); line-height: 1;
+}
+.wa-banner-result {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; border-radius: 10px;
+  background: rgba(76,175,125,0.08);
+  border: 1px solid rgba(76,175,125,0.25);
+}
+.wa-result-check {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(76,175,125,0.15); border: 1px solid rgba(76,175,125,0.3);
+  color: var(--green); font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.wa-result-text { font-size: 13px; font-weight: 600; color: var(--green); }
+
+@media (max-width: 768px) {
+  .wa-banner-inner { grid-template-columns: 1fr; gap: 32px; }
+  .wa-banner-right { display: none; }
+  .wa-banner-section { padding: 48px 16px; }
+  .wa-banner-btn { width: 100%; justify-content: center; }
+}

@@ -577,9 +577,38 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* WhatsApp feature banner */}
+      <section className="wa-banner-section">
+        <div className="wa-banner-inner">
+          <div className="wa-banner-left">
+            <div className="wa-banner-badge">💬 New feature</div>
+            <h2 className="wa-banner-title">Have a WhatsApp negotiation? Paste it.</h2>
+            <p className="wa-banner-body">
+              We extract the agreed terms — names, amounts, dates, restrictions — and auto-fill your document in seconds. Works for tenancy agreements, loan agreements, freelance contracts and 24 more document types.
+            </p>
+            <button className="wa-banner-btn" onClick={() => navigate('/whatsapp')}>
+              Try it free → getsignova.com/whatsapp
+            </button>
+          </div>
+          <div className="wa-banner-right">
+            <div className="wa-banner-chat">
+              <div className="wa-msg wa-msg-them">Rent is ₦1.2m per year. 1 year tenancy.</div>
+              <div className="wa-msg wa-msg-me">Agreed. I'm Amaka Nwosu. When do I move in?</div>
+              <div className="wa-msg wa-msg-them">1st April. 6 months caution deposit — 600k.</div>
+              <div className="wa-msg wa-msg-me">Fine. No pets right?</div>
+              <div className="wa-msg wa-msg-them">No pets, no subletting. We sign before you move in.</div>
+            </div>
+            <div className="wa-banner-arrow">↓</div>
+            <div className="wa-banner-result">
+              <span className="wa-result-check">✓</span>
+              <span className="wa-result-text">9 fields auto-filled — Tenancy Agreement ready</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* How it works section */}
-      <section className="how-section" id="how">
-        <div className="section-inner">
+      <section className="how-section" id="how">        <div className="section-inner">
           <div className="section-header">
             <p className="section-label">The process</p>
             <h2 className="section-title">How the legal document generator works</h2>
