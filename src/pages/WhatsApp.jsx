@@ -1,138 +1,249 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import './WhatsApp.css'
 
-const DOC_OPTIONS = [
-  { id: 'tenancy-agreement',    label: 'Tenancy Agreement',       icon: '🏠', popular: true },
-  { id: 'loan-agreement',       label: 'Loan Agreement',           icon: '💰', popular: true },
-  { id: 'freelance-contract',   label: 'Freelance Contract',       icon: '✍️', popular: true },
-  { id: 'nda',                  label: 'NDA',                      icon: '🤝', popular: true },
-  { id: 'service-agreement',    label: 'Service Agreement',        icon: '📝', popular: false },
-  { id: 'business-partnership', label: 'Business Partnership',     icon: '🤝', popular: false },
-  { id: 'payment-terms-agreement', label: 'Payment Agreement',     icon: '💳', popular: false },
-  { id: 'deed-of-assignment',   label: 'Deed of Assignment',       icon: '📜', popular: false },
-  { id: 'mou',                  label: 'MOU',                      icon: '🗒️', popular: false },
-  { id: 'independent-contractor', label: 'Contractor Agreement',   icon: '📋', popular: false },
-  { id: 'consulting-agreement', label: 'Consulting Agreement',     icon: '💼', popular: false },
-  { id: 'hire-purchase',        label: 'Hire Purchase',            icon: '🚗', popular: false },
-  { id: 'joint-venture',        label: 'Joint Venture',            icon: '🏗️', popular: false },
-  { id: 'employment-offer-letter', label: 'Employment Offer',      icon: '👔', popular: false },
-  { id: 'quit-notice',          label: 'Quit Notice',              icon: '📮', popular: false },
-  { id: 'supply-agreement',     label: 'Supply Agreement',         icon: '🏭', popular: false },
-  { id: 'distribution-agreement', label: 'Distribution Agreement', icon: '📦', popular: false },
-  { id: 'business-proposal',    label: 'Business Proposal',        icon: '🚀', popular: false },
-  { id: 'shareholder-agreement', label: 'Shareholder Agreement',   icon: '📊', popular: false },
-  { id: 'power-of-attorney',    label: 'Power of Attorney',        icon: '⚖️', popular: false },
-  { id: 'letter-of-intent',     label: 'Letter of Intent',         icon: '✉️', popular: false },
-  { id: 'landlord-agent-agreement', label: 'Landlord & Agent',     icon: '🤝', popular: false },
-  { id: 'non-compete-agreement', label: 'Non-Compete',             icon: '🚫', popular: false },
-  { id: 'purchase-agreement',   label: 'Purchase Agreement',       icon: '🛒', popular: false },
-  { id: 'privacy-policy',       label: 'Privacy Policy',           icon: '🔒', popular: false },
-  { id: 'terms-of-service',     label: 'Terms of Service',         icon: '📋', popular: false },
-  { id: 'facility-manager-agreement', label: 'Facility Manager',   icon: '🏢', popular: false },
+// Geo-aware doc ordering — most relevant first per region
+const GEO_DOC_PRIORITY = {
+  // West Africa
+  NG: ['tenancy-agreement','loan-agreement','freelance-contract','deed-of-assignment','business-partnership','quit-notice','nda','service-agreement'],
+  GH: ['tenancy-agreement','loan-agreement','business-partnership','freelance-contract','service-agreement','nda','hire-purchase','mou'],
+  // East/South Africa
+  KE: ['tenancy-agreement','service-agreement','freelance-contract','loan-agreement','business-partnership','nda','mou','employment-offer-letter'],
+  ZA: ['tenancy-agreement','service-agreement','freelance-contract','nda','employment-offer-letter','business-partnership','loan-agreement','non-compete-agreement'],
+  // South Asia
+  IN: ['service-agreement','freelance-contract','nda','employment-offer-letter','independent-contractor','consulting-agreement','mou','business-proposal'],
+  PH: ['service-agreement','freelance-contract','employment-offer-letter','nda','independent-contractor','business-proposal','consulting-agreement','loan-agreement'],
+  PK: ['service-agreement','freelance-contract','tenancy-agreement','employment-offer-letter','nda','business-partnership','mou','loan-agreement'],
+  // Middle East
+  AE: ['service-agreement','nda','consulting-agreement','employment-offer-letter','freelance-contract','mou','business-proposal','distribution-agreement'],
+  SA: ['service-agreement','consulting-agreement','nda','employment-offer-letter','business-proposal','mou','joint-venture','distribution-agreement'],
+  // North America
+  US: ['nda','freelance-contract','independent-contractor','non-compete-agreement','service-agreement','employment-offer-letter','business-proposal','consulting-agreement'],
+  CA: ['nda','freelance-contract','independent-contractor','service-agreement','employment-offer-letter','non-compete-agreement','business-proposal','consulting-agreement'],
+  // UK & Europe
+  GB: ['freelance-contract','nda','service-agreement','employment-offer-letter','independent-contractor','consulting-agreement','business-proposal','tenancy-agreement'],
+  // Southeast Asia
+  SG: ['service-agreement','nda','freelance-contract','consulting-agreement','employment-offer-letter','mou','distribution-agreement','joint-venture'],
+  MY: ['service-agreement','freelance-contract','nda','employment-offer-letter','tenancy-agreement','consulting-agreement','business-proposal','distribution-agreement'],
+  // East Asia
+  CN: ['mou','joint-venture','distribution-agreement','supply-agreement','service-agreement','nda','consulting-agreement','business-proposal'],
+  // Default global
+  DEFAULT: ['nda','freelance-contract','service-agreement','tenancy-agreement','employment-offer-letter','consulting-agreement','loan-agreement','business-partnership'],
+}
+
+// Geo-aware use cases — global, specific to each region
+const GEO_USECASES = {
+  NG: [
+    { icon: '🏠', title: 'Landlords & tenants', body: 'Rent amount, duration, caution deposit, move-in date — agreed on WhatsApp, turned into a signed tenancy agreement in minutes.' },
+    { icon: '💰', title: 'Friends lending money', body: '"Pay back in 3 months" agreed on WhatsApp but never written down. Turn that chat into a loan agreement before money moves.' },
+    { icon: '✍️', title: 'Freelancers & clients', body: 'Project scope, payment terms, IP ownership — negotiated over chat, extracted into a professional contract in minutes.' },
+    { icon: '🤝', title: 'Business partners', body: 'Profit split, capital contribution — discussed in a WhatsApp group, turned into a partnership agreement before work begins.' },
+  ],
+  IN: [
+    { icon: '✍️', title: 'Freelancers & clients', body: 'Scope, rate, delivery date — negotiated on WhatsApp or email, extracted into a professional service agreement.' },
+    { icon: '🤝', title: 'Service providers', body: 'Agreed terms across IT services, consulting, and outsourcing — turned into a clean, signed contract from any chat thread.' },
+    { icon: '🏠', title: 'Rental agreements', body: 'Rent, deposit, maintenance — agreed over messaging, generated into a proper tenancy agreement in minutes.' },
+    { icon: '💼', title: 'Business proposals', body: 'Terms discussed over email with clients — extracted and formatted into a professional business proposal.' },
+  ],
+  US: [
+    { icon: '🤝', title: 'NDAs & confidentiality', body: 'Agreed to keep something confidential over email or Slack? Extract those terms into a signed NDA.' },
+    { icon: '✍️', title: 'Freelancers & contractors', body: 'Rate, scope, IP ownership — negotiated over email or iMessage, turned into an independent contractor agreement.' },
+    { icon: '🚫', title: 'Non-compete agreements', body: 'Employment terms discussed over email — extract the agreed restrictions into a compliant non-compete clause.' },
+    { icon: '💼', title: 'Consulting agreements', body: 'Scope, exclusivity, payment schedule — agreed over email, generated into a formal consulting contract.' },
+  ],
+  GB: [
+    { icon: '✍️', title: 'Freelancers & contractors', body: 'Rate, deliverables, IP rights — negotiated on email or WhatsApp, extracted into a professional UK-compliant contract.' },
+    { icon: '💼', title: 'Consultants', body: 'Engagement terms agreed over email — extracted into a signed consulting agreement ready for both parties.' },
+    { icon: '🤝', title: 'NDAs', body: 'Confidentiality discussed in a chat — turn those agreed terms into a proper NDA in minutes.' },
+    { icon: '👔', title: 'Employment offers', body: 'Offer terms discussed over email — generate a formal employment offer letter from the agreed conversation.' },
+  ],
+  DEFAULT: [
+    { icon: '✍️', title: 'Freelancers & clients', body: 'Project scope, payment terms, IP ownership — negotiated over any messaging platform, extracted into a professional contract.' },
+    { icon: '🤝', title: 'NDAs & confidentiality', body: 'Agreed to keep something confidential in a chat? Extract those terms into a properly signed NDA.' },
+    { icon: '🏠', title: 'Rental agreements', body: 'Rent amount, duration, deposit — agreed over messaging, generated into a signed tenancy agreement in minutes.' },
+    { icon: '💼', title: 'Business agreements', body: 'Partnership terms, consulting scope, service fees — discussed in any chat thread, turned into a legal document.' },
+  ],
+}
+
+const ALL_DOCS = [
+  { id: 'tenancy-agreement',    label: 'Tenancy Agreement',       icon: '🏠' },
+  { id: 'loan-agreement',       label: 'Loan Agreement',           icon: '💰' },
+  { id: 'freelance-contract',   label: 'Freelance Contract',       icon: '✍️' },
+  { id: 'nda',                  label: 'NDA',                      icon: '🤝' },
+  { id: 'service-agreement',    label: 'Service Agreement',        icon: '📝' },
+  { id: 'business-partnership', label: 'Business Partnership',     icon: '🤝' },
+  { id: 'payment-terms-agreement', label: 'Payment Agreement',     icon: '💳' },
+  { id: 'deed-of-assignment',   label: 'Deed of Assignment',       icon: '📜' },
+  { id: 'mou',                  label: 'MOU',                      icon: '🗒️' },
+  { id: 'independent-contractor', label: 'Contractor Agreement',   icon: '📋' },
+  { id: 'consulting-agreement', label: 'Consulting Agreement',     icon: '💼' },
+  { id: 'hire-purchase',        label: 'Hire Purchase',            icon: '🚗' },
+  { id: 'joint-venture',        label: 'Joint Venture',            icon: '🏗️' },
+  { id: 'employment-offer-letter', label: 'Employment Offer',      icon: '👔' },
+  { id: 'quit-notice',          label: 'Quit Notice',              icon: '📮' },
+  { id: 'supply-agreement',     label: 'Supply Agreement',         icon: '🏭' },
+  { id: 'distribution-agreement', label: 'Distribution Agreement', icon: '📦' },
+  { id: 'business-proposal',    label: 'Business Proposal',        icon: '🚀' },
+  { id: 'shareholder-agreement', label: 'Shareholder Agreement',   icon: '📊' },
+  { id: 'power-of-attorney',    label: 'Power of Attorney',        icon: '⚖️' },
+  { id: 'letter-of-intent',     label: 'Letter of Intent',         icon: '✉️' },
+  { id: 'landlord-agent-agreement', label: 'Landlord & Agent',     icon: '🤝' },
+  { id: 'non-compete-agreement', label: 'Non-Compete',             icon: '🚫' },
+  { id: 'purchase-agreement',   label: 'Purchase Agreement',       icon: '🛒' },
+  { id: 'privacy-policy',       label: 'Privacy Policy',           icon: '🔒' },
+  { id: 'terms-of-service',     label: 'Terms of Service',         icon: '📋' },
+  { id: 'facility-manager-agreement', label: 'Facility Manager',   icon: '🏢' },
 ]
 
+// Sample conversations — globally representative
 const SAMPLE_CONVOS = {
-  'tenancy-agreement': `Chief Emeka: The flat at 14 Admiralty Way Lekki Phase 1 is available. 2 bedroom. Rent is 1.2m naira per year.
+  'tenancy-agreement': `Landlord: The 2-bed flat at 14 Park Lane is available. Rent is £1,800/month, 12 months minimum.
 
-Amaka: Okay I'm interested. My name is Amaka Nwosu. Can we do 1.1m?
+Tenant: I'm James Okafor. Can we do £1,700?
 
-Chief Emeka: Final price is 1.2m. I'm Chief Emeka Okafor. Take it or leave it.
+Landlord: Best I can do is £1,750. I'm Mr. David Walsh. First month plus one month deposit required.
 
-Amaka: Okay fine. I'll take it. When can I move in?
+Tenant: Agreed. When can I move in?
 
-Chief Emeka: 1st April. I need 6 months caution deposit — 600k. Rent paid annually.
+Landlord: 1st of next month. No pets, no smoking inside. Utilities in your name.
 
-Amaka: Agreed. No pets right?
+Tenant: Fine. Let's get a tenancy agreement signed before I transfer anything.`,
 
-Chief Emeka: Correct. No pets, no subletting. 1 year tenancy. We sign agreement before you move in.`,
+  'loan-agreement': `Alex: Hey, I need to borrow $5,000. I can pay back in 6 months.
 
-  'loan-agreement': `Tunde: Bro I need 500k urgently. Business matter. I go pay back in 3 months.
+Jordan: That works. I'm Jordan Lee. No interest but I need it in writing this time.
 
-Emeka: 500k? That's a lot. What's the interest?
+Alex: Agreed. I'm Alex Chen. Monthly instalments of $833?
 
-Tunde: No interest, just the principal. I'm Tunde Adeyemi. You know me now.
+Jordan: Yes — $833 per month, starting next month. If you miss a payment, full amount becomes due.
 
-Emeka: Okay fine. I'm Emeka Osei. But we need to put it in writing this time. No go be like last time.
+Alex: Fair enough. Let's sign something before you transfer.
 
-Tunde: Agreed. 500k, 3 months, no interest. I'll sign whatever you bring.
+Jordan: Correct. I'll send a loan agreement over.`,
 
-Emeka: Good. I'll send the money to your GTBank account once we sign. No collateral but I trust you.
+  'freelance-contract': `Client: Hi, we need a website built for our law firm. Budget is $4,500 flat.
 
-Tunde: Thank you bro. God bless you.`,
+Dev: Hi, I'm Maya Patel, freelance developer. $4,500 works. 6-week timeline from kickoff.
 
-  'freelance-contract': `Sarah: Hi, I'm Sarah Mitchell from Apex Digital. We need a logo and brand kit designed for our startup.
+Client: I'm Sarah Chen from Chen & Associates. What's included?
 
-Jide: Great! I'm Jide Okafor, freelance designer. My rate for a full brand identity is $1,500 flat fee.
+Dev: Full 5-page site, CMS, contact form, mobile responsive. 2 rounds of revisions.
 
-Sarah: Works for us. What's included?
+Client: Payment terms?
 
-Jide: Logo (3 concepts, 2 revision rounds), color palette, typography, and brand guidelines PDF.
+Dev: 50% upfront, 50% on launch. IP transfers to you after final payment.
 
-Sarah: Perfect. When can you deliver?
+Client: Perfect. Can you send a contract over?`,
 
-Jide: 3 weeks from kickoff. 50% upfront, 50% on final delivery. All files handed over after final payment.
+  'nda': `Bob: I want to share our new SaaS idea with you before bringing you on as a co-founder.
 
-Sarah: Agreed. You retain no rights after payment right?
+Alice: Of course. I'm Alice Kim. Happy to sign an NDA first.
 
-Jide: Correct — full IP transfer to Apex Digital once paid. Shall I send the contract?`,
+Bob: I'm Bob Nguyen. One-way NDA — you're the receiving party. 2-year confidentiality period.
 
-  'nda': `David: Hey, I want to share our new fintech idea with you before we bring you on as an advisor.
+Alice: Governing law?
 
-Priya: Of course. I'm Priya Sharma, happy to sign an NDA first.
+Bob: Delaware, US. Standard mutual non-solicitation too.
 
-David: I'm David Mensah. We're not ready to disclose yet — just need you to keep it confidential while we discuss.
-
-Priya: Understood. Mutual or one-way?
-
-David: One-way — you're the receiving party. Information stays confidential for 2 years.
-
-Priya: Fine. Governing law?
-
-David: Nigeria. We're incorporated in Lagos.
-
-Priya: Send it over and I'll sign today.`,
+Alice: Fine. Send it over and I'll sign today.`,
 }
 
 const FAQS = [
   {
-    q: 'What kind of conversations can I paste?',
-    a: 'WhatsApp chats, SMS threads, email exchanges, Telegram messages — anything where terms were agreed in writing. You can copy-paste directly from your phone or computer.',
+    q: 'Which messaging platforms are supported?',
+    a: 'Any platform where you can copy text — WhatsApp, iMessage, Telegram, email, SMS, Slack, Teams, Signal, WeChat, and more. If you can select and copy the conversation, it works.',
+  },
+  {
+    q: 'How do I copy my conversation?',
+    a: 'On WhatsApp: long-press a message, tap More, select all relevant messages, then Copy. On iMessage: long-press, tap Copy. On email: select the thread text and copy. Then paste it into the box above.',
   },
   {
     q: 'How accurate is the extraction?',
-    a: 'Very accurate for clearly stated terms like names, amounts, dates, and restrictions. We only extract what is clearly stated — we never guess or invent terms.',
+    a: 'Very accurate for clearly stated terms — names, amounts, dates, durations, restrictions. We only extract what is explicitly stated or strongly implied. We never guess or invent terms.',
   },
   {
-    q: 'Is my conversation stored?',
-    a: 'No. Your conversation is sent to our AI only to extract the terms, then immediately discarded. We do not store, log, or read your private messages.',
+    q: 'Is my conversation stored or read by anyone?',
+    a: 'No. Your conversation is processed by AI only to extract the terms, then immediately discarded. We do not store, log, or retain your private messages.',
   },
   {
-    q: 'Are these documents legally valid in Nigeria?',
-    a: 'Yes. Signova documents are drafted to comply with Nigerian law — including the Lagos State Tenancy Law 2011, Labour Act Cap L1 LFN 2004, and general contract law. For property transactions, you still need to stamp the document at the Stamp Duties Office.',
+    q: 'Are the documents legally valid in my country?',
+    a: 'Signova generates documents applicable across 180+ countries. Documents are tailored to the governing law you specify. For high-value transactions, we recommend having a local solicitor review the final document.',
   },
   {
     q: 'What if the extraction misses something?',
-    a: 'You review every extracted field before generating. Any field you want to change, you just edit directly. The form is fully editable — the extraction just saves you time filling it.',
+    a: 'You review every extracted field before generating. Any field you want to change, add, or remove can be edited directly. The extraction saves time — it does not replace your review.',
   },
   {
     q: 'How much does it cost?',
-    a: 'Extracting terms and previewing your document is completely free. You pay $4.99 (or ₦7,400) only when you want to download the clean, watermark-free PDF.',
+    a: 'Extracting terms and previewing your document is completely free. You pay $4.99 only when you want to download the clean, watermark-free PDF. One-time payment, no subscription.',
   },
 ]
+
+// Helper — get priority list for country code
+function getOrderedDocs(countryCode) {
+  const priority = GEO_DOC_PRIORITY[countryCode] || GEO_DOC_PRIORITY.DEFAULT
+  const prioritySet = new Set(priority)
+  const rest = ALL_DOCS.filter(d => !prioritySet.has(d.id))
+  const ordered = [
+    ...priority.map(id => ALL_DOCS.find(d => d.id === id)).filter(Boolean),
+    ...rest,
+  ]
+  return ordered
+}
+
+function getUseCases(countryCode) {
+  return GEO_USECASES[countryCode] || GEO_USECASES.DEFAULT
+}
 
 export default function WhatsApp() {
   const navigate = useNavigate()
   const [conversation, setConversation] = useState('')
-  const [docType, setDocType] = useState('tenancy-agreement')
+  const [docType, setDocType] = useState('nda')
   const [extracting, setExtracting] = useState(false)
   const [extracted, setExtracted] = useState(null)
   const [error, setError] = useState('')
   const [showAll, setShowAll] = useState(false)
   const [openFaq, setOpenFaq] = useState(null)
+  const [countryCode, setCountryCode] = useState('DEFAULT')
+  const [geoLoaded, setGeoLoaded] = useState(false)
 
-  const visibleDocs = showAll ? DOC_OPTIONS : DOC_OPTIONS.filter(d => d.popular)
+  // Geo detection — reuse session cache from Landing.jsx
+  useEffect(() => {
+    const cached = sessionStorage.getItem('sig_currency')
+    if (cached) {
+      try {
+        const d = JSON.parse(cached)
+        if (d.country) {
+          setCountryCode(d.country)
+          // Set default doc type to region's top priority
+          const priority = GEO_DOC_PRIORITY[d.country] || GEO_DOC_PRIORITY.DEFAULT
+          setDocType(priority[0])
+        }
+      } catch {}
+      setGeoLoaded(true)
+      return
+    }
+    fetch('https://ipapi.co/json/')
+      .then(r => r.json())
+      .then(d => {
+        const cc = d.country_code || 'DEFAULT'
+        setCountryCode(cc)
+        const priority = GEO_DOC_PRIORITY[cc] || GEO_DOC_PRIORITY.DEFAULT
+        setDocType(priority[0])
+        // Cache alongside currency data
+        sessionStorage.setItem('sig_currency', JSON.stringify({
+          country: cc,
+          code: d.currency || 'USD',
+        }))
+      })
+      .catch(() => {})
+      .finally(() => setGeoLoaded(true))
+  }, [])
+
+  const orderedDocs = getOrderedDocs(countryCode)
+  const useCases = getUseCases(countryCode)
+  const visibleDocs = showAll ? orderedDocs : orderedDocs.slice(0, 8)
 
   const handleExtract = async () => {
     if (!conversation.trim()) { setError('Please paste your conversation first.'); return }
@@ -160,7 +271,6 @@ export default function WhatsApp() {
 
   const handleGenerate = () => {
     if (!extracted?.fields) return
-    const config = DOC_OPTIONS.find(d => d.id === docType)
     sessionStorage.setItem('signova_prefill', JSON.stringify({
       docType,
       fields: extracted.fields,
@@ -170,21 +280,23 @@ export default function WhatsApp() {
   }
 
   const loadSample = () => {
-    const sample = SAMPLE_CONVOS[docType] || SAMPLE_CONVOS['tenancy-agreement']
+    const sample = SAMPLE_CONVOS[docType] || SAMPLE_CONVOS['freelance-contract']
     setConversation(sample)
     setExtracted(null)
     setError('')
   }
 
+  const currentDoc = ALL_DOCS.find(d => d.id === docType)
+
   return (
     <div className="wa-page">
       <Helmet>
-        <title>WhatsApp to Legal Document — Turn Your Chat Into a Contract | Signova</title>
-        <meta name="description" content="Paste your WhatsApp negotiation and Signova extracts the agreed terms — names, amounts, dates — and generates a ready-to-sign legal document in 2 minutes. Free preview. Works for Nigeria, Africa and globally." />
-        <meta name="keywords" content="whatsapp to contract nigeria, whatsapp agreement generator, convert whatsapp chat to legal document, tenancy agreement from whatsapp nigeria, loan agreement whatsapp nigeria, whatsapp negotiation legal document" />
+        <title>Chat to Legal Document — Turn Any Conversation Into a Contract | Signova</title>
+        <meta name="description" content="Paste any WhatsApp, iMessage, Telegram, or email conversation. Signova extracts the agreed terms and generates a ready-to-sign legal document in 2 minutes. Free preview. 180+ countries." />
+        <meta name="keywords" content="whatsapp to contract, chat to legal document, email to contract, imessage to agreement, telegram to legal document, conversation to contract generator, whatsapp agreement generator" />
         <link rel="canonical" href="https://www.getsignova.com/whatsapp" />
-        <meta property="og:title" content="Turn Your WhatsApp Negotiation Into a Legal Document | Signova" />
-        <meta property="og:description" content="Paste your WhatsApp chat. We extract the agreed terms and generate a ready-to-sign legal document in 2 minutes." />
+        <meta property="og:title" content="Turn Any Conversation Into a Legal Document | Signova" />
+        <meta property="og:description" content="Paste your chat. We extract the agreed terms and generate a ready-to-sign legal document in 2 minutes." />
         <meta property="og:url" content="https://www.getsignova.com/whatsapp" />
       </Helmet>
 
@@ -200,21 +312,32 @@ export default function WhatsApp() {
 
       {/* Hero */}
       <section className="wa-hero">
-        <div className="wa-hero-badge">💬 WhatsApp → Legal Document</div>
         <h1 className="wa-hero-title">
-          Turn your WhatsApp negotiation<br />
-          into a legal document
+          Turn any conversation<br />into a legal document
         </h1>
         <p className="wa-hero-sub">
-          Paste your chat. We extract the agreed terms — names, amounts, dates, restrictions — and generate
-          a ready-to-sign document in 2 minutes. Free preview. $4.99 to download.
+          Paste a chat from WhatsApp, iMessage, Telegram, email, or any messaging platform.
+          We extract the agreed terms and generate a ready-to-sign document in 2 minutes.
         </p>
+        <div className="wa-platforms">
+          <span className="wa-platform">WhatsApp</span>
+          <span className="wa-platform-dot">·</span>
+          <span className="wa-platform">iMessage</span>
+          <span className="wa-platform-dot">·</span>
+          <span className="wa-platform">Telegram</span>
+          <span className="wa-platform-dot">·</span>
+          <span className="wa-platform">Email</span>
+          <span className="wa-platform-dot">·</span>
+          <span className="wa-platform">SMS</span>
+          <span className="wa-platform-dot">·</span>
+          <span className="wa-platform">Any chat</span>
+        </div>
         <div className="wa-stats">
           <div className="wa-stat"><span className="wa-stat-num">27</span><span className="wa-stat-label">document types</span></div>
           <div className="wa-stat-div" />
-          <div className="wa-stat"><span className="wa-stat-num">180+</span><span className="wa-stat-label">countries supported</span></div>
+          <div className="wa-stat"><span className="wa-stat-num">180+</span><span className="wa-stat-label">countries</span></div>
           <div className="wa-stat-div" />
-          <div className="wa-stat"><span className="wa-stat-num">2 min</span><span className="wa-stat-label">average time</span></div>
+          <div className="wa-stat"><span className="wa-stat-num">$4.99</span><span className="wa-stat-label">to download</span></div>
         </div>
       </section>
 
@@ -228,7 +351,7 @@ export default function WhatsApp() {
             What document do you need?
           </div>
           <div className="wa-doc-grid">
-            {visibleDocs.map(d => (
+            {visibleDocs.map((d, i) => (
               <button
                 key={d.id}
                 className={`wa-doc-btn ${docType === d.id ? 'selected' : ''}`}
@@ -236,12 +359,12 @@ export default function WhatsApp() {
               >
                 <span className="wa-doc-icon">{d.icon}</span>
                 <span className="wa-doc-label">{d.label}</span>
-                {d.popular && <span className="wa-popular">Popular</span>}
+                {i < 4 && <span className="wa-popular">Popular</span>}
               </button>
             ))}
           </div>
           <button className="wa-show-all" onClick={() => setShowAll(v => !v)}>
-            {showAll ? '↑ Show fewer document types' : `+ Show all 27 document types`}
+            {showAll ? '↑ Show fewer' : '+ Show all 27 document types'}
           </button>
         </div>
 
@@ -251,16 +374,19 @@ export default function WhatsApp() {
             <span className="wa-step-num">2</span>
             Paste your conversation
           </div>
+          <p className="wa-step-hint">
+            Copy directly from WhatsApp, iMessage, Telegram, email, or any messaging app and paste it below.
+          </p>
           <div className="wa-textarea-wrap">
             <textarea
               className="wa-textarea"
-              placeholder="Paste your WhatsApp chat, email thread, or SMS exchange here…&#10;&#10;Example:&#10;Landlord: Rent is ₦1.2m per year, 1 year tenancy.&#10;Tenant: Agreed. I'm Amaka Nwosu. When do I move in?&#10;Landlord: 1st April. 6 months caution deposit."
+              placeholder={`Paste your conversation here — WhatsApp, iMessage, Telegram, email, SMS, or any messaging platform.\n\nExample:\nParty A: The rate is $2,000 flat fee, delivered in 3 weeks.\nParty B: Agreed. 50% upfront, 50% on delivery?\nParty A: Yes. I'll send a contract.`}
               value={conversation}
               onChange={e => { setConversation(e.target.value); setExtracted(null); setError('') }}
               rows={10}
             />
             <button className="wa-sample-btn" onClick={loadSample}>
-              Load sample conversation →
+              Load sample →
             </button>
           </div>
           {error && <div className="wa-error">{error}</div>}
@@ -275,7 +401,7 @@ export default function WhatsApp() {
           >
             {extracting
               ? <><span className="wa-spinner" /> Extracting terms…</>
-              : <>⚡ Extract terms & auto-fill document →</>
+              : <>Extract terms & generate {currentDoc?.label || 'document'} →</>
             }
           </button>
         )}
@@ -298,11 +424,11 @@ export default function WhatsApp() {
               ))}
             </div>
             <p className="wa-extracted-note">
-              Review the extracted terms above. Click Generate to continue — you can edit any field in the next step before generating your document.
+              Review the terms above. You can edit any field in the next step before generating your document.
             </p>
             <div className="wa-extracted-actions">
               <button className="wa-generate-btn" onClick={handleGenerate}>
-                Generate {DOC_OPTIONS.find(d => d.id === docType)?.label} →
+                Continue to {currentDoc?.label || 'document'} →
               </button>
               <button className="wa-redo-btn" onClick={() => setExtracted(null)}>
                 ← Edit conversation
@@ -318,47 +444,57 @@ export default function WhatsApp() {
         <div className="wa-steps-row">
           <div className="wa-how-step">
             <div className="wa-how-num">01</div>
-            <div className="wa-how-title">Copy your chat</div>
-            <div className="wa-how-body">Select your WhatsApp, SMS, or email conversation where you agreed the terms. Copy and paste it into the box above.</div>
+            <div className="wa-how-title">Copy your conversation</div>
+            <div className="wa-how-body">Select the messages where you agreed the terms — from WhatsApp, iMessage, Telegram, email, or SMS. Copy and paste the text above.</div>
           </div>
           <div className="wa-how-arrow">→</div>
           <div className="wa-how-step">
             <div className="wa-how-num">02</div>
             <div className="wa-how-title">AI extracts the terms</div>
-            <div className="wa-how-body">Our AI reads your conversation and pulls out the key details — names, amounts, dates, restrictions — and fills the document form automatically.</div>
+            <div className="wa-how-body">The AI reads your conversation and identifies the key details — party names, amounts, dates, durations, and restrictions — and fills the document fields.</div>
           </div>
           <div className="wa-how-arrow">→</div>
           <div className="wa-how-step">
             <div className="wa-how-num">03</div>
             <div className="wa-how-title">Review and generate</div>
-            <div className="wa-how-body">Check the extracted fields, make any adjustments, then generate your complete legal document. Free preview. $4.99 to download the clean PDF.</div>
+            <div className="wa-how-body">Check the extracted fields, adjust anything that needs changing, then generate your complete legal document. Free preview. $4.99 to download the clean PDF.</div>
           </div>
         </div>
       </section>
 
-      {/* Use cases */}
+      {/* Use cases — geo-aware */}
       <section className="wa-usecases">
-        <h2 className="wa-section-title">Built for how Nigerians actually negotiate</h2>
+        <h2 className="wa-section-title">Common use cases</h2>
         <div className="wa-cases-grid">
-          <div className="wa-case">
-            <div className="wa-case-icon">🏠</div>
-            <div className="wa-case-title">Landlords & tenants</div>
-            <div className="wa-case-body">Rent amount, duration, caution deposit, move-in date, restrictions — agreed on WhatsApp, turned into a proper tenancy agreement in 2 minutes.</div>
+          {useCases.map((c, i) => (
+            <div key={i} className="wa-case">
+              <div className="wa-case-icon">{c.icon}</div>
+              <div className="wa-case-title">{c.title}</div>
+              <div className="wa-case-body">{c.body}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Platform guide */}
+      <section className="wa-platform-guide">
+        <h2 className="wa-section-title">How to copy from any platform</h2>
+        <div className="wa-guide-grid">
+          <div className="wa-guide-item">
+            <div className="wa-guide-title">WhatsApp</div>
+            <div className="wa-guide-body">Long-press a message → More → select messages → Copy. Or export the chat via Settings → Chat → Export Chat, then paste the text.</div>
           </div>
-          <div className="wa-case">
-            <div className="wa-case-icon">💰</div>
-            <div className="wa-case-title">Friends lending money</div>
-            <div className="wa-case-body">"I'll pay back in 3 months" — agreed on WhatsApp but never written down. Turn that chat into a loan agreement both parties sign before the money moves.</div>
+          <div className="wa-guide-item">
+            <div className="wa-guide-title">iMessage</div>
+            <div className="wa-guide-body">Long-press a message → Copy. On Mac, select all relevant messages, right-click → Copy. Paste directly into the box above.</div>
           </div>
-          <div className="wa-case">
-            <div className="wa-case-icon">✍️</div>
-            <div className="wa-case-title">Freelancers & clients</div>
-            <div className="wa-case-body">Project scope, payment terms, delivery date, IP ownership — negotiated over email, extracted into a professional freelance contract in minutes.</div>
+          <div className="wa-guide-item">
+            <div className="wa-guide-title">Telegram</div>
+            <div className="wa-guide-body">Long-press a message → Copy Text. Select multiple messages → Forward → Saved Messages, then copy from there.</div>
           </div>
-          <div className="wa-case">
-            <div className="wa-case-icon">🤝</div>
-            <div className="wa-case-title">Business partners</div>
-            <div className="wa-case-body">Profit split, capital contribution, decision-making — discussed in a WhatsApp group, turned into a business partnership agreement before you start.</div>
+          <div className="wa-guide-item">
+            <div className="wa-guide-title">Email</div>
+            <div className="wa-guide-body">Select the email thread text, copy, and paste. Include both sides of the exchange for best extraction results.</div>
           </div>
         </div>
       </section>
@@ -381,12 +517,12 @@ export default function WhatsApp() {
 
       {/* Bottom CTA */}
       <section className="wa-bottom-cta">
-        <h2 className="wa-bottom-title">Stop relying on "we agreed on WhatsApp"</h2>
-        <p className="wa-bottom-sub">That argument never wins in court. A signed document does. Generate yours in 2 minutes.</p>
+        <h2 className="wa-bottom-title">Your agreement is only as strong as the document behind it</h2>
+        <p className="wa-bottom-sub">A chat message is not a contract. A signed document is. Generate yours in 2 minutes.</p>
         <button className="wa-bottom-btn" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-          Paste your conversation now →
+          Paste your conversation →
         </button>
-        <p className="wa-bottom-note">Free preview · $4.99 to download · No account needed</p>
+        <p className="wa-bottom-note">Free preview · $4.99 to download · No account needed · 180+ countries</p>
       </section>
 
       {/* Footer */}
@@ -396,7 +532,7 @@ export default function WhatsApp() {
           <span className="logo-text">Signova</span>
         </div>
         <p className="wa-footer-note">
-          Signova is a product of Ebenova Solutions · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a>
+          Signova · Ebenova Solutions · <a href="/privacy">Privacy Policy</a> · <a href="/terms">Terms of Service</a>
         </p>
       </footer>
     </div>
