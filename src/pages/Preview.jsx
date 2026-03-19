@@ -623,9 +623,40 @@ export default function Preview() {
             </ul>
           </div>
 
+          {/* Companion doc — context-aware suggestion */}
+          {doc && (() => {
+            const companions = {
+              'privacy-policy': { id: 'terms-of-service', label: 'Terms of Service', icon: '📋', reason: 'Every app needs both.' },
+              'terms-of-service': { id: 'privacy-policy', label: 'Privacy Policy', icon: '🔒', reason: 'Required alongside Terms of Service.' },
+              'nda': { id: 'freelance-contract', label: 'Freelance Contract', icon: '✍️', reason: 'Protect scope and payment too.' },
+              'freelance-contract': { id: 'nda', label: 'NDA', icon: '🤝', reason: 'Protect your ideas before the project.' },
+              'tenancy-agreement': { id: 'quit-notice', label: 'Quit Notice', icon: '📦', reason: 'Ready if you ever need it.' },
+              'loan-agreement': { id: 'payment-terms-agreement', label: 'Payment Terms', icon: '💳', reason: 'Document the repayment schedule too.' },
+              'business-partnership': { id: 'nda', label: 'NDA', icon: '🤝', reason: 'Protect confidential info before you start.' },
+              'consulting-agreement': { id: 'nda', label: 'NDA', icon: '🤝', reason: 'Standard companion for consulting work.' },
+              'employment-offer-letter': { id: 'non-compete-agreement', label: 'Non-Compete', icon: '🚫', reason: 'Protect your business from day one.' },
+            }
+            const c = companions[doc.docType]
+            if (!c) return null
+            return (
+              <div className="sidebar-companion">
+                <p className="companion-reason">📎 You’ll also need</p>
+                <button className="companion-btn" onClick={() => navigate(`/generate/${c.id}`)}>
+                  <span className="companion-icon">{c.icon}</span>
+                  <span>
+                    <strong>{c.label}</strong>
+                    <span className="companion-sub">{c.reason}</span>
+                  </span>
+                  <span className="companion-arrow">→</span>
+                </button>
+              </div>
+            )
+          })()}
+
           <div className="sidebar-need-more">
-            <p>Need multiple documents?</p>
+            <p>Building multiple products?</p>
             <strong>Unlimited plan — $9.99/month</strong>
+            <p className="need-more-sub">Agencies & freelancers generating docs for clients.</p>
             <button className="btn-unlimited" onClick={() => { navigate('/'); setTimeout(() => { document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }) }, 100) }}>
               View unlimited plan
             </button>

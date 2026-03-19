@@ -646,6 +646,18 @@ export default function Generator() {
     }
   }
 
+  // Read URL params on mount — lets developers pre-fill via ?company=Acme&website=acme.com etc.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.toString()) {
+      const prefilled = {}
+      for (const [key, val] of params.entries()) {
+        prefilled[key] = val
+      }
+      setAnswers(prev => ({ ...prev, ...prefilled }))
+    }
+  }, [])
+
   const handleGenerateClick = () => {
     if (!isValid()) { setError('Please fill in all required fields.'); return }
     setError('')
