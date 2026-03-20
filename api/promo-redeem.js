@@ -16,6 +16,11 @@ const VALID_CODES = {
     maxUses: 9999,
     description: 'Founder access — unlimited testing',
   },
+  AFRICA: {
+    expiresAt: new Date('2026-12-31T23:59:59Z'),
+    maxUses: 920,
+    description: 'Taryl African Founders Community — 1 free document per member',
+  },
 }
 
 export default async function handler(req, res) {
