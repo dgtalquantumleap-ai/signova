@@ -577,7 +577,7 @@ export default function Preview() {
                         ? <><span className="spinner-sm" /> Preparing invoice…</>
                         : <>⬡ Pay $4.99 in USDT / Crypto →</>}
                     </button>
-                    <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Instant confirmation</p>
+                    <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Works with Myaza, Binance & all African crypto wallets</p>
                     <div className="usdt-divider"><span>or try card payment</span></div>
                     <button className="btn-pay-full btn-pay-secondary" onClick={handleDownload} disabled={paying}>
                       {paying
@@ -610,7 +610,7 @@ export default function Preview() {
                           ? <><span className="spinner-sm" /> Preparing invoice…</>
                           : <>⬡ Pay $4.99 in USDT / Crypto →</>}
                       </button>
-                      <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Works for Nigeria & Africa · Instant confirmation</p>
+                      <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Works with Myaza, Binance & all African crypto wallets · Instant confirmation</p>
                     </div>
                   </>
                 )}
