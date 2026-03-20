@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef, startTransition } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { trackDocSelected } from '../lib/analytics'
 import './Landing.css'
@@ -164,7 +164,23 @@ function LoomFacade({ videoId }) {
   const [clicked, setClicked] = useState(false)
   const [thumbLoaded, setThumbLoaded] = useState(false)
   const [thumbError, setThumbError] = useState(false)
+  const [inView, setInView] = useState(false)
+  const ref = useRef(null)
+
+  // Only load the GIF when the section scrolls into view — keeps it off LCP path
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setInView(true); observer.disconnect() } },
+      { rootMargin: '200px' }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   const thumb = `https://cdn.loom.com/sessions/thumbnails/${videoId}-with-play.gif`
+
   if (clicked) {
     return (
       <iframe
@@ -177,11 +193,11 @@ function LoomFacade({ videoId }) {
     )
   }
   return (
-    <div className="loom-facade" onClick={() => setClicked(true)} role="button" aria-label="Play demo video">
-      {!thumbLoaded && !thumbError && (
+    <div ref={ref} className="loom-facade" onClick={() => setClicked(true)} role="button" aria-label="Play demo video">
+      {(!inView || (!thumbLoaded && !thumbError)) && (
         <div className="loom-placeholder">
           <div className="loom-play-btn">▶</div>
-          <p className="loom-loading-text">Loading preview…</p>
+          <p className="loom-loading-text">{inView ? 'Loading preview…' : 'Click to watch demo'}</p>
         </div>
       )}
       {thumbError && (
@@ -190,14 +206,16 @@ function LoomFacade({ videoId }) {
           <p className="loom-loading-text">Click to watch demo</p>
         </div>
       )}
-      <img
-        src={thumb}
-        alt="Watch Signova demo"
-        className="loom-thumb"
-        style={{ display: thumbLoaded ? 'block' : 'none' }}
-        onLoad={() => setThumbLoaded(true)}
-        onError={() => setThumbError(true)}
-      />
+      {inView && (
+        <img
+          src={thumb}
+          alt="Watch Signova demo"
+          className="loom-thumb"
+          style={{ display: thumbLoaded ? 'block' : 'none' }}
+          onLoad={() => setThumbLoaded(true)}
+          onError={() => setThumbError(true)}
+        />
+      )}
       {thumbLoaded && <div className="loom-play-btn">▶</div>}
     </div>
   )
@@ -571,7 +589,7 @@ export default function Landing() {
 
           <button
             className="more-docs-link"
-            onClick={() => setShowAllDocs(true)}
+            onClick={() => startTransition(() => setShowAllDocs(true))}
           >
             {showAllDocs ? '' : 'More documents ↓'}
           </button>
