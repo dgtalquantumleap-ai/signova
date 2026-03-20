@@ -1,6 +1,13 @@
 // Preview page — v2 PDF renderer
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState, useRef } from 'react'
+import {
+  trackPreviewLoaded,
+  trackPaymentAttempted,
+  trackPaymentSuccess,
+  trackCompanionClicked,
+  trackPromoApplied,
+} from '../lib/analytics'
 import './Preview.css'
 
 // Geo detect — same sessionStorage key used by Landing.jsx
@@ -47,7 +54,9 @@ export default function Preview() {
   useEffect(() => {
     const raw = sessionStorage.getItem('signova_doc')
     if (!raw) { navigate('/'); return }
-    setDoc(JSON.parse(raw))
+    const parsed = JSON.parse(raw)
+    setDoc(parsed)
+    trackPreviewLoaded(parsed.docType)
     window.scrollTo(0, 0)
   }, [])
 
@@ -76,7 +85,7 @@ export default function Preview() {
     if (paid) { downloadPDF(); return }
     setPaying(true)
     setError('')
-    // Safety reset — if user navigates back from Polar, button should be clickable again
+    trackPaymentAttempted(doc?.docType, 'card')
     const payingTimer = setTimeout(() => setPaying(false), 8000)
     try {
       const res = await fetch('/api/checkout', {
@@ -199,6 +208,7 @@ export default function Preview() {
   const handleUsdtCheckout = async () => {
     setPayingUsdt(true)
     setError('')
+    trackPaymentAttempted(doc?.docType, 'usdt')
     const usdtTimer = setTimeout(() => setPayingUsdt(false), 8000)
     try {
       const res = await fetch('/api/oxapay-checkout', {
@@ -235,7 +245,7 @@ export default function Preview() {
       } else {
         setPromoToken(data.token)
         setPromoMsg(data.message)
-        // Unlock immediately — no payment needed
+        trackPromoApplied(doc?.docType, promoCode)
         setPaid(true)
       }
     } catch {
@@ -294,6 +304,7 @@ export default function Preview() {
           }
         }
         sessionStorage.removeItem('oxapay_trackId')
+        trackPaymentSuccess(savedDoc.docType, 'usdt')
         setPaid(true)
         window.history.replaceState({}, '', '/preview')
       } catch (err) {
@@ -365,9 +376,8 @@ export default function Preview() {
           }
         }
 
+        trackPaymentSuccess(savedDoc.docType, 'card')
         setPaid(true)
-
-        // Clean up URL params so refreshing doesn't re-verify
         window.history.replaceState({}, '', '/preview')
       } catch (err) {
         console.error('Verification error:', err)
@@ -641,7 +651,7 @@ export default function Preview() {
             return (
               <div className="sidebar-companion">
                 <p className="companion-reason">📎 You’ll also need</p>
-                <button className="companion-btn" onClick={() => navigate(`/generate/${c.id}`)}>
+                <button className="companion-btn" onClick={() => { trackCompanionClicked(doc.docType, c.id); navigate(`/generate/${c.id}`) }}>
                   <span className="companion-icon">{c.icon}</span>
                   <span>
                     <strong>{c.label}</strong>

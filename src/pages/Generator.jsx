@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
+import { trackGenerateStarted, trackGenerateCompleted } from '../lib/analytics'
 import './Generator.css'
 
 const SEO_META = {
@@ -661,7 +662,7 @@ export default function Generator() {
   const handleGenerateClick = () => {
     if (!isValid()) { setError('Please fill in all required fields.'); return }
     setError('')
-    // Go straight to generation — email captured post-purchase on preview page
+    trackGenerateStarted(docType)
     handleGenerate('')
   }
 
@@ -735,9 +736,10 @@ Output the complete document only, no preamble, explanation, or closing notes.`
         docName: config.name,
         content: text,
         answers,
-        prompt, // stored for premium regeneration after payment
+        prompt,
         generatedAt: new Date().toISOString(),
       }))
+      trackGenerateCompleted(docType)
       navigate('/preview')
     } catch (e) {
       setError(e.message || 'Something went wrong. Please try again.')

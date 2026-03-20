@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect, useMemo } from 'react'
 import { Helmet } from 'react-helmet-async'
+import { trackDocSelected } from '../lib/analytics'
 import './Landing.css'
 
 // ── Geo-currency detection ──────────────────────────────────────────────────
@@ -559,7 +560,7 @@ export default function Landing() {
               <button
                 key={d.id}
                 className="top3-card"
-                onClick={() => navigate(`/generate/${d.id}`)}
+                onClick={() => { trackDocSelected(d.id, 'top3'); navigate(`/generate/${d.id}`) }}
               >
                 <span className="top3-icon">{d.icon}</span>
                 <span className="top3-name">{d.name}</span>
@@ -578,7 +579,7 @@ export default function Landing() {
           {showAllDocs && (
             <div className="all-docs-grid">
               {docsToShow.filter(d => !quickPicks.slice(0, 3).some(qp => qp.id === d.id)).map(doc => (
-                <button key={doc.id} className="all-doc-btn" onClick={() => navigate(`/generate/${doc.id}`)}>
+                <button key={doc.id} className="all-doc-btn" onClick={() => { trackDocSelected(doc.id, 'all_docs'); navigate(`/generate/${doc.id}`) }}>
                   <span>{doc.icon}</span> {doc.name}
                 </button>
               ))}
