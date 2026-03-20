@@ -49,6 +49,10 @@ export default function Preview() {
   const [promoMsg, setPromoMsg] = useState('')
   const [promoError, setPromoError] = useState('')
   const [promoOpen, setPromoOpen] = useState(false)
+  const [promoEmail, setPromoEmail] = useState('')
+  const [promoEmailSubmitted, setPromoEmailSubmitted] = useState(false)
+  const [promoEmailLoading, setPromoEmailLoading] = useState(false)
+  const [pendingPromoUnlock, setPendingPromoUnlock] = useState(false)
   const contentRef = useRef(null)
 
   useEffect(() => {
@@ -246,13 +250,41 @@ export default function Preview() {
         setPromoToken(data.token)
         setPromoMsg(data.message)
         trackPromoApplied(doc?.docType, promoCode)
-        setPaid(true)
+        // Don't unlock yet — ask for email first so we capture the lead
+        setPendingPromoUnlock(true)
       }
     } catch {
       setPromoError('Could not apply code. Please try again.')
     } finally {
       setPromoLoading(false)
     }
+  }
+
+  const handlePromoEmailCapture = async () => {
+    if (!promoEmail || !promoEmail.includes('@')) return
+    setPromoEmailLoading(true)
+    try {
+      await fetch('/api/capture-buyer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: promoEmail,
+          docName: doc?.docName,
+          source: 'promo',
+          promoCode: promoCode,
+        }),
+      })
+    } catch {}
+    setPromoEmailSubmitted(true)
+    setPromoEmailLoading(false)
+    setPendingPromoUnlock(false)
+    setPaid(true)
+  }
+
+  const handlePromoSkipEmail = () => {
+    // Allow skip but still unlock — we tried to capture
+    setPendingPromoUnlock(false)
+    setPaid(true)
   }
 
   // Check if returning from Polar payment success
@@ -500,6 +532,34 @@ export default function Preview() {
                 )}
               </div>
             )}
+            {/* Promo email gate — appears after valid code, before download unlocks */}
+            {pendingPromoUnlock && (
+              <div className="promo-email-gate">
+                <p className="promo-email-title">✓ Your document is unlocked</p>
+                <p className="promo-email-sub">Where should we send your copy? We'll also email you 5 tips on protecting it after signing.</p>
+                <input
+                  className="pre-capture-input"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={promoEmail}
+                  onChange={e => setPromoEmail(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handlePromoEmailCapture()}
+                  autoFocus
+                />
+                <button
+                  className="btn-pay-full"
+                  onClick={handlePromoEmailCapture}
+                  disabled={promoEmailLoading || !promoEmail.includes('@')}
+                  style={{ marginTop: '8px' }}
+                >
+                  {promoEmailLoading ? 'Sending…' : 'Send to my email →'}
+                </button>
+                <button className="promo-toggle" onClick={handlePromoSkipEmail} style={{ marginTop: '8px' }}>
+                  No thanks — just download
+                </button>
+              </div>
+            )}
+
             {/* Pre-purchase email capture — appears after 20s for non-paying visitors */}
             {!paid && showPreCapture && (
               <div className="pre-capture-box">
