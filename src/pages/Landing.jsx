@@ -610,7 +610,7 @@ export default function Landing() {
       <section className="wa-banner-section">
         <div className="wa-banner-inner">
           <div className="wa-banner-left">
-            <div className="wa-banner-badge">💬 New feature</div>
+            <div className="wa-banner-badge">💬 Most popular feature</div>
             <h2 className="wa-banner-title">Have a WhatsApp negotiation? Paste it.</h2>
             <p className="wa-banner-body">
               We extract the agreed terms — names, amounts, dates, restrictions — and auto-fill your document in seconds. Works for tenancy agreements, loan agreements, freelance contracts and 24 more document types.
@@ -637,7 +637,8 @@ export default function Landing() {
       </section>
 
       {/* How it works section */}
-      <section className="how-section" id="how">        <div className="section-inner">
+      <section className="how-section" id="how">
+        <div className="section-inner">
           <div className="section-header">
             <p className="section-label">The process</p>
             <h2 className="section-title">How the legal document generator works</h2>
@@ -763,7 +764,7 @@ export default function Landing() {
           <div className="footer-links">
             <a href="/privacy">Privacy Policy</a>
             <a href="/terms">Terms of Service</a>
-            <a href="mailto:hello@getsignova.com">Contact</a>
+            <a href="/about">Contact</a>
           </div>
           <p className="footer-disc">
             Signova is a document generation tool, not a law firm. Documents are AI-generated starting points — not legal advice. No attorney-client relationship is created by using this service. For complex or high-stakes matters, consult a qualified attorney before signing or relying on any document.

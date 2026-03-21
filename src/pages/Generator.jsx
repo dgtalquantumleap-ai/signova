@@ -842,6 +842,7 @@ Output the complete document only, no preamble, explanation, or closing notes.`
           {/* Current question */}
           {currentField && !loading && (
             <div className="gen-chat-current" onKeyDown={handleKeyDown}>
+              <div className="chat-step-counter">Step {currentStep + 1} of {config.fields.length}</div>
               <label className="chat-question">{currentField.label}</label>
 
               {currentField.type === 'text' && (
@@ -900,10 +901,16 @@ Output the complete document only, no preamble, explanation, or closing notes.`
                 {currentStep > 0 && (
                   <button className="chat-back" onClick={() => setCurrentStep(s => s - 1)}>← Back</button>
                 )}
+                {currentField.type === 'checkbox' && (
+                  <button className="chat-skip" onClick={handleNext}>
+                    Skip
+                  </button>
+                )}
                 <button className={`chat-next ${!canAdvance() ? 'disabled' : ''}`} onClick={handleNext} disabled={!canAdvance()}>
                   {isLastStep ? 'Generate →' : 'Next →'}
                 </button>
               </div>
+              <p className="chat-privacy-note">🔒 Your answers are used only to generate this document — never stored.</p>
             </div>
           )}
 

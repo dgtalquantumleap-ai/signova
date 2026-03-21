@@ -18,7 +18,7 @@ const VALID_CODES = {
   },
   AFRICA: {
     expiresAt: new Date('2026-12-31T23:59:59Z'),
-    maxUses: 920,
+    maxUses: 1200,
     description: 'Taryl African Founders Community — 1 free document per member',
   },
 }
