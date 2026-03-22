@@ -14,8 +14,16 @@ import './Preview.css'
 function useIsNigeria() {
   const [isNG, setIsNG] = useState(false)
   useEffect(() => {
-    const cached = sessionStorage.getItem('sig_currency')
-    if (cached) { setIsNG(JSON.parse(cached).code === 'NGN'); return }
+    // Key must match Landing.jsx which writes 'sig_geo'
+    const cached = sessionStorage.getItem('sig_geo')
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached)
+        // sig_geo stores { currency: { code, ... }, countryCode: 'NG' }
+        setIsNG(parsed.countryCode === 'NG' || parsed.currency?.code === 'NGN')
+      } catch {}
+      return
+    }
     fetch('https://ipapi.co/json/')
       .then(r => r.json())
       .then(d => setIsNG(d.country_code === 'NG'))
