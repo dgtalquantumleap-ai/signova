@@ -10,6 +10,7 @@ const BlogIndex  = lazy(() => import('./pages/blog/BlogIndex'))
 const BlogPost   = lazy(() => import('./pages/blog/BlogPost'))
 const AdminPage  = lazy(() => import('./pages/AdminPage'))
 const NDALanding = lazy(() => import('./pages/NDALanding'))
+const TenancyLanding = lazy(() => import('./pages/TenancyLanding'))
 const DocLanding = lazy(() => import('./pages/DocLanding'))
 const WhatsApp = lazy(() => import('./pages/WhatsApp'))
 const NotFound = lazy(() => import('./pages/NotFound'))
@@ -32,6 +33,7 @@ export default function App() {
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/nda-generator" element={<NDALanding />} />
+        <Route path="/tenancy-agreement-nigeria" element={<TenancyLanding />} />
         <Route path="/whatsapp" element={<WhatsApp />} />
         {/* About + contact pages */}
         <Route path="/about" element={<AboutPage />} />
