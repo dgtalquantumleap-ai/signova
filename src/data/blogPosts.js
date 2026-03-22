@@ -863,6 +863,273 @@ export const BLOG_POSTS = [
     cta: { label: 'Generate Facility Manager Agreement Free →', href: '/generate/facility-manager-agreement' }
   },
 
+  {
+    slug: 'lagos-tenancy-bill-2025-landlord-guide',
+    title: 'Lagos Tenancy Bill 2025: What Every Landlord and Tenant Must Know',
+    description: 'The Lagos Tenancy and Recovery of Premises Bill 2025 is moving through the House of Assembly. Here is exactly what it changes, what it means for your rent agreement, and how to protect yourself now.',
+    date: '2026-03-22',
+    readTime: '7 min read',
+    category: 'Real Estate',
+    keywords: 'Lagos tenancy bill 2025, Lagos tenancy law landlord, tenancy agreement Lagos 2025, Lagos rent increase law, landlord tenant law Nigeria 2025',
+    sections: [
+      {
+        heading: 'What Is the Lagos Tenancy Bill 2025?',
+        body: `The Lagos State Tenancy and Recovery of Premises Bill 2025 passed its second reading at the Lagos State House of Assembly in July 2025 and was referred to the Housing Committee for review. It is an amendment and expansion of the existing Lagos State Tenancy Law 2011.\n\nThe bill is still a draft — it has not yet been signed into law. But it is actively moving through the Assembly, and every Lagos landlord and tenant should understand what it proposes to change, because the direction is clear: more tenant protections, more landlord obligations, and stricter enforcement.\n\nThis guide explains the key proposed changes in plain language — no legal jargon.`
+      },
+      {
+        heading: 'Key Changes the Bill Proposes',
+        body: `1. Mandatory rent receipts. The bill proposes that landlords must issue written receipts for every rent payment. Currently, many Lagos landlords collect rent informally with no written acknowledgement. Under the proposed law, failing to issue a receipt could be used against a landlord in a dispute.\n\n2. Stricter rules on rent advances. The existing 2011 law limits landlords to collecting 1 year rent in advance (for yearly tenancies). The 2025 bill seeks to tighten enforcement of this rule — some landlords collect 2–3 years in advance, which the bill specifically addresses.\n\n3. Digital dispute resolution. The bill proposes a mechanism for landlord-tenant disputes to be resolved through a structured tribunal process, reducing the backlog in regular courts.\n\n4. Notice period enforcement. The bill reinforces the existing notice period requirements — 1 month for monthly tenancies, 6 months for yearly tenancies — and proposes penalties for landlords who fail to observe these periods before proceeding with eviction.\n\n5. Written tenancy agreement requirement. The bill moves toward making written tenancy agreements a more formal requirement, particularly for tenancies exceeding 6 months.`
+      },
+      {
+        heading: 'What This Means for Lagos Landlords',
+        body: `If you are a landlord in Lagos, the message from this bill is clear: the era of verbal agreements and informal arrangements is coming to an end.\n\nHere is what you should do now, regardless of whether the bill passes:\n\nGet a written tenancy agreement in place for every tenant. If a dispute goes to the tribunal, a landlord with a properly signed and dated agreement is in a far stronger position than one relying on memory or WhatsApp messages.\n\nIssue payment receipts. Even before the bill becomes law, issuing receipts protects you — it creates a clear paper trail of what was paid, when, and for which period.\n\nDo not collect more than 1 year advance rent. This is already law under the 2011 Act. The 2025 bill will enforce it more strictly. Collecting 2–3 years upfront exposes you to legal liability.\n\nUnderstand your notice period obligations. If you want a tenant to leave at the end of their tenancy, you must give proper written notice within the required timeframe. Informal notice — including WhatsApp messages — may not be sufficient.`
+      },
+      {
+        heading: 'What This Means for Lagos Tenants',
+        body: `If you are a tenant, the bill strengthens your rights in several ways:\n\nYou have the right to a written receipt for every rent payment. If your landlord refuses to provide receipts, document your payments through bank transfers rather than cash.\n\nYour landlord cannot legally demand more than 1 year advance rent under the existing law. If they are demanding 2 or 3 years, you can push back — and the 2025 bill will make this easier to enforce.\n\nYou are entitled to proper notice before eviction. An arbitrary order to leave, even with WhatsApp evidence, does not constitute proper legal notice. Know your notice period rights.\n\nGet a signed tenancy agreement before paying any money. A receipt alone is not a tenancy agreement. The agreement specifies the duration, rent amount, and conditions — all of which protect you if the landlord later changes the terms.`
+      },
+      {
+        heading: 'The One Thing Both Parties Need Right Now',
+        body: `Whether you are a landlord or a tenant, the single most important action you can take before this bill becomes law is to ensure you have a proper written tenancy agreement in place.\n\nA well-drafted tenancy agreement under current Lagos law already covers rent amount, duration, caution fee, notice periods, maintenance responsibilities, and termination conditions. If a dispute goes to tribunal — now or after the bill passes — your agreement is your primary evidence.\n\nSignova generates a Lagos-law-compliant tenancy agreement in under 3 minutes. You answer a few questions about your property, tenant, rent, and special conditions — and get a professionally structured agreement you can preview free and download for $4.99.\n\nNo lawyer. No waiting. No generic template that ignores Lagos State law.`
+      },
+    ],
+    cta: { label: 'Generate Lagos Tenancy Agreement →', href: '/generate/tenancy-agreement' }
+  },
+
+  {
+    slug: 'freelance-contract-nigeria-guide-2025',
+    title: 'Freelance Contract Nigeria 2025: How to Get Paid and Stay Protected',
+    description: 'Nigeria has 40% of its workforce in freelance work. Most get burned because they work without a contract. Here is exactly what a Nigerian freelance contract must include — and how to generate one free.',
+    date: '2026-03-22',
+    readTime: '6 min read',
+    category: 'Freelance',
+    keywords: 'freelance contract Nigeria 2025, freelance agreement Nigeria, how to protect freelance work Nigeria, Nigerian freelancer contract template, Upwork Nigeria contract',
+    sections: [
+      {
+        heading: 'Why Nigerian Freelancers Lose Money Without a Contract',
+        body: `Nigeria has over 40% of its workforce engaged in freelance work — one of the highest rates in Africa. Nigerian freelancers earned over $100 million on Upwork alone in 2024, and the number is growing as demand for remote AI skills, design, and software development accelerates.\n\nBut most Nigerian freelancers lose 15–25% of their potential earnings every year to scope creep, non-payment, and project disputes — almost all of which could have been prevented with a signed contract.\n\nThe most common scenarios: a client adds requirements after work has started and refuses to pay extra. A client receives the finished work and then disputes the invoice. A client ghosts after delivery. In every one of these cases, a freelancer with a signed contract has legal recourse. A freelancer without one has only WhatsApp messages.`
+      },
+      {
+        heading: 'What a Nigerian Freelance Contract Must Include',
+        body: `A proper freelance contract for Nigerian work — whether the client is local or international — must cover:\n\n1. Scope of work. Exactly what you will deliver. Specific deliverables, formats, and what is NOT included. This single clause prevents 80% of scope creep disputes.\n\n2. Payment terms. The full project fee, payment schedule (deposit + milestones + final), and the consequence of late payment. Specify currency — USD for international clients, Naira for local.\n\n3. Revision limit. How many rounds of revisions are included. Any work beyond this limit is billed at an agreed hourly rate.\n\n4. Timeline and deadlines. Delivery date per milestone, and what happens if the client delays providing feedback or materials.\n\n5. Intellectual property. Who owns the work after delivery — typically the client, after full payment. Before full payment, the freelancer retains ownership.\n\n6. Kill fee. If the client cancels mid-project, what percentage of the remaining fee is payable. Standard is 25–50% of the remaining balance.\n\n7. Governing law. For Nigerian freelancers working with international clients, specifying the governing law jurisdiction matters if you ever need to enforce the contract.`
+      },
+      {
+        heading: 'The Deposit Clause That Changes Everything',
+        body: `The single most effective protection for a Nigerian freelancer is a non-refundable deposit clause — typically 30–50% of the project fee, paid before any work begins.\n\nThe deposit does three things:\n\nIt filters out non-serious clients immediately. A client who will not pay a deposit is a client who will not pay the final invoice.\n\nIt covers your time if the client disappears. The deposit is non-refundable — meaning even if the client vanishes after paying, you are compensated for your work up to that point.\n\nIt creates a payment rhythm. Clients who have already paid a deposit are psychologically committed to the project. They are far less likely to ghost or dispute invoices.`
+      },
+      {
+        heading: 'WhatsApp Agreements Are Not Contracts',
+        body: `Many Nigerian freelancers operate entirely through WhatsApp negotiations — prices agreed in chat, work delivered via link, payment expected via transfer. When it works, it works. When it doesn't, you have nothing.\n\nWhatsApp messages can be used as evidence in Nigerian courts, but they are weak evidence compared to a signed contract. A client who disputes the scope of work agreed over WhatsApp can simply claim they misunderstood. A signed contract with a specific scope definition is unambiguous.\n\nIf you negotiate via WhatsApp, you can now paste that conversation directly into Signova's WhatsApp feature — it extracts the agreed terms (client name, project description, price, timeline) and auto-fills your freelance contract. This turns a WhatsApp negotiation into a legally structured agreement in under 2 minutes.`
+      },
+      {
+        heading: 'Generate Your Freelance Contract Free',
+        body: `Signova generates a professional Nigerian freelance contract in under 3 minutes. Fill in the client name, project description, fee, payment schedule, revision limit, and any special conditions — and get a structured, enforceable contract you can preview free and download for $4.99.\n\nFor international clients, the contract can specify USD payment terms and an international governing law clause. For Nigerian clients, it follows Nigerian commercial law principles.\n\nNo lawyer needed. Preview completely free before paying anything.`
+      },
+    ],
+    cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
+  },
+
+
+  // ── COUNTRY-SPECIFIC POSTS — non-Nigeria ────────────────────────────────
+
+  {
+    slug: 'tenancy-agreement-kenya',
+    title: 'Tenancy Agreement Kenya 2026 — Free Template for Landlords and Tenants',
+    description: 'What every Kenyan landlord and tenant needs in a written tenancy agreement — the legal requirements, notice periods under Kenyan law, and how to generate one free in 2 minutes.',
+    date: '2026-03-22',
+    readTime: '6 min read',
+    category: 'Real Estate',
+    keywords: 'tenancy agreement Kenya, rental agreement Kenya, lease agreement Kenya free, landlord tenant Kenya, tenancy agreement Nairobi, Kenya tenancy law 2026',
+    sections: [
+      {
+        heading: 'Tenancy Law in Kenya — What Governs Your Agreement',
+        body: `Tenancy agreements in Kenya are governed primarily by the Landlord and Tenant (Shops, Hotels and Catering Establishments) Act Cap 301 for commercial premises, and the Rent Restriction Act Cap 296 for residential properties in controlled areas. For uncontrolled residential tenancies, general contract law and the common law principles apply.\n\nIn 2010, the Constitution of Kenya introduced new property rights provisions that reinforce the importance of documented tenancy agreements. The Sectional Properties Act 2020 and the Land Act 2012 also affect how tenancy terms interact with property rights in Kenya.\n\nFor most residential tenancies in Nairobi, Mombasa, Kisumu and other urban centres, a written agreement is not legally required — but it is the only reliable protection if a dispute arises. Without one, both landlord and tenant are arguing from memory.`
+      },
+      {
+        heading: 'What a Kenyan Tenancy Agreement Must Include',
+        body: `A properly drafted Kenyan tenancy agreement should cover:\n\n1. Full names and ID numbers of both landlord and tenant.\n2. Property description — precise address including estate, house number, and any unit identifier.\n3. Rent amount and due date — specify in Kenyan Shillings, and whether rent is payable monthly or quarterly.\n4. Security deposit — typically 1–2 months rent. State the conditions for refund and the deduction process.\n5. Duration — fixed term (6 months, 1 year) or periodic tenancy.\n6. Notice period — typically 1 month for monthly tenancies.\n7. Utilities — who pays for water, electricity, service charge.\n8. Permitted use — residential only, or home office allowed.\n9. Maintenance responsibilities — routine maintenance by tenant, structural repairs by landlord.\n10. Termination conditions.\n11. Signatures of both parties, witnessed.`
+      },
+      {
+        heading: 'Notice Periods Under Kenyan Law',
+        body: `For residential tenancies in Kenya not covered by the Rent Restriction Act, the notice period is governed by the agreement itself or, where the agreement is silent, by common law principles.\n\nMonthly tenancies: 1 month notice is standard and widely accepted.\nYearly tenancies: 3 to 6 months notice is reasonable.\n\nFor tenancies covered by the Rent Restriction Act (primarily lower-income urban residential areas), the landlord can only increase rent or terminate the tenancy through a formal notice process, and the tenant has the right to apply to the Rent Restriction Tribunal to challenge unreasonable rent increases or unlawful evictions.\n\nImportant: A landlord in Kenya cannot forcibly evict a tenant without a court order. Self-help eviction — changing locks, removing belongings — is illegal regardless of whether the tenant is in breach.`
+      },
+      {
+        heading: 'Security Deposit Rules in Kenya',
+        body: `Unlike some jurisdictions, Kenya does not have a statutory cap on security deposits for uncontrolled residential tenancies. Market practice is 1 to 3 months rent.\n\nYour agreement must specify: the exact deposit amount, that it is held as security against damage and unpaid obligations, the timeframe for refund after vacating (14–30 days is standard), and the process for making and documenting deductions.\n\nAlways document the condition of the property at the start of the tenancy with a signed inventory and photographs. Without this, deductions for damage will be disputed.`
+      },
+      {
+        heading: 'Generate a Kenyan Tenancy Agreement Free',
+        body: `Signova generates a professional tenancy agreement suitable for Kenyan residential and commercial properties in under 2 minutes. Enter the landlord and tenant names, property address, rent amount, deposit, duration, and special conditions — get a structured agreement ready to print and sign.\n\nFree preview. KSh 650 (≈ $4.99) to download. No account needed.`
+      },
+    ],
+    cta: { label: 'Generate Tenancy Agreement Free →', href: '/generate/tenancy-agreement' }
+  },
+
+  {
+    slug: 'freelance-contract-india',
+    title: 'Freelance Contract India 2026 — Free Template for Indian Freelancers',
+    description: 'India has 15 million+ freelancers on global platforms. Most work without a proper contract. This guide covers what an Indian freelance agreement must include under the Indian Contract Act and how to generate one free.',
+    date: '2026-03-22',
+    readTime: '6 min read',
+    category: 'Freelance',
+    keywords: 'freelance contract India, freelancer agreement India free, client contract India, freelance invoice contract India, Indian freelancer contract template 2026',
+    sections: [
+      {
+        heading: 'Freelancing in India — The Legal Framework',
+        body: `India is one of the world\'s largest freelancing markets, with over 15 million registered freelancers on international platforms like Upwork, Fiverr, and Toptal, and a growing domestic market for design, development, content, and consulting services.\n\nFreelance contracts in India are governed by the Indian Contract Act 1872, which provides the legal framework for all commercial agreements. For a freelance contract to be enforceable, it must meet the basic requirements of a valid contract: offer, acceptance, consideration (payment), and the capacity to contract.\n\nIndia does not have a specific "freelance law" — unlike some US states. Your protection as a freelancer comes entirely from the quality of the contract you sign before beginning work.`
+      },
+      {
+        heading: 'What an Indian Freelance Contract Must Include',
+        body: `1. Parties — full legal name and address of both freelancer and client. For businesses, include the registered company name.\n2. Scope of work — define deliverables precisely. Vague scope is the primary cause of every freelance dispute.\n3. Payment terms — the total fee, payment schedule, and accepted methods (bank transfer, UPI, international wire for foreign clients). Specify currency — INR or USD — and who bears bank transfer fees.\n4. Timeline — delivery date per milestone.\n5. Revision policy — rounds of revisions included, cost per additional round.\n6. Intellectual property — all IP transfers to client upon full payment. Until then, the freelancer retains ownership.\n7. Confidentiality — if you will handle sensitive business information.\n8. Indemnification — standard clause limiting your liability to the project fee.\n9. Governing law — specify Indian jurisdiction and your state (e.g. Maharashtra, Karnataka).\n10. Dispute resolution — arbitration is faster and cheaper than court in India for commercial disputes.`
+      },
+      {
+        heading: 'GST and Tax Considerations for Indian Freelancers',
+        body: `If your annual freelance turnover exceeds ₹20 lakhs (₹10 lakhs for special category states), GST registration is mandatory. Once registered, you must charge 18% GST on services provided to Indian clients and issue proper GST invoices.\n\nFor services exported to foreign clients (work delivered outside India and payment received in foreign currency), the supply is treated as a zero-rated export — meaning you charge 0% GST but can claim input tax credits.\n\nYour contract should clearly state whether the quoted fee is inclusive or exclusive of GST. "₹50,000 + 18% GST" avoids disputes at invoice time.\n\nFor income tax, freelance income is treated as "Profits and Gains from Business or Profession" (PGBP). Keep records of all contracts, invoices, and bank receipts — they are your audit trail.`
+      },
+      {
+        heading: 'The Deposit Clause — Why Indian Freelancers Need It More Than Anyone',
+        body: `Indian freelancers working with international clients face a particular problem: once the work is delivered, chasing payment across borders is expensive and often not worth it. The typical Indian freelancer cannot afford a US lawyer to recover a $500 invoice.\n\nThe only reliable protection is a non-refundable deposit before work begins — typically 30–50% of the project fee. For international clients, the deposit creates a financial commitment before you invest any time. A client who pays a deposit almost never ghosts at delivery.\n\nState this clearly in your contract: "A non-refundable deposit of [amount] is required before work commences. The remaining balance is due upon delivery of final files." Period.`
+      },
+      {
+        heading: 'Generate Your Indian Freelance Contract Free',
+        body: `Signova generates a complete freelance contract suitable for Indian law — covering scope, payment in INR or USD, GST clause, IP ownership, revision policy, and dispute resolution. Free preview, ₹418 (≈ $4.99) to download. No account needed. Works for designers, developers, writers, marketers, and all freelancers.`
+      },
+    ],
+    cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
+  },
+
+  {
+    slug: 'freelance-contract-philippines',
+    title: 'Freelance Contract Philippines 2026 — Free Template for Filipino Freelancers',
+    description: 'The Philippines is the world\'s third-largest English-speaking freelance market. Most Filipino freelancers work without written contracts. This guide covers what your contract must include and how to generate one free.',
+    date: '2026-03-22',
+    readTime: '6 min read',
+    category: 'Freelance',
+    keywords: 'freelance contract Philippines, freelancer contract Philippines free, client agreement Philippines, independent contractor Philippines, freelance agreement template Philippines 2026',
+    sections: [
+      {
+        heading: 'Freelancing in the Philippines — A Growing Profession Without Legal Protection',
+        body: `The Philippines is one of the world\'s most active freelance markets. Filipino freelancers are among the most sought-after on Upwork, Fiverr, and OnlineJobs.ph — working as virtual assistants, designers, developers, content writers, and customer service specialists for clients primarily in the US, UK, Australia, and Canada.\n\nDespite the scale of this industry, most Filipino freelancers work on nothing more than a verbal agreement or a brief email exchange. When a client disputes the work, delays payment, or ghosts after delivery, the freelancer has no legal protection.\n\nIn the Philippines, freelance contracts are governed by the Civil Code of the Philippines (Republic Act 386). A written contract is not required for validity — but it is essential for enforceability.`
+      },
+      {
+        heading: 'Key Clauses Every Filipino Freelancer Needs',
+        body: `1. Scope of work — be specific about what you will deliver, in what format, and what is excluded.\n2. Payment terms — specify the amount, currency (USD is standard for international clients), payment method (PayPal, Wise, bank wire), and schedule. A 50% deposit before starting is strongly recommended.\n3. Revision policy — how many rounds are included, and the rate for additional rounds.\n4. Delivery timeline — milestone dates and the final deadline.\n5. Intellectual property — all rights transfer to the client upon receipt of final payment.\n6. Confidentiality — especially important for VA and data entry work where you access client accounts.\n7. Independent contractor clause — you are not an employee. This matters for tax purposes.\n8. Termination — what happens if either party ends the project early, including the kill fee.\n9. Governing law — specify Philippine law. For US clients, some prefer their own state — negotiate this.`
+      },
+      {
+        heading: 'Tax Obligations for Filipino Freelancers',
+        body: `All freelance income earned by Filipino citizens is subject to Philippine income tax, regardless of whether the client is local or foreign. Freelancers must register with the Bureau of Internal Revenue (BIR) and file returns quarterly and annually.\n\nFor VAT: if annual gross receipts exceed ₱3 million, VAT registration is mandatory (12% VAT on services). Below ₱3 million, you can opt for percentage tax (3% on gross receipts) or the 8% flat tax on gross income in lieu of income tax and percentage tax.\n\nFor foreign-sourced income: payments received from foreign clients (USD, AUD, GBP) are still taxable in the Philippines. However, business expenses — laptop, internet, software — can be deducted if you are on the regular income tax scheme.\n\nKeep all contracts, invoices, and bank records. The BIR may audit freelance income, especially for those earning in foreign currency.`
+      },
+      {
+        heading: 'Protecting Yourself From Non-Payment',
+        body: `The most common problem Filipino freelancers face is non-payment after delivering work. Options for recovery are limited when the client is abroad — filing in Philippine courts against a US company is not practical.\n\nThe most effective protections are built into the contract before work starts:\n\nMilestone payment structure — deliver in phases, each with a payment trigger before the next phase begins. A client who has already paid two milestones is psychologically committed to finishing.\n\nKill fee clause — if the client cancels after work has started, they owe you a percentage of the remaining balance. "In the event of cancellation after commencement of work, the Client shall pay a kill fee equal to 50% of the outstanding balance."\n\nFile retention — do not deliver the final source files until full payment is confirmed. Deliver a low-resolution watermarked version for approval, final files on payment. This is standard practice globally.`
+      },
+      {
+        heading: 'Generate Your Freelance Contract Free',
+        body: `Signova generates a complete freelance contract for Philippine-based freelancers — covering scope, USD payment terms, independent contractor status, IP ownership, and termination provisions. Free preview, ₱288 (≈ $4.99) to download. No account needed.`
+      },
+    ],
+    cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
+  },
+
+  {
+    slug: 'freelance-contract-uk',
+    title: 'Freelance Contract UK 2026 — Free Template for British Freelancers',
+    description: 'Everything a UK freelancer needs in their contract — IR35 implications, scope, payment terms, IP ownership, and the clauses that actually protect you. Generate a free UK freelance contract in 3 minutes.',
+    date: '2026-03-22',
+    readTime: '7 min read',
+    category: 'Freelance',
+    keywords: 'freelance contract UK, freelancer contract template UK free, UK contractor agreement, IR35 freelance contract, self-employed contract UK 2026, freelance agreement UK',
+    sections: [
+      {
+        heading: 'Freelancing in the UK — The Legal Landscape',
+        body: `The UK has over 4.2 million self-employed workers, with freelancers concentrated in creative industries, technology, marketing, consulting, and professional services. UK freelance contracts are governed by the general principles of English contract law — primarily the Contract Act, Sale of Goods Act, and case law.\n\nUnlike employment contracts, freelance contracts are not regulated by the Employment Rights Act 1996 — meaning you have no right to sick pay, minimum wage protections, or unfair dismissal rights. What you have is entirely determined by what is written in your contract.\n\nThe most significant legal development for UK freelancers in recent years is IR35 (the off-payroll working rules), which affects how HMRC classifies your working relationship for tax purposes.`
+      },
+      {
+        heading: 'IR35 — What Every UK Freelancer Must Know',
+        body: `IR35 is HMRC\'s legislation designed to identify "disguised employment" — where a contractor works essentially as an employee but pays less tax by operating through a limited company or personal service company.\n\nIf your contract is caught by IR35, HMRC can require the client (or your intermediary) to deduct employment taxes on your fees. The key tests HMRC applies are:\n\nControl — does the client control how, when, and where the work is done?\nSubstitution — can you send a substitute to do the work?\nMutuality of obligation — is the client obliged to offer work and are you obliged to accept it?\n\nTo protect yourself from IR35, your contract must clearly reflect the genuine nature of your relationship: you have the right to send a substitute, you are responsible for correcting faulty work at your own cost, the client does not control your working methods, and there is no ongoing obligation of work.\n\nFor public sector clients and large private sector businesses, IR35 status is assessed by the client (since April 2021). For small private sector clients, you assess your own status.`
+      },
+      {
+        heading: 'What a UK Freelance Contract Must Include',
+        body: `1. Description of services — precisely what you will deliver.\n2. Fees and payment terms — your rate (daily, project, or hourly), payment schedule, and late payment clause. Under the Late Payment of Commercial Debts (Interest) Act 1998, you can charge 8% above the Bank of England base rate on overdue invoices.\n3. Independent contractor status — explicit clause confirming you are not an employee.\n4. Substitution clause — your right to send a substitute (important for IR35).\n5. Intellectual property — who owns the work product. Under UK copyright law, the creator owns copyright by default — you must explicitly assign it to the client in writing for the transfer to be valid.\n6. Confidentiality — standard NDA terms for access to client information.\n7. Limitation of liability — caps your financial exposure at the project fee.\n8. Governing law — English law (or Scottish law for Scotland-based contractors).\n9. Termination — notice period and any kill fee provisions.`
+      },
+      {
+        heading: 'Late Payment — A UK Freelancer\'s Legal Right',
+        body: `The Late Payment of Commercial Debts (Interest) Act 1998 is one of the strongest protections available to UK freelancers. Under this law, if a business client fails to pay an invoice within the agreed payment terms (or within 30 days if not specified), you can legally charge:\n\n— Statutory interest at 8% above the Bank of England base rate on the overdue amount\n— Fixed debt recovery costs: £40 for debts under £1,000, £70 for debts £1,000–£9,999, £100 for debts above £10,000\n\nThis applies automatically — you do not need to include it in your contract, though it is good practice to reference it. Your invoice should state: "Late payment interest and compensation may be charged under the Late Payment of Commercial Debts (Interest) Act 1998."`
+      },
+      {
+        heading: 'Generate Your UK Freelance Contract Free',
+        body: `Signova generates a complete UK freelance contract covering IR35-friendly clauses, payment terms, IP assignment, late payment provisions, and limitation of liability — for any freelance or contracting work in the United Kingdom. Free preview, £3.95 (≈ $4.99) to download. No account needed.`
+      },
+    ],
+    cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
+  },
+
+  {
+    slug: 'freelance-contract-canada',
+    title: 'Freelance Contract Canada 2026 — Free Template for Canadian Freelancers',
+    description: 'What every Canadian freelancer needs in their contract — HST/GST considerations, IP ownership under Canadian copyright law, and the clauses that protect you. Generate a free Canadian freelance contract in 3 minutes.',
+    date: '2026-03-22',
+    readTime: '6 min read',
+    category: 'Freelance',
+    keywords: 'freelance contract Canada, freelancer contract template Canada, independent contractor Canada, self-employed contract Canada, freelance agreement Ontario, freelance contract BC 2026',
+    sections: [
+      {
+        heading: 'Freelancing in Canada — The Legal Framework',
+        body: `Canada has one of the world\'s most active freelance economies, with over 2.9 million self-employed workers. Freelance contracts in Canada are governed by provincial contract law — each province has its own rules, though the fundamental principles are consistent across the country.\n\nOntario and British Columbia are the two largest freelance markets. Quebec operates under the Civil Code of Quebec rather than common law, which affects how contracts are interpreted.\n\nA written freelance contract is not legally required in Canada, but without one you cannot enforce scope limitations, claim a kill fee, or clearly establish IP ownership. The Federal Copyright Act makes IP ownership particularly important — unlike employment, the creator of work retains copyright unless explicitly assigned in writing.`
+      },
+      {
+        heading: 'GST/HST for Canadian Freelancers',
+        body: `If your annual freelance revenue exceeds $30,000 (the Small Supplier threshold), you must register for GST/HST with the Canada Revenue Agency (CRA) and charge applicable rates to your clients:\n\nOntario: 13% HST\nBritish Columbia: 12% HST (5% GST + 7% PST)\nAlberta: 5% GST (no provincial sales tax)\nQuebec: 14.975% (5% GST + 9.975% QST)\n\nFor services provided to US and international clients, the supply is generally zero-rated (0% GST/HST) if the service is exported — meaning you do not charge HST on foreign-client invoices.\n\nYour contract should specify whether fees are plus applicable taxes or inclusive of all taxes. "CAD $5,000 + HST where applicable" avoids disputes at invoice time.`
+      },
+      {
+        heading: 'Copyright Ownership — Canada\'s Default Rule',
+        body: `Under the Canadian Copyright Act, the creator of an original work owns copyright by default. This includes code, design, writing, photography, and any other creative work.\n\nThis means: if you create a website for a client and your contract is silent on IP, you legally own the code and design — the client has a licence to use it, but you can still sell it or use it in your portfolio unless your contract restricts this.\n\nFor most clients, this is not the outcome they expect. Most clients assume they own the work they paid for. To transfer copyright to the client, your contract must contain an explicit written assignment.\n\nA standard clause: "Upon receipt of final payment in full, Freelancer hereby assigns all intellectual property rights, including copyright, in the deliverables to Client." Without this language, copyright does not transfer.`
+      },
+      {
+        heading: 'Independent Contractor vs Employee — The CRA Test',
+        body: `CRA applies a four-factor test to determine whether a working relationship is employment or self-employment:\n\n1. Control — does the payer control how the work is done?\n2. Ownership of tools — does the worker own their own equipment?\n3. Chance of profit / risk of loss — can the worker profit more by managing their business efficiently, or lose money?\n4. Integration — is the worker integrated into the client\'s organisation?\n\nIf CRA reclassifies your relationship as employment, the client may owe employer payroll taxes and you may owe additional income tax. Your contract should clearly reflect the genuine contractor relationship: you set your own hours, use your own equipment, work for multiple clients, and invoice for results.`
+      },
+      {
+        heading: 'Generate Your Canadian Freelance Contract Free',
+        body: `Signova generates a complete freelance contract for Canadian self-employed professionals — covering scope, HST/GST clause, copyright assignment, independent contractor status, and late payment terms. Free preview, CA$6.85 (≈ $4.99) to download. No account needed. Works for Ontario, BC, Alberta, and all Canadian provinces.`
+      },
+    ],
+    cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
+  },
+
+  {
+    slug: 'tenancy-agreement-ghana',
+    title: 'Tenancy Agreement Ghana 2026 — Free Template for Landlords and Tenants',
+    description: 'What every Ghanaian landlord and tenant needs in a written rental agreement — the legal requirements under the Rent Act 1963, notice periods, and how to generate one free.',
+    date: '2026-03-22',
+    readTime: '6 min read',
+    category: 'Real Estate',
+    keywords: 'tenancy agreement Ghana, rental agreement Ghana free, lease agreement Ghana, landlord tenant Ghana, Ghana rent act, tenancy agreement Accra 2026',
+    sections: [
+      {
+        heading: 'Tenancy Law in Ghana — The Rent Act 1963',
+        body: `Tenancy agreements in Ghana are primarily governed by the Rent Act 1963 (Act 220), which applies to both residential and commercial tenancies across the country. The Rent Control Department, operating under the Rent Control Law (PNDC Law 138 of 1986), is the regulatory body responsible for enforcing rent law and resolving landlord-tenant disputes.\n\nA key provision of Ghanaian rent law is the limitation on advance rent payments. Landlords in Ghana are legally prohibited from collecting more than 6 months rent in advance. The Rent Act also requires landlords to provide a written receipt for every rent payment — a requirement that is widely ignored but legally enforceable.\n\nDespite these protections, the majority of landlord-tenant relationships in Ghana operate without a formal written agreement, which leaves both parties exposed when disputes arise.`
+      },
+      {
+        heading: 'The Advance Rent Problem in Ghana',
+        body: `One of the most significant housing challenges in Ghana is the widespread practice of demanding 1–3 years of rent in advance — known locally as "advance payment." This practice persists despite being illegal under the Rent Act 1963.\n\nLandlords justify this practice as security against non-payment. The reality is that it creates a significant barrier to housing access and leaves tenants with no leverage if the landlord later breaches the agreement.\n\nIf you are a tenant being asked for more than 6 months advance rent, you can report this to the Rent Control Department. If you pay more than 6 months in advance, document it carefully — excess advance payments can be recovered as a debt.\n\nYour written tenancy agreement should state the exact rent amount, the advance period paid, and a refund clause for any overpayment of advance rent.`
+      },
+      {
+        heading: 'What a Ghanaian Tenancy Agreement Must Include',
+        body: `1. Names and contact details of landlord and tenant.\n2. Property address — full description of the premises, including any fixtures included.\n3. Rent amount in Ghanaian Cedis (GH₵) — monthly rent and the agreed advance period (maximum 6 months under the Rent Act).\n4. Duration of tenancy — fixed term or periodic.\n5. Notice period — standard is 1 month for monthly tenancies.\n6. Security deposit — whether a caution deposit was collected and the refund conditions.\n7. Utilities — which party pays electricity (ECG bill), water (GWCL), and any service charge.\n8. Maintenance responsibilities.\n9. Subletting restrictions.\n10. Signatures of both parties.`
+      },
+      {
+        heading: 'Eviction Process in Ghana',
+        body: `A landlord in Ghana cannot evict a tenant without following the legal process. The correct procedure is:\n\n1. Serve written notice to vacate — respecting the required notice period.\n2. If the tenant does not vacate, apply to the Rent Control Department for a recovery order.\n3. The Rent Control Department may attempt mediation before issuing an order.\n4. If mediation fails, the case proceeds to the Rent Control Tribunal.\n\nSelf-help eviction — changing locks, removing belongings, cutting off utilities — is illegal in Ghana and can result in the landlord facing criminal charges. A written tenancy agreement that specifies the notice period and breach conditions makes the formal eviction process faster and more predictable.`
+      },
+      {
+        heading: 'Generate a Ghanaian Tenancy Agreement Free',
+        body: `Signova generates a professional tenancy agreement for Ghana — covering rent amount in Cedis, advance rent period, security deposit, notice period, utilities, and termination provisions. Free preview, GH₵75 (≈ $4.99) to download. No account needed.`
+      },
+    ],
+    cta: { label: 'Generate Tenancy Agreement Free →', href: '/generate/tenancy-agreement' }
+  },
+
 ]
 
 export function getPostBySlug(slug) {
