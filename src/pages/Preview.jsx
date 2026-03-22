@@ -336,7 +336,7 @@ export default function Preview() {
           }
         }
         sessionStorage.removeItem('oxapay_trackId')
-        trackPaymentSuccess(savedDoc.docType, 'usdt')
+        setTimeout(() => trackPaymentSuccess(savedDoc.docType, 'usdt'), 1500)
         setPaid(true)
         window.history.replaceState({}, '', '/preview')
       } catch (err) {
@@ -408,7 +408,7 @@ export default function Preview() {
           }
         }
 
-        trackPaymentSuccess(savedDoc.docType, 'card')
+        setTimeout(() => trackPaymentSuccess(savedDoc.docType, 'card'), 1500)
         setPaid(true)
         window.history.replaceState({}, '', '/preview')
       } catch (err) {
