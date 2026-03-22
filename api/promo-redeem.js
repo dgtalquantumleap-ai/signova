@@ -14,8 +14,37 @@ function isPromoRateLimited(ip) {
   return false
 }
 
-// ── In-memory use tracking (resets on cold start — best effort) ─────────────
-const CODE_USE_COUNT = new Map()
+// ── Persistent use tracking via Upstash Redis ──────────────────────────────
+// Falls back to in-memory if Redis env vars are missing (local dev)
+const CODE_USE_COUNT_FALLBACK = new Map()
+
+async function getUseCount(code) {
+  const url = process.env.UPSTASH_REDIS_REST_URL
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN
+  if (!url || !token) return CODE_USE_COUNT_FALLBACK.get(code) || 0
+  try {
+    const r = await fetch(`${url}/get/promo_uses:${code}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    const json = await r.json()
+    return parseInt(json.result || '0', 10)
+  } catch { return CODE_USE_COUNT_FALLBACK.get(code) || 0 }
+}
+
+async function incrementUseCount(code) {
+  const url = process.env.UPSTASH_REDIS_REST_URL
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN
+  if (!url || !token) {
+    CODE_USE_COUNT_FALLBACK.set(code, (CODE_USE_COUNT_FALLBACK.get(code) || 0) + 1)
+    return
+  }
+  try {
+    await fetch(`${url}/incr/promo_uses:${code}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+    })
+  } catch { CODE_USE_COUNT_FALLBACK.set(code, (CODE_USE_COUNT_FALLBACK.get(code) || 0) + 1) }
+}
 
 const VALID_CODES = {
   PRODUCTHUNT: {
@@ -71,12 +100,12 @@ export default async function handler(req, res) {
     return res.status(400).json({ valid: false, error: 'This promo code has expired.' })
   }
 
-  // Enforce maxUses (best-effort in-memory — resets on cold start)
-  const currentUses = CODE_USE_COUNT.get(upperCode) || 0
+  // Enforce maxUses — persisted in Upstash Redis across cold starts
+  const currentUses = await getUseCount(upperCode)
   if (currentUses >= promo.maxUses) {
     return res.status(400).json({ valid: false, error: 'This promo code has reached its usage limit.' })
   }
-  CODE_USE_COUNT.set(upperCode, currentUses + 1)
+  await incrementUseCount(upperCode)
 
   const secret = process.env.PROMO_SECRET || 'signova_promo_2026'
   const timestamp = Date.now()
