@@ -1,4 +1,4 @@
-// Preview page — v2 PDF renderer
+// Preview page — v2 PDF renderer with blurred locked section
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState, useRef } from 'react'
 import {
@@ -455,6 +455,12 @@ export default function Preview() {
   )
 
   const lines = doc.content.split('\n')
+  
+  // Show only 40% of lines in preview, blur the rest
+  const previewCutoff = paid ? lines.length : Math.floor(lines.length * 0.4)
+  const visibleLines = lines.slice(0, previewCutoff)
+  const hiddenLines = paid ? [] : lines.slice(previewCutoff)
+  const hiddenSectionCount = hiddenLines.filter(l => l.startsWith('## ')).length
 
   return (
     <div className="preview-page">
@@ -483,7 +489,7 @@ export default function Preview() {
         <div className="preview-doc-wrap">
           {!paid && (
             <div className="preview-watermark-bar">
-              🔒 Preview only — <button onClick={handleDownload} disabled={paying}>Pay $4.99 to download the clean PDF</button>
+              🔒 Preview — showing first 40% of your document
             </div>
           )}
           {paid && (
@@ -493,17 +499,57 @@ export default function Preview() {
           )}
 
           <div className={`preview-doc ${!paid ? 'watermarked' : ''}`} ref={contentRef}>
-            {!paid && <div className="watermark-overlay"><span>PREVIEW ONLY · SIGNOVA</span></div>}
             <div className="doc-content">
-              {lines.map((line, i) => {
+              {/* Visible portion */}
+              {visibleLines.map((line, i) => {
                 if (!line.trim()) return <br key={i} />
-                // Bold markdown
                 const formatted = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                 if (line.startsWith('# ')) return <h1 key={i} dangerouslySetInnerHTML={{ __html: formatted.slice(2) }} />
                 if (line.startsWith('## ')) return <h2 key={i} dangerouslySetInnerHTML={{ __html: formatted.slice(3) }} />
                 if (line.startsWith('### ')) return <h3 key={i} dangerouslySetInnerHTML={{ __html: formatted.slice(4) }} />
                 return <p key={i} dangerouslySetInnerHTML={{ __html: formatted }} />
               })}
+              
+              {/* Blurred/hidden portion with unlock CTA */}
+              {!paid && hiddenLines.length > 0 && (
+                <div className="preview-locked-section">
+                  <div className="locked-blur">
+                    {hiddenLines.slice(0, 15).map((line, i) => {
+                      if (!line.trim()) return <br key={`blur-${i}`} />
+                      const formatted = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                      if (line.startsWith('## ')) return <h2 key={`blur-${i}`} dangerouslySetInnerHTML={{ __html: formatted.slice(3) }} />
+                      if (line.startsWith('### ')) return <h3 key={`blur-${i}`} dangerouslySetInnerHTML={{ __html: formatted.slice(4) }} />
+                      return <p key={`blur-${i}`} dangerouslySetInnerHTML={{ __html: formatted }} />
+                    })}
+                  </div>
+                  <div className="locked-overlay">
+                    <div className="locked-content">
+                      <div className="locked-icon">🔒</div>
+                      <h3 className="locked-title">
+                        {hiddenSectionCount > 0 
+                          ? `${hiddenSectionCount} more section${hiddenSectionCount > 1 ? 's' : ''} hidden`
+                          : 'Document continues below'
+                        }
+                      </h3>
+                      <p className="locked-desc">
+                        The full document includes all clauses, terms, and signature blocks. 
+                        Pay once to unlock and download the complete PDF.
+                      </p>
+                      <button 
+                        className="locked-cta" 
+                        onClick={handleDownload}
+                        disabled={paying}
+                      >
+                        {paying 
+                          ? <><span className="spinner-sm" /> Processing…</> 
+                          : <>Unlock Full Document — $4.99</>
+                        }
+                      </button>
+                      <p className="locked-guarantee">30-day money-back guarantee · Instant download</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -566,7 +612,7 @@ export default function Preview() {
                   <>
                     <p className="pre-capture-label">Not ready to pay?</p>
                     <p className="pre-capture-sub">
-                      Enter your email and we’ll send you a link to come back to this document.
+                      Enter your email and we'll send you a link to come back to this document.
                     </p>
                     <input
                       className="pre-capture-input"
@@ -705,7 +751,7 @@ export default function Preview() {
             if (!c) return null
             return (
               <div className="sidebar-companion">
-                <p className="companion-reason">📎 You’ll also need</p>
+                <p className="companion-reason">📎 You'll also need</p>
                 <button className="companion-btn" onClick={() => { trackCompanionClicked(doc.docType, c.id); navigate(`/generate/${c.id}`) }}>
                   <span className="companion-icon">{c.icon}</span>
                   <span>
