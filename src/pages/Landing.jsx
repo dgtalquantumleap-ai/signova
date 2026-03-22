@@ -621,7 +621,7 @@ export default function Landing() {
           </div>
           <div className="steps">
             {[
-              { n: '01', title: 'Choose your document', body: 'Pick from 27 document types built for Nigeria, Africa, and global use — Tenancy Agreement, NDA, Freelance Contract, Deed of Assignment, Loan Agreement, Business Proposal, and more.' },
+              { n: '01', title: 'Choose your document', body: 'Pick from 27 document types built for global use — Tenancy Agreement, NDA, Freelance Contract, Deed of Assignment, Loan Agreement, Business Proposal, and more. Works in 180+ countries.' },
               { n: '02', title: 'Answer a few questions', body: 'Tell us your names, jurisdiction, and deal terms. Takes 2 minutes. No legal knowledge required — the questions are plain language.' },
               { n: '03', title: 'Preview free, download when ready', body: 'See your complete, properly structured document instantly. When you\'re happy, download the clean PDF for the price of a phone call — not a lawyer.' },
             ].map(s => (
