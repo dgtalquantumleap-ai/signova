@@ -61,23 +61,36 @@ function useGeo() {
   const [currency, setCurrency] = useState(DEFAULT_CURRENCY)
   const [countryCode, setCountryCode] = useState(null)
   useEffect(() => {
+    // Check cache first — synchronous, no network, safe to run immediately
     const cached = sessionStorage.getItem('sig_geo')
     if (cached) {
-      const parsed = JSON.parse(cached)
-      setCurrency(parsed.currency)
-      setCountryCode(parsed.countryCode)
+      try {
+        const parsed = JSON.parse(cached)
+        setCurrency(parsed.currency)
+        setCountryCode(parsed.countryCode)
+      } catch {}
       return
     }
-    fetch('https://ipapi.co/json/')
-      .then(r => r.json())
-      .then(data => {
-        const c = CURRENCY_MAP[data.country_code] || DEFAULT_CURRENCY
-        const cc = data.country_code || null
-        sessionStorage.setItem('sig_geo', JSON.stringify({ currency: c, countryCode: cc }))
-        setCurrency(c)
-        setCountryCode(cc)
-      })
-      .catch(() => {})
+    // Defer the network fetch until after the browser has painted the first frame.
+    // This prevents the ipapi response from triggering a re-render that inflates LCP.
+    // requestIdleCallback fires when the main thread is idle; setTimeout(0) is the fallback.
+    const doFetch = () => {
+      fetch('https://ipapi.co/json/')
+        .then(r => r.json())
+        .then(data => {
+          const c = CURRENCY_MAP[data.country_code] || DEFAULT_CURRENCY
+          const cc = data.country_code || null
+          sessionStorage.setItem('sig_geo', JSON.stringify({ currency: c, countryCode: cc }))
+          setCurrency(c)
+          setCountryCode(cc)
+        })
+        .catch(() => {})
+    }
+    if (typeof requestIdleCallback !== 'undefined') {
+      requestIdleCallback(doFetch, { timeout: 3000 })
+    } else {
+      setTimeout(doFetch, 0)
+    }
   }, [])
   return { currency, countryCode }
 }
@@ -162,26 +175,21 @@ function getQuickPicks(cc) {
 
 function LoomFacade({ videoId }) {
   const [clicked, setClicked] = useState(false)
-  const [thumbLoaded, setThumbLoaded] = useState(false)
-  const [thumbError, setThumbError] = useState(false)
   const [inView, setInView] = useState(false)
   const ref = useRef(null)
 
-  // Only load the GIF when the section scrolls into view — keeps it off LCP path
+  // Only start loading the iframe when section is actually in viewport (rootMargin: 0px).
+  // Previously rootMargin was 200px which caused the GIF to preload before visible — inflating LCP.
   useEffect(() => {
     const el = ref.current
     if (!el) return
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) { setInView(true); observer.disconnect() } },
-      { rootMargin: '200px' }
+      { rootMargin: '0px' }
     )
     observer.observe(el)
     return () => observer.disconnect()
   }, [])
-
-  // Thumbnail hardcoded — avoids oEmbed network call on load (LCP improvement)
-  // To update: GET loom.com/v1/oembed?url=https://www.loom.com/share/{videoId} and use thumbnail_url
-  const thumb = 'https://cdn.loom.com/sessions/thumbnails/9a41b8a6f1654deab554c80a7d1ba891-513a0d12b2c3cd0e.gif'
 
   if (clicked) {
     return (
@@ -194,31 +202,30 @@ function LoomFacade({ videoId }) {
       />
     )
   }
+
   return (
     <div ref={ref} className="loom-facade" onClick={() => setClicked(true)} role="button" aria-label="Play demo video">
-      {(!inView || (!thumbLoaded && !thumbError)) && (
-        <div className="loom-placeholder">
-          <div className="loom-play-btn">▶</div>
-          <p className="loom-loading-text">{inView ? 'Loading preview…' : 'Click to watch demo'}</p>
+      {/* Static local poster — no external CDN, no GIF, no LCP bloat */}
+      <div className="loom-poster">
+        <svg className="loom-poster-bg" viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="800" height="450" fill="#1a1a1a" rx="12"/>
+          <rect x="60" y="60" width="680" height="40" fill="#2a2a2a" rx="6"/>
+          <rect x="60" y="120" width="520" height="20" fill="#222" rx="4"/>
+          <rect x="60" y="155" width="460" height="20" fill="#222" rx="4"/>
+          <rect x="60" y="190" width="500" height="20" fill="#222" rx="4"/>
+          <rect x="60" y="240" width="680" height="1" fill="#333"/>
+          <rect x="60" y="260" width="300" height="80" fill="#242424" rx="8"/>
+          <rect x="380" y="260" width="360" height="80" fill="#242424" rx="8"/>
+          <rect x="60" y="360" width="200" height="36" fill="#c9a84c" rx="6"/>
+        </svg>
+        <div className="loom-play-btn" aria-hidden="true">
+          {inView
+            ? <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="13" stroke="#fff" strokeWidth="1.5"/><path d="M11 9.5l9 4.5-9 4.5V9.5z" fill="#fff"/></svg>
+            : <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="13" stroke="#fff" strokeWidth="1.5"/><path d="M11 9.5l9 4.5-9 4.5V9.5z" fill="#fff"/></svg>
+          }
         </div>
-      )}
-      {thumbError && (
-        <div className="loom-placeholder loom-placeholder-error">
-          <div className="loom-play-btn">▶</div>
-          <p className="loom-loading-text">Click to watch demo</p>
-        </div>
-      )}
-      {inView && thumb && (
-        <img
-          src={thumb}
-          alt="Watch Signova demo"
-          className="loom-thumb"
-          style={{ display: thumbLoaded ? 'block' : 'none' }}
-          onLoad={() => setThumbLoaded(true)}
-          onError={() => setThumbError(true)}
-        />
-      )}
-      {thumbLoaded && <div className="loom-play-btn">▶</div>}
+        <p className="loom-loading-text">Watch demo — 2 min</p>
+      </div>
     </div>
   )
 }

@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   build: {
+    cssCodeSplit: true, // each route chunk gets its own CSS — reduces initial CSS parse time
     rollupOptions: {
       output: {
         manualChunks: (id) => {
