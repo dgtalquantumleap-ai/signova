@@ -96,14 +96,26 @@ export default async function handler(req, res) {
     })
 
     if (!response.ok) {
-      const err = await response.json()
-      return res
-        .status(response.status)
-        .json({ error: err.error?.message || 'Preview generation failed' })
+      let errMsg = 'Preview generation failed'
+      try {
+        const errBody = await response.json()
+        errMsg = errBody.error?.message || errMsg
+      } catch {
+        try { errMsg = await response.text() } catch {}
+      }
+      console.error('Groq API error:', response.status, errMsg)
+      return res.status(500).json({ error: 'Preview generation failed. Please try again.' })
     }
 
-    const data = await response.json()
-    const text = data.choices[0]?.message?.content || ''
+    let data
+    try {
+      data = await response.json()
+    } catch (parseErr) {
+      console.error('Groq response parse error:', parseErr)
+      return res.status(500).json({ error: 'Preview generation failed. Please try again.' })
+    }
+    const text = data.choices?.[0]?.message?.content || ''
+    if (!text) return res.status(500).json({ error: 'Preview generation failed. Please try again.' })
     res.status(200).json({ text, isPreview: true })
   } catch (err) {
     console.error('Preview generate error:', err)
