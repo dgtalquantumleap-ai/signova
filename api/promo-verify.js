@@ -15,7 +15,12 @@ export default async function handler(req, res) {
 
     const sig = parts.pop()
     const payload = parts.join(':')
-    const [code, timestampStr] = parts
+
+    // Token format from promo-redeem: "CODE::timestamp:sig"
+    // After popping sig, parts = ["CODE", "", "timestamp"]
+    // Timestamp is always the last element; code is always the first
+    const code = parts[0]
+    const timestampStr = parts[parts.length - 1]
 
     const timestamp = parseInt(timestampStr, 10)
     if (isNaN(timestamp)) throw new Error('Invalid timestamp')
