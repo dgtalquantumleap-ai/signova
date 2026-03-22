@@ -148,7 +148,6 @@
 
 @media (max-width: 768px) {
   .testimonials-grid { grid-template-columns: 1fr; }
-  .hero-top3 { grid-template-columns: repeat(2, 1fr); }
   .all-docs-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
