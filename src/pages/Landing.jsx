@@ -777,7 +777,7 @@ export default function Landing() {
               Preview my document free <span className="btn-arrow">→</span>
             </button>
             <div className="waitlist-box">
-              <p className="waitlist-label">Need unlimited documents? Join the waitlist — $9.99/month</p>
+              <p className="waitlist-label">Building a business? Join the waitlist for Signova Pro — unlimited docs, contract monitoring &amp; scope alerts. $9.99/month at launch.</p>
               {waitlistSubmitted ? (
                 <p className="waitlist-done">✓ You’re on the list — we’ll email you at launch</p>
               ) : (

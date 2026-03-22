@@ -25,7 +25,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         from: 'Signova Waitlist <info@getsignova.com>',
         to: ['info@ebenova.net'],
-        subject: `🎉 New waitlist signup: ${email}`,
+        subject: `🎉 New Signova Pro waitlist signup: ${email}`,
         html: `
           <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
             <h2 style="color: #c9a84c; margin-bottom: 8px;">New Unlimited waitlist signup</h2>
@@ -60,12 +60,12 @@ export default async function handler(req, res) {
             </div>
             <h2 style="color: #c9a84c; margin-bottom: 16px;">You're on the list.</h2>
             <p style="color: #9a9690; line-height: 1.7; margin-bottom: 24px;">
-              Thanks for signing up for <strong style="color: #f0ece4;">Signova Unlimited</strong> — 
-              unlimited document generation for $9.99/month.
+              Thanks for signing up for <strong style="color: #f0ece4;">Signova Pro</strong> — 
+              unlimited document generation, contract monitoring, and scope alerts for $9.99/month.
             </p>
             <p style="color: #9a9690; line-height: 1.7; margin-bottom: 24px;">
-              We're putting the finishing touches on it and will email you the moment it's live. 
-              You'll get first access and a launch discount.
+              We're building the full Pro experience and will email you the moment it's live.
+              You'll get first access and a launch discount as an early signup.
             </p>
             <p style="color: #9a9690; line-height: 1.7; margin-bottom: 32px;">
               In the meantime, you can generate any document for just $4.99 at
