@@ -541,8 +541,8 @@ export default function Landing() {
   return (
     <div className="landing">
       <Helmet>
-        <title>Signova — Legal Documents for Nigeria, Africa & the World | Free Preview</title>
-        <meta name="description" content="The legal document tool built for Nigeria, Africa, and every market the big platforms ignore. Tenancy agreements, freelance contracts, NDAs, deeds of assignment and 23 more — jurisdiction-aware, WhatsApp-ready, free to preview. $4.99 to download." />
+        <title>Signova — Professional Legal Documents for Freelancers, Landlords & Businesses | Free Preview</title>
+        <meta name="description" content="Generate professional legal documents in minutes — tenancy agreements, freelance contracts, NDAs, deeds of assignment, business proposals and 22 more. Jurisdiction-aware for Nigeria, Africa, and 180+ countries. Free preview, $4.99 to download. No account needed." />
         <meta name="keywords" content="legal document generator Nigeria, tenancy agreement Nigeria, NDA template Nigeria, freelance contract Nigeria, deed of assignment Nigeria, loan agreement Nigeria, business proposal Nigeria, freelance contract Africa, legal document generator Africa, NDA generator free" />
         <link rel="canonical" href="https://www.getsignova.com/" />
       </Helmet>
@@ -575,7 +575,7 @@ export default function Landing() {
         <div className="hero-glow" />
         <div className="hero-inner">
           <h1 className="hero-title">
-            Legal documents built for Nigeria, Africa, and everyone the big platforms ignore.
+            Professional legal documents for freelancers, landlords, and businesses globally.
           </h1>
           <p className="hero-sub">
             Tenancy agreements. Freelance contracts. NDAs. Deeds of assignment. 27 document types — jurisdiction-aware, WhatsApp-ready, free to preview. No account. No lawyer fees.
