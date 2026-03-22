@@ -179,15 +179,9 @@ function LoomFacade({ videoId }) {
     return () => observer.disconnect()
   }, [])
 
-  // Loom CDN GIF thumbnails now require a session hash — use oEmbed API to resolve the real URL
-  const [thumbUrl, setThumbUrl] = useState(null)
-  useEffect(() => {
-    fetch(`https://www.loom.com/v1/oembed?url=https://www.loom.com/share/${videoId}`)
-      .then(r => r.json())
-      .then(d => { if (d.thumbnail_url) setThumbUrl(d.thumbnail_url) })
-      .catch(() => {})
-  }, [videoId])
-  const thumb = thumbUrl
+  // Thumbnail hardcoded — avoids oEmbed network call on load (LCP improvement)
+  // To update: GET loom.com/v1/oembed?url=https://www.loom.com/share/{videoId} and use thumbnail_url
+  const thumb = 'https://cdn.loom.com/sessions/thumbnails/9a41b8a6f1654deab554c80a7d1ba891-513a0d12b2c3cd0e.gif'
 
   if (clicked) {
     return (
@@ -597,14 +591,14 @@ export default function Landing() {
 
           <button
             className="more-docs-link"
-            onClick={() => startTransition(() => setShowAllDocs(true))}
+            onClick={() => startTransition(() => setShowAllDocs(v => !v))}
           >
-            {showAllDocs ? '' : 'More documents ↓'}
+            {showAllDocs ? 'Show fewer ↑' : 'More documents ↓'}
           </button>
 
           {showAllDocs && (
             <div className="all-docs-grid">
-              {docsToShow.filter(d => !quickPicks.slice(0, 3).some(qp => qp.id === d.id)).map(doc => (
+              {DOCS.filter(d => !quickPicks.slice(0, 3).some(qp => qp.id === d.id)).map(doc => (
                 <button key={doc.id} className="all-doc-btn" onClick={() => { trackDocSelected(doc.id, 'all_docs'); navigate(`/generate/${doc.id}`) }}>
                   <span>{doc.icon}</span> {doc.name}
                 </button>
@@ -759,6 +753,27 @@ export default function Landing() {
             >
               Preview my document free <span className="btn-arrow">→</span>
             </button>
+            <div className="waitlist-box">
+              <p className="waitlist-label">Need unlimited documents? Join the waitlist — $9.99/month</p>
+              {waitlistSubmitted ? (
+                <p className="waitlist-done">✓ You’re on the list — we’ll email you at launch</p>
+              ) : (
+                <form className="waitlist-form" onSubmit={handleWaitlist}>
+                  <input
+                    className="waitlist-input"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={waitlistEmail}
+                    onChange={e => setWaitlistEmail(e.target.value)}
+                    required
+                  />
+                  <button className="waitlist-btn" type="submit" disabled={waitlistLoading}>
+                    {waitlistLoading ? 'Saving…' : 'Join waitlist →'}
+                  </button>
+                </form>
+              )}
+              {waitlistError && <p className="waitlist-error">{waitlistError}</p>}
+            </div>
           </div>
         </div>
       </section>

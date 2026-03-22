@@ -764,8 +764,10 @@ Output the complete document only, no preamble, explanation, or closing notes.`
         <meta property="og:title" content={seo.title} />
         <meta property="og:description" content={seo.description} />
         <meta property="og:url" content={`https://www.getsignova.com/generate/${docType}`} />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={seo.title} />
         <meta name="twitter:description" content={seo.description} />
+        <meta name="twitter:image" content="https://www.getsignova.com/og-image.png" />
       </Helmet>
       <div className="gen-nav">
         <button className="gen-back" onClick={() => navigate('/')}>← Back</button>

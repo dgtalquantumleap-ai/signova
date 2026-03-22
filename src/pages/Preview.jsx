@@ -255,11 +255,21 @@ export default function Preview() {
       if (!res.ok || !data.valid) {
         setPromoError(data.error || 'Invalid promo code.')
       } else {
-        setPromoToken(data.token)
-        setPromoMsg(data.message)
-        trackPromoApplied(doc?.docType, promoCode)
-        // Unlock immediately — post-purchase email capture handles lead collection
-        setPaid(true)
+        // Verify the token server-side before unlocking — prevents client-side bypass
+        const verifyRes = await fetch('/api/promo-verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: data.token }),
+        })
+        const verifyData = await verifyRes.json()
+        if (!verifyRes.ok || !verifyData.valid) {
+          setPromoError(verifyData.error || 'Code could not be verified. Please try again.')
+        } else {
+          setPromoToken(data.token)
+          setPromoMsg(data.message)
+          trackPromoApplied(doc?.docType, promoCode)
+          setPaid(true)
+        }
       }
     } catch {
       setPromoError('Could not apply code. Please try again.')

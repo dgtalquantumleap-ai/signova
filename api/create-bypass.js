@@ -1,17 +1,17 @@
 // api/create-bypass.js
 // Generates a single-use bypass code for manual payment verification
 // Used by /admin page when a customer pays via bank transfer
-// Protected by ADMIN_SECRET env var
+// Protected by BYPASS_ADMIN_SECRET env var
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
   const { secret } = req.body
-  const adminSecret = process.env.ADMIN_SECRET
+  const adminSecret = process.env.BYPASS_ADMIN_SECRET
 
-  // If ADMIN_SECRET not configured, block all access
+  // If BYPASS_ADMIN_SECRET not configured, block all access
   if (!adminSecret) {
-    console.error('ADMIN_SECRET not set — /api/create-bypass is disabled')
+    console.error('BYPASS_ADMIN_SECRET not set — /api/create-bypass is disabled')
     return res.status(503).json({ error: 'Admin feature not configured.' })
   }
 
