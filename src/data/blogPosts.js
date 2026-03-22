@@ -1130,6 +1130,273 @@ export const BLOG_POSTS = [
     cta: { label: 'Generate Tenancy Agreement Free →', href: '/generate/tenancy-agreement' }
   },
 
+
+  // ── TIER 1 PRIORITY POSTS ───────────────────────────────────────────────
+
+  {
+    slug: 'nda-template-south-africa',
+    title: 'Free NDA Template South Africa 2026 — Non-Disclosure Agreement Generator',
+    description: 'What South African businesses, freelancers, and startups need in an enforceable NDA — confidentiality law, IP protection, and how to generate one free in 2 minutes.',
+    date: '2026-03-22',
+    readTime: '6 min read',
+    category: 'Business',
+    keywords: 'NDA South Africa, non-disclosure agreement South Africa, confidentiality agreement South Africa, NDA template SA free, NDA generator South Africa 2026',
+    sections: [
+      {
+        heading: 'NDA Law in South Africa',
+        body: `Non-Disclosure Agreements in South Africa are governed by the general principles of the South African law of contract, grounded in the common law tradition inherited from Roman-Dutch law. For an NDA to be valid and enforceable in South Africa, it must satisfy the standard requirements of a valid contract: consensus, capacity, legality, possibility of performance, and formalities where required.\n\nSouth Africa's Protection of Personal Information Act (POPIA), which came into full effect in July 2021, adds an important layer — if your NDA involves the sharing of personal information (names, contact details, financial data), the parties must ensure that such sharing is compliant with POPIA's conditions for lawful processing. An NDA that facilitates the unlawful sharing of personal data could itself be unenforceable.\n\nThe Companies Act 71 of 2008 and the Consumer Protection Act 68 of 2008 also affect how confidentiality clauses are interpreted in commercial relationships — excessively broad restraints can be struck down as contrary to public policy.`
+      },
+      {
+        heading: 'What a South African NDA Must Include',
+        body: `1. Identification of parties — full legal names, registration numbers for companies, and physical addresses.\n2. Definition of confidential information — be specific. "All information shared" clauses are routinely challenged. Define categories: business plans, financial data, client lists, technical specifications, pricing.\n3. Standard exclusions — information already public, independently developed, received from a third party, or required to be disclosed by law.\n4. Obligations of the receiving party — use only for the defined purpose, protect with reasonable care, disclose only to authorised staff on a need-to-know basis.\n5. Duration — 2 to 5 years is standard and enforceable. Perpetual NDAs face challenges in South African courts.\n6. Governing law — Republic of South Africa, and specify the court jurisdiction (e.g. High Court of South Africa, Western Cape Division).\n7. Dispute resolution — consider including an arbitration clause under the Arbitration Act 42 of 1965 for faster, private resolution.`
+      },
+      {
+        heading: 'POPIA and Your NDA — What You Must Know',
+        body: `The Protection of Personal Information Act 4 of 2013 (POPIA) came into full effect on 1 July 2021. It requires that all processing of personal information — including sharing it under an NDA — complies with eight conditions: accountability, processing limitation, purpose specification, further processing limitation, information quality, openness, security safeguards, and data subject participation.\n\nFor NDAs involving employee or contractor personal information, you must also comply with the POPIA requirements around consent and legitimate purpose. A pure confidentiality clause is not, by itself, POPIA-compliant authority to process personal data.\n\nPractical implication: if your NDA requires the receiving party to handle personal data (client lists, employee information), add a clause specifying that such data is processed only in accordance with POPIA and under a separate data processing agreement if volume is significant.`
+      },
+      {
+        heading: 'Restraint of Trade vs NDA — The South African Distinction',
+        body: `Many South African businesses confuse NDAs with restraint of trade agreements. They serve different purposes.\n\nAn NDA protects confidential information — it restricts what the other party can disclose, not where they can work. It survives the end of the relationship and binds the receiving party indefinitely (subject to the agreed duration).\n\nA restraint of trade restricts the employee or contractor from competing with you or working for competitors for a defined period and area after leaving. South African courts apply a strict "reasonableness" test to restraints — they must be reasonable in scope, duration, and geography to be enforceable.\n\nIf you need both, use both — but as separate documents or clearly separated clauses.`
+      },
+      {
+        heading: 'Generate Your South African NDA Free',
+        body: `Signova generates a complete NDA suitable for South African law — covering confidentiality obligations, POPIA-aware data handling clauses, duration, and jurisdiction. Free preview, R93 (≈ $4.99) to download. No account needed.`
+      },
+    ],
+    cta: { label: 'Generate NDA Free →', href: '/generate/nda' }
+  },
+
+  {
+    slug: 'tenancy-agreement-south-africa',
+    title: 'Tenancy Agreement South Africa 2026 — Free Lease Template for Landlords',
+    description: 'What South African landlords and tenants must include in a written lease agreement under the Rental Housing Act 1999 — deposit rules, notice periods, and how to generate one free.',
+    date: '2026-03-22',
+    readTime: '7 min read',
+    category: 'Real Estate',
+    keywords: 'tenancy agreement South Africa, lease agreement South Africa free, rental agreement SA, Rental Housing Act South Africa, landlord tenant South Africa 2026',
+    sections: [
+      {
+        heading: 'The Rental Housing Act — Your Legal Foundation',
+        body: `Residential tenancies in South Africa are governed by the Rental Housing Act 50 of 1999 (as amended by the Rental Housing Amendment Act 35 of 2014). This Act applies to all residential rental agreements across all nine provinces and establishes minimum rights and obligations for both landlords and tenants.\n\nKey protections under the Act: landlords must provide a written lease agreement if the tenant requests one; the lease must include specific minimum information; the deposit is strictly regulated; landlords cannot unlawfully evict tenants without a court order; and the Rental Housing Tribunal is available in every province to resolve disputes for free.\n\nThe Prevention of Illegal Eviction from and Unlawful Occupation of Land Act (PIE Act) 19 of 1998 adds further protection — a landlord cannot evict a tenant without first obtaining a court order, even if the tenant is in arrears. Self-help evictions are illegal and can result in the landlord facing criminal charges.`
+      },
+      {
+        heading: 'Deposit Rules Under the Rental Housing Act',
+        body: `The Rental Housing Act is very specific about deposits:\n\nThe deposit must be invested in an interest-bearing account at a financial institution. The interest accrues for the benefit of the tenant — not the landlord.\n\nAt the end of the lease, the landlord must refund the deposit plus interest within 14 days if the property is undamaged, or within 21 days if there is damage to be assessed and repaired.\n\nThe landlord must provide the tenant with a written statement of all deductions made from the deposit, supported by invoices or quotes.\n\nFailure to comply with these requirements entitles the tenant to claim the full deposit back regardless of any damage, plus compensation.\n\nPractical advice for landlords: open a dedicated savings account for each tenant's deposit, document it in the lease, and conduct a written joint inspection at move-in and move-out. This single practice prevents 90% of deposit disputes.`
+      },
+      {
+        heading: 'What a South African Lease Agreement Must Include',
+        body: `Under the Rental Housing Act, a written lease must include at minimum:\n\n1. Names and addresses of landlord and tenant.\n2. Address of the rental property.\n3. Monthly rental amount and due date.\n4. Deposit amount and the bank account where it will be held.\n5. Duration of the lease — fixed term or month-to-month.\n6. Notice period for termination — typically 1 calendar month for month-to-month leases.\n7. Description of what is included — parking, outbuildings, appliances.\n8. Tenant's obligation to maintain the property in good condition.\n9. Whether pets are permitted.\n10. Landlord's obligation to maintain the structure and ensure habitability.`
+      },
+      {
+        heading: 'Notice Periods and Termination',
+        body: `For month-to-month leases, either party must give 1 calendar month written notice. The notice must be in writing — a WhatsApp message may not be sufficient unless the lease explicitly allows digital notice.\n\nFor fixed-term leases, the Consumer Protection Act 68 of 2008 applies to leases of 24 months or longer. Under the CPA, a tenant can cancel a fixed-term lease with 20 business days notice — but the landlord may charge a reasonable cancellation penalty.\n\nFor shorter fixed-term leases, the lease terms govern. A lease that says "no early termination" is enforceable unless the CPA applies.\n\nImportant: A landlord cannot refuse to renew a lease simply because the tenant complained about maintenance or exercised their legal rights. Retaliatory non-renewal is prohibited under the Rental Housing Act.`
+      },
+      {
+        heading: 'Generate a South African Lease Agreement Free',
+        body: `Signova generates a complete residential lease agreement for South Africa — covering deposit terms, notice periods, maintenance obligations, and the required Rental Housing Act disclosures. Free preview, R93 (≈ $4.99) to download. No account needed.`
+      },
+    ],
+    cta: { label: 'Generate Lease Agreement Free →', href: '/generate/tenancy-agreement' }
+  },
+
+  {
+    slug: 'tenancy-agreement-uae-dubai',
+    title: 'Tenancy Agreement UAE Dubai 2026 — Free RERA-Compliant Rental Contract',
+    description: 'Everything landlords and tenants in Dubai and the UAE need in a valid tenancy agreement — RERA registration, Ejari, rent increase rules, and how to generate one free.',
+    date: '2026-03-22',
+    readTime: '7 min read',
+    category: 'Real Estate',
+    keywords: 'tenancy agreement UAE, rental agreement Dubai, Ejari tenancy contract, RERA Dubai tenancy, lease agreement Dubai free, UAE rent law 2026',
+    sections: [
+      {
+        heading: 'Tenancy Law in Dubai and the UAE',
+        body: `Residential and commercial tenancies in Dubai are governed by Law No. 26 of 2007 (as amended by Law No. 33 of 2008), commonly known as the Dubai Tenancy Law. This law applies to all rental properties in Dubai and is enforced by RERA — the Real Estate Regulatory Authority, a division of the Dubai Land Department (DLD).\n\nFor other Emirates: Abu Dhabi has its own tenancy law (Law No. 20 of 2006), Sharjah operates under Emiri Decree No. 35 of 2007, and the other Northern Emirates have their own regulations. This guide focuses primarily on Dubai, which has the most developed and frequently updated tenancy framework.\n\nAll tenancy agreements in Dubai must be registered with Ejari — the official tenancy registration system operated by the Dubai Land Department. An unregistered tenancy agreement is not admissible before the Dubai Rental Dispute Settlement Centre (RDSC) and the tenant cannot obtain a residence visa renewal based on an unregistered contract.`
+      },
+      {
+        heading: 'Ejari — Why Registration Is Non-Negotiable',
+        body: `Ejari (Arabic for "my rent") is the Dubai Land Department's mandatory registration system for all tenancy contracts. Both new tenancies and renewals must be registered.\n\nTo register on Ejari, you need: the signed tenancy contract, the landlord's Emirates ID and title deed (or property owner certificate), the tenant's Emirates ID and passport copy, and a recent DEWA (Dubai Electricity and Water Authority) bill or connection certificate.\n\nEjari registration costs AED 220 (≈ $60) and is typically the tenant's responsibility, though this can be negotiated.\n\nAn Ejari-registered contract is required to: obtain or renew a residence visa, open a UAE bank account based on the address, connect or transfer DEWA utilities, register children in school, and bring disputes before the RDSC.`
+      },
+      {
+        heading: 'Rent Increases — The RERA Calculator',
+        body: `One of the most important protections in Dubai tenancy law is the rent increase framework. RERA publishes an annual Rental Index that sets the maximum permissible rent increase for each area of Dubai, based on the current rent relative to the market average.\n\nThe rules: if the current rent is within 10% of the market rate, the landlord cannot increase it. If the rent is 10–20% below market, the landlord can increase by up to 5%. If 20–30% below, up to 10%. If 30–40% below, up to 15%. If more than 40% below market, up to 20%.\n\nThe landlord must give 90 days notice of any rent increase — notices given with less than 90 days are not enforceable for that renewal period. Any increase not compliant with the RERA calculator can be challenged at the RDSC.\n\nFor tenants: check the RERA Rental Index (available free on the Dubai REST app and DLD website) before your renewal date. If your landlord is proposing an increase that exceeds the RERA calculator, you can refuse it legally.`
+      },
+      {
+        heading: 'What a UAE Tenancy Agreement Must Include',
+        body: `A valid Dubai tenancy contract must include:\n\n1. Landlord and tenant full names, passport numbers, and Emirates IDs.\n2. Property details — DEWA premises number, unit number, building name, area.\n3. Annual rent amount in AED — and the number and dates of post-dated cheques (typically 1–4 cheques).\n4. Security deposit — standard is 5% of annual rent for unfurnished, 10% for furnished properties.\n5. Duration — most residential leases are 1 year.\n6. Maintenance responsibilities — tenant handles minor maintenance; landlord handles structural and major appliance repairs.\n7. Notice period — 90 days for non-renewal or rent increase notices; 12 months for landlord-needs-property notices.\n8. Permitted use — residential only, or commercial if applicable.\n9. Sub-letting restrictions.\n10. Ejari registration obligation.`
+      },
+      {
+        heading: 'Generate a UAE Tenancy Agreement Free',
+        body: `Signova generates a complete tenancy agreement for Dubai and UAE properties — covering RERA-compliant terms, Ejari registration provisions, deposit conditions, rent increase notice requirements, and cheque payment structure. Free preview, AED 18 (≈ $4.99) to download. No account needed.`
+      },
+    ],
+    cta: { label: 'Generate Tenancy Agreement Free →', href: '/generate/tenancy-agreement' }
+  },
+
+  {
+    slug: 'freelance-contract-nigeria-upwork-international',
+    title: 'Freelance Contract for Nigerian Freelancers on Upwork and International Platforms (2026)',
+    description: 'Nigerian freelancers on Upwork, Fiverr, and Toptal face unique contract challenges — payment methods, IP ownership, and client disputes across borders. This guide covers exactly what you need.',
+    date: '2026-03-22',
+    readTime: '7 min read',
+    category: 'Freelance',
+    keywords: 'freelance contract Nigeria Upwork, Nigerian freelancer contract international, Nigeria remote work contract, freelance agreement Nigeria international client 2026, Upwork Nigeria freelancer protect',
+    sections: [
+      {
+        heading: 'The Reality of International Freelancing from Nigeria',
+        body: `Nigeria earned over $100 million on Upwork alone in 2024, and the number is growing as demand for AI skills, software development, design, and content creation continues to rise. Nigerian freelancers are among the most active on Fiverr, Toptal, PeoplePerHour, and direct-client platforms.\n\nBut working internationally from Nigeria comes with specific challenges that don't exist for freelancers in the US or UK. Payment methods that work for Americans fail for Nigerians. Contract templates written for US law don't reflect how disputes are actually resolved when your client is in California and you're in Lagos. And when a client ghosts after delivery, your options are limited.\n\nThis guide covers the contract provisions that specifically protect Nigerian freelancers working with international clients — beyond what the platform terms of service provide.`
+      },
+      {
+        heading: 'Why Platform Terms Are Not Enough',
+        body: `Upwork's and Fiverr's built-in dispute resolution helps — but only within their platform. For clients who contact you directly after an initial platform engagement, or for projects negotiated off-platform, you are operating purely on your own contract.\n\nEven on Upwork, the platform only arbitrates disputes up to a point — and a client who refuses to release milestone funds can create significant delays. Your own contract that defines scope, revision limits, and kill fees gives you additional leverage even within platform disputes.\n\nFor direct clients — businesses and individuals who contact you without going through a platform — your contract is the only protection you have. No platform. No escrow. Just the document you both signed.`
+      },
+      {
+        heading: 'The Four Clauses That Specifically Protect Nigerian Freelancers',
+        body: `1. Currency and payment method clause. Specify exactly: "Payment shall be made in USD via [Wise / PayPal / Payoneer / USDT on TRC20 network] to [your account details]. All bank transfer fees are borne by the Client." Nigerian freelancers lose thousands of naira per transaction in conversion and transfer fees that are never discussed before the contract is signed.\n\n2. File retention clause. Never deliver final source files until full payment is confirmed in your account. Your contract should state: "Final source files, passwords, access credentials, and all deliverables are transferred only upon receipt of the final payment in full. A watermarked/low-resolution preview is provided for approval prior to payment." This single clause prevents the most common non-payment pattern — receiving the files then refusing to pay.\n\n3. Milestone payment structure. For projects exceeding $500, never work on a single payment at the end. Structure as: 40% on signing, 30% at midpoint (defined deliverable), 30% on final delivery. A client who has paid two milestones has a financial incentive to complete rather than walk away.\n\n4. Kill fee. If the client cancels after work has started: "Client shall pay a kill fee equal to 50% of the remaining balance at the time of cancellation. Work completed to date remains the property of the Freelancer until the kill fee is paid."`
+      },
+      {
+        heading: 'Governing Law — What to Specify for International Clients',
+        body: `This is the clause most Nigerian freelancers ignore and the one that matters most if a dispute escalates.\n\nOption A — Nigerian law: "This Agreement is governed by the laws of the Federal Republic of Nigeria." This is your home territory but practically difficult to enforce against a US client who ignores a Nigerian judgment.\n\nOption B — Client's jurisdiction: Some US clients will insist on their state law. Accepting this gives you better enforceability in their territory — but increases your legal costs if you ever need to pursue action.\n\nOption C — International arbitration: The most practical for cross-border freelance disputes. "Disputes shall be resolved by binding arbitration under the UNCITRAL Arbitration Rules." Arbitration awards are enforceable internationally under the New York Convention.\n\nFor most Nigerian freelancers working with small-to-medium international clients, the kill fee and file retention clauses are far more valuable than the governing law clause — they prevent disputes rather than resolve them.`
+      },
+      {
+        heading: 'WhatsApp Negotiations — Turning Them Into Contracts',
+        body: `Most Nigerian freelancers negotiate projects entirely over WhatsApp before any formal document is signed. The agreed rate, scope, timeline, and payment method exist only in a chat thread.\n\nSignova's WhatsApp feature lets you paste that conversation directly — it extracts the key terms and auto-fills a professional freelance contract in under 2 minutes. The result is a proper document covering all four protective clauses above, ready to send to the client for signature before any work begins.\n\nGenerate your contract free, download for ₦7,400 (≈ $4.99). No account needed.`
+      },
+    ],
+    cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
+  },
+
+  {
+    slug: 'freelance-contract-australia',
+    title: 'Freelance Contract Australia 2026 — Free Template for Australian Freelancers',
+    description: 'What Australian freelancers need in their contracts — GST obligations, IP ownership under Australian copyright law, superannuation for contractors, and how to generate one free.',
+    date: '2026-03-22',
+    readTime: '6 min read',
+    category: 'Freelance',
+    keywords: 'freelance contract Australia, contractor agreement Australia free, independent contractor Australia, GST freelancer Australia, freelance agreement template Australia 2026',
+    sections: [
+      {
+        heading: 'Freelancing in Australia — The Legal Framework',
+        body: `Australia has approximately 2.5 million freelancers and independent contractors, representing a significant and growing part of the workforce. Freelance contracts in Australia are governed by the common law of contract, with the Competition and Consumer Act 2010 (CCA) and the Australian Consumer Law (ACL) providing additional protections and obligations.\n\nThe distinction between an employee and an independent contractor is critically important in Australia. The Australian Taxation Office (ATO) and the Fair Work Commission apply a multi-factor test to determine worker classification. Misclassification can result in back payment of employee entitlements — annual leave, personal leave, and superannuation — as well as penalties for the business engaging the contractor.\n\nThe Fair Work Act 2009 now includes specific provisions protecting independent contractors from sham contracting arrangements.`
+      },
+      {
+        heading: 'GST Obligations for Australian Freelancers',
+        body: `If your annual freelance turnover exceeds AUD $75,000, you must register for GST (Goods and Services Tax) with the ATO. Once registered, you charge 10% GST on your services to Australian clients and remit it quarterly via a Business Activity Statement (BAS).\n\nFor services exported to overseas clients — work performed in Australia for a foreign client — the supply is GST-free (input-taxed export). You do not charge GST, but you can still claim input tax credits on your business expenses.\n\nYour contract should clearly specify whether your fee includes GST: "$10,000 plus GST" means the client pays $11,000. "$10,000 including GST" means you receive $10,000 and remit $909 to the ATO. The difference matters and should be explicit in every engagement.`
+      },
+      {
+        heading: 'Copyright Ownership Under Australian Law',
+        body: `Under the Copyright Act 1968 (Cth), copyright in original works is owned by the creator — the freelancer — from the moment of creation. This means that code, design, written content, or other creative work you produce for a client belongs to you by default, not to them.\n\nTo transfer copyright to the client, your contract must include an explicit written assignment. A common form: "Subject to receipt of full payment, Contractor hereby assigns all copyright and intellectual property rights in the Deliverables to Client."\n\nWithout this clause, the client has a licence to use your work but cannot prevent you from using it for other clients, including their competitors. Most clients assume they own commissioned work — your contract must reflect the legal reality and the agreed outcome.\n\nFor software: include a clause specifying whether the assignment covers the underlying code or only the compiled output. Open-source components used in your work should be disclosed and excluded from the assignment.`
+      },
+      {
+        heading: 'Superannuation — When Contractors Must Be Paid Super',
+        body: `This is the clause most Australian businesses forget. Under the Superannuation Guarantee (Administration) Act 1992, businesses must pay superannuation (currently 11.5% of gross earnings) for contractors who are engaged primarily for their personal labour and skills — even if they have an ABN.\n\nThe test is substance over form. If a contractor works primarily at the client's direction, uses mainly client-provided tools, and is not running a genuine business operation independent of this engagement, the ATO may require the client to pay super.\n\nFor freelancers with genuine independent businesses, this typically does not apply. But for long-term, high-volume engagements that start to resemble employment, it is worth addressing explicitly in the contract: "The parties agree that this is a genuine independent contractor arrangement and that no superannuation obligation arises for the Client."`
+      },
+      {
+        heading: 'Generate Your Australian Freelance Contract Free',
+        body: `Signova generates a complete freelance contract for Australian contractors — covering scope, GST clause, copyright assignment, independent contractor status, and late payment provisions. Free preview, A$7.80 (≈ $4.99) to download. No account needed.`
+      },
+    ],
+    cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
+  },
+
+  {
+    slug: 'freelance-contract-pakistan',
+    title: 'Freelance Contract Pakistan 2026 — Free Template for Pakistani Freelancers',
+    description: 'Pakistan has over 1 million active freelancers on global platforms. Most work without contracts. This guide covers what Pakistani freelancers need — FBR registration, payment methods, and contract clauses that protect you.',
+    date: '2026-03-22',
+    readTime: '6 min read',
+    category: 'Freelance',
+    keywords: 'freelance contract Pakistan, freelancer agreement Pakistan free, Pakistan contractor template, FBR freelancer Pakistan, Upwork Pakistan contract 2026',
+    sections: [
+      {
+        heading: 'Freelancing in Pakistan — A Growing Industry',
+        body: `Pakistan is one of the world's largest freelance markets, with over 1.6 million registered freelancers earning an estimated $500 million annually in foreign exchange. Pakistani freelancers rank among the top five globally on Upwork, Fiverr, and Freelancer.com — concentrated in software development, graphic design, content writing, and digital marketing.\n\nFreelance contracts in Pakistan are governed by the Contract Act 1872 — one of the oldest contract law frameworks in South Asia, inherited from British India and still in force. The Act establishes the requirements for a valid contract: offer, acceptance, lawful consideration, and capacity.\n\nPakistan's government has taken active steps to formalise the freelance sector. The Federal Board of Revenue (FBR) requires freelancers who earn above the taxable threshold to register and file returns. Freelance earnings remitted through official banking channels (known as "Export of Services") benefit from a reduced income tax rate of 1% under the Income Tax Ordinance 2001.`
+      },
+      {
+        heading: 'FBR Registration and Tax Obligations',
+        body: `Pakistani freelancers who earn above PKR 600,000 annually (≈ $2,150) are required to register with the FBR (Federal Board of Revenue) and file annual income tax returns.\n\nKey tax benefit: Foreign remittances received through approved banking channels are taxed at a final tax rate of just 1% under the Export of Services scheme — significantly lower than the standard income tax rates. To qualify, the payment must be received in Pakistan through a bank account in foreign currency.\n\nFor freelancers using Payoneer, Wise, or direct bank transfers: ensure the payment arrives in a designated foreign currency account (FCA) at a Pakistani bank. Payments received in PKR after conversion lose the export services tax benefit.\n\nKeep contracts, invoices, and bank remittance certificates as documentation for the FBR. These are your proof that income was earned from foreign clients as export of services.`
+      },
+      {
+        heading: 'Key Contract Clauses for Pakistani Freelancers',
+        body: `1. Payment currency and method. Specify USD, GBP, or EUR — and the exact transfer method. Pakistani freelancers commonly use Payoneer, Wise, direct wire to a Pakistani bank FCA, or USDT (crypto). Specify: "Payment shall be made in USD via [method] within [X] days of invoice. Client bears all transfer fees." This protects against the silent deduction of international wire fees from your payment.\n\n2. Scope boundary. Define precisely what is and is not included. Pakistani freelancers on platforms frequently encounter scope creep because the initial project description is vague. Your contract scope section is the boundary line.\n\n3. Intellectual property. Under Pakistani law, the creator owns copyright by default. Assignment requires explicit written agreement. Include: "All IP rights transfer to Client upon receipt of full payment."\n\n4. Milestone payments. For projects above $300, structure as 50% upfront, 50% on delivery. Clients who have already paid 50% almost never disappear before the final payment.\n\n5. Dispute resolution. Specifying Pakistani courts is rarely practical when the client is in the West. Include: "Disputes shall be resolved by binding arbitration under UNCITRAL rules, conducted in English." Arbitration awards are internationally enforceable.`
+      },
+      {
+        heading: 'The Non-Payment Problem — Prevention Over Cure',
+        body: `Pakistani freelancers face the same non-payment risk as freelancers everywhere — with one additional challenge: when a US or European client refuses to pay, your legal options across borders are limited and expensive.\n\nThe most effective protection is contractual, not legal: never deliver final files without full payment, use milestone structures, and include a kill fee. A contract that prevents delivery without payment is worth more than a contract that gives you the right to sue in a foreign court you cannot afford to use.\n\nFor recurring clients, a master service agreement signed once with per-project work orders is more efficient than renegotiating a new contract for every project.`
+      },
+      {
+        heading: 'Generate Your Freelance Contract Free',
+        body: `Signova generates a complete freelance contract for Pakistani freelancers — covering USD payment terms, IP assignment, milestone structure, and international dispute resolution. Free preview, Rs 1,390 (≈ $4.99) to download. No account needed.`
+      },
+    ],
+    cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
+  },
+
+  {
+    slug: 'nda-template-canada',
+    title: 'Free NDA Template Canada 2026 — Non-Disclosure Agreement for Canadian Businesses',
+    description: 'What Canadian businesses, startups, and freelancers need in an enforceable NDA — provincial IP considerations, trade secret protection, and how to generate a Canadian NDA free in 2 minutes.',
+    date: '2026-03-22',
+    readTime: '6 min read',
+    category: 'Business',
+    keywords: 'NDA Canada, non-disclosure agreement Canada free, NDA template Ontario, confidentiality agreement Canada, NDA generator Canada, trade secret NDA Canada 2026',
+    sections: [
+      {
+        heading: 'NDA Law in Canada',
+        body: `Non-Disclosure Agreements in Canada are governed by provincial contract law — each province has its own legislation, though the fundamental common law principles are consistent across the country (except Quebec, which operates under the Civil Code).\n\nIn Ontario, British Columbia, and Alberta — the three largest business centres — NDAs are enforced under general contract principles. For an NDA to be enforceable, it must be supported by consideration (something of value exchanged by both parties), be reasonable in scope, and not violate public policy.\n\nCanada does not have a federal trade secrets statute equivalent to the US Defend Trade Secrets Act. Protection of confidential information in Canada relies primarily on the tort of breach of confidence and contractual NDA provisions. This makes the quality of your NDA language more important than in the US — there is no statutory backstop.`
+      },
+      {
+        heading: 'Quebec — The Civil Law Exception',
+        body: `If your business operates in Quebec or you are entering an NDA with a Quebec-based party, the Civil Code of Quebec (CCQ) governs the agreement, not common law. While the practical outcomes are similar — courts will enforce reasonable confidentiality obligations — the legal framework is different.\n\nUnder the CCQ, contracts must be interpreted according to the common intent of the parties. Courts in Quebec are more willing to imply terms that reflect the reasonable expectations of the parties, even if not explicitly stated.\n\nFor NDAs involving Quebec parties, specify in the governing law clause: "This Agreement is governed by the laws of the Province of Quebec and the federal laws of Canada applicable therein" — or specify Ontario or another common law province if that is your preferred jurisdiction and the Quebec party agrees.`
+      },
+      {
+        heading: 'What a Canadian NDA Must Include',
+        body: `1. Parties — full legal names, registered business names and numbers if applicable, and provinces of incorporation.\n2. Definition of confidential information — specific categories, not just "all information." Include: business plans, financial data, technical specifications, customer and supplier lists, pricing, and trade secrets.\n3. Standard exclusions — public information, independently developed information, prior knowledge, legally required disclosures.\n4. Permitted use — state the specific purpose for which the confidential information is disclosed.\n5. Return or destruction — obligation to return or certifiably destroy confidential information at the end of the relationship.\n6. Duration — 2 to 5 years is standard and enforceable across all Canadian provinces.\n7. Governing law — specify the province and that Canadian federal law applies.\n8. Equitable relief — include a clause confirming that breach may cause irreparable harm and the disclosing party is entitled to seek injunctive relief without posting bond.`
+      },
+      {
+        heading: 'Employee vs Contractor NDAs in Canada',
+        body: `The enforceability of NDAs in Canada depends significantly on whether the party is an employee or an independent contractor — and when the NDA was signed.\n\nFor employees: NDAs signed at the beginning of employment are generally enforceable. NDAs signed after employment has started without new consideration (a raise, a promotion, additional responsibilities) may not be enforceable in Ontario and BC. If you are requiring an existing employee to sign a new NDA, offer something of value at the same time.\n\nFor contractors: NDAs signed at the start of an engagement are enforceable without additional consideration — the contract itself provides the consideration. Include the NDA as part of the overall engagement agreement, not as a separate later document.`
+      },
+      {
+        heading: 'Generate Your Canadian NDA Free',
+        body: `Signova generates a complete NDA suitable for Canadian law — covering trade secret protection, permitted use, return obligations, duration, and equitable relief provisions. Free preview, CA$6.85 (≈ $4.99) to download. No account needed. Works across Ontario, BC, Alberta, and all Canadian provinces.`
+      },
+    ],
+    cta: { label: 'Generate NDA Free →', href: '/generate/nda' }
+  },
+
+  {
+    slug: 'nda-template-india',
+    title: 'Free NDA Template India 2026 — Non-Disclosure Agreement for Indian Businesses and Startups',
+    description: 'What Indian startups, businesses, and freelancers need in an enforceable NDA under the Indian Contract Act — IP protection, DPDP Act compliance, and how to generate one free in 2 minutes.',
+    date: '2026-03-22',
+    readTime: '6 min read',
+    category: 'Business',
+    keywords: 'NDA India, non-disclosure agreement India free, NDA template India, confidentiality agreement India, startup NDA India, NDA generator India 2026',
+    sections: [
+      {
+        heading: 'NDA Law in India',
+        body: `Non-Disclosure Agreements in India are governed by the Indian Contract Act 1872. For an NDA to be valid and enforceable, it must meet the Act's requirements for a valid contract: offer, acceptance, lawful consideration, free consent, parties of competent capacity, and a lawful object.\n\nIndia does not have dedicated trade secret legislation — unlike the US, EU, or UK. Protection of confidential business information relies on the law of contract (your NDA) and, for specific categories, on the Copyright Act 1957 and the Patents Act 1970. This makes the NDA your primary protection mechanism — it must be well-drafted to be effective.\n\nThe Digital Personal Data Protection Act (DPDP Act) 2023 adds a new layer for NDAs involving personal data. If your NDA involves sharing personal data of Indian citizens, compliance with the DPDP Act's consent and processing requirements is mandatory.`
+      },
+      {
+        heading: 'Stamp Duty — A Requirement Many Indian Businesses Miss',
+        body: `This is the most commonly overlooked aspect of NDAs in India. Under the Indian Stamp Act 1899 and various state stamp duty laws, certain agreements must be executed on stamp paper of the appropriate denomination to be admissible as evidence in court.\n\nFor NDAs: most states treat confidentiality agreements as "agreement" instruments requiring stamp duty of Rs 100 to Rs 500 depending on the state. Maharashtra, Karnataka, and Delhi — where most tech and business activity is concentrated — each have specific stamp duty rates.\n\nAn unstamped or inadequately stamped NDA is not void — but it cannot be used as evidence in any legal proceeding until the deficit stamp duty is paid along with a penalty.\n\nPractical advice: execute NDAs on Rs 100 stamp paper (a non-judicial stamp paper of appropriate denomination), have both parties sign, and keep original copies. For NDAs with high-value engagements, consult a local advocate about the stamp duty applicable in your state.`
+      },
+      {
+        heading: 'DPDP Act 2023 — What It Means for Your NDA',
+        body: `The Digital Personal Data Protection Act 2023 requires that any processing of personal data of Indian citizens — including sharing it under an NDA — is based on consent or a legitimate use as defined in the Act.\n\nFor NDAs: if the confidential information being shared includes names, contact details, financial data, health information, or other personal data of individuals, the NDA must not authorise processing that goes beyond what the data principals have consented to.\n\nPractical implication: add a clause to your NDA specifying that any personal data shared under the agreement is handled in compliance with the DPDP Act, is used only for the specified purpose, and is not retained longer than necessary. For large-scale personal data sharing, a separate Data Processing Agreement may be required.`
+      },
+      {
+        heading: 'What an Indian NDA Must Include',
+        body: `1. Parties — full legal names, registered addresses, and for companies, the CIN (Corporate Identification Number).\n2. Definition of confidential information — specific categories. In India, courts interpret NDAs strictly — vague definitions are routinely challenged.\n3. Standard exclusions — public domain information, independently known, received from third parties, legally compelled disclosure.\n4. Obligations — non-disclosure, non-use beyond the permitted purpose, protection with reasonable care.\n5. Duration — 2 to 5 years. Perpetual NDAs are generally unenforceable in Indian courts as being unreasonably in restraint of trade.\n6. Return or destruction of information.\n7. Stamp duty compliance — executed on appropriate stamp paper.\n8. Governing law — India, and specify the state and court (e.g. "courts of Mumbai" or "courts of Bengaluru").`
+      },
+      {
+        heading: 'Generate Your Indian NDA Free',
+        body: `Signova generates a complete NDA suitable for Indian law — covering confidentiality obligations, DPDP Act-aware data handling, duration, stamp duty guidance, and court jurisdiction. Free preview, ₹418 (≈ $4.99) to download. No account needed.`
+      },
+    ],
+    cta: { label: 'Generate NDA Free →', href: '/generate/nda' }
+  },
+
 ]
 
 export function getPostBySlug(slug) {
