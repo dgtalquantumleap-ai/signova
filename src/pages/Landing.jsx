@@ -541,9 +541,9 @@ export default function Landing() {
   return (
     <div className="landing">
       <Helmet>
-        <title>Signova — Free Legal Document Generator | 27 Documents for Nigeria, Africa, Asia & Global</title>
-        <meta name="description" content="Generate professional legal documents in minutes — tenancy agreements, NDAs, business proposals, loan agreements, deeds of assignment, MOUs and 21 more. Free preview, $4.99 to download. Serving Nigeria, Ghana, Kenya, India, Philippines, UAE and 180+ countries." />
-        <meta name="keywords" content="legal document generator Nigeria, tenancy agreement Nigeria, NDA template, freelance contract, deed of assignment Nigeria, loan agreement template, business proposal template, MOU template, hire purchase agreement Nigeria, power of attorney Nigeria, employment offer letter, shareholder agreement, joint venture agreement, service agreement, distribution agreement" />
+        <title>Signova — Legal Documents for Nigeria, Africa & the World | Free Preview</title>
+        <meta name="description" content="The legal document tool built for Nigeria, Africa, and every market the big platforms ignore. Tenancy agreements, freelance contracts, NDAs, deeds of assignment and 23 more — jurisdiction-aware, WhatsApp-ready, free to preview. $4.99 to download." />
+        <meta name="keywords" content="legal document generator Nigeria, tenancy agreement Nigeria, NDA template Nigeria, freelance contract Nigeria, deed of assignment Nigeria, loan agreement Nigeria, business proposal Nigeria, freelance contract Africa, legal document generator Africa, NDA generator free" />
         <link rel="canonical" href="https://www.getsignova.com/" />
       </Helmet>
       <nav className="nav">
@@ -575,10 +575,10 @@ export default function Landing() {
         <div className="hero-glow" />
         <div className="hero-inner">
           <h1 className="hero-title">
-            What document do you need?
+            Legal documents built for Nigeria, Africa, and everyone the big platforms ignore.
           </h1>
           <p className="hero-sub">
-            Answer a few questions. Get a professional legal document in under 3 minutes. Free preview — no account needed.
+            Tenancy agreements. Freelance contracts. NDAs. Deeds of assignment. 27 document types — jurisdiction-aware, WhatsApp-ready, free to preview. No account. No lawyer fees.
           </p>
 
           {/* Top 3 geo-detected documents — big, bold, tappable */}
@@ -619,7 +619,7 @@ export default function Landing() {
       <section className="wa-banner-section">
         <div className="wa-banner-inner">
           <div className="wa-banner-left">
-            <div className="wa-banner-badge">💰 Most popular feature</div>
+            <div className="wa-banner-badge">🇳🇬 Built for how Nigeria does business</div>
             <h2 className="wa-banner-title">Have a WhatsApp negotiation? Paste it.</h2>
             <p className="wa-banner-body">
               We extract the agreed terms — names, amounts, dates, restrictions — and auto-fill your document in seconds. Works for tenancy agreements, loan agreements, freelance contracts and 24 more document types.
@@ -650,13 +650,13 @@ export default function Landing() {
         <div className="section-inner">
           <div className="section-header">
             <p className="section-label">The process</p>
-            <h2 className="section-title">How the legal document generator works</h2>
+            <h2 className="section-title">How Signova works — from question to signed document in 3 minutes</h2>
           </div>
           <div className="steps">
             {[
-              { n: '01', title: 'Choose your document', body: 'Pick from 27 document types — Privacy Policy, NDA, Freelance Contract, Tenancy Agreement, Loan Agreement, Business Proposal, and more.' },
-              { n: '02', title: 'Answer a few questions', body: 'Tell us about your business, jurisdiction, and needs. Takes about 2 minutes. No legal knowledge required.' },
-              { n: '03', title: 'Preview free, download when ready', body: 'See your complete document instantly. When you\'re happy, download the clean, watermark-free PDF.' },
+              { n: '01', title: 'Choose your document', body: 'Pick from 27 document types built for Nigeria, Africa, and global use — Tenancy Agreement, NDA, Freelance Contract, Deed of Assignment, Loan Agreement, Business Proposal, and more.' },
+              { n: '02', title: 'Answer a few questions', body: 'Tell us your names, jurisdiction, and deal terms. Takes 2 minutes. No legal knowledge required — the questions are plain language.' },
+              { n: '03', title: 'Preview free, download when ready', body: 'See your complete, properly structured document instantly. When you\'re happy, download the clean PDF for the price of a phone call — not a lawyer.' },
             ].map(s => (
               <div key={s.n} className="step">
                 <span className="step-num">{s.n}</span>
@@ -733,10 +733,10 @@ export default function Landing() {
         <div className="section-inner">
           <div className="trust-grid">
             {[
-              { icon: '⚡', title: 'Instant generation', body: 'Documents ready in seconds, not days.' },
-              { icon: '🔑', title: 'Privacy first', body: 'Your answers are never stored or shared.' },
-              { icon: '📄', title: 'Attorney-drafted base', body: 'Templates built from real legal frameworks used by attorneys.' },
-              { icon: '🌍', title: 'Jurisdiction-aware', body: 'Tailored for your country and industry.' },
+              { icon: '⚡', title: 'Ready in 3 minutes', body: 'From question to signed-ready PDF faster than a WhatsApp voice note.' },
+              { icon: '🔑', title: 'Your data stays yours', body: 'Nothing is saved to a database. Close the tab and it\'s gone.' },
+              { icon: '🌍', title: 'Built for Nigeria and Africa', body: 'Lagos State Tenancy Law. Labour Act Cap L1 LFN 2004. Nigerian property law. Not US templates renamed.' },
+              { icon: '💳', title: 'Accepts Naira, card & USDT', body: 'No US card required. Pay the way you already pay — including crypto for Nigerian users.' },
             ].map(t => (
               <div key={t.title} className="trust-item">
                 <span className="trust-icon">{t.icon}</span>
@@ -751,9 +751,9 @@ export default function Landing() {
       <section className="cta-section">
         <div className="section-inner">
           <div className="cta-box">
-            <h2 className="cta-title">Your next deal deserves a contract.</h2>
-            <p className="cta-sub">Preview your document completely free — no credit card, no account. Pay only{' '}
-              {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} when you're ready to download.</p>
+            <h2 className="cta-title">Stop paying ₦50,000–₦150,000 for a document you can generate in 3 minutes.</h2>
+            <p className="cta-sub">Preview completely free — no account, no credit card. Pay only{' '}
+              {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} when you're ready to download. Works in Nigeria, Ghana, Kenya, the UK, Canada, and 180+ countries.</p>
             <button
               className="btn-primary btn-large"
               onClick={() => navigate('/generate/nda')}
