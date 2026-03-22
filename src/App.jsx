@@ -15,9 +15,13 @@ const WhatsApp = lazy(() => import('./pages/WhatsApp'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const AboutPage = lazy(() => import('./pages/AboutPage'))
 
+const PageShell = () => (
+  <div style={{ minHeight: '100vh', background: '#0e0e0e' }} />
+)
+
 export default function App() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<PageShell />}>
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/generate/:docType" element={<Generator />} />

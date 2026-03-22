@@ -9,9 +9,13 @@ export default defineConfig({
         manualChunks: (id) => {
           if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) return 'react-vendor'
           if (id.includes('node_modules/react-router')) return 'router'
+          if (id.includes('node_modules/react-helmet-async')) return 'helmet'
+          if (id.includes('node_modules/@vercel')) return 'vercel-analytics'
         },
       },
     },
     chunkSizeWarningLimit: 600,
+    // Vite 8 uses OXC by default — fast and produces smaller bundles
+    target: 'es2020',
   },
 })
