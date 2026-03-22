@@ -87,9 +87,9 @@ function useGeo() {
       } catch {}
       return
     }
-    // Defer the network fetch until after the browser has painted the first frame.
-    // This prevents the ipapi response from triggering a re-render that inflates LCP.
-    // requestIdleCallback fires when the main thread is idle; setTimeout(0) is the fallback.
+    // CRITICAL LCP FIX: Defer the network fetch until AFTER first paint completes.
+    // Using double-RAF + setTimeout ensures we're past the critical rendering path.
+    // This prevents the geo-detection response from blocking or inflating LCP.
     const doFetch = () => {
       fetch('https://ipapi.co/json/')
         .then(r => r.json())
@@ -102,11 +102,17 @@ function useGeo() {
         })
         .catch(() => {})
     }
-    if (typeof requestIdleCallback !== 'undefined') {
-      requestIdleCallback(doFetch, { timeout: 3000 })
-    } else {
-      setTimeout(doFetch, 0)
-    }
+    // Double requestAnimationFrame ensures we're past first paint
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        // Then use requestIdleCallback for truly idle execution
+        if (typeof requestIdleCallback !== 'undefined') {
+          requestIdleCallback(doFetch, { timeout: 5000 })
+        } else {
+          setTimeout(doFetch, 100)
+        }
+      })
+    })
   }, [])
   return { currency, countryCode }
 }
@@ -189,19 +195,20 @@ function getQuickPicks(cc) {
   return p || QUICKPICK_DEFAULT
 }
 
+// ── LoomFacade with REAL thumbnail (FIX for dead clicks) ────────────────────
 function LoomFacade({ videoId }) {
   const [clicked, setClicked] = useState(false)
   const [inView, setInView] = useState(false)
+  const [thumbnailLoaded, setThumbnailLoaded] = useState(false)
   const ref = useRef(null)
 
-  // Only start loading the iframe when section is actually in viewport (rootMargin: 0px).
-  // Previously rootMargin was 200px which caused the GIF to preload before visible — inflating LCP.
+  // Only start loading the thumbnail when section is in viewport
   useEffect(() => {
     const el = ref.current
     if (!el) return
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) { setInView(true); observer.disconnect() } },
-      { rootMargin: '0px' }
+      { rootMargin: '100px' } // Load slightly before visible
     )
     observer.observe(el)
     return () => observer.disconnect()
@@ -219,27 +226,49 @@ function LoomFacade({ videoId }) {
     )
   }
 
+  // Loom provides a CDN thumbnail URL for every video
+  const thumbnailUrl = `https://cdn.loom.com/sessions/thumbnails/${videoId}-with-play.gif`
+  const fallbackThumbnail = `https://cdn.loom.com/sessions/thumbnails/${videoId}-00001.jpg`
+
   return (
     <div ref={ref} className="loom-facade" onClick={() => setClicked(true)} role="button" aria-label="Play demo video">
-      {/* Static local poster — no external CDN, no GIF, no LCP bloat */}
       <div className="loom-poster">
-        <svg className="loom-poster-bg" viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <rect width="800" height="450" fill="#1a1a1a" rx="12"/>
-          <rect x="60" y="60" width="680" height="40" fill="#2a2a2a" rx="6"/>
-          <rect x="60" y="120" width="520" height="20" fill="#222" rx="4"/>
-          <rect x="60" y="155" width="460" height="20" fill="#222" rx="4"/>
-          <rect x="60" y="190" width="500" height="20" fill="#222" rx="4"/>
-          <rect x="60" y="240" width="680" height="1" fill="#333"/>
-          <rect x="60" y="260" width="300" height="80" fill="#242424" rx="8"/>
-          <rect x="380" y="260" width="360" height="80" fill="#242424" rx="8"/>
-          <rect x="60" y="360" width="200" height="36" fill="#c9a84c" rx="6"/>
-        </svg>
-        <div className="loom-play-btn" aria-hidden="true">
-          {inView
-            ? <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="13" stroke="#fff" strokeWidth="1.5"/><path d="M11 9.5l9 4.5-9 4.5V9.5z" fill="#fff"/></svg>
-            : <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="13" stroke="#fff" strokeWidth="1.5"/><path d="M11 9.5l9 4.5-9 4.5V9.5z" fill="#fff"/></svg>
-          }
-        </div>
+        {/* Show actual Loom thumbnail instead of SVG placeholder */}
+        {inView && (
+          <>
+            <img 
+              src={thumbnailUrl}
+              alt="Signova demo video thumbnail"
+              className={`loom-thumbnail ${thumbnailLoaded ? 'loaded' : ''}`}
+              onLoad={() => setThumbnailLoaded(true)}
+              onError={(e) => {
+                // Fallback to static thumbnail if GIF fails
+                e.target.src = fallbackThumbnail
+                setThumbnailLoaded(true)
+              }}
+              loading="lazy"
+            />
+            {/* Play button overlay */}
+            <div className="loom-play-btn" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                <circle cx="14" cy="14" r="13" stroke="#fff" strokeWidth="1.5"/>
+                <path d="M11 9.5l9 4.5-9 4.5V9.5z" fill="#fff"/>
+              </svg>
+            </div>
+          </>
+        )}
+        {/* Loading state before thumbnail loads */}
+        {(!inView || !thumbnailLoaded) && (
+          <>
+            <div className="loom-loading-skeleton" />
+            <div className="loom-play-btn" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                <circle cx="14" cy="14" r="13" stroke="#fff" strokeWidth="1.5"/>
+                <path d="M11 9.5l9 4.5-9 4.5V9.5z" fill="#fff"/>
+              </svg>
+            </div>
+          </>
+        )}
         <p className="loom-loading-text">Watch demo — 2 min</p>
       </div>
     </div>
@@ -561,6 +590,11 @@ export default function Landing() {
         <meta name="description" content="Generate professional legal documents in minutes — tenancy agreements, freelance contracts, NDAs, deeds of assignment, business proposals and 22 more. Jurisdiction-aware for Nigeria, Africa, and 180+ countries. Free preview, $4.99 to download. No account needed." />
         <meta name="keywords" content="legal document generator Nigeria, tenancy agreement Nigeria, NDA template Nigeria, freelance contract Nigeria, deed of assignment Nigeria, loan agreement Nigeria, business proposal Nigeria, freelance contract Africa, legal document generator Africa, NDA generator free" />
         <link rel="canonical" href="https://www.getsignova.com/" />
+        {/* LCP FIX: Preconnect to geo-detection API to reduce connection time */}
+        <link rel="preconnect" href="https://ipapi.co" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://ipapi.co" />
+        {/* Preconnect to Loom CDN for faster video thumbnail loading */}
+        <link rel="preconnect" href="https://cdn.loom.com" crossOrigin="anonymous" />
       </Helmet>
       <nav className="nav">
         <div className="nav-inner">
@@ -779,7 +813,7 @@ export default function Landing() {
             <div className="waitlist-box">
               <p className="waitlist-label">Building a business? Join the waitlist for Signova Pro — unlimited docs, contract monitoring &amp; scope alerts. $9.99/month at launch.</p>
               {waitlistSubmitted ? (
-                <p className="waitlist-done">✓ You’re on the list — we’ll email you at launch</p>
+                <p className="waitlist-done">✓ You're on the list — we'll email you at launch</p>
               ) : (
                 <form className="waitlist-form" onSubmit={handleWaitlist}>
                   <input

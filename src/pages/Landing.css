@@ -1,11 +1,13 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   LOOM VIDEO FACADE — Real Thumbnail (Fixed dead clicks)
+   ══════════════════════════════════════════════════════════════════════════ */
 .loom-facade {
   position: absolute; top: 0; left: 0;
   width: 100%; height: 100%;
   cursor: pointer; display: flex;
   align-items: center; justify-content: center;
 }
-/* Static SVG poster — replaces the external GIF thumbnail.
-   No network request, no LCP bloat, renders instantly. */
+
 .loom-poster {
   position: absolute; top: 0; left: 0;
   width: 100%; height: 100%;
@@ -15,13 +17,43 @@
   border-radius: 16px;
   overflow: hidden;
 }
-.loom-poster-bg {
+
+/* Actual Loom thumbnail image */
+.loom-thumbnail {
   position: absolute; top: 0; left: 0;
   width: 100%; height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.loom-thumbnail.loaded {
+  opacity: 1;
+}
+
+/* Loading skeleton while thumbnail loads */
+.loom-loading-skeleton {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(
+    90deg,
+    #1a1a1a 0%,
+    #2a2a2a 50%,
+    #1a1a1a 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
   border-radius: 16px;
 }
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 .loom-play-btn {
-  position: relative;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 2;
   width: 72px; height: 72px;
   background: rgba(0,0,0,0.75);
@@ -30,14 +62,20 @@
   transition: transform 0.2s, background 0.2s;
 }
 .loom-facade:hover .loom-play-btn {
-  transform: scale(1.1);
+  transform: translate(-50%, -50%) scale(1.1);
   background: rgba(201,168,76,0.9);
 }
+
 .loom-loading-text {
-  position: relative;
+  position: absolute;
+  bottom: 20px; left: 50%;
+  transform: translateX(-50%);
   z-index: 2;
-  font-size: 13px; color: rgba(255,255,255,0.6);
+  font-size: 13px; color: rgba(255,255,255,0.8);
   pointer-events: none; margin: 0;
+  background: rgba(0,0,0,0.6);
+  padding: 6px 12px;
+  border-radius: 6px;
 }
 
 /* ── Video Section ── */
@@ -183,7 +221,6 @@
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-/* Remove old .visible class — no longer used */
 
 .hero-sub {
   font-size: 18px; color: var(--text2); line-height: 1.7;
@@ -454,7 +491,6 @@
   grid-template-columns: repeat(6, 1fr);
   gap: 16px;
 }
-/* Each card spans 2 of 6 cols → 3 per row */
 .doc-card { grid-column: span 2; }
 
 .doc-card {
@@ -692,29 +728,6 @@
   50% { transform: translateY(4px); }
 }
 
-/* ── Waitlist ── */
-.waitlist-form { display: flex; flex-direction: column; gap: 10px; }
-.waitlist-input {
-  width: 100%; padding: 11px 14px; border-radius: var(--radius);
-  background: var(--bg3); border: 1px solid var(--border);
-  color: var(--text); font-size: 14px;
-  transition: border-color 0.2s;
-}
-.waitlist-input:focus { outline: none; border-color: var(--gold); }
-.waitlist-input::placeholder { color: var(--text3); }
-.waitlist-btn { width: 100%; justify-content: center; }
-.waitlist-error {
-  font-size: 13px; color: var(--red); margin-top: 8px; text-align: center;
-}
-.waitlist-input:disabled, .waitlist-btn:disabled {
-  opacity: 0.6; cursor: not-allowed;
-}
-.waitlist-submitted {
-  padding: 14px 16px; border-radius: var(--radius);
-  background: rgba(76,175,125,0.1); border: 1px solid rgba(76,175,125,0.3);
-  color: var(--green); font-size: 14px; font-weight: 500; text-align: center; line-height: 1.5;
-}
-
 .mobile-show { display: none; }
 
 /* ── Mobile Sticky CTA ── */
@@ -743,6 +756,9 @@
   white-space: nowrap;
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   MOBILE OPTIMIZATIONS — Document cards above fold, faster LCP
+   ══════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 640px) {
   /* ── Prevent horizontal scroll ── */
   .landing { padding-bottom: 72px; overflow-x: hidden; }
@@ -765,12 +781,34 @@
     padding: 16px 24px; font-size: 16px; border-bottom: 1px solid var(--border);
   }
 
-  /* ── Hero ── */
-  .hero { padding: 100px 16px 32px; }
-  .hero-title { font-size: clamp(28px, 8vw, 40px) !important; margin-bottom: 16px !important; }
-  .hero-sub { font-size: 14px !important; margin-bottom: 20px !important; line-height: 1.6 !important; }
-  .hero-badge { margin-bottom: 16px !important; }
-  /* hide secondary btn on mobile — sticky bar covers navigation */
+  /* ══════════════════════════════════════════════════════════════════════════
+     HERO — AGGRESSIVE MOBILE OPTIMIZATION
+     Target: Document cards visible above the fold on iPhone SE (375x667)
+     ══════════════════════════════════════════════════════════════════════════ */
+  .hero {
+    /* Reduced from 160px to 80px — nav is 64px, so content starts at 144px */
+    padding: 80px 16px 24px;
+  }
+  
+  /* Title: Smaller, tighter, faster to render */
+  .hero-title {
+    font-size: 24px !important;
+    line-height: 1.2 !important;
+    margin-bottom: 10px !important;
+  }
+  
+  /* Subtitle: Condensed for mobile */
+  .hero-sub {
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+    margin-bottom: 16px !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .hero-badge { display: none !important; }
   .hero-actions .btn-outline { display: none; }
   .hero-note { display: none; }
   .hero-sub .mobile-hide { display: none; }
@@ -780,67 +818,99 @@
   .hero-actions .btn-outline {
     width: 100%; justify-content: center;
     font-size: 15px; padding: 16px 20px;
-    min-height: 52px; /* iOS tap target minimum */
+    min-height: 52px;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
   .hero-actions .btn-large { font-size: 15px !important; padding: 16px 20px !important; }
-  .hero-badge { font-size: 11px; padding: 5px 12px; text-align: center; }
-  /* hero stats + scroll nudge — hide on mobile to keep CTA above fold */
   .hero-stats { display: none !important; }
   .hero-scroll-nudge { display: none !important; }
 
-  /* ── Top 3 Cards mobile ── */
-  .hero-top3 { grid-template-columns: 1fr; gap: 12px; margin: 24px 0 16px; }
-  .top3-card { padding: 24px 16px; flex-direction: row; gap: 16px; text-align: left; }
-  .top3-icon { font-size: 32px; }
-  .top3-name { font-size: 16px; }
-  .top3-go { opacity: 1; font-size: 13px; }
+  /* ══════════════════════════════════════════════════════════════════════════
+     TOP 3 CARDS — THE CONVERSION ZONE
+     These MUST be visible above the fold. Big, bold, tappable.
+     ══════════════════════════════════════════════════════════════════════════ */
+  .hero-top3 {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin: 16px 0 12px;
+  }
+  
+  .top3-card {
+    padding: 16px;
+    flex-direction: row;
+    gap: 14px;
+    text-align: left;
+    align-items: center;
+    /* Gold border to make them pop */
+    border-color: rgba(201, 168, 76, 0.3);
+    background: linear-gradient(135deg, rgba(201,168,76,0.04), var(--bg2));
+  }
+  
+  .top3-icon { font-size: 28px; flex-shrink: 0; }
+  
+  .top3-name {
+    font-size: 15px;
+    flex: 1;
+  }
+  
+  .top3-go {
+    opacity: 1;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  
+  /* "More documents" link — smaller, less prominent */
+  .more-docs-link {
+    font-size: 13px;
+    margin: 8px auto 16px;
+  }
+  
   .all-docs-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-  .all-doc-btn { font-size: 13px; padding: 10px 12px; }
+  .all-doc-btn { font-size: 12px; padding: 10px 12px; }
 
   /* ── Section headings ── */
-  .section-title { font-size: 24px !important; }
-  .section-header { margin-bottom: 32px; }
+  .section-title { font-size: 22px !important; }
+  .section-header { margin-bottom: 24px; }
   .section-inner { padding: 0 16px; }
 
   /* ── Docs grid ── */
-  .docs-section { padding: 60px 0; }
+  .docs-section { padding: 48px 0; }
   .docs-grid { grid-template-columns: 1fr !important; gap: 12px; }
   .doc-card { padding: 20px; grid-column: span 1 !important; }
   .doc-name { font-size: 17px !important; }
   .doc-desc { font-size: 14px !important; }
 
   /* ── How it works ── */
-  .how-section { padding: 60px 0; }
-  .step { gap: 16px; padding: 24px 0; }
-  .step-num { font-size: 36px; width: 44px; }
-  .step-title { font-size: 17px; }
-  .step-body { font-size: 14px; }
+  .how-section { padding: 48px 0; }
+  .step { gap: 16px; padding: 20px 0; }
+  .step-num { font-size: 32px; width: 40px; }
+  .step-title { font-size: 16px; }
+  .step-body { font-size: 13px; }
 
   /* ── Video ── */
-  .video-section { padding: 60px 0; }
+  .video-section { padding: 48px 0; }
   .video-wrapper { border-radius: 10px; }
 
   /* ── Pricing ── */
-  .pricing-section { padding: 60px 0; }
+  .pricing-section { padding: 48px 0; }
   .pricing-grid { grid-template-columns: 1fr !important; }
 
   /* ── Trust ── */
-  .trust-section { padding: 48px 0; }
+  .trust-section { padding: 40px 0; }
   .trust-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 20px; }
 
   /* ── Testimonials ── */
-  .testimonials-section { padding: 60px 0; }
+  .testimonials-section { padding: 48px 0; }
 
   /* ── FAQ ── */
-  .faq-section { padding: 60px 0; }
+  .faq-section { padding: 48px 0; }
   .faq-question { font-size: 14px; }
 
   /* ── CTA box ── */
-  .cta-section { padding: 60px 0; }
-  .cta-box { padding: 36px 20px; border-radius: 14px; }
-  .cta-title { font-size: 24px !important; }
+  .cta-section { padding: 48px 0; }
+  .cta-box { padding: 32px 20px; border-radius: 14px; }
+  .cta-title { font-size: 22px !important; }
   .cta-sub { font-size: 14px; }
   .cta-box .btn-primary { width: 100%; justify-content: center; }
 
@@ -855,6 +925,19 @@
     background: rgba(201,168,76,0.08);
     border-top: 1px solid rgba(201,168,76,0.2) !important;
   }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   EXTRA SMALL SCREENS (iPhone SE, older Androids)
+   ══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 380px) {
+  .hero { padding: 76px 12px 20px; }
+  .hero-title { font-size: 22px !important; }
+  .hero-sub { font-size: 12px !important; -webkit-line-clamp: 2; }
+  .top3-card { padding: 14px; gap: 12px; }
+  .top3-icon { font-size: 24px; }
+  .top3-name { font-size: 14px; }
+  .top3-go { font-size: 11px; }
 }
 
 /* ── WhatsApp Feature Banner ── */

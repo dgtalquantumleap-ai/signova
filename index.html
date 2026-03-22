@@ -111,16 +111,94 @@
     }
     </script>
 
-    <!-- Microsoft Clarity Heatmaps -->
+    <!-- Microsoft Clarity Heatmaps — deferred to not block LCP -->
     <script type="text/javascript">
-      (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "vuim6xvhs5");
+      // Defer Clarity until after LCP
+      if (typeof requestIdleCallback !== 'undefined') {
+        requestIdleCallback(function() {
+          (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+          })(window, document, "clarity", "script", "vuim6xvhs5");
+        }, { timeout: 3000 });
+      } else {
+        setTimeout(function() {
+          (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+          })(window, document, "clarity", "script", "vuim6xvhs5");
+        }, 2000);
+      }
     </script>
 
-    <!-- Fonts — non-blocking -->
+    <!-- ══════════════════════════════════════════════════════════════════════
+         CRITICAL CSS — Inlined for instant LCP
+         Renders nav + hero title + top 3 cards before any external CSS loads
+         ══════════════════════════════════════════════════════════════════════ -->
+    <style>
+      /* Critical variables */
+      :root {
+        --bg: #0e0e0e;
+        --bg2: #161616;
+        --gold: #c9a84c;
+        --text: #ffffff;
+        --text2: #a0a0a0;
+        --border: rgba(255,255,255,0.1);
+        --font-display: 'Playfair Display', Georgia, serif;
+      }
+      
+      /* Reset */
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      
+      body {
+        font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        -webkit-font-smoothing: antialiased;
+      }
+      
+      /* Nav — critical for layout shift prevention */
+      .nav {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+        padding: 0 24px;
+        background: rgba(14,14,14,0.85);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        height: 64px;
+      }
+      
+      /* Hero — critical for LCP */
+      .hero {
+        position: relative;
+        padding: 160px 24px 100px;
+        text-align: center;
+        min-height: 100vh;
+      }
+      
+      .hero-title {
+        font-family: var(--font-display);
+        font-size: clamp(36px, 6vw, 64px);
+        font-weight: 700;
+        line-height: 1.15;
+        color: var(--text);
+        margin-bottom: 24px;
+      }
+      
+      /* Mobile critical overrides */
+      @media (max-width: 640px) {
+        .hero { padding: 80px 16px 24px; min-height: auto; }
+        .hero-title { font-size: 24px !important; line-height: 1.2 !important; margin-bottom: 10px !important; }
+      }
+      
+      @media (max-width: 380px) {
+        .hero { padding: 76px 12px 20px; }
+        .hero-title { font-size: 22px !important; }
+      }
+    </style>
+
+    <!-- Fonts — non-blocking with font-display: swap -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Preload Playfair Display 700 (hero headline font) — eliminates font-swap LCP delay -->
