@@ -1,5 +1,22 @@
 // Promo code redemption — bypasses payment, grants one free document download
 
+// ── In-memory rate limiter (5 attempts per IP per hour) ─────────────────────
+const PROMO_RATE = new Map()
+function isPromoRateLimited(ip) {
+  const now = Date.now()
+  const entry = PROMO_RATE.get(ip)
+  if (!entry || now > entry.resetAt) {
+    PROMO_RATE.set(ip, { count: 1, resetAt: now + 60 * 60 * 1000 })
+    return false
+  }
+  if (entry.count >= 5) return true
+  entry.count++
+  return false
+}
+
+// ── In-memory use tracking (resets on cold start — best effort) ─────────────
+const CODE_USE_COUNT = new Map()
+
 const VALID_CODES = {
   PRODUCTHUNT: {
     expiresAt: new Date('2026-04-09T23:59:59Z'),
@@ -26,6 +43,16 @@ const VALID_CODES = {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
+  // Rate limit by IP — prevent brute-force code guessing
+  const ip =
+    req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+    req.headers['x-real-ip'] ||
+    req.socket?.remoteAddress ||
+    'unknown'
+  if (isPromoRateLimited(ip)) {
+    return res.status(429).json({ valid: false, error: 'Too many attempts. Please try again later.' })
+  }
+
   const { code, docType, docName } = req.body
 
   if (!code || !docType) {
@@ -43,6 +70,13 @@ export default async function handler(req, res) {
   if (now > promo.expiresAt) {
     return res.status(400).json({ valid: false, error: 'This promo code has expired.' })
   }
+
+  // Enforce maxUses (best-effort in-memory — resets on cold start)
+  const currentUses = CODE_USE_COUNT.get(upperCode) || 0
+  if (currentUses >= promo.maxUses) {
+    return res.status(400).json({ valid: false, error: 'This promo code has reached its usage limit.' })
+  }
+  CODE_USE_COUNT.set(upperCode, currentUses + 1)
 
   const secret = process.env.PROMO_SECRET || 'signova_promo_2026'
   const timestamp = Date.now()

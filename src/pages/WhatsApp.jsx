@@ -208,16 +208,17 @@ export default function WhatsApp() {
   const [countryCode, setCountryCode] = useState('DEFAULT')
   const [geoLoaded, setGeoLoaded] = useState(false)
 
-  // Geo detection — reuse session cache from Landing.jsx
+  // Geo detection — reuse session cache from Landing.jsx (key: sig_geo)
   useEffect(() => {
-    const cached = sessionStorage.getItem('sig_currency')
+    const cached = sessionStorage.getItem('sig_geo')
     if (cached) {
       try {
         const d = JSON.parse(cached)
-        if (d.country) {
-          setCountryCode(d.country)
-          // Set default doc type to region's top priority
-          const priority = GEO_DOC_PRIORITY[d.country] || GEO_DOC_PRIORITY.DEFAULT
+        // sig_geo stores { currency: {...}, countryCode: 'NG' }
+        const cc = d.countryCode || 'DEFAULT'
+        if (cc !== 'DEFAULT') {
+          setCountryCode(cc)
+          const priority = GEO_DOC_PRIORITY[cc] || GEO_DOC_PRIORITY.DEFAULT
           setDocType(priority[0])
         }
       } catch {}
@@ -231,10 +232,10 @@ export default function WhatsApp() {
         setCountryCode(cc)
         const priority = GEO_DOC_PRIORITY[cc] || GEO_DOC_PRIORITY.DEFAULT
         setDocType(priority[0])
-        // Cache alongside currency data
-        sessionStorage.setItem('sig_currency', JSON.stringify({
-          country: cc,
-          code: d.currency || 'USD',
+        // Write to sig_geo so Landing.jsx can also read it
+        sessionStorage.setItem('sig_geo', JSON.stringify({
+          countryCode: cc,
+          currency: { code: d.currency || 'USD', symbol: '$', amount: 4.99 },
         }))
       })
       .catch(() => {})

@@ -4,8 +4,24 @@ export default async function handler(req, res) {
   try {
     const data = req.body
 
-    // OxaPay sends: trackId, status, amount, currency, orderId, etc.
-    // Status values: Waiting | Paid | Confirming | Expired | Failed
+    // Verify this request genuinely came from OxaPay
+    // OxaPay signs webhooks with HMAC-SHA512 using your merchant key
+    const merchantKey = process.env.OXAPAY_MERCHANT_KEY
+    if (merchantKey) {
+      const signature = req.headers['oxapay-signature'] || req.headers['x-oxapay-signature']
+      if (signature) {
+        const { createHmac } = await import('crypto')
+        const rawBody = JSON.stringify(data)
+        const expectedSig = createHmac('sha512', merchantKey).update(rawBody).digest('hex')
+        if (signature !== expectedSig) {
+          console.warn('OxaPay webhook: invalid signature — possible spoofed request')
+          return res.status(401).json({ error: 'Invalid signature' })
+        }
+      }
+      // If no signature header present: OxaPay may not send one on all plans
+      // Log but continue — full verification happens in /api/oxapay-verify
+    }
+
     const { trackId, status, orderId } = data
 
     console.log(`OxaPay webhook: trackId=${trackId} status=${status} orderId=${orderId}`)

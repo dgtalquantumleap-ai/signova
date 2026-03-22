@@ -2,8 +2,55 @@
 // Accepts a raw conversation (WhatsApp, email, chat) + docType
 // Returns a JSON object with field values matching DOC_CONFIG in Generator.jsx
 
+// ── Rate limiting (mirrors generate-preview.js) ─────────────────────────────
+let ratelimit = null
+async function initRatelimit() {
+  if (ratelimit) return ratelimit
+  const url = process.env.UPSTASH_REDIS_REST_URL
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN
+  if (url && token) {
+    const { Redis } = await import('@upstash/redis')
+    const { Ratelimit } = await import('@upstash/ratelimit')
+    const redis = new Redis({ url, token })
+    ratelimit = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(5, '1 h'), // 5 extractions per IP per hour
+      analytics: false,
+    })
+  }
+  return ratelimit
+}
+const RATE_FALLBACK = new Map()
+function isRateLimitedFallback(ip) {
+  const now = Date.now()
+  const entry = RATE_FALLBACK.get(ip)
+  if (!entry || now > entry.resetAt) {
+    RATE_FALLBACK.set(ip, { count: 1, resetAt: now + 60 * 60 * 1000 })
+    return false
+  }
+  if (entry.count >= 5) return true
+  entry.count++
+  return false
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
+
+  // Rate limiting — 5 extractions per IP per hour
+  const ip =
+    req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+    req.headers['x-real-ip'] ||
+    req.socket?.remoteAddress ||
+    'unknown'
+  const rl = await initRatelimit()
+  if (rl) {
+    const { success } = await rl.limit(`extract:${ip}`)
+    if (!success) {
+      return res.status(429).json({ error: 'Too many extractions. Please try again in an hour.' })
+    }
+  } else if (isRateLimitedFallback(ip)) {
+    return res.status(429).json({ error: 'Too many extractions. Please try again in an hour.' })
+  }
 
   const { conversation, docType } = req.body
   if (!conversation || !docType) {
