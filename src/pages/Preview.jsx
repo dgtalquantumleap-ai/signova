@@ -100,7 +100,7 @@ export default function Preview() {
     trackPaymentAttempted(doc?.docType, 'card')
     const payingTimer = setTimeout(() => setPaying(false), 8000)
     try {
-      const res = await fetch('/api/checkout', {
+      const res = await fetch('/api/stripe-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ docType: doc.docType, docName: doc.docName }),
@@ -370,9 +370,9 @@ export default function Preview() {
 
     if (params.get('payment') !== 'success') return
 
-    const checkoutId = params.get('checkout_id')
-    if (!checkoutId) {
-      console.error('No checkout_id in return URL')
+    const sessionId = params.get('session_id')
+    if (!sessionId) {
+      console.error('No session_id in return URL')
       setError('Payment could not be verified — missing checkout reference. Please contact hello@getsignova.com.')
       return
     }
@@ -386,10 +386,10 @@ export default function Preview() {
     const verifyAndRegenerate = async () => {
       try {
         // Step 1: Verify payment server-side
-        const verifyRes = await fetch('/api/verify-payment', {
+        const verifyRes = await fetch('/api/stripe-verify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ checkoutId }),
+          body: JSON.stringify({ sessionId }),
         })
 
         const verifyData = await verifyRes.json()
