@@ -58,8 +58,8 @@ export default function NDALanding() {
             <span className="logo-text">Signova</span>
           </div>
           <div className="nav-links">
-            <a href="/#how-it-works">How it works</a>
-            <a href="/#pricing">Pricing</a>
+            <a href="/#how">How it works</a>
+            <a href="/#documents">Documents</a>
             <a href="/blog">Blog</a>
           </div>
         </div>

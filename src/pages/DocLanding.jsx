@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom'
+import { useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { DOC_LANDING_DATA } from '../data/docLandingData'
 import './Landing.css'
@@ -11,10 +12,12 @@ export default function DocLanding() {
   // Find config by slug
   const config = Object.values(DOC_LANDING_DATA).find(d => d.slug === slug)
 
-  if (!config) {
-    navigate('/')
-    return null
-  }
+  // Navigate in effect, not during render — React anti-pattern fix
+  useEffect(() => {
+    if (!config) navigate('/')
+  }, [config, navigate])
+
+  if (!config) return null
 
   const {
     docId, icon, name, headline, subheadline,
@@ -40,8 +43,8 @@ export default function DocLanding() {
             <span className="logo-text">Signova</span>
           </div>
           <div className="nav-links">
-            <a href="/#how-it-works">How it works</a>
-            <a href="/#pricing">Pricing</a>
+            <a href="/#how">How it works</a>
+            <a href="/#documents">Documents</a>
             <a href="/blog">Blog</a>
           </div>
         </div>
