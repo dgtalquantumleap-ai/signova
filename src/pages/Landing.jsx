@@ -57,6 +57,22 @@ const CURRENCY_MAP = {
 }
 const DEFAULT_CURRENCY = { symbol: '$', amount: 4.99, code: 'USD', local: null }
 
+// Geo-aware lawyer fee comparison — shown in CTA section
+const LAWYER_FEE_MAP = {
+  NG: '₦50,000–₦150,000', GH: 'GH₵500–GH₵2,000', KE: 'KSh 5,000–KSh 20,000',
+  ZA: 'R800–R3,000', ET: 'ETB 2,000–ETB 8,000', TZ: 'TSh 50,000–TSh 200,000',
+  UG: 'USh 150,000–USh 600,000',
+  IN: '₹5,000–₹20,000', PK: 'Rs 5,000–Rs 20,000', BD: '৳5,000–৳20,000',
+  PH: '₱2,000–₱8,000', ID: 'Rp 500,000–Rp 2,000,000', MY: 'RM 300–RM 1,200', SG: 'S$200–S$600',
+  GB: '£150–£400', DE: '€150–€400', FR: '€150–€400', IT: '€150–€400',
+  ES: '€150–€400', NL: '€150–€400', PT: '€150–€400',
+  CA: 'CA$200–CA$600', AU: 'A$200–A$500', NZ: 'NZ$200–NZ$500',
+  US: '$150–$400', BR: 'R$200–R$800', MX: 'MX$1,500–MX$6,000',
+  CO: 'COP 200,000–COP 800,000', AR: 'AR$5,000–AR$20,000',
+  AE: 'AED 500–AED 2,000', SA: 'SAR 500–SAR 2,000', EG: 'E£500–E£2,000',
+}
+const DEFAULT_LAWYER_FEE = '$150–$400'
+
 function useGeo() {
   const [currency, setCurrency] = useState(DEFAULT_CURRENCY)
   const [countryCode, setCountryCode] = useState(null)
@@ -619,8 +635,8 @@ export default function Landing() {
       <section className="wa-banner-section">
         <div className="wa-banner-inner">
           <div className="wa-banner-left">
-            <div className="wa-banner-badge">🇳🇬 Built for how Nigeria does business</div>
-            <h2 className="wa-banner-title">Have a WhatsApp negotiation? Paste it.</h2>
+            <div className="wa-banner-badge">✉️ WhatsApp, iMessage, Telegram, email — paste any negotiation</div>
+            <h2 className="wa-banner-title">Agreed terms in a chat or email? Paste it.</h2>
             <p className="wa-banner-body">
               We extract the agreed terms — names, amounts, dates, restrictions — and auto-fill your document in seconds. Works for tenancy agreements, loan agreements, freelance contracts and 24 more document types.
             </p>
@@ -751,7 +767,7 @@ export default function Landing() {
       <section className="cta-section">
         <div className="section-inner">
           <div className="cta-box">
-            <h2 className="cta-title">Stop paying ₦50,000–₦150,000 for a document you can generate in 3 minutes.</h2>
+            <h2 className="cta-title">Stop paying {LAWYER_FEE_MAP[countryCode] || DEFAULT_LAWYER_FEE} for a document you can generate in 3 minutes.</h2>
             <p className="cta-sub">Preview completely free — no account, no credit card. Pay only{' '}
               {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} when you're ready to download. Works in Nigeria, Ghana, Kenya, the UK, Canada, and 180+ countries.</p>
             <button
