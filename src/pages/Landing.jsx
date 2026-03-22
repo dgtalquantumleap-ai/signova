@@ -201,82 +201,68 @@ function getQuickPicks(cc) {
 }
 
 /**
- * LoomFacade — Fixed dead clicks issue
+ * LoomFacade — Video preview with native Loom thumbnail
  * 
- * PROBLEM: Old version showed an SVG "skeleton" that looked broken.
- * Users clicked expecting a video, saw gray lines, thought it was broken.
+ * Uses Loom's embed with hide_owner, hide_share, and hide_title for a clean look.
+ * When section enters viewport, loads the embed (paused) showing native thumbnail.
+ * On click, starts playing with autoplay.
  * 
- * FIX: Use Loom's actual CDN thumbnail image. Shows real video preview.
- * Thumbnail loads lazily when section is in viewport.
+ * This approach is more reliable than trying to construct CDN thumbnail URLs,
+ * since Loom frequently changes their CDN structure.
  */
 function LoomFacade({ videoId }) {
   const [clicked, setClicked] = useState(false)
   const [inView, setInView] = useState(false)
-  const [thumbLoaded, setThumbLoaded] = useState(false)
   const ref = useRef(null)
 
-  // Lazy-load thumbnail when section enters viewport
+  // Lazy-load embed when section enters viewport
   useEffect(() => {
     const el = ref.current
     if (!el) return
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) { setInView(true); observer.disconnect() } },
-      { rootMargin: '100px' } // Start loading just before visible
+      { rootMargin: '200px' } // Start loading before visible
     )
     observer.observe(el)
     return () => observer.disconnect()
   }, [])
 
-  // If clicked, show the actual Loom embed
-  if (clicked) {
-    return (
-      <iframe
-        src={`https://www.loom.com/embed/${videoId}?autoplay=1`}
-        frameBorder="0"
-        allowFullScreen
-        allow="autoplay"
-        className="loom-embed"
-      />
-    )
-  }
-
-  // Loom CDN thumbnail URL — this is the REAL preview image
-  const thumbnailUrl = `https://cdn.loom.com/sessions/thumbnails/${videoId}-with-play.gif`
+  // Loom embed URL — starts paused, autoplays on click
+  // hide_owner=true, hide_share=true, hide_title=true for clean appearance
+  const embedUrl = clicked
+    ? `https://www.loom.com/embed/${videoId}?autoplay=1&hide_owner=true&hide_share=true&hide_title=true`
+    : `https://www.loom.com/embed/${videoId}?autoplay=0&hide_owner=true&hide_share=true&hide_title=true`
 
   return (
-    <div 
-      ref={ref} 
-      className="loom-facade" 
-      onClick={() => setClicked(true)} 
-      role="button" 
-      aria-label="Play demo video"
-    >
-      <div className="loom-poster">
-        {/* Loading skeleton — shows while thumbnail loads */}
-        {!thumbLoaded && <div className="loom-loading-skeleton" />}
-        
-        {/* Actual Loom thumbnail — loads when in viewport */}
-        {inView && (
-          <img
-            src={thumbnailUrl}
-            alt="Demo video preview"
-            className={`loom-thumbnail ${thumbLoaded ? 'loaded' : ''}`}
-            onLoad={() => setThumbLoaded(true)}
-            loading="lazy"
-          />
-        )}
-        
-        {/* Play button overlay */}
-        <div className="loom-play-btn" aria-hidden="true">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <circle cx="14" cy="14" r="13" stroke="#fff" strokeWidth="1.5"/>
-            <path d="M11 9.5l9 4.5-9 4.5V9.5z" fill="#fff"/>
-          </svg>
+    <div ref={ref} className="loom-facade-wrapper">
+      {/* Show branded placeholder until viewport triggers load */}
+      {!inView && (
+        <div className="loom-placeholder">
+          <div className="loom-branded-bg">
+            <div className="loom-branded-icon">S</div>
+            <p className="loom-branded-text">See how Signova works</p>
+          </div>
+          <div className="loom-play-btn" aria-hidden="true">
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+              <circle cx="32" cy="32" r="30" fill="rgba(201,168,76,0.95)" />
+              <path d="M26 20l20 12-20 12V20z" fill="#0e0e0e"/>
+            </svg>
+          </div>
+          <p className="loom-loading-text">▶ Watch demo — 2 min</p>
         </div>
-        
-        {/* Label */}
-        <p className="loom-loading-text">Watch demo — 2 min</p>
-      </div>
+      )}
+      
+      {/* Load Loom embed when in viewport */}
+      {inView && (
+        <iframe
+          src={embedUrl}
+          frameBorder="0"
+          allowFullScreen
+          allow="autoplay; fullscreen"
+          className="loom-embed"
+          title="Signova demo video"
+        />
+      )}
     </div>
   )
 }
