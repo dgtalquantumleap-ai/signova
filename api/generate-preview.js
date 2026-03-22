@@ -30,7 +30,23 @@ export default async function handler(req, res) {
     })
   }
 
-  const { prompt } = req.body
+  // Parse body manually — req.body can be undefined in ESM Vercel functions
+  let body = req.body
+  if (!body || typeof body === 'string') {
+    try {
+      const raw = await new Promise((resolve, reject) => {
+        let data = ''
+        req.on('data', chunk => { data += chunk })
+        req.on('end', () => resolve(data))
+        req.on('error', reject)
+      })
+      body = raw ? JSON.parse(raw) : {}
+    } catch {
+      return res.status(400).json({ error: 'Invalid JSON body' })
+    }
+  }
+
+  const { prompt } = body
   if (!prompt) return res.status(400).json({ error: 'Missing prompt' })
 
   const apiKey = process.env.GROQ_API_KEY

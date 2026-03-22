@@ -2,10 +2,21 @@
 // PAID ONLY — Uses Anthropic Claude for premium quality documents
 // Verifies Polar payment server-side before generating
 
+async function parseBody(req) {
+  if (req.body && typeof req.body === 'object') return req.body
+  return new Promise((resolve, reject) => {
+    let data = ''
+    req.on('data', chunk => { data += chunk })
+    req.on('end', () => { try { resolve(data ? JSON.parse(data) : {}) } catch { resolve({}) } })
+    req.on('error', reject)
+  })
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
-  const { prompt, checkoutId } = req.body
+  const body = await parseBody(req)
+  const { prompt, checkoutId } = body
   if (!prompt) return res.status(400).json({ error: 'Missing prompt' })
 
   // Verify payment with Polar API — no more trusting client-side flags
