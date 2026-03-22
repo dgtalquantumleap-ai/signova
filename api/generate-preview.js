@@ -6,23 +6,12 @@
 // Uses Upstash Redis in production (persists across serverless cold starts).
 // Falls back to in-memory Map in local dev when env vars are missing.
 
+// Rate limiting temporarily using in-memory only
+// Upstash Redis re-enable when confirmed working
 let ratelimit = null
 
 async function initRatelimit() {
-  if (ratelimit) return ratelimit
-  const url = process.env.UPSTASH_REDIS_REST_URL
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN
-  if (url && token) {
-    const { Redis } = await import('@upstash/redis')
-    const { Ratelimit } = await import('@upstash/ratelimit')
-    const redis = new Redis({ url, token })
-    ratelimit = new Ratelimit({
-      redis,
-      limiter: Ratelimit.slidingWindow(3, '1 h'), // 3 previews per IP per hour
-      analytics: false,
-    })
-  }
-  return ratelimit
+  return null // using in-memory fallback for stability
 }
 
 // In-memory fallback (dev only — resets on every cold start in prod)
