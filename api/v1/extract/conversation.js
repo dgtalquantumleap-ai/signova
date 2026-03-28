@@ -1,0 +1,273 @@
+// api/v1/extract/conversation.js
+// POST https://api.ebenova.dev/v1/extract/conversation
+// Extracts structured fields from a raw conversation (WhatsApp, email, chat)
+// and optionally generates the document immediately.
+// Requires: Authorization: Bearer sk_live_...
+
+import { authenticate, recordUsage, buildUsageBlock } from '../../../lib/api-auth.js'
+
+// ─── Field maps ─────────────────────────────────────────────────────────────
+// Tells Claude exactly what JSON keys to return per document type.
+// Kept in sync with api/extract-terms.js
+const FIELD_MAPS = {
+  'privacy-policy':          ['company', 'website', 'country', 'dataCollected', 'thirdParties', 'contact'],
+  'terms-of-service':        ['company', 'website', 'country', 'serviceType', 'hasSubscription', 'contact'],
+  'nda':                     ['disclosingParty', 'receivingParty', 'purpose', 'duration', 'country', 'mutual'],
+  'freelance-contract':      ['freelancer', 'client', 'services', 'rate', 'paymentTerms', 'country', 'ipOwnership'],
+  'independent-contractor':  ['company', 'contractor', 'services', 'compensation', 'term', 'country', 'nonCompete'],
+  'service-agreement':       ['provider', 'client', 'services', 'fee', 'paymentTerms', 'duration', 'country', 'ipOwnership', 'confidentiality'],
+  'consulting-agreement':    ['consultant', 'client', 'scope', 'rate', 'paymentTerms', 'duration', 'exclusivity', 'country'],
+  'employment-offer-letter': ['employer', 'employee', 'jobTitle', 'department', 'startDate', 'salary', 'employmentType', 'benefits', 'noticePeriod', 'country'],
+  'non-compete-agreement':   ['employer', 'employee', 'role', 'restrictedActivities', 'duration', 'geography', 'country'],
+  'payment-terms-agreement': ['creditor', 'debtor', 'amountOwed', 'reason', 'paymentSchedule', 'dueDate', 'latePenalty', 'country'],
+  'business-partnership':    ['partner1', 'partner2', 'businessName', 'businessType', 'capitalContribution', 'profitSplit', 'decisionMaking', 'duration', 'country'],
+  'joint-venture':           ['party1', 'party2', 'jvName', 'purpose', 'equitySplit', 'management', 'duration', 'country'],
+  'loan-agreement':          ['lender', 'borrower', 'loanAmount', 'purpose', 'interestRate', 'repaymentPeriod', 'repaymentSchedule', 'collateral', 'country'],
+  'shareholder-agreement':   ['companyName', 'shareholders', 'businessDescription', 'dividendPolicy', 'transferRestrictions', 'antiDilution', 'country'],
+  'mou':                     ['party1', 'party2', 'purpose', 'obligations1', 'obligations2', 'binding', 'duration', 'country'],
+  'letter-of-intent':        ['sender', 'recipient', 'intentType', 'description', 'proposedValue', 'exclusivity', 'country'],
+  'distribution-agreement':  ['supplier', 'distributor', 'products', 'territory', 'exclusivity', 'minimumPurchase', 'margin', 'duration', 'country'],
+  'supply-agreement':        ['supplier', 'buyer', 'goods', 'priceStructure', 'unitPrice', 'minimumOrder', 'deliverySchedule', 'qualityStandards', 'duration', 'country'],
+  'business-proposal':       ['proposingCompany', 'prospectName', 'projectTitle', 'problemStatement', 'proposedSolution', 'deliverables', 'timeline', 'investment', 'whyUs', 'country', 'validityPeriod'],
+  'tenancy-agreement':       ['landlord', 'tenant', 'property', 'rentAmount', 'duration', 'paymentSchedule', 'cautionDeposit', 'country', 'utilities', 'restrictions'],
+  'quit-notice':             ['landlord', 'tenant', 'property', 'noticeType', 'noticePeriod', 'vacateDate', 'country'],
+  'deed-of-assignment':      ['assignor', 'assignee', 'property', 'consideration', 'titleDocument', 'country'],
+  'power-of-attorney':       ['donor', 'attorney', 'scope', 'propertyDetails', 'duration', 'durationNote', 'country'],
+  'landlord-agent-agreement':['landlord', 'agent', 'property', 'agentScope', 'commission', 'duration', 'country'],
+  'facility-manager-agreement':['propertyOwner', 'facilityManager', 'property', 'services', 'fee', 'duration', 'country', 'liability'],
+  'hire-purchase':           ['seller', 'buyer', 'asset', 'assetValue', 'deposit', 'installments', 'interestRate', 'country', 'ownershipTransfer', 'defaultClause'],
+  'purchase-agreement':      ['seller', 'buyer', 'goods', 'purchasePrice', 'paymentMethod', 'deliveryTerms', 'condition', 'warranty', 'country'],
+}
+
+async function parseBody(req) {
+  if (req.body && typeof req.body === 'object') return req.body
+  return new Promise((resolve, reject) => {
+    let data = ''
+    req.on('data', chunk => { data += chunk })
+    req.on('end', () => { try { resolve(data ? JSON.parse(data) : {}) } catch { resolve({}) } })
+    req.on('error', reject)
+  })
+}
+
+function buildDocPrompt(docType, fields) {
+  const fieldSummary = Object.entries(fields)
+    .filter(([, v]) => v && (typeof v === 'string' ? v.trim() : true))
+    .map(([k, v]) => {
+      const display = Array.isArray(v) ? v.join(', ') : v
+      const label = k.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())
+      return `${label}: ${display}`
+    })
+    .join('\n')
+
+  const docName = docType.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+
+  return `Generate a professional, comprehensive ${docName} document for the following:\n\n${fieldSummary}\n\nRequirements:\n- Write in formal legal language\n- Clear numbered sections and subsections\n- Include all standard clauses\n- Use the actual values provided — no placeholders\n- End with a signature block\n- Do NOT add disclaimers or suggestions to seek legal advice\n\nOutput the complete document only.`
+}
+
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+
+  if (req.method === 'OPTIONS') return res.status(200).end()
+  if (req.method !== 'POST') {
+    return res.status(405).json({ success: false, error: { code: 'METHOD_NOT_ALLOWED', message: 'Use POST' } })
+  }
+
+  // ── Auth ──────────────────────────────────────────────────────────────────
+  const auth = await authenticate(req)
+  if (!auth.ok) {
+    return res.status(auth.status).json({ success: false, error: auth.error })
+  }
+
+  // ── Parse body ────────────────────────────────────────────────────────────
+  const body = await parseBody(req)
+  const { conversation, target_document, auto_generate = false } = body
+
+  if (!conversation || typeof conversation !== 'string' || !conversation.trim()) {
+    return res.status(400).json({
+      success: false,
+      error: { code: 'MISSING_FIELD', message: 'conversation is required' },
+    })
+  }
+
+  if (conversation.length > 10000) {
+    return res.status(400).json({
+      success: false,
+      error: { code: 'CONVERSATION_TOO_LONG', message: 'conversation must be under 10,000 characters', hint: 'Paste the relevant portion only' },
+    })
+  }
+
+  const validTypes = Object.keys(FIELD_MAPS)
+
+  // If target_document provided, validate it
+  if (target_document && !validTypes.includes(target_document)) {
+    return res.status(400).json({
+      success: false,
+      error: { code: 'UNSUPPORTED_TYPE', message: `Unsupported target_document: ${target_document}` },
+      supported_types: validTypes,
+    })
+  }
+
+  const anthropicKey = process.env.ANTHROPIC_API_KEY
+  if (!anthropicKey) {
+    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: 'Server misconfigured' } })
+  }
+
+  // ── Step 1: Extract fields (always uses Haiku — fast + cheap) ─────────────
+  const fieldsToExtract = target_document ? FIELD_MAPS[target_document] : null
+
+  const extractPrompt = target_document
+    ? `Extract key terms from this conversation as a JSON object.
+Document type: ${target_document}
+Fields to extract: ${fieldsToExtract.join(', ')}
+
+Rules:
+- Return ONLY valid JSON. No explanation, no markdown, no code fences.
+- Only include fields where you found clear information.
+- Omit fields you cannot determine (no nulls or empty strings).
+- For array fields return arrays of strings.
+- Be conservative — only extract what is clearly stated.
+
+Conversation:
+---
+${conversation}
+---
+
+Return only the JSON object:`
+    : `Analyze this conversation and identify the most appropriate legal document type, then extract all relevant fields.
+
+Return ONLY a JSON object in this exact structure (no explanation, no markdown):
+{
+  "suggested_document": "<document_type_slug>",
+  "confidence": <0.0-1.0>,
+  "extracted_fields": { ... field key-value pairs ... },
+  "missing_fields": ["field1", "field2"]
+}
+
+Available document types:
+${validTypes.join(', ')}
+
+Conversation:
+---
+${conversation}
+---`
+
+  let extracted = {}
+  let suggestedDocument = target_document || null
+  let confidence = null
+  let missingFields = []
+
+  try {
+    const extractRes = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': anthropicKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5',
+        max_tokens: 1200,
+        messages: [{ role: 'user', content: extractPrompt }],
+      }),
+    })
+
+    if (!extractRes.ok) {
+      const err = await extractRes.json()
+      console.error('Extraction API error:', err)
+      return res.status(500).json({ success: false, error: { code: 'EXTRACTION_FAILED', message: 'Extraction failed' } })
+    }
+
+    const extractData = await extractRes.json()
+    const raw = extractData.content?.[0]?.text?.trim() || ''
+    const clean = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim()
+
+    const parsed = JSON.parse(clean)
+
+    if (target_document) {
+      // Filter to only valid fields for this doc type
+      const validFields = FIELD_MAPS[target_document]
+      for (const key of validFields) {
+        if (parsed[key] !== undefined && parsed[key] !== null && parsed[key] !== '') {
+          extracted[key] = parsed[key]
+        }
+      }
+      missingFields = validFields.filter(f => !extracted[f])
+    } else {
+      suggestedDocument = parsed.suggested_document || null
+      confidence = parsed.confidence || null
+      extracted = parsed.extracted_fields || {}
+      missingFields = parsed.missing_fields || []
+    }
+  } catch (err) {
+    console.error('Extraction parse error:', err)
+    return res.status(500).json({
+      success: false,
+      error: { code: 'EXTRACTION_FAILED', message: 'Could not parse extracted fields. Try providing target_document explicitly.' },
+    })
+  }
+
+  // ── Step 2 (optional): Generate the document ───────────────────────────────
+  if (!auto_generate) {
+    // Extraction only — no usage charge
+    return res.status(200).json({
+      success: true,
+      suggested_document: suggestedDocument,
+      confidence,
+      extracted_fields: extracted,
+      missing_fields: missingFields,
+    })
+  }
+
+  // auto_generate: true — generate the full document (counts as 1 document)
+  if (!suggestedDocument || !FIELD_MAPS[suggestedDocument]) {
+    return res.status(400).json({
+      success: false,
+      error: { code: 'CANNOT_DETERMINE_TYPE', message: 'Could not determine document type. Set target_document explicitly.' },
+    })
+  }
+
+  const docPrompt = buildDocPrompt(suggestedDocument, extracted)
+
+  try {
+    const genRes = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': anthropicKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 4000,
+        system: 'You are an expert legal document drafter. Generate comprehensive, professional legal documents. Use formal legal language, clear numbered sections, all standard clauses. Never add disclaimers or suggestions to consult a lawyer. The document ends cleanly after the signature block.',
+        messages: [{ role: 'user', content: docPrompt }],
+      }),
+    })
+
+    if (!genRes.ok) {
+      return res.status(500).json({ success: false, error: { code: 'GENERATION_FAILED', message: 'Document generation failed' } })
+    }
+
+    const genData = await genRes.json()
+    const documentText = genData.content[0]?.text || ''
+
+    await recordUsage(auth)
+
+    return res.status(200).json({
+      success: true,
+      suggested_document: suggestedDocument,
+      confidence,
+      extracted_fields: extracted,
+      missing_fields: missingFields,
+      document: documentText,
+      document_type: suggestedDocument,
+      usage: buildUsageBlock(auth),
+      generated_at: new Date().toISOString(),
+    })
+  } catch (err) {
+    console.error('Generation error:', err)
+    return res.status(500).json({ success: false, error: { code: 'GENERATION_FAILED', message: 'Document generation failed. Please try again.' } })
+  }
+}

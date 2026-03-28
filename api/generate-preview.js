@@ -1,18 +1,33 @@
 // api/generate-preview.js
 // Uses Groq (fast + near free) for watermarked previews
+// Rate limiting: simple token bucket per IP, resets on cold start
+// At current scale this is sufficient — add Redis when abuse is detected
 
-const RATE_LIMIT = new Map()
+const WINDOW_MS = 60 * 60 * 1000 // 1 hour
+const MAX_PER_WINDOW = 3
+
+const ipStore = new Map()
 
 function isRateLimited(ip) {
   const now = Date.now()
-  const entry = RATE_LIMIT.get(ip)
+  const entry = ipStore.get(ip)
   if (!entry || now > entry.resetAt) {
-    RATE_LIMIT.set(ip, { count: 1, resetAt: now + 60 * 60 * 1000 })
+    ipStore.set(ip, { count: 1, resetAt: now + WINDOW_MS })
     return false
   }
-  if (entry.count >= 3) return true
+  if (entry.count >= MAX_PER_WINDOW) return true
   entry.count++
   return false
+}
+
+async function parseBody(req) {
+  if (req.body && typeof req.body === 'object') return req.body
+  return new Promise((resolve, reject) => {
+    let data = ''
+    req.on('data', chunk => { data += chunk })
+    req.on('end', () => { try { resolve(data ? JSON.parse(data) : {}) } catch { resolve({}) } })
+    req.on('error', reject)
+  })
 }
 
 export default async function handler(req, res) {
@@ -30,22 +45,7 @@ export default async function handler(req, res) {
     })
   }
 
-  // Parse body manually — req.body can be undefined in ESM Vercel functions
-  let body = req.body
-  if (!body || typeof body === 'string') {
-    try {
-      const raw = await new Promise((resolve, reject) => {
-        let data = ''
-        req.on('data', chunk => { data += chunk })
-        req.on('end', () => resolve(data))
-        req.on('error', reject)
-      })
-      body = raw ? JSON.parse(raw) : {}
-    } catch {
-      return res.status(400).json({ error: 'Invalid JSON body' })
-    }
-  }
-
+  const body = await parseBody(req)
   const { prompt } = body
   if (!prompt) return res.status(400).json({ error: 'Missing prompt' })
 

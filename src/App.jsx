@@ -15,6 +15,8 @@ const DocLanding = lazy(() => import('./pages/DocLanding'))
 const WhatsApp = lazy(() => import('./pages/WhatsApp'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const AboutPage = lazy(() => import('./pages/AboutPage'))
+const ContactPage = lazy(() => import('./pages/ContactPage'))
+const Docs = lazy(() => import('./pages/Docs'))
 
 const PageShell = () => (
   <div style={{ minHeight: '100vh', background: '#0e0e0e' }} />
@@ -37,9 +39,10 @@ export default function App() {
         <Route path="/whatsapp" element={<WhatsApp />} />
         {/* About + contact pages */}
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/contact" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="/team" element={<AboutPage />} />
         <Route path="/pricing" element={<Landing />} />
+        <Route path="/docs" element={<Docs />} />
         <Route path="/:slug" element={<DocLanding />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

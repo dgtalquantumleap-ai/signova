@@ -180,12 +180,17 @@
   position: relative; overflow: hidden;
   padding: 160px 24px 100px;
   text-align: center;
+  /* LCP FIX: Contain layout to prevent shifts */
+  contain: layout style;
 }
 .hero-glow {
   position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
   width: 800px; height: 600px; border-radius: 50%;
   background: radial-gradient(ellipse, rgba(201,168,76,0.12) 0%, transparent 70%);
   pointer-events: none; z-index: 0;
+  /* LCP FIX: Promote to GPU layer, prevent repaint */
+  will-change: transform;
+  content-visibility: auto;
 }
 .hero-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
 .hero-badge {
@@ -220,6 +225,27 @@
   font-size: 18px; color: var(--text2); line-height: 1.7;
   max-width: 560px; margin: 0 auto 36px;
 }
+
+/* Jurisdiction badges — trust indicators */
+.hero-jurisdictions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--text3);
+  margin-bottom: 24px;
+}
+.jurisdiction-divider {
+  color: var(--border);
+  font-weight: 300;
+}
+.jurisdiction-more {
+  color: var(--gold);
+  font-weight: 500;
+}
+
 .hero-actions { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 16px; margin-bottom: 48px; flex-wrap: wrap; }
 .hero-note { font-size: 13px; color: var(--text3); }
 
@@ -724,6 +750,11 @@
 
 .mobile-show { display: none; }
 
+/* ── Mobile WhatsApp hero shortcut — hidden on desktop ── */
+.mobile-wa-hero {
+  display: none;
+}
+
 /* ── Mobile Sticky CTA ── */
 .mobile-sticky-cta {
   display: none;
@@ -756,6 +787,28 @@
 @media (max-width: 640px) {
   /* ── Prevent horizontal scroll ── */
   .landing { padding-bottom: 72px; overflow-x: hidden; }
+
+  /* ── Mobile WhatsApp shortcut — visible above fold ── */
+  .mobile-wa-hero {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    background: rgba(37,211,102,0.08);
+    border: 1px solid rgba(37,211,102,0.25);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--text2);
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .mobile-wa-hero:hover {
+    background: rgba(37,211,102,0.12);
+  }
+  .mobile-wa-hero strong { color: #25D366; }
 
   /* ── Sticky CTA ── */
   .mobile-sticky-cta { display: flex; }
@@ -795,13 +848,22 @@
   .hero-sub {
     font-size: 13px !important;
     line-height: 1.5 !important;
-    margin-bottom: 16px !important;
+    margin-bottom: 12px !important;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  
+
+  /* Jurisdiction badges — compact on mobile */
+  .hero-jurisdictions {
+    font-size: 11px !important;
+    margin-bottom: 16px !important;
+    gap: 6px !important;
+  }
+  .jurisdiction-divider { display: none; }
+  .hero-jurisdictions span { display: inline-flex; align-items: center; }
+
   .hero-badge { display: none !important; }
   .hero-actions .btn-outline { display: none; }
   .hero-note { display: none; }
@@ -816,7 +878,11 @@
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
-  .hero-actions .btn-large { font-size: 15px !important; padding: 16px 20px !important; }
+  .hero-actions .btn-large { 
+    font-size: 15px !important; 
+    padding: 16px 20px !important; 
+    width: 100% !important;
+  }
   .hero-stats { display: none !important; }
   .hero-scroll-nudge { display: none !important; }
 
@@ -1018,7 +1084,7 @@
 
 @media (max-width: 768px) {
   .wa-banner-inner { grid-template-columns: 1fr; gap: 32px; }
-  .wa-banner-right { display: none; }
+  .wa-banner-right { display: flex; }
   .wa-banner-section { padding: 48px 16px; }
   .wa-banner-btn { width: 100%; justify-content: center; }
 }

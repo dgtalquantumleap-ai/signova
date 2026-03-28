@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect, useMemo, useRef, startTransition } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { trackDocSelected } from '../lib/analytics'
+import { trackDocSelected, trackHeroCtaClick } from '../lib/analytics'
 import './Landing.css'
 
 // ── Geo-currency detection ──────────────────────────────────────────────────
@@ -124,10 +124,10 @@ function useGeo() {
 
 // ── Geo-prioritised quick-pick documents ────────────────────────────────────
 const QUICKPICK_DEFAULT = [
+  { id: 'business-proposal', icon: '🚀', name: 'Business Proposal' },
   { id: 'nda', icon: '🤝', name: 'NDA' },
   { id: 'freelance-contract', icon: '✍️', name: 'Freelance Contract' },
   { id: 'privacy-policy', icon: '🔒', name: 'Privacy Policy' },
-  { id: 'business-proposal', icon: '🚀', name: 'Business Proposal' },
   { id: 'service-agreement', icon: '📝', name: 'Service Agreement' },
   { id: 'loan-agreement', icon: '💰', name: 'Loan Agreement' },
   { id: 'tenancy-agreement', icon: '🏠', name: 'Tenancy Agreement' },
@@ -454,7 +454,7 @@ const FAQS = [
   },
   {
     q: 'What if I\'m not happy with the result?',
-    a: 'You can preview your complete document for free before paying anything. If after downloading you\'re not satisfied for any reason, email hello@getsignova.com within 30 days for a full refund — no questions asked. We stand behind every document.',
+    a: 'You can preview your complete document for free before paying anything. If after downloading you\'re not satisfied for any reason, email info@ebenova.net within 30 days for a full refund — no questions asked. We stand behind every document.',
   },
 ]
 
@@ -520,11 +520,11 @@ export default function Landing() {
             <span className="logo-text">Signova</span>
           </div>
           <div className={`nav-links ${navOpen ? 'open' : ''}`}>
-            <a href="#documents" onClick={closeNav}>Documents</a>
-            <a href="#how" onClick={closeNav}>How it works</a>
-            <a href="#faq" onClick={closeNav}>FAQ</a>
-            <a href="/blog" onClick={closeNav}>Blog</a>
-            <a href="#documents" onClick={closeNav} className="nav-cta-link">Start free →</a>
+            <a href="#documents" onClick={closeNav} aria-label="Browse documents">Documents</a>
+            <a href="#how" onClick={closeNav} aria-label="How Signova works">How it works</a>
+            <a href="#faq" onClick={closeNav} aria-label="Frequently asked questions">FAQ</a>
+            <a href="/blog" onClick={closeNav} aria-label="Read our blog">Blog</a>
+            <a href="#documents" onClick={closeNav} className="nav-cta-link" aria-label="Start generating your document">Start free →</a>
           </div>
           <button
             className="hamburger"
@@ -541,20 +541,57 @@ export default function Landing() {
       <section className="hero">
         <div className="hero-glow" />
         <div className="hero-inner">
-          <h1 className="hero-title">
+          <h1 className="hero-title" fetchpriority="high">
             Professional legal documents for freelancers, landlords, and businesses globally.
           </h1>
           <p className="hero-sub">
             Tenancy agreements. Freelance contracts. NDAs. Deeds of assignment. 27 document types — jurisdiction-aware, WhatsApp-ready, free to preview. No account. No lawyer fees.
           </p>
 
-          {/* Top 3 geo-detected documents — big, bold, tappable */}
+          {/* Jurisdiction badges — above the fold for trust */}
+          <div className="hero-jurisdictions">
+            <span>🇳🇬 Nigeria</span>
+            <span className="jurisdiction-divider">·</span>
+            <span>🇨🇦 Canada</span>
+            <span className="jurisdiction-divider">·</span>
+            <span>🇺🇸 US</span>
+            <span className="jurisdiction-divider">·</span>
+            <span>🇬🇧 UK</span>
+            <span className="jurisdiction-divider">·</span>
+            <span className="jurisdiction-more">180+ countries</span>
+          </div>
+
+          {/* Primary CTA — unmissable single action above the fold */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
+            <button
+              className="btn-primary btn-large"
+              onClick={() => { trackHeroCtaClick(); trackDocSelected(quickPicks[0]?.id || 'nda', 'hero_cta'); navigate(`/generate/${quickPicks[0]?.id || 'nda'}`) }}
+              aria-label="Generate your legal document for free"
+            >
+              Generate my document free <span className="btn-arrow">→</span>
+            </button>
+            <p style={{ fontSize: '13px', color: 'var(--text3)', margin: 0 }}>Free preview · No account · $4.99 to download</p>
+          </div>
+
+          {/* Mobile-only WhatsApp shortcut — above the fold for mobile users */}
+          <button
+            className="mobile-wa-hero"
+            onClick={() => navigate('/whatsapp')}
+            aria-label="Paste WhatsApp conversation to generate document"
+          >
+            <span style={{ fontSize: '16px' }}>💬</span>
+            <span>Got agreed terms in a chat? <strong>Paste any conversation →</strong></span>
+          </button>
+
+          {/* Top 3 geo-detected documents — or scroll to browse all 27 */}
+          <p style={{ fontSize: '12px', color: 'var(--text3)', textAlign: 'center', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Or choose your document type</p>
           <div className="hero-top3" id="documents">
             {quickPicks.slice(0, 3).map(d => (
               <button
                 key={d.id}
                 className="top3-card"
                 onClick={() => { trackDocSelected(d.id, 'top3'); navigate(`/generate/${d.id}`) }}
+                aria-label={`Generate ${d.name} for free`}
               >
                 <span className="top3-icon">{d.icon}</span>
                 <span className="top3-name">{d.name}</span>
@@ -566,6 +603,7 @@ export default function Landing() {
           <button
             className="more-docs-link"
             onClick={() => startTransition(() => setShowAllDocs(v => !v))}
+            aria-label={showAllDocs ? 'Show fewer document types' : 'Show more document types'}
           >
             {showAllDocs ? 'Show fewer ↑' : 'More documents ↓'}
           </button>
@@ -573,7 +611,7 @@ export default function Landing() {
           {showAllDocs && (
             <div className="all-docs-grid">
               {DOCS.filter(d => !quickPicks.slice(0, 3).some(qp => qp.id === d.id)).map(doc => (
-                <button key={doc.id} className="all-doc-btn" onClick={() => { trackDocSelected(doc.id, 'all_docs'); navigate(`/generate/${doc.id}`) }}>
+                <button key={doc.id} className="all-doc-btn" onClick={() => { trackDocSelected(doc.id, 'all_docs'); navigate(`/generate/${doc.id}`) }} aria-label={`Generate ${doc.name}`}>
                   <span>{doc.icon}</span> {doc.name}
                 </button>
               ))}
@@ -596,12 +634,14 @@ export default function Landing() {
             </button>
           </div>
           <div className="wa-banner-right">
-            <div className="wa-banner-chat">
+            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px', textAlign: 'right' }}>Example conversation</div>
+            <div className="wa-banner-chat" style={{ cursor: 'pointer' }} onClick={() => navigate('/whatsapp')}>
               <div className="wa-msg wa-msg-them">Rent is ₦1.2m per year. 1 year tenancy.</div>
               <div className="wa-msg wa-msg-me">Agreed. I'm Amaka Nwosu. When do I move in?</div>
               <div className="wa-msg wa-msg-them">1st April. 6 months caution deposit — 600k.</div>
               <div className="wa-msg wa-msg-me">Fine. No pets right?</div>
               <div className="wa-msg wa-msg-them">No pets, no subletting. We sign before you move in.</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>Tap to try with your own conversation →</div>
             </div>
             <div className="wa-banner-arrow">↓</div>
             <div className="wa-banner-result">
@@ -749,7 +789,7 @@ export default function Landing() {
           <div className="footer-links">
             <a href="/privacy">Privacy Policy</a>
             <a href="/terms">Terms of Service</a>
-            <a href="/about">Contact</a>
+            <a href="/contact">Contact</a>
           </div>
           <p className="footer-disc">
             Signova is a document generation tool, not a law firm. Documents are AI-generated starting points — not legal advice. No attorney-client relationship is created by using this service. For complex or high-stakes matters, consult a qualified attorney before signing or relying on any document.

@@ -1,0 +1,155 @@
+// api/v1/documents/generate.js
+// POST https://api.ebenova.dev/v1/documents/generate
+// Requires: Authorization: Bearer sk_live_...
+
+import { authenticate, recordUsage, buildUsageBlock } from '../../../lib/api-auth.js'
+
+const SUPPORTED_TYPES = [
+  'privacy-policy', 'terms-of-service', 'nda', 'freelance-contract',
+  'independent-contractor', 'hire-purchase', 'tenancy-agreement', 'quit-notice',
+  'deed-of-assignment', 'power-of-attorney', 'landlord-agent-agreement',
+  'facility-manager-agreement', 'service-agreement', 'consulting-agreement',
+  'employment-offer-letter', 'non-compete-agreement', 'payment-terms-agreement',
+  'business-partnership', 'joint-venture', 'loan-agreement', 'shareholder-agreement',
+  'mou', 'letter-of-intent', 'distribution-agreement', 'supply-agreement',
+  'business-proposal', 'purchase-agreement',
+]
+
+async function parseBody(req) {
+  if (req.body && typeof req.body === 'object') return req.body
+  return new Promise((resolve, reject) => {
+    let data = ''
+    req.on('data', chunk => { data += chunk })
+    req.on('end', () => { try { resolve(data ? JSON.parse(data) : {}) } catch { resolve({}) } })
+    req.on('error', reject)
+  })
+}
+
+function buildPrompt(docType, fields) {
+  const fieldSummary = Object.entries(fields)
+    .filter(([, v]) => v && (typeof v === 'string' ? v.trim() : true))
+    .map(([k, v]) => {
+      const display = Array.isArray(v) ? v.join(', ') : v
+      const label = k.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())
+      return `${label}: ${display}`
+    })
+    .join('\n')
+
+  const docName = docType.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+
+  return `Generate a professional, comprehensive ${docName} document for the following:
+
+${fieldSummary}
+
+Requirements:
+- Write in formal legal language appropriate for the document type
+- Be specific and detailed, not generic
+- Structure with clear numbered sections and subsections
+- Include all standard clauses expected in a ${docName}
+- Tailor the content to the specific details provided
+- Do not include any placeholder text like [INSERT NAME] — use the actual values provided
+- End with a signature block
+- Do NOT add any disclaimers, footnotes, notes, or suggestions to seek legal advice
+
+Output the complete document only, no preamble, explanation, or closing notes.`
+}
+
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+
+  if (req.method === 'OPTIONS') return res.status(200).end()
+  if (req.method !== 'POST') {
+    return res.status(405).json({ success: false, error: { code: 'METHOD_NOT_ALLOWED', message: 'Use POST' } })
+  }
+
+  // ── Auth ──────────────────────────────────────────────────────────────────
+  const auth = await authenticate(req)
+  if (!auth.ok) {
+    return res.status(auth.status).json({ success: false, error: auth.error })
+  }
+
+  // ── Parse + validate body ─────────────────────────────────────────────────
+  const body = await parseBody(req)
+  const { document_type, fields, jurisdiction } = body
+
+  if (!document_type) {
+    return res.status(400).json({
+      success: false,
+      error: { code: 'MISSING_FIELD', message: 'document_type is required' },
+      supported_types: SUPPORTED_TYPES,
+    })
+  }
+
+  if (!SUPPORTED_TYPES.includes(document_type)) {
+    return res.status(400).json({
+      success: false,
+      error: { code: 'UNSUPPORTED_TYPE', message: `Unsupported document type: ${document_type}` },
+      supported_types: SUPPORTED_TYPES,
+    })
+  }
+
+  if (!fields || typeof fields !== 'object' || Object.keys(fields).length === 0) {
+    return res.status(400).json({
+      success: false,
+      error: {
+        code: 'MISSING_FIELD',
+        message: 'fields object is required and must not be empty',
+        hint: 'See field reference at ebenova.dev/docs/legal',
+      },
+    })
+  }
+
+  const enrichedFields = { ...fields }
+  if (jurisdiction) enrichedFields.jurisdiction = jurisdiction
+
+  // ── Generate ──────────────────────────────────────────────────────────────
+  const anthropicKey = process.env.ANTHROPIC_API_KEY
+  if (!anthropicKey) {
+    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: 'Server misconfigured' } })
+  }
+
+  const prompt = buildPrompt(document_type, enrichedFields)
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': anthropicKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 4000,
+        system:
+          'You are an expert legal document drafter with deep knowledge of international law. Generate comprehensive, professional legal documents tailored precisely to the details provided. Use formal legal language, clear numbered sections, and include all standard clauses. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.',
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    })
+
+    if (!response.ok) {
+      const err = await response.json()
+      console.error('Anthropic error:', err)
+      return res.status(500).json({ success: false, error: { code: 'GENERATION_FAILED', message: 'Document generation failed' } })
+    }
+
+    const data = await response.json()
+    const documentText = data.content[0]?.text || ''
+
+    // Record usage only after successful generation
+    await recordUsage(auth)
+
+    return res.status(200).json({
+      success: true,
+      document_type,
+      document: documentText,
+      usage: buildUsageBlock(auth),
+      generated_at: new Date().toISOString(),
+    })
+  } catch (err) {
+    console.error('Generate error:', err)
+    return res.status(500).json({ success: false, error: { code: 'GENERATION_FAILED', message: 'Document generation failed. Please try again.' } })
+  }
+}

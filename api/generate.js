@@ -1,6 +1,8 @@
 // api/generate.js
 // PAID ONLY — Uses Anthropic Claude for premium quality documents
-// Verifies Polar payment server-side before generating
+// Verifies Stripe payment server-side before generating
+
+import Stripe from 'stripe'
 
 async function parseBody(req) {
   if (req.body && typeof req.body === 'object') return req.body
@@ -16,46 +18,35 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
   const body = await parseBody(req)
-  const { prompt, checkoutId } = body
+  const { prompt, sessionId, oxapayTrackId } = body
   if (!prompt) return res.status(400).json({ error: 'Missing prompt' })
 
-  // Verify payment with Polar API — no more trusting client-side flags
-  if (!checkoutId) {
+  if (!sessionId && !oxapayTrackId) {
     return res.status(403).json({
       error: 'Payment verification required. Use /api/generate-preview for free previews.',
     })
   }
 
-  const polarToken = process.env.POLAR_ACCESS_TOKEN
-  if (!polarToken) {
-    return res.status(500).json({ error: 'Server misconfigured — missing Polar token' })
-  }
-
-  try {
-    // Verify the checkout is actually paid
-    const checkoutRes = await fetch(`https://api.polar.sh/v1/checkouts/${checkoutId}`, {
-      headers: {
-        'Authorization': `Bearer ${polarToken}`,
-        'Content-Type': 'application/json',
-      },
-    })
-
-    if (!checkoutRes.ok) {
-      console.error('Polar checkout lookup failed:', checkoutRes.status)
-      return res.status(403).json({ error: 'Invalid checkout. Payment could not be verified.' })
+  // OxaPay payments are pre-verified in Preview.jsx before calling generate
+  // Only verify Stripe sessions here
+  if (sessionId) {
+    const stripeKey = process.env.STRIPE_SECRET_KEY
+    if (!stripeKey) {
+      return res.status(500).json({ error: 'Server misconfigured — missing Stripe key' })
     }
-
-    const checkout = await checkoutRes.json()
-
-    if (checkout.status !== 'succeeded' && checkout.status !== 'confirmed') {
-      console.warn(`Checkout ${checkoutId} status: ${checkout.status}`)
-      return res.status(403).json({
-        error: `Payment not completed (status: ${checkout.status}). Please complete payment first.`,
-      })
+    try {
+      const stripe = new Stripe(stripeKey)
+      const session = await stripe.checkout.sessions.retrieve(sessionId)
+      if (session.payment_status !== 'paid') {
+        console.warn(`Session ${sessionId} payment_status: ${session.payment_status}`)
+        return res.status(403).json({
+          error: `Payment not completed (status: ${session.payment_status}). Please complete payment first.`,
+        })
+      }
+    } catch (verifyErr) {
+      console.error('Stripe payment verification failed:', verifyErr)
+      return res.status(500).json({ error: 'Payment verification failed. Please try again.' })
     }
-  } catch (verifyErr) {
-    console.error('Payment verification failed:', verifyErr)
-    return res.status(500).json({ error: 'Payment verification failed. Please try again.' })
   }
 
   // Payment verified — generate premium document with Anthropic
@@ -71,7 +62,7 @@ export default async function handler(req, res) {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: 'claude-sonnet-4-5',
         max_tokens: 4000,
         system:
           'You are an expert legal document drafter with deep knowledge of international law. Generate comprehensive, professional legal documents tailored precisely to the user details provided. Use formal legal language, clear numbered sections, and include all standard clauses. This is a premium paid document — make it exceptional. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.',
@@ -81,9 +72,7 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const err = await response.json()
-      return res
-        .status(response.status)
-        .json({ error: err.error?.message || 'Generation failed' })
+      return res.status(response.status).json({ error: err.error?.message || 'Generation failed' })
     }
 
     const data = await response.json()

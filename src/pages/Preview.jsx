@@ -7,6 +7,7 @@ import {
   trackPaymentSuccess,
   trackCompanionClicked,
   trackPromoApplied,
+  trackDownloadClicked,
 } from '../lib/analytics'
 import './Preview.css'
 
@@ -313,7 +314,7 @@ export default function Preview() {
     if (params.get('payment') === 'oxapay_success') {
       const trackId = sessionStorage.getItem('oxapay_trackId')
       if (!trackId) {
-        setError('Payment reference missing. If you paid, please contact hello@getsignova.com.')
+        setError('Payment reference missing. If you paid, please contact info@ebenova.net.')
         return
       }
       const raw = sessionStorage.getItem('signova_doc')
@@ -329,7 +330,7 @@ export default function Preview() {
         })
         const verifyData = await verifyRes.json()
         if (!verifyRes.ok || !verifyData.verified) {
-          setError('Payment not confirmed yet. If you just paid, wait a moment and refresh. Need help? Email hello@getsignova.com.')
+          setError('Payment not confirmed yet. If you just paid, wait a moment and refresh. Need help? Email info@ebenova.net.')
           setVerifying(false)
           return
         }
@@ -339,7 +340,7 @@ export default function Preview() {
             const genRes = await fetch('/api/generate', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ prompt: savedDoc.prompt, checkoutId: trackId }),
+              body: JSON.stringify({ prompt: savedDoc.prompt, oxapayTrackId: trackId }),
             })
             if (genRes.ok) {
               const genData = await genRes.json()
@@ -359,7 +360,7 @@ export default function Preview() {
         window.history.replaceState({}, '', '/preview')
       } catch (err) {
         console.error('OxaPay verify error:', err)
-        setError('Something went wrong verifying your USDT payment. Please contact hello@getsignova.com.')
+        setError('Something went wrong verifying your USDT payment. Please contact info@ebenova.net.')
       } finally {
         setVerifying(false)
       }
@@ -373,7 +374,7 @@ export default function Preview() {
     const sessionId = params.get('session_id')
     if (!sessionId) {
       console.error('No session_id in return URL')
-      setError('Payment could not be verified — missing checkout reference. Please contact hello@getsignova.com.')
+      setError('Payment could not be verified — missing checkout reference. Please contact info@ebenova.net.')
       return
     }
 
@@ -396,7 +397,7 @@ export default function Preview() {
 
         if (!verifyRes.ok || !verifyData.verified) {
           console.error('Payment verification failed:', verifyData)
-          setError('Payment could not be verified. If you were charged, please contact hello@getsignova.com with your checkout reference.')
+          setError('Payment could not be verified. If you were charged, please contact info@ebenova.net with your checkout reference.')
           setVerifying(false)
           return
         }
@@ -407,13 +408,13 @@ export default function Preview() {
             const genRes = await fetch('/api/generate', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ prompt: savedDoc.prompt, checkoutId }),
+              body: JSON.stringify({ prompt: savedDoc.prompt, sessionId }),
             })
 
             if (genRes.ok) {
               const genData = await genRes.json()
               if (genData.text) {
-                const upgraded = { ...savedDoc, content: genData.text, isPremium: true, checkoutId }
+                const upgraded = { ...savedDoc, content: genData.text, isPremium: true, sessionId }
                 sessionStorage.setItem('signova_doc', JSON.stringify(upgraded))
                 setDoc(upgraded)
               }
@@ -431,7 +432,7 @@ export default function Preview() {
         window.history.replaceState({}, '', '/preview')
       } catch (err) {
         console.error('Verification error:', err)
-        setError('Something went wrong verifying your payment. Please contact hello@getsignova.com.')
+        setError('Something went wrong verifying your payment. Please contact info@ebenova.net.')
       } finally {
         setVerifying(false)
       }
@@ -473,7 +474,7 @@ export default function Preview() {
         </div>
         <div className="preview-nav-right">
           {paid ? (
-            <button className="btn-download" onClick={downloadPDF}>
+            <button className="btn-download" onClick={() => { trackDownloadClicked(doc.docType); downloadPDF() }}>
               ⬇ Download PDF
             </button>
           ) : (
@@ -532,8 +533,7 @@ export default function Preview() {
                         }
                       </h3>
                       <p className="locked-desc">
-                        The full document includes all clauses, terms, and signature blocks. 
-                        Pay once to unlock and download the complete PDF.
+                        The hidden sections contain the obligations, payment terms, termination clauses, dispute resolution, governing law, and the signature block — the parts that actually protect you.
                       </p>
                       <button 
                         className="locked-cta" 
@@ -557,14 +557,25 @@ export default function Preview() {
         {/* Sidebar */}
         <div className="preview-sidebar">
           <div className="sidebar-card">
-            <h3 className="sidebar-title">Your document is ready</h3>
-            <p className="sidebar-body">
-              Preview your complete {doc.docName} below.
-              Pay once to download the clean, watermark-free PDF.
-            </p>
+            <h3 className="sidebar-title">Your {doc.docName} is ready</h3>
+
+            {/* Social proof — right at the top before payment */}
+            <div className="sidebar-social-proof">
+              <div className="proof-avatars">
+                <span>👤</span><span>👤</span><span>👤</span>
+              </div>
+              <p className="proof-text">200+ documents generated this month</p>
+            </div>
+
             <div className="sidebar-price">
               <span className="price-big">$4.99</span>
-              <span className="price-label">one-time download</span>
+              <span className="price-label">one-time · instant download</span>
+            </div>
+
+            {/* Guarantee — prominent, not buried */}
+            <div className="sidebar-guarantee">
+              <span className="guarantee-icon">✓</span>
+              <span>30-day money-back guarantee — no questions asked</span>
             </div>
             {error && <div className="sidebar-error">{error}</div>}
             {/* Promo code — hidden behind toggle so it doesn't distract the pay button */}
@@ -636,7 +647,7 @@ export default function Preview() {
 
             {paid ? (
               <>
-                <button className="btn-download-full" onClick={downloadPDF}>
+                <button className="btn-download-full" onClick={() => { trackDownloadClicked(doc.docType); downloadPDF() }}>
                   ⬇ Download clean PDF — ready now
                 </button>
                 {/* Post-purchase email capture */}
@@ -705,11 +716,10 @@ export default function Preview() {
                     <button className="btn-pay-full" onClick={handleDownload} disabled={paying}>
                       {paying
                         ? <><span className="spinner-sm" /> Processing…</>
-                        : <>💳 Pay $4.99 by Card →</>
+                        : <>Download full document — $4.99 →</>
                       }
                     </button>
-                    <div className="trust-badge">🔒 SSL encrypted · Secure checkout · Instant delivery</div>
-                    <p className="trust-line">No account needed · 30-day money-back guarantee</p>
+                    <p className="trust-line">🔒 SSL secure · No account · Instant PDF · 30-day refund</p>
                     <div className="sidebar-usdt">
                       <div className="usdt-divider"><span>or pay with crypto</span></div>
                       <button

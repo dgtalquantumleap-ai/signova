@@ -18,6 +18,10 @@ export function track(eventName, params = {}) {
 
 // Named events — call these directly across the app
 
+// Homepage — hero CTA clicked (most important conversion event)
+export const trackHeroCtaClick = () =>
+  track('hero_cta_click', {})
+
 // Homepage — document selected from quick-pick or grid
 export const trackDocSelected = (docType, source = 'grid') =>
   track('doc_selected', { doc_type: docType, source })
@@ -41,6 +45,10 @@ export const trackPaymentAttempted = (docType, method = 'card') =>
 // Preview — payment verified and confirmed (most important event)
 export const trackPaymentSuccess = (docType, method = 'card') =>
   track('payment_success', { doc_type: docType, method, value: 4.99, currency: 'USD' })
+
+// Preview — user clicked download button (after payment)
+export const trackDownloadClicked = (docType) =>
+  track('download_click', { doc_type: docType })
 
 // Preview — companion doc suggestion clicked
 export const trackCompanionClicked = (fromDoc, toDoc) =>

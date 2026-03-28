@@ -1,0 +1,608 @@
+openapi: 3.1.0
+info:
+  title: Ebenova API
+  version: 1.0.0
+  description: |
+    Developer-first APIs for legal documents, invoices, and African business workflows.
+    One integration, multiple tools.
+
+    **Base URL:** `https://api.ebenova.dev`
+
+    **Authentication:** All endpoints (except `/v1/documents/types`) require a Bearer token:
+    ```
+    Authorization: Bearer sk_live_your_api_key
+    ```
+
+    Get your API key at https://ebenova.dev/dashboard
+  contact:
+    email: api@ebenova.dev
+    url: https://ebenova.dev
+  license:
+    name: Proprietary
+    url: https://ebenova.dev/terms
+
+servers:
+  - url: https://api.ebenova.dev
+    description: Production
+  - url: https://www.getsignova.com
+    description: Signova (alias)
+
+tags:
+  - name: Documents
+    description: Generate legally compliant documents — 27 types, 18 jurisdictions
+  - name: Invoices
+    description: Generate invoices, receipts, proformas and credit notes
+  - name: Extraction
+    description: Extract structured fields from raw conversations
+  - name: Keys
+    description: API key management
+
+paths:
+
+  /v1/documents/generate:
+    post:
+      operationId: generateDocument
+      summary: Generate a legal document
+      description: |
+        Generates a professionally drafted legal document using AI.
+        The document is returned as plain text, ready to copy, download, or render as PDF/DOCX.
+
+        **When to use this endpoint:** Any time you need to create a legal document —
+        NDA, contract, tenancy agreement, privacy policy, etc.
+      tags: [Documents]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateDocumentRequest'
+            examples:
+              nda:
+                summary: Non-Disclosure Agreement
+                value:
+                  document_type: nda
+                  fields:
+                    disclosingParty: Acme Inc.
+                    receivingParty: John Smith
+                    purpose: Discussing a potential partnership to build a mobile application
+                    duration: 2 years
+                    mutual: "Yes — mutual NDA"
+                  jurisdiction: Nigeria
+              tenancy:
+                summary: Tenancy Agreement
+                value:
+                  document_type: tenancy-agreement
+                  fields:
+                    landlord: Chief Emeka Okafor
+                    tenant: Mrs. Amaka Nwosu
+                    property: "Flat 3B, No. 14 Admiralty Way, Lekki Phase 1, Lagos"
+                    rentAmount: "₦1,200,000 per annum"
+                    duration: 1 year
+                  jurisdiction: Nigeria
+      responses:
+        '200':
+          description: Document generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateDocumentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /v1/documents/types:
+    get:
+      operationId: listDocumentTypes
+      summary: List all supported document types
+      description: Returns all 27 supported document types, grouped by category. No authentication required.
+      tags: [Documents]
+      responses:
+        '200':
+          description: List of document types
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentTypesResponse'
+
+  /v1/extract/conversation:
+    post:
+      operationId: extractFromConversation
+      summary: Extract fields from a conversation
+      description: |
+        Parses a raw WhatsApp chat, email thread, or any text conversation and extracts
+        structured fields for a legal document.
+
+        Set `auto_generate: true` to also generate the full document in one call.
+        This counts as 1 document against your monthly quota.
+
+        **When to use this endpoint:** When you have unstructured conversation data
+        and want to auto-populate a legal document.
+      tags: [Extraction]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtractRequest'
+            examples:
+              extract_only:
+                summary: Extract fields only
+                value:
+                  conversation: |
+                    [3/20/26, 10:15 AM] Emeka: Hi John, so we agreed on 1 year tenancy right?
+                    [3/20/26, 10:16 AM] John: Yes, starting April 1st. Rent is 1.2M per year.
+                    [3/20/26, 10:17 AM] Emeka: Great. The property is Flat 3B, 14 Admiralty Way, Lekki.
+                  target_document: tenancy-agreement
+                  auto_generate: false
+              extract_and_generate:
+                summary: Extract and generate document
+                value:
+                  conversation: "We agreed on an NDA. I'm Acme Inc disclosing to John Smith about our new product. 2 year duration, mutual."
+                  target_document: nda
+                  auto_generate: true
+      responses:
+        '200':
+          description: Extraction successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtractResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /v1/invoices/generate:
+    post:
+      operationId: generateInvoice
+      summary: Generate an invoice or receipt
+      description: |
+        Generates a professional HTML invoice, receipt, proforma invoice, or credit note.
+        Returns fully rendered HTML ready to display or print-to-PDF client-side.
+
+        **When to use this endpoint:** Any time you need to create a billing document —
+        invoice, receipt, proforma, or credit note.
+      tags: [Invoices]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateInvoiceRequest'
+            examples:
+              invoice:
+                summary: Basic invoice
+                value:
+                  type: invoice
+                  from:
+                    name: Acme Design Ltd.
+                    address: "12 Marina, Lagos, Nigeria"
+                    email: billing@acme.com
+                    tax_id: NG-12345678
+                  to:
+                    name: John Smith
+                    address: "456 Oak Ave, London, UK"
+                    email: john@example.com
+                  items:
+                    - description: Website Design
+                      quantity: 1
+                      unit_price: 2500
+                    - description: Monthly Maintenance
+                      quantity: 3
+                      unit_price: 400
+                  invoice_number: INV-2026-001
+                  issue_date: "April 1, 2026"
+                  due_date: "April 30, 2026"
+                  currency: USD
+                  tax_rate: 10
+                  notes: "Thank you for your business!"
+      responses:
+        '200':
+          description: Invoice generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateInvoiceResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /v1/keys/usage:
+    get:
+      operationId: getKeyUsage
+      summary: Get API key usage stats
+      description: Returns current month usage and 3-month history for the authenticated API key.
+      tags: [Keys]
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Usage statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Format: `Bearer sk_live_your_key`. Get your key at ebenova.dev/dashboard'
+
+  schemas:
+
+    GenerateDocumentRequest:
+      type: object
+      required: [document_type, fields]
+      properties:
+        document_type:
+          type: string
+          description: The type of document to generate
+          example: nda
+          enum:
+            - nda
+            - freelance-contract
+            - service-agreement
+            - consulting-agreement
+            - independent-contractor
+            - business-partnership
+            - joint-venture
+            - distribution-agreement
+            - supply-agreement
+            - business-proposal
+            - purchase-agreement
+            - employment-offer-letter
+            - non-compete-agreement
+            - loan-agreement
+            - payment-terms-agreement
+            - shareholder-agreement
+            - hire-purchase
+            - tenancy-agreement
+            - quit-notice
+            - deed-of-assignment
+            - power-of-attorney
+            - landlord-agent-agreement
+            - facility-manager-agreement
+            - privacy-policy
+            - terms-of-service
+            - mou
+            - letter-of-intent
+        fields:
+          type: object
+          description: Document-specific fields. See the field reference at ebenova.dev/docs/legal for required fields per document type.
+          additionalProperties:
+            oneOf:
+              - type: string
+              - type: array
+                items:
+                  type: string
+          example:
+            disclosingParty: Acme Inc.
+            receivingParty: John Smith
+            purpose: Discussing potential partnership
+            duration: 2 years
+        jurisdiction:
+          type: string
+          description: Governing law / jurisdiction (e.g. "Nigeria", "United States — California")
+          example: Nigeria
+
+    GenerateDocumentResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        document_type:
+          type: string
+          example: nda
+        document:
+          type: string
+          description: The full generated document text
+        usage:
+          $ref: '#/components/schemas/UsageBlock'
+        generated_at:
+          type: string
+          format: date-time
+
+    ExtractRequest:
+      type: object
+      required: [conversation]
+      properties:
+        conversation:
+          type: string
+          description: Raw conversation text (WhatsApp, email, chat). Max 10,000 characters.
+          example: "We agreed on an NDA. I'm Acme Inc disclosing to John Smith. 2 year duration, mutual."
+        target_document:
+          type: string
+          description: The document type to extract fields for. If omitted, the model will suggest the best type.
+          example: nda
+        auto_generate:
+          type: boolean
+          description: If true, generate the full document after extraction. Counts as 1 document.
+          default: false
+
+    ExtractResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        suggested_document:
+          type: string
+          description: The document type that was identified or used
+          example: nda
+        confidence:
+          type: number
+          format: float
+          description: Confidence score for the suggested document type (0–1). Present when target_document was not specified.
+          example: 0.92
+        extracted_fields:
+          type: object
+          description: Structured fields extracted from the conversation
+          additionalProperties: true
+        missing_fields:
+          type: array
+          items:
+            type: string
+          description: Fields that could not be determined from the conversation
+        document:
+          type: string
+          description: The generated document text. Present only when auto_generate is true.
+        usage:
+          $ref: '#/components/schemas/UsageBlock'
+          description: Present only when auto_generate is true.
+
+    DocumentTypesResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        total:
+          type: integer
+          example: 27
+        types:
+          type: array
+          items:
+            type: string
+          description: Flat list of all document type slugs
+        grouped:
+          type: object
+          description: Document types grouped by category
+          additionalProperties:
+            type: array
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                label:
+                  type: string
+
+    UsageResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        key:
+          type: object
+          properties:
+            owner:
+              type: string
+            tier:
+              type: string
+            label:
+              type: string
+              nullable: true
+            created_at:
+              type: string
+              format: date-time
+        current_month:
+          $ref: '#/components/schemas/UsageBlock'
+        history:
+          type: array
+          items:
+            type: object
+            properties:
+              month:
+                type: string
+                example: "2026-03"
+              documents_generated:
+                type: integer
+
+    UsageBlock:
+      type: object
+      properties:
+        documents_used:
+          type: integer
+          example: 15
+        documents_remaining:
+          type: integer
+          example: 85
+        monthly_limit:
+          type: integer
+          example: 100
+        resets_at:
+          type: string
+          format: date-time
+
+    GenerateInvoiceRequest:
+      type: object
+      required: [from, to, items]
+      properties:
+        type:
+          type: string
+          enum: [invoice, receipt, proforma, credit-note]
+          default: invoice
+        from:
+          $ref: '#/components/schemas/InvoiceParty'
+        to:
+          $ref: '#/components/schemas/InvoiceParty'
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/InvoiceItem'
+        invoice_number:
+          type: string
+          example: INV-2026-001
+        issue_date:
+          type: string
+          example: "April 1, 2026"
+        due_date:
+          type: string
+          example: "April 30, 2026"
+        currency:
+          type: string
+          enum: [USD, EUR, GBP, CAD, AUD, NGN, KES, GHS, ZAR, INR, AED, SGD]
+          default: USD
+        tax_rate:
+          type: number
+          description: Tax percentage (e.g. 10 for 10%)
+          default: 0
+        discount_percent:
+          type: number
+          description: Discount percentage applied to subtotal
+          default: 0
+        notes:
+          type: string
+          description: Notes shown on the invoice (e.g. payment terms, thank-you message)
+        payment_instructions:
+          type: string
+          description: Bank details or payment instructions
+        logo_url:
+          type: string
+          description: Public URL of your logo image (PNG/JPG, displayed top-left)
+
+    InvoiceParty:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          example: Acme Inc.
+        address:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        tax_id:
+          type: string
+
+    InvoiceItem:
+      type: object
+      required: [description, quantity, unit_price]
+      properties:
+        description:
+          type: string
+          example: Website Development
+        quantity:
+          type: number
+          example: 1
+        unit_price:
+          type: number
+          example: 2500
+        notes:
+          type: string
+          description: Optional sub-description shown beneath the item
+
+    GenerateInvoiceResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        invoice_id:
+          type: string
+          example: inv_m8x3k_ab12c
+        invoice_number:
+          type: string
+          nullable: true
+        type:
+          type: string
+        currency:
+          type: string
+        subtotal:
+          type: number
+        discount_amount:
+          type: number
+        tax_amount:
+          type: number
+        total:
+          type: number
+        html:
+          type: string
+          description: Fully rendered HTML invoice — display in an iframe or print to PDF
+        usage:
+          $ref: '#/components/schemas/UsageBlock'
+        generated_at:
+          type: string
+          format: date-time
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: INVALID_API_KEY
+            message:
+              type: string
+              example: Invalid API key
+            hint:
+              type: string
+              example: Get your API key at ebenova.dev/dashboard
+
+  responses:
+    BadRequest:
+      description: Bad request — missing or invalid parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized — invalid or missing API key
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    RateLimited:
+      description: Rate limited — monthly document limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServerError:
+      description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

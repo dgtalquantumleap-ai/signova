@@ -210,11 +210,13 @@ export default function WhatsApp() {
 
   // Geo detection — reuse session cache from Landing.jsx (key: sig_geo)
   useEffect(() => {
+    let mounted = true
+    const controller = new AbortController()
+
     const cached = sessionStorage.getItem('sig_geo')
     if (cached) {
       try {
         const d = JSON.parse(cached)
-        // sig_geo stores { currency: {...}, countryCode: 'NG' }
         const cc = d.countryCode || 'DEFAULT'
         if (cc !== 'DEFAULT') {
           setCountryCode(cc)
@@ -223,23 +225,29 @@ export default function WhatsApp() {
         }
       } catch {}
       setGeoLoaded(true)
-      return
+      return () => { mounted = false }
     }
-    fetch('https://ipapi.co/json/')
+
+    fetch('https://ipapi.co/json/', { signal: controller.signal })
       .then(r => r.json())
       .then(d => {
+        if (!mounted) return
         const cc = d.country_code || 'DEFAULT'
         setCountryCode(cc)
         const priority = GEO_DOC_PRIORITY[cc] || GEO_DOC_PRIORITY.DEFAULT
         setDocType(priority[0])
-        // Write to sig_geo so Landing.jsx can also read it
         sessionStorage.setItem('sig_geo', JSON.stringify({
           countryCode: cc,
           currency: { code: d.currency || 'USD', symbol: '$', amount: 4.99 },
         }))
       })
       .catch(() => {})
-      .finally(() => setGeoLoaded(true))
+      .finally(() => { if (mounted) setGeoLoaded(true) })
+
+    return () => {
+      mounted = false
+      controller.abort()
+    }
   }, [])
 
   const orderedDocs = getOrderedDocs(countryCode)

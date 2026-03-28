@@ -23,21 +23,6 @@ export default async function handler(req, res) {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // no ambiguous I,O,0,1
   const code = Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
 
-  // Store the code in Upstash Redis with 24hr TTL if available
-  try {
-    const url = process.env.UPSTASH_REDIS_REST_URL
-    const token = process.env.UPSTASH_REDIS_REST_TOKEN
-    if (url && token) {
-      const { Redis } = await import('@upstash/redis')
-      const redis = new Redis({ url, token })
-      // Key: bypass:CODE → value: 1 (unused), TTL: 24 hours
-      await redis.set(`bypass:${code}`, '1', { ex: 86400 })
-    }
-  } catch (err) {
-    console.warn('Redis unavailable for bypass code storage:', err.message)
-    // Still return the code — Redis storage is best-effort
-  }
-
   // Log for audit trail
   console.log(`[admin] Bypass code generated: ${code} at ${new Date().toISOString()}`)
 

@@ -2,30 +2,13 @@
 // Accepts a raw conversation (WhatsApp, email, chat) + docType
 // Returns a JSON object with field values matching DOC_CONFIG in Generator.jsx
 
-// ── Rate limiting (mirrors generate-preview.js) ─────────────────────────────
-let ratelimit = null
-async function initRatelimit() {
-  if (ratelimit) return ratelimit
-  const url = process.env.UPSTASH_REDIS_REST_URL
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN
-  if (url && token) {
-    const { Redis } = await import('@upstash/redis')
-    const { Ratelimit } = await import('@upstash/ratelimit')
-    const redis = new Redis({ url, token })
-    ratelimit = new Ratelimit({
-      redis,
-      limiter: Ratelimit.slidingWindow(5, '1 h'), // 5 extractions per IP per hour
-      analytics: false,
-    })
-  }
-  return ratelimit
-}
-const RATE_FALLBACK = new Map()
-function isRateLimitedFallback(ip) {
+// Simple in-memory rate limiter — no Redis needed at current scale
+const ipStore = new Map()
+function isRateLimited(ip) {
   const now = Date.now()
-  const entry = RATE_FALLBACK.get(ip)
+  const entry = ipStore.get(ip)
   if (!entry || now > entry.resetAt) {
-    RATE_FALLBACK.set(ip, { count: 1, resetAt: now + 60 * 60 * 1000 })
+    ipStore.set(ip, { count: 1, resetAt: now + 60 * 60 * 1000 })
     return false
   }
   if (entry.count >= 5) return true
@@ -42,17 +25,27 @@ export default async function handler(req, res) {
     req.headers['x-real-ip'] ||
     req.socket?.remoteAddress ||
     'unknown'
-  const rl = await initRatelimit()
-  if (rl) {
-    const { success } = await rl.limit(`extract:${ip}`)
-    if (!success) {
-      return res.status(429).json({ error: 'Too many extractions. Please try again in an hour.' })
-    }
-  } else if (isRateLimitedFallback(ip)) {
+  if (isRateLimited(ip)) {
     return res.status(429).json({ error: 'Too many extractions. Please try again in an hour.' })
   }
 
-  const { conversation, docType } = req.body
+  // Parse body safely — req.body can be undefined in ESM Vercel functions
+  let body = req.body
+  if (!body || typeof body === 'string') {
+    try {
+      const raw = await new Promise((resolve, reject) => {
+        let data = ''
+        req.on('data', chunk => { data += chunk })
+        req.on('end', () => resolve(data))
+        req.on('error', reject)
+      })
+      body = raw ? JSON.parse(raw) : {}
+    } catch {
+      return res.status(400).json({ error: 'Invalid JSON body' })
+    }
+  }
+
+  const { conversation, docType } = body
   if (!conversation || !docType) {
     return res.status(400).json({ error: 'Missing conversation or docType' })
   }
@@ -129,7 +122,7 @@ Return only the JSON object:`
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
+        model: 'claude-haiku-4-5',
         max_tokens: 1000,
         messages: [{ role: 'user', content: prompt }],
       }),
