@@ -16,6 +16,9 @@
   "functions": {
     "api/**/*.js": {
       "maxDuration": 60
+    },
+    "api/v1/documents/generate.js": {
+      "maxDuration": 120
     }
   },
   "headers": [
