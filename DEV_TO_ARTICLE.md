@@ -1,8 +1,7 @@
 ---
 title: "How I Built a Multi-Jurisdiction Legal Document API in 30 Days (Solo Founder, AI-Assisted)"
 published: true
-publishDate: 2026-03-28
-coverImage: https://dev-to-uploads.s3.amazonaws.com/uploads/articles/ebenova-api-cover.png
+cover_image: https://dev-to-uploads.s3.amazonaws.com/uploads/articles/ebenova-api-cover.png
 tags: api, nodejs, indiehackers, saas, webdev, typescript, startup, africa
 series: Building Ebenova
 canonical: https://ebenova.dev/blog/how-i-built-legal-api

@@ -37,3 +37,11 @@ api-keys.md
 .env*.local
 .env.production
 .env.vercel
+
+find-token.js
+temp_token.txt
+temp_url.txt
+
+find-token.js
+temp_token.txt
+temp_url.txt
