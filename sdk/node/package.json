@@ -1,18 +1,18 @@
 {
-  "name": "@ebenova/legal-docs",
+  "name": "ebenova-legal-docs",
   "version": "1.0.0",
   "description": "Node.js SDK for the Ebenova Legal Document API. Generate NDAs, contracts, and 25 more document types via a simple JS/TS client.",
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./src/index.js",
+  "main": "src/index.js",
+  "module": "src/index.js",
   "exports": {
     ".": {
       "import": "./src/index.js",
-      "require": "./dist/index.cjs"
+      "require": "./src/index.js"
     }
   },
   "types": "src/index.d.ts",
-  "files": ["src", "dist", "README.md"],
+  "files": ["src", "README.md", "LICENSE"],
   "scripts": {
     "test": "node --test"
   },

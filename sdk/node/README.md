@@ -1,17 +1,17 @@
-# @ebenova/legal-docs
+# ebenova-legal-docs
 
 Node.js SDK for the [Ebenova Legal Document API](https://ebenova.dev).
 
 ## Install
 
 ```bash
-npm install @ebenova/legal-docs
+npm install ebenova-legal-docs
 ```
 
 ## Quick start
 
 ```js
-import EbenovaClient from '@ebenova/legal-docs'
+import EbenovaClient from 'ebenova-legal-docs'
 
 const client = new EbenovaClient({ apiKey: 'sk_live_your_key' })
 

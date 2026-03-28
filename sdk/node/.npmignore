@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env*
+.env.local
+.env.production
+
+# Git
+.git/
+.gitignore
+
+# Build artifacts (we ship src/ only for ESM)
+dist/
+*.log
+
+# Tests
+test/
+tests/
+__tests__/
+*.test.js
+*.spec.js
+
+# TypeScript config (if any)
+tsconfig.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Misc
+.DS_Store
+Thumbs.db
