@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "name": "@ebenova/legal-docs-mcp",
+  "version": "1.0.0",
+  "displayName": "Ebenova Legal Docs",
+  "description": "Generate legally compliant contracts, NDAs, and business documents via AI. 27 document types, 18 jurisdictions. Extract fields from WhatsApp/email conversations and auto-generate documents.",
+  "homepage": "https://ebenova.dev",
+  "license": "MIT",
+  "runtime": "node",
+  "command": "npx",
+  "args": ["-y", "@ebenova/legal-docs-mcp"],
+  "configSchema": {
+    "type": "object",
+    "required": ["EBENOVA_API_KEY"],
+    "properties": {
+      "EBENOVA_API_KEY": {
+        "type": "string",
+        "description": "Your Ebenova API key. Get one free at https://ebenova.dev/dashboard",
+        "secret": true
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "generate_legal_document",
+      "description": "Generate a professionally drafted legal document. Supports 27 document types across 18 jurisdictions."
+    },
+    {
+      "name": "extract_from_conversation",
+      "description": "Extract structured legal document fields from a raw conversation (WhatsApp, email, chat) and optionally auto-generate the document."
+    },
+    {
+      "name": "list_document_types",
+      "description": "List all 27 supported legal document types, grouped by category."
+    },
+    {
+      "name": "check_usage",
+      "description": "Check how many documents have been generated this month and what quota remains."
+    }
+  ]
+}
