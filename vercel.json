@@ -14,10 +14,7 @@
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "functions": {
-    "api/**/*.js": {
-      "maxDuration": 60
-    },
-    "api/v1/documents/generate.js": {
+    "api/v1/documents/generate": {
       "maxDuration": 120
     }
   },
