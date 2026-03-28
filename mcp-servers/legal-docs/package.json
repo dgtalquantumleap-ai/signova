@@ -4,6 +4,7 @@
   "description": "MCP server for the Ebenova Legal Document API. Generate NDAs, contracts, tenancy agreements and 24 more document types across 18 jurisdictions — directly from Claude Desktop, Cursor, or any MCP-compatible AI client.",
   "type": "module",
   "main": "index.js",
+  "module": "src/index.js",
   "bin": {
     "ebenova-legal-docs-mcp": "index.js"
   },
@@ -38,6 +39,7 @@
   },
   "smithery": {
     "name": "ebenova-legal-docs",
+    "entryPoint": "src/index.js",
     "configSchema": {
       "type": "object",
       "properties": {
