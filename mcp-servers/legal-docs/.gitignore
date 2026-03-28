@@ -1,0 +1,10 @@
+# MCP Server files only - for GitHub push
+# Exclude sensitive .env files
+
+node_modules/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
