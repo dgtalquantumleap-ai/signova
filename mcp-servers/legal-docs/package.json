@@ -8,7 +8,8 @@
     "ebenova-legal-docs-mcp": "index.js"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "publish:smithery": "smithery publish"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
@@ -23,7 +24,8 @@
     "tenancy",
     "africa",
     "nigeria",
-    "ebenova"
+    "ebenova",
+    "smithery"
   ],
   "author": "Ebenova Solutions <api@ebenova.dev>",
   "license": "MIT",
@@ -33,5 +35,25 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "smithery": {
+    "name": "ebenova-legal-docs",
+    "configSchema": {
+      "type": "object",
+      "properties": {
+        "EBENOVA_API_KEY": {
+          "type": "string",
+          "description": "Your Ebenova API key. Get one free at https://ebenova.dev/docs",
+          "default": "",
+          "required": true
+        },
+        "EBENOVA_API_BASE": {
+          "type": "string",
+          "description": "API base URL (optional, defaults to https://api.ebenova.dev)",
+          "default": "https://api.ebenova.dev",
+          "required": false
+        }
+      }
+    }
   }
 }

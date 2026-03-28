@@ -1,101 +1,82 @@
-name: "@ebenova/legal-docs-mcp"
-version: "1.0.0"
-description: "Generate legally compliant contracts, NDAs, and business documents via AI. 27 document types, 18 jurisdictions. Extract fields from WhatsApp/email conversations and auto-generate documents."
+# Smithery MCP Server Configuration
+# https://smithery.ai/docs/build/publish
 
-homepage: "https://ebenova.dev"
-repository: "https://github.com/ebenova/legal-docs-mcp"
-license: "MIT"
+name: ebenova-legal-docs
+version: 1.0.0
+description: Generate professional legal documents via API. 27 document types across 18 jurisdictions.
 
-author:
-  name: "Ebenova Solutions"
-  email: "api@ebenova.dev"
-  url: "https://ebenova.dev"
+# Server metadata
+author: Ebenova Solutions <api@ebenova.dev>
+license: MIT
+homepage: https://ebenova.dev
+repository: https://github.com/ebenova/legal-docs-mcp
 
-categories:
+# Keywords for discovery
+keywords:
   - legal
   - documents
-  - business
-  - productivity
-
-tags:
-  - legal
   - contracts
   - nda
-  - documents
-  - africa
+  - tenancy-agreement
+  - freelance-contract
   - nigeria
-  - invoices
-  - tenancy
-  - whatsapp
-  - extraction
+  - africa
+  - api
 
-runtime: "node"
-command: "npx"
-args: ["-y", "@ebenova/legal-docs-mcp"]
+# Configuration schema (required for API keys)
+configSchema:
+  type: object
+  properties:
+    EBENOVA_API_KEY:
+      type: string
+      description: "Your Ebenova API key. Get one free at https://ebenova.dev/docs"
+      default: ""
+      required: true
+    EBENOVA_API_BASE:
+      type: string
+      description: "API base URL (optional, defaults to https://api.ebenova.dev)"
+      default: "https://api.ebenova.dev"
+      required: false
 
-env:
-  EBENOVA_API_KEY:
-    description: "Your Ebenova API key. Get one free at https://ebenova.dev/dashboard"
-    required: true
-    secret: true
-
-tools:
-  - name: generate_legal_document
-    description: |
-      Generate a professionally drafted legal document. Supports 27 document types across 
-      18 jurisdictions including Nigeria, Ghana, Kenya, South Africa, UK, US, Canada, UAE and more.
-      
-      Use this when the user needs any legal document: NDA, contract, tenancy agreement, 
-      privacy policy, loan agreement, shareholder agreement, and more.
-    
-  - name: extract_from_conversation
-    description: |
-      Extract structured legal document fields from a raw conversation (WhatsApp, email, chat).
-      Identifies the document type and populates fields automatically.
-      Set auto_generate=true to also generate the full document in one call.
-      
-      Use this when the user pastes a conversation and wants a contract generated from it.
-
-  - name: list_document_types
-    description: |
-      List all 27 supported legal document types, grouped by category.
-      Use this to help the user choose the right document type.
-
-  - name: check_usage
-    description: |
-      Check how many documents have been generated this month and what quota remains.
-
-examples:
-  - title: "Generate an NDA"
-    prompt: "Create a mutual NDA between Acme Inc. and John Smith for discussing a partnership. 2 year duration, Nigerian law."
-  
-  - title: "Tenancy agreement from WhatsApp"
-    prompt: |
-      Here's our WhatsApp chat about the apartment rental:
-      "The rent is ₦1.2M per year, 1 year tenancy. Flat 3B, 14 Admiralty Way, Lekki. 
-      Landlord is Chief Emeka, tenant is Mrs. Nwosu."
-      Generate a tenancy agreement from this.
-  
-  - title: "Privacy policy for an app"
-    prompt: "Write a GDPR-compliant privacy policy for my app TaskFlow that collects emails and uses Stripe for payments."
-  
-  - title: "Freelance contract"
-    prompt: "Draft a freelance contract for a web design project. I'm Jane Smith, client is Acme Corp, $3,500 flat fee, Net 30 payment, client owns all work."
-
+# Installation methods
 installation:
+  npm: "npx -y @ebenova/legal-docs-mcp"
+  docker: "docker run -e EBENOVA_API_KEY=your_key ebenova/legal-docs-mcp"
   claude_desktop:
-    config_path:
-      macos: "~/Library/Application Support/Claude/claude_desktop_config.json"
-      windows: "%APPDATA%\\Claude\\claude_desktop_config.json"
-    snippet: |
-      {
-        "mcpServers": {
-          "ebenova-legal": {
-            "command": "npx",
-            "args": ["-y", "@ebenova/legal-docs-mcp"],
-            "env": {
-              "EBENOVA_API_KEY": "sk_live_your_key_here"
-            }
-          }
-        }
-      }
+    command: npx
+    args: ["-y", "@ebenova/legal-docs-mcp"]
+    env:
+      EBENOVA_API_KEY: "sk_live_your_key"
+
+# Tool capabilities
+capabilities:
+  tools:
+    - name: generate_legal_document
+      description: "Generate a legal document (NDA, contract, tenancy agreement, etc.)"
+    - name: extract_from_conversation
+      description: "Extract structured fields from WhatsApp/email conversations"
+    - name: list_document_types
+      description: "List all 27 supported document types"
+    - name: check_usage
+      description: "Check API usage and quota"
+
+# Example prompts for users
+examples:
+  - name: "Generate an NDA"
+    prompt: "Create an NDA between Acme Inc. and John Smith for a partnership discussion, 2 years, mutual, under Nigerian law"
+  - name: "Extract from WhatsApp chat"
+    prompt: "Extract the key terms from this WhatsApp conversation and create a tenancy agreement: [paste conversation]"
+  - name: "List available documents"
+    prompt: "What types of legal documents can you generate?"
+
+# Pricing information
+pricing:
+  free_tier: "5 documents/month free"
+  starter: "$29/month for 100 documents"
+  pro: "$19.99/month for 500 documents + Scope Guard"
+
+# Support contacts
+support:
+  email: api@ebenova.dev
+  documentation: https://ebenova.dev/docs
+  status: https://status.ebenova.dev

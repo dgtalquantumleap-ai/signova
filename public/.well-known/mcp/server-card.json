@@ -1,41 +1,83 @@
 {
-  "schemaVersion": "1.0",
-  "name": "@ebenova/legal-docs-mcp",
+  "name": "ebenova-legal-docs",
   "version": "1.0.0",
-  "displayName": "Ebenova Legal Docs",
-  "description": "Generate legally compliant contracts, NDAs, and business documents via AI. 27 document types, 18 jurisdictions. Extract fields from WhatsApp/email conversations and auto-generate documents.",
-  "homepage": "https://ebenova.dev",
+  "description": "Generate professional legal documents via API. 27 document types (NDAs, contracts, tenancy agreements) across 18 jurisdictions including Nigeria, Canada, UK, US, India, and more.",
+  "author": "Ebenova Solutions <api@ebenova.dev>",
   "license": "MIT",
-  "runtime": "node",
-  "command": "npx",
-  "args": ["-y", "@ebenova/legal-docs-mcp"],
+  "homepage": "https://ebenova.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ebenova/legal-docs-mcp"
+  },
+  "keywords": [
+    "legal",
+    "documents",
+    "contracts",
+    "nda",
+    "tenancy-agreement",
+    "freelance-contract",
+    "nigeria",
+    "africa",
+    "api"
+  ],
+  "capabilities": {
+    "tools": {
+      "generate_legal_document": "Generate a legal document (NDA, contract, tenancy agreement, etc.)",
+      "extract_from_conversation": "Extract structured fields from WhatsApp/email conversations",
+      "list_document_types": "List all 27 supported document types",
+      "check_usage": "Check API usage and quota"
+    }
+  },
   "configSchema": {
     "type": "object",
-    "required": ["EBENOVA_API_KEY"],
     "properties": {
       "EBENOVA_API_KEY": {
         "type": "string",
-        "description": "Your Ebenova API key. Get one free at https://ebenova.dev/dashboard",
-        "secret": true
+        "description": "Your Ebenova API key. Get one free at https://ebenova.dev/docs",
+        "default": "",
+        "required": true
+      },
+      "EBENOVA_API_BASE": {
+        "type": "string",
+        "description": "API base URL (optional, defaults to https://api.ebenova.dev)",
+        "default": "https://api.ebenova.dev",
+        "required": false
       }
     }
   },
-  "tools": [
-    {
-      "name": "generate_legal_document",
-      "description": "Generate a professionally drafted legal document. Supports 27 document types across 18 jurisdictions."
-    },
-    {
-      "name": "extract_from_conversation",
-      "description": "Extract structured legal document fields from a raw conversation (WhatsApp, email, chat) and optionally auto-generate the document."
-    },
-    {
-      "name": "list_document_types",
-      "description": "List all 27 supported legal document types, grouped by category."
-    },
-    {
-      "name": "check_usage",
-      "description": "Check how many documents have been generated this month and what quota remains."
+  "installation": {
+    "npm": "npx -y @ebenova/legal-docs-mcp",
+    "docker": "docker run -e EBENOVA_API_KEY=your_key ebenova/legal-docs-mcp",
+    "claude_desktop": {
+      "command": "npx",
+      "args": ["-y", "@ebenova/legal-docs-mcp"],
+      "env": {
+        "EBENOVA_API_KEY": "sk_live_your_key"
+      }
     }
-  ]
+  },
+  "examples": [
+    {
+      "name": "Generate an NDA",
+      "prompt": "Create an NDA between Acme Inc. and John Smith for a partnership discussion, 2 years, mutual, under Nigerian law"
+    },
+    {
+      "name": "Extract from WhatsApp chat",
+      "prompt": "Extract the key terms from this WhatsApp conversation and create a tenancy agreement: [paste conversation]"
+    },
+    {
+      "name": "List available documents",
+      "prompt": "What types of legal documents can you generate?"
+    }
+  ],
+  "pricing": {
+    "free_tier": "5 documents/month free",
+    "starter": "$29/month for 100 documents",
+    "pro": "$19.99/month for 500 documents + Scope Guard"
+  },
+  "support": {
+    "email": "api@ebenova.dev",
+    "documentation": "https://ebenova.dev/docs",
+    "status": "https://status.ebenova.dev"
+  }
 }
