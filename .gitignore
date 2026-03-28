@@ -17,6 +17,11 @@ dist-ssr
 .env.local
 .env.*.local
 
+# API Keys (never commit)
+BETA_KEYS.md
+*-keys.md
+api-keys.md
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
