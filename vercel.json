@@ -1,5 +1,4 @@
 {
-
   "redirects": [
     {
       "source": "/(.*)",
@@ -9,13 +8,45 @@
     }
   ],
   "rewrites": [
-    { "source": "/api/v1/(.*)", "destination": "/api/v1/$1" },
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/v1/(.*)",
+      "destination": "/api/v1/$1"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/docs",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/api",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ],
   "functions": {
-    "api/v1/**/*.js": {
+    "api/v1/documents/generate.js": {
       "maxDuration": 120
+    },
+    "api/v1/extract/conversation.js": {
+      "maxDuration": 120
+    },
+    "api/v1/invoices/generate.js": {
+      "maxDuration": 60
+    },
+    "api/v1/keys/create.js": {
+      "maxDuration": 30
+    },
+    "api/v1/keys/usage.js": {
+      "maxDuration": 30
+    },
+    "api/v1/documents/types.js": {
+      "maxDuration": 30
     }
   },
   "headers": [
@@ -29,6 +60,16 @@
       "source": "/(.*\\.(?:png|jpg|jpeg|svg|gif|webp|ico))",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, PUT, DELETE, OPTIONS, PATCH" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization, X-Requested-With" },
+        { "key": "Access-Control-Expose-Headers", "value": "Content-Length, X-Request-Id" },
+        { "key": "Access-Control-Max-Age", "value": "86400" }
       ]
     },
     {
