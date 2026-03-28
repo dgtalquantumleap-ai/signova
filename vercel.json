@@ -5,6 +5,12 @@
       "has": [{ "type": "host", "value": "getsignova.com" }],
       "destination": "https://www.getsignova.com/$1",
       "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "ebenova.dev" }],
+      "destination": "https://www.ebenova.dev/$1",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -46,6 +52,15 @@
       "maxDuration": 30
     },
     "api/v1/documents/types.js": {
+      "maxDuration": 30
+    },
+    "api/v1/billing/checkout.js": {
+      "maxDuration": 30
+    },
+    "api/v1/billing/webhook.js": {
+      "maxDuration": 30
+    },
+    "api/v1/billing/portal.js": {
       "maxDuration": 30
     }
   },

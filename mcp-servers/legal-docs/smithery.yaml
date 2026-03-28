@@ -1,0 +1,101 @@
+name: "@ebenova/legal-docs-mcp"
+version: "1.0.0"
+description: "Generate legally compliant contracts, NDAs, and business documents via AI. 27 document types, 18 jurisdictions. Extract fields from WhatsApp/email conversations and auto-generate documents."
+
+homepage: "https://ebenova.dev"
+repository: "https://github.com/ebenova/legal-docs-mcp"
+license: "MIT"
+
+author:
+  name: "Ebenova Solutions"
+  email: "api@ebenova.dev"
+  url: "https://ebenova.dev"
+
+categories:
+  - legal
+  - documents
+  - business
+  - productivity
+
+tags:
+  - legal
+  - contracts
+  - nda
+  - documents
+  - africa
+  - nigeria
+  - invoices
+  - tenancy
+  - whatsapp
+  - extraction
+
+runtime: "node"
+command: "npx"
+args: ["-y", "@ebenova/legal-docs-mcp"]
+
+env:
+  EBENOVA_API_KEY:
+    description: "Your Ebenova API key. Get one free at https://ebenova.dev/dashboard"
+    required: true
+    secret: true
+
+tools:
+  - name: generate_legal_document
+    description: |
+      Generate a professionally drafted legal document. Supports 27 document types across 
+      18 jurisdictions including Nigeria, Ghana, Kenya, South Africa, UK, US, Canada, UAE and more.
+      
+      Use this when the user needs any legal document: NDA, contract, tenancy agreement, 
+      privacy policy, loan agreement, shareholder agreement, and more.
+    
+  - name: extract_from_conversation
+    description: |
+      Extract structured legal document fields from a raw conversation (WhatsApp, email, chat).
+      Identifies the document type and populates fields automatically.
+      Set auto_generate=true to also generate the full document in one call.
+      
+      Use this when the user pastes a conversation and wants a contract generated from it.
+
+  - name: list_document_types
+    description: |
+      List all 27 supported legal document types, grouped by category.
+      Use this to help the user choose the right document type.
+
+  - name: check_usage
+    description: |
+      Check how many documents have been generated this month and what quota remains.
+
+examples:
+  - title: "Generate an NDA"
+    prompt: "Create a mutual NDA between Acme Inc. and John Smith for discussing a partnership. 2 year duration, Nigerian law."
+  
+  - title: "Tenancy agreement from WhatsApp"
+    prompt: |
+      Here's our WhatsApp chat about the apartment rental:
+      "The rent is ₦1.2M per year, 1 year tenancy. Flat 3B, 14 Admiralty Way, Lekki. 
+      Landlord is Chief Emeka, tenant is Mrs. Nwosu."
+      Generate a tenancy agreement from this.
+  
+  - title: "Privacy policy for an app"
+    prompt: "Write a GDPR-compliant privacy policy for my app TaskFlow that collects emails and uses Stripe for payments."
+  
+  - title: "Freelance contract"
+    prompt: "Draft a freelance contract for a web design project. I'm Jane Smith, client is Acme Corp, $3,500 flat fee, Net 30 payment, client owns all work."
+
+installation:
+  claude_desktop:
+    config_path:
+      macos: "~/Library/Application Support/Claude/claude_desktop_config.json"
+      windows: "%APPDATA%\\Claude\\claude_desktop_config.json"
+    snippet: |
+      {
+        "mcpServers": {
+          "ebenova-legal": {
+            "command": "npx",
+            "args": ["-y", "@ebenova/legal-docs-mcp"],
+            "env": {
+              "EBENOVA_API_KEY": "sk_live_your_key_here"
+            }
+          }
+        }
+      }

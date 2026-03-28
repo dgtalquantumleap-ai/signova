@@ -17,17 +17,29 @@ const WhatsApp = lazy(() => import('./pages/WhatsApp'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const AboutPage = lazy(() => import('./pages/AboutPage'))
 const ContactPage = lazy(() => import('./pages/ContactPage'))
-const Docs = lazy(() => import('./pages/Docs'))
+const Docs      = lazy(() => import('./pages/Docs'))
+const Dashboard = lazy(() => import('./pages/Dashboard'))
 
 const PageShell = () => (
   <div style={{ minHeight: '100vh', background: '#0e0e0e' }} />
 )
 
+// Serve the correct root page based on which domain is being visited.
+// ebenova.dev  → ApiLanding (the API platform homepage)
+// getsignova.com / anything else → Landing (the Signova product homepage)
+function RootPage() {
+  const hostname = window.location.hostname
+  const isEbenova = hostname === 'ebenova.dev'
+    || hostname === 'www.ebenova.dev'
+    || hostname === 'api.ebenova.dev'
+  return isEbenova ? <ApiLanding /> : <Landing />
+}
+
 export default function App() {
   return (
     <Suspense fallback={<PageShell />}>
       <Routes>
-        <Route path="/" element={<Landing />} />
+        <Route path="/" element={<RootPage />} />
         <Route path="/api" element={<ApiLanding />} />
         <Route path="/generate/:docType" element={<Generator />} />
         <Route path="/preview" element={<Preview />} />
@@ -45,6 +57,7 @@ export default function App() {
         <Route path="/team" element={<AboutPage />} />
         <Route path="/pricing" element={<Landing />} />
         <Route path="/docs" element={<Docs />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/:slug" element={<DocLanding />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
