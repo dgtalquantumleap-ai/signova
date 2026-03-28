@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 
 const Landing    = lazy(() => import('./pages/Landing'))
+const ApiLanding = lazy(() => import('./pages/ApiLanding'))
 const Generator  = lazy(() => import('./pages/Generator'))
 const Preview    = lazy(() => import('./pages/Preview'))
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
@@ -27,6 +28,7 @@ export default function App() {
     <Suspense fallback={<PageShell />}>
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/api" element={<ApiLanding />} />
         <Route path="/generate/:docType" element={<Generator />} />
         <Route path="/preview" element={<Preview />} />
         <Route path="/privacy" element={<PrivacyPage />} />
