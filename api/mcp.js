@@ -1,4 +1,4 @@
-// api/mcp.js — HTTP MCP endpoint (Streamable HTTP transport, stateless)
+// api/mcp.js — HTTP MCP endpoint (Streamable HTTP, stateless, no Zod)
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
 
@@ -37,9 +37,13 @@ function buildServer(apiKey) {
     'generate_legal_document',
     'Generate a professionally drafted legal document. 27 document types, 18 jurisdictions.',
     {
-      document_type: { type: 'string', description: 'Type of legal document, e.g. nda, freelance-contract, tenancy-agreement' },
-      fields: { type: 'object', description: 'Document-specific fields as key-value pairs', additionalProperties: true },
-      jurisdiction: { type: 'string', description: 'Governing jurisdiction e.g. Nigeria, United Kingdom' },
+      type: 'object',
+      properties: {
+        document_type: { type: 'string', description: 'Type of document e.g. nda, freelance-contract, tenancy-agreement' },
+        fields: { type: 'object', description: 'Document fields as key-value pairs', additionalProperties: true },
+        jurisdiction: { type: 'string', description: 'Governing jurisdiction e.g. Nigeria, UK, US' },
+      },
+      required: ['document_type', 'fields'],
     },
     async ({ document_type, fields, jurisdiction }) => {
       const data = await callApi('/v1/documents/generate', { document_type, fields, jurisdiction }, apiKey)
@@ -50,11 +54,15 @@ function buildServer(apiKey) {
 
   server.tool(
     'extract_from_conversation',
-    'Extract legal document fields from a raw conversation (WhatsApp, email, chat). Optionally auto-generate the full document.',
+    'Extract legal document fields from a raw conversation (WhatsApp, email, chat).',
     {
-      conversation: { type: 'string', description: 'Raw conversation text, max 10,000 characters' },
-      target_document: { type: 'string', description: 'Target document type (optional, AI will suggest if omitted)' },
-      auto_generate: { type: 'boolean', description: 'If true, generate the full document after extraction' },
+      type: 'object',
+      properties: {
+        conversation: { type: 'string', description: 'Raw conversation text, max 10,000 characters' },
+        target_document: { type: 'string', description: 'Target document type (AI suggests if omitted)' },
+        auto_generate: { type: 'boolean', description: 'If true, also generate the full document' },
+      },
+      required: ['conversation'],
     },
     async ({ conversation, target_document, auto_generate }) => {
       const data = await callApi('/v1/extract/conversation', { conversation, target_document, auto_generate }, apiKey)
@@ -66,7 +74,7 @@ function buildServer(apiKey) {
   server.tool(
     'list_document_types',
     'List all 27 supported legal document types grouped by category.',
-    {},
+    { type: 'object', properties: {} },
     async () => {
       const data = await getApi('/v1/documents/types', apiKey)
       if (!data.success) return { content: [{ type: 'text', text: 'Error fetching types.' }], isError: true }
@@ -82,7 +90,7 @@ function buildServer(apiKey) {
   server.tool(
     'check_usage',
     'Check monthly document quota and remaining usage.',
-    {},
+    { type: 'object', properties: {} },
     async () => {
       const data = await getApi('/v1/keys/usage', apiKey)
       if (!data.success) return { content: [{ type: 'text', text: `Error: ${data.error?.message}` }], isError: true }
@@ -100,16 +108,22 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, mcp-session-id')
   if (req.method === 'OPTIONS') return res.status(200).end()
 
-  const apiKey = getApiKey(req)
-  const server = buildServer(apiKey)
-  const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined })
+  try {
+    const apiKey = getApiKey(req)
+    const server = buildServer(apiKey)
+    const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined })
+    await server.connect(transport)
 
-  await server.connect(transport)
+    let body = req.body
+    if (typeof body === 'string') {
+      try { body = JSON.parse(body) } catch { body = undefined }
+    }
 
-  let body = req.body
-  if (typeof body === 'string') {
-    try { body = JSON.parse(body) } catch { body = undefined }
+    await transport.handleRequest(req, res, body)
+  } catch (err) {
+    console.error('[mcp] handler error:', err)
+    if (!res.headersSent) {
+      res.status(500).json({ error: err.message, stack: err.stack })
+    }
   }
-
-  await transport.handleRequest(req, res, body)
 }
