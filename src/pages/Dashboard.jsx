@@ -1,324 +1,325 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { useNavigate } from 'react-router-dom'
 import './Dashboard.css'
 
+const API = 'https://www.getsignova.com'
+
 const TIERS = {
-  free:       { label: 'Free',       limit: 5,    price: 0   },
-  starter:    { label: 'Starter',    limit: 100,  price: 29  },
-  growth:     { label: 'Growth',     limit: 500,  price: 79  },
-  scale:      { label: 'Scale',      limit: 2000, price: 199 },
-  enterprise: { label: 'Enterprise', limit: '∞',  price: null },
+  free:       { label: 'Free',       limit: 5,    price: 0,     color: '#6b7280' },
+  starter:    { label: 'Starter',    limit: 100,  price: 29,    color: '#3b82f6' },
+  growth:     { label: 'Growth',     limit: 500,  price: 79,    color: '#f97316' },
+  scale:      { label: 'Scale',      limit: 2000, price: 199,   color: '#8b5cf6' },
+  enterprise: { label: 'Enterprise', limit: '∞',  price: null,  color: '#10b981' },
 }
 
+const UPGRADE_PLANS = [
+  { tier: 'starter',  label: 'Starter',  price: 29,  docs: 100,  features: ['100 docs/month', 'All document types', 'API access', 'Email support'] },
+  { tier: 'growth',   label: 'Growth',   price: 79,  docs: 500,  features: ['500 docs/month', 'Scope Guard API', 'Priority support', 'Webhook events'] },
+  { tier: 'scale',    label: 'Scale',    price: 199, docs: 2000, features: ['2,000 docs/month', 'Scope Guard API', 'Dedicated support', 'Custom jurisdictions'] },
+]
+
 export default function Dashboard() {
-  const navigate = useNavigate()
-  const [apiKey, setApiKey]     = useState('')
-  const [savedKey, setSavedKey] = useState('')
-  const [usage, setUsage]       = useState(null)
-  const [loading, setLoading]   = useState(false)
-  const [error, setError]       = useState('')
-  const [copied, setCopied]     = useState(false)
-  const [checkingOut, setCheckingOut] = useState(null)
+  const [view, setView] = useState('loading') // loading | login | dashboard
+  const [email, setEmail] = useState('')
+  const [emailSent, setEmailSent] = useState(false)
+  const [sendingLink, setSendingLink] = useState(false)
 
-  // Restore saved key on mount
+  const [session, setSession] = useState(null) // { token, user, api_keys }
+  const [usage, setUsage] = useState(null)
+  const [activeKey, setActiveKey] = useState(null)
+
+  const [copied, setCopied] = useState(false)
+  const [upgrading, setUpgrading] = useState(null)
+  const [error, setError] = useState('')
+
+  // ── Boot: check for session or magic token ──────────────────────────────────
   useEffect(() => {
-    const stored = localStorage.getItem('ebenova_api_key')
-    if (stored) { setSavedKey(stored); setApiKey(stored); fetchUsage(stored) }
-
-    // Handle return from Stripe checkout
     const params = new URLSearchParams(window.location.search)
-    if (params.get('subscribed') === '1') {
-      const session = params.get('session_id')
-      if (session) {
-        // Usage will refresh momentarily as webhook fires
-        window.history.replaceState({}, '', '/dashboard')
-      }
+    const magicToken = params.get('token')
+    const storedSession = localStorage.getItem('ebenova_session')
+
+    if (magicToken) {
+      verifyMagicToken(magicToken)
+    } else if (storedSession) {
+      try {
+        const s = JSON.parse(storedSession)
+        setSession(s)
+        setActiveKey(s.api_keys?.[0])
+        fetchUsage(s.api_keys?.[0]?.key)
+        setView('dashboard')
+      } catch { localStorage.removeItem('ebenova_session'); setView('login') }
+    } else {
+      setView('login')
     }
   }, [])
 
-  async function fetchUsage(key) {
-    if (!key) return
-    setLoading(true)
-    setError('')
+  async function verifyMagicToken(token) {
+    setView('loading')
     try {
-      const res = await fetch('https://api.ebenova.dev/v1/keys/usage', {
+      const res = await fetch(`${API}/api/v1/auth/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        const s = { token: data.session_token, user: data.user, api_keys: data.api_keys }
+        localStorage.setItem('ebenova_session', JSON.stringify(s))
+        setSession(s)
+        setActiveKey(data.api_keys?.[0])
+        fetchUsage(data.api_keys?.[0]?.key)
+        setView('dashboard')
+        window.history.replaceState({}, '', '/dashboard')
+      } else {
+        setError(data.error?.message || 'Invalid or expired link')
+        setView('login')
+      }
+    } catch { setError('Verification failed. Try again.'); setView('login') }
+  }
+
+  const fetchUsage = useCallback(async (key) => {
+    if (!key) return
+    try {
+      const res = await fetch(`${API}/api/v1/keys/usage`, {
         headers: { Authorization: `Bearer ${key}` },
       })
       const data = await res.json()
-      if (!data.success) {
-        setError(data.error?.message || 'Invalid API key')
-        setUsage(null)
-      } else {
-        setUsage(data)
-        setSavedKey(key)
-        localStorage.setItem('ebenova_api_key', key)
-      }
-    } catch {
-      setError('Could not reach API. Check your connection.')
-    } finally {
-      setLoading(false)
-    }
-  }
+      if (data.success) setUsage(data)
+    } catch {}
+  }, [])
 
-  function handleLookup(e) {
-    e.preventDefault()
-    fetchUsage(apiKey.trim())
-  }
-
-  function handleCopy() {
-    navigator.clipboard.writeText(savedKey)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
-  function handleForget() {
-    localStorage.removeItem('ebenova_api_key')
-    setSavedKey('')
-    setApiKey('')
-    setUsage(null)
-    setError('')
+  async function sendMagicLink() {
+    if (!email || !email.includes('@')) return setError('Enter a valid email')
+    setSendingLink(true); setError('')
+    try {
+      const res = await fetch(`${API}/api/v1/auth/magic-link`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      const data = await res.json()
+      if (data.success) setEmailSent(true)
+      else setError(data.error?.message || 'Failed to send link')
+    } catch { setError('Network error. Try again.') }
+    setSendingLink(false)
   }
 
   async function handleUpgrade(tier) {
-    setCheckingOut(tier)
+    setUpgrading(tier)
     try {
-      const res = await fetch('https://api.ebenova.dev/v1/billing/checkout', {
+      const res = await fetch(`${API}/api/v1/billing/checkout`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          tier,
-          email: usage?.key?.owner || '',
-          success_url: `${window.location.origin}/dashboard?subscribed=1`,
-          cancel_url: `${window.location.origin}/dashboard`,
-        }),
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${activeKey?.key}` },
+        body: JSON.stringify({ tier, success_url: `${window.location.origin}/dashboard?subscribed=1`, cancel_url: `${window.location.origin}/dashboard` }),
       })
       const data = await res.json()
-      if (data.checkout_url) {
-        window.location.href = data.checkout_url
-      } else {
-        alert('Could not start checkout. Please try again.')
-      }
-    } catch {
-      alert('Checkout failed. Please try again.')
-    } finally {
-      setCheckingOut(null)
-    }
+      if (data.url) window.location.href = data.url
+      else setError(data.error?.message || 'Checkout failed')
+    } catch { setError('Checkout error') }
+    setUpgrading(null)
   }
 
-  async function handlePortal() {
-    if (!savedKey) return
-    try {
-      const res = await fetch('https://api.ebenova.dev/v1/billing/portal', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${savedKey}`,
-        },
-        body: JSON.stringify({ return_url: window.location.href }),
-      })
-      const data = await res.json()
-      if (data.portal_url) window.location.href = data.portal_url
-    } catch {
-      alert('Could not open billing portal.')
-    }
+  function logout() {
+    localStorage.removeItem('ebenova_session')
+    setSession(null); setView('login'); setEmailSent(false); setEmail('')
   }
 
-  const tier = TIERS[usage?.key?.tier] || TIERS.free
-  const cm = usage?.current_month
-  const pct = cm ? Math.round((cm.documents_used / cm.monthly_limit) * 100) : 0
-  const isNearLimit = pct >= 80
+  function copyKey(key) {
+    navigator.clipboard.writeText(key)
+    setCopied(true); setTimeout(() => setCopied(false), 2000)
+  }
 
-  return (
-    <div className="dash-page">
-      <Helmet>
-        <title>Dashboard | Ebenova API</title>
-      </Helmet>
+  const tier = session?.user?.tier || 'free'
+  const tierInfo = TIERS[tier] || TIERS.free
+  const isProUser = ['growth', 'scale', 'enterprise'].includes(tier)
+  const usedDocs = usage?.current_month?.documents_used ?? 0
+  const limitDocs = usage?.current_month?.monthly_limit ?? tierInfo.limit
+  const pct = typeof limitDocs === 'number' ? Math.min(100, Math.round((usedDocs / limitDocs) * 100)) : 0
 
-      <nav className="dash-nav">
-        <div className="dash-logo" onClick={() => navigate('/')}>
-          <span className="dash-logo-mark">E</span>
-          <span className="dash-logo-text">ebenova.dev</span>
-        </div>
-        <a href="/docs" className="dash-nav-link">Docs</a>
-      </nav>
+  // ── Loading ──────────────────────────────────────────────────────────────────
+  if (view === 'loading') return (
+    <div className="dash-loading">
+      <div className="dash-spinner" />
+      <p>Signing you in…</p>
+    </div>
+  )
 
-      <div className="dash-container">
-        <div className="dash-header">
-          <h1>API Dashboard</h1>
-          <p>Monitor usage, manage your subscription, and access your API key.</p>
-        </div>
+  // ── Login ────────────────────────────────────────────────────────────────────
+  if (view === 'login') return (
+    <>
+      <Helmet><title>Sign In — Ebenova Dashboard</title></Helmet>
+      <div className="dash-login-wrap">
+        <div className="dash-login-card">
+          <div className="dash-login-logo">⚖️</div>
+          <h1>Ebenova Dashboard</h1>
+          <p className="dash-login-sub">Sign in to manage your API keys and usage</p>
 
-        {/* Key input — shown when no key loaded */}
-        {!usage && (
-          <div className="dash-card dash-lookup">
-            <h2>Enter your API key</h2>
-            <p>Paste your <code>sk_live_</code> key to view usage and manage your account.</p>
-            <form className="dash-lookup-form" onSubmit={handleLookup}>
-              <input
-                className="dash-key-input"
-                type="password"
-                placeholder="sk_live_..."
-                value={apiKey}
-                onChange={e => setApiKey(e.target.value)}
-                autoFocus
-              />
-              <button className="dash-btn-primary" type="submit" disabled={loading || !apiKey.trim()}>
-                {loading ? 'Loading…' : 'View Dashboard →'}
-              </button>
-            </form>
-            {error && <div className="dash-error">{error}</div>}
-            <p className="dash-lookup-note">
-              Don't have a key? <a href="/pricing">Get one free</a> — no credit card needed.
-            </p>
-          </div>
-        )}
-
-        {/* Main dashboard — shown when key loaded */}
-        {usage && (
-          <>
-            {/* Key card */}
-            <div className="dash-card dash-key-card">
-              <div className="dash-key-header">
-                <div>
-                  <div className="dash-card-label">API Key</div>
-                  <div className="dash-key-owner">{usage.key.owner}</div>
-                </div>
-                <div className="dash-tier-badge" data-tier={usage.key.tier}>
-                  {tier.label}
-                </div>
-              </div>
-              <div className="dash-key-display">
-                <code className="dash-key-value">
-                  {savedKey.slice(0, 12)}{'•'.repeat(20)}{savedKey.slice(-4)}
-                </code>
-                <div className="dash-key-actions">
-                  <button className="dash-btn-sm" onClick={handleCopy}>
-                    {copied ? '✓ Copied' : 'Copy'}
-                  </button>
-                  <button className="dash-btn-sm dash-btn-ghost" onClick={handleForget}>
-                    Forget
-                  </button>
-                </div>
-              </div>
-              {usage.key.label && (
-                <div className="dash-key-label-tag">{usage.key.label}</div>
-              )}
-            </div>
-
-            {/* Usage card */}
-            <div className={`dash-card dash-usage-card ${isNearLimit ? 'near-limit' : ''}`}>
-              <div className="dash-card-label">This Month</div>
-              <div className="dash-usage-numbers">
-                <span className="dash-usage-used">{cm.documents_used}</span>
-                <span className="dash-usage-sep">/</span>
-                <span className="dash-usage-limit">{cm.monthly_limit}</span>
-                <span className="dash-usage-unit">documents</span>
-              </div>
-              <div className="dash-progress-bar">
-                <div
-                  className="dash-progress-fill"
-                  style={{ width: `${Math.min(pct, 100)}%` }}
-                  data-near={isNearLimit}
+          {!emailSent ? (
+            <>
+              <div className="dash-field-group">
+                <label>Email address</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => { setEmail(e.target.value); setError('') }}
+                  onKeyDown={e => e.key === 'Enter' && sendMagicLink()}
+                  placeholder="you@example.com"
+                  className="dash-input"
+                  autoFocus
                 />
               </div>
-              <div className="dash-usage-meta">
-                <span>{cm.documents_remaining} remaining</span>
-                <span>Resets {new Date(cm.resets_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
-              </div>
-
-              {isNearLimit && usage.key.tier !== 'enterprise' && (
-                <div className="dash-limit-warning">
-                  ⚠️ You've used {pct}% of your monthly quota.
-                  {usage.key.tier !== 'scale' ? ' Upgrade to avoid interruptions.' : ' Contact us for Enterprise pricing.'}
-                </div>
-              )}
+              {error && <p className="dash-error">{error}</p>}
+              <button className="dash-btn-primary" onClick={sendMagicLink} disabled={sendingLink}>
+                {sendingLink ? 'Sending…' : 'Send Magic Link →'}
+              </button>
+              <p className="dash-login-note">No password needed. We'll email you a sign-in link.</p>
+            </>
+          ) : (
+            <div className="dash-email-sent">
+              <div className="dash-email-icon">📧</div>
+              <h3>Check your inbox</h3>
+              <p>We sent a sign-in link to <strong>{email}</strong></p>
+              <p className="dash-login-note">Link expires in 15 minutes.</p>
+              <button className="dash-btn-ghost" onClick={() => { setEmailSent(false); setError('') }}>
+                ← Use different email
+              </button>
             </div>
+          )}
 
-            {/* History */}
-            {usage.history?.length > 0 && (
-              <div className="dash-card">
-                <div className="dash-card-label">Usage History</div>
-                <div className="dash-history">
-                  {usage.history.map(h => (
-                    <div key={h.month} className="dash-history-row">
-                      <span className="dash-history-month">{h.month}</span>
-                      <div className="dash-history-bar-wrap">
-                        <div
-                          className="dash-history-bar"
-                          style={{ width: `${Math.min((h.documents_generated / cm.monthly_limit) * 100, 100)}%` }}
-                        />
-                      </div>
-                      <span className="dash-history-count">{h.documents_generated}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+          <div className="dash-login-divider" />
+          <p className="dash-login-note">
+            Don't have an account? Just enter your email — we'll create one automatically.
+          </p>
+        </div>
+      </div>
+    </>
+  )
+
+  // ── Dashboard ────────────────────────────────────────────────────────────────
+  return (
+    <>
+      <Helmet><title>Dashboard — Ebenova</title></Helmet>
+      <div className="dash-wrap">
+
+        {/* Header */}
+        <header className="dash-header">
+          <div className="dash-header-left">
+            <span className="dash-logo">⚖️ Ebenova</span>
+            <span className="dash-tier-badge" style={{ background: tierInfo.color }}>
+              {tierInfo.label}
+            </span>
+          </div>
+          <div className="dash-header-right">
+            <span className="dash-email">{session?.user?.email}</span>
+            <button className="dash-btn-ghost" onClick={logout}>Sign out</button>
+          </div>
+        </header>
+
+        <main className="dash-main">
+          {error && <div className="dash-alert-error">{error} <button onClick={() => setError('')}>✕</button></div>}
+
+          {/* Usage Card */}
+          <section className="dash-card">
+            <h2 className="dash-card-title">Usage this month</h2>
+            <div className="dash-usage-row">
+              <span className="dash-usage-count">{usedDocs} / {typeof limitDocs === 'number' ? limitDocs : '∞'}</span>
+              <span className="dash-usage-label">documents generated</span>
+            </div>
+            <div className="dash-progress-track">
+              <div className="dash-progress-fill" style={{ width: `${pct}%`, background: pct > 80 ? '#ef4444' : tierInfo.color }} />
+            </div>
+            {usage?.current_month?.resets_at && (
+              <p className="dash-usage-reset">
+                Resets {new Date(usage.current_month.resets_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}
+              </p>
             )}
+          </section>
 
-            {/* Upgrade / manage billing */}
-            {usage.key.tier === 'free' ? (
-              <div className="dash-card dash-upgrade-card">
-                <div className="dash-card-label">Upgrade Your Plan</div>
-                <p className="dash-upgrade-sub">You're on the free tier (5 docs/month). Upgrade to generate more.</p>
-                <div className="dash-upgrade-grid">
-                  {['starter', 'growth', 'scale'].map(t => {
-                    const info = TIERS[t]
-                    return (
-                      <div key={t} className={`dash-upgrade-option ${t === 'starter' ? 'popular' : ''}`}>
-                        {t === 'starter' && <div className="dash-popular-badge">Popular</div>}
-                        <div className="dash-upgrade-name">{info.label}</div>
-                        <div className="dash-upgrade-price">${info.price}<span>/mo</span></div>
-                        <div className="dash-upgrade-docs">{info.limit} docs/month</div>
-                        <button
-                          className="dash-btn-primary dash-btn-full"
-                          onClick={() => handleUpgrade(t)}
-                          disabled={checkingOut === t}
-                        >
-                          {checkingOut === t ? 'Redirecting…' : 'Upgrade →'}
-                        </button>
-                      </div>
-                    )
-                  })}
+          {/* API Keys */}
+          <section className="dash-card">
+            <h2 className="dash-card-title">Your API Key</h2>
+            {session?.api_keys?.map(k => (
+              <div key={k.key} className="dash-key-row">
+                <div className="dash-key-meta">
+                  <span className="dash-key-label">{k.label || 'Default key'}</span>
+                  <span className="dash-key-tier">{k.tier}</span>
                 </div>
+                <div className="dash-key-value-row">
+                  <code className="dash-key-code">{k.key.slice(0, 20)}••••••••••••••••</code>
+                  <button className="dash-btn-copy" onClick={() => copyKey(k.key)}>
+                    {copied ? '✓ Copied' : 'Copy'}
+                  </button>
+                </div>
+                <p className="dash-key-hint">Add to requests: <code>Authorization: Bearer {k.key.slice(0,16)}…</code></p>
+              </div>
+            ))}
+          </section>
+
+          {/* Scope Guard */}
+          <section className={`dash-card ${!isProUser ? 'dash-card-locked' : ''}`}>
+            <div className="dash-card-title-row">
+              <h2 className="dash-card-title">🛡️ Scope Guard</h2>
+              {!isProUser && <span className="dash-pro-badge">Pro</span>}
+            </div>
+            {isProUser ? (
+              <div className="dash-scope-active">
+                <p>Scope Guard is active on your account. Use the API to analyze client requests:</p>
+                <code className="dash-code-block">POST /v1/scope/analyze</code>
+                <code className="dash-code-block">POST /v1/scope/change-order</code>
+                <a href="/docs#scope-guard" className="dash-btn-secondary">View Docs →</a>
               </div>
             ) : (
-              <div className="dash-card dash-billing-card">
-                <div className="dash-card-label">Billing</div>
-                <p>You're on the <strong>{tier.label}</strong> plan — {tier.limit} documents/month.</p>
-                <div className="dash-billing-actions">
-                  <button className="dash-btn-outline" onClick={handlePortal}>
-                    Manage Subscription →
-                  </button>
-                  {usage.key.tier !== 'scale' && usage.key.tier !== 'enterprise' && (
-                    <button
-                      className="dash-btn-primary"
-                      onClick={() => {
-                        const next = usage.key.tier === 'starter' ? 'growth' : 'scale'
-                        handleUpgrade(next)
-                      }}
-                      disabled={!!checkingOut}
-                    >
-                      {checkingOut ? 'Redirecting…' : 'Upgrade Plan →'}
-                    </button>
-                  )}
-                </div>
+              <div className="dash-scope-locked">
+                <p>Automatically detect scope creep and draft professional responses. Upgrade to Growth or Scale to unlock.</p>
+                <button className="dash-btn-primary" onClick={() => handleUpgrade('growth')} disabled={upgrading === 'growth'}>
+                  {upgrading === 'growth' ? 'Loading…' : 'Upgrade to Growth — $79/mo →'}
+                </button>
               </div>
             )}
+          </section>
 
-            {/* Quick links */}
-            <div className="dash-card dash-links-card">
-              <div className="dash-card-label">Quick Links</div>
-              <div className="dash-links">
-                <a href="/docs" className="dash-link">📄 Documentation</a>
-                <a href="/docs#sdk" className="dash-link">📦 SDK & MCP Server</a>
-                <a href="https://api.ebenova.dev/v1/documents/types" target="_blank" rel="noopener noreferrer" className="dash-link">🔧 Document Types</a>
-                <a href="mailto:api@ebenova.dev" className="dash-link">✉️ api@ebenova.dev</a>
+          {/* Upgrade Plans (only for free/starter) */}
+          {!['scale','enterprise'].includes(tier) && (
+            <section className="dash-card">
+              <h2 className="dash-card-title">Upgrade your plan</h2>
+              <div className="dash-plans-grid">
+                {UPGRADE_PLANS.filter(p => p.price > (tierInfo.price || 0)).map(plan => (
+                  <div key={plan.tier} className={`dash-plan-card ${plan.tier === 'growth' ? 'dash-plan-featured' : ''}`}>
+                    {plan.tier === 'growth' && <div className="dash-plan-popular">Most Popular</div>}
+                    <h3>{plan.label}</h3>
+                    <div className="dash-plan-price">${plan.price}<span>/mo</span></div>
+                    <ul className="dash-plan-features">
+                      {plan.features.map(f => <li key={f}>✓ {f}</li>)}
+                    </ul>
+                    <button
+                      className={`dash-btn-plan ${plan.tier === 'growth' ? 'dash-btn-primary' : 'dash-btn-secondary'}`}
+                      onClick={() => handleUpgrade(plan.tier)}
+                      disabled={!!upgrading}
+                    >
+                      {upgrading === plan.tier ? 'Loading…' : `Upgrade to ${plan.label} →`}
+                    </button>
+                  </div>
+                ))}
               </div>
+            </section>
+          )}
+
+          {/* Quick Start */}
+          <section className="dash-card">
+            <h2 className="dash-card-title">Quick start</h2>
+            <pre className="dash-quickstart">{`curl -X POST https://api.ebenova.dev/v1/documents/generate \\
+  -H "Authorization: Bearer ${activeKey?.key?.slice(0,20) ?? 'sk_live_...'}..." \\
+  -H "Content-Type: application/json" \\
+  -d '{"document_type":"nda","fields":{"party_a":"Acme Inc","party_b":"Jane Smith"},"jurisdiction":"Nigeria"}'`}</pre>
+            <div className="dash-links-row">
+              <a href="/docs" className="dash-link">📄 API Docs</a>
+              <a href="https://ebenova.dev/blog" className="dash-link">📝 Blog</a>
+              <a href="mailto:api@ebenova.dev" className="dash-link">💬 Support</a>
             </div>
-          </>
-        )}
+          </section>
+
+        </main>
       </div>
-    </div>
+    </>
   )
 }
