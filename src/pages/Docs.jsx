@@ -28,6 +28,7 @@ export default function Docs() {
             <li><a href="#quickstart">Quickstart</a></li>
             <li><a href="#authentication">Authentication</a></li>
             <li><a href="#generate">Generate Document</a></li>
+            <li><a href="#invoices">Generate Invoice</a></li>
             <li><a href="#types">List Document Types</a></li>
             <li><a href="#extract">Extract from Conversation</a></li>
             <li><a href="#usage">Check Usage</a></li>
@@ -115,6 +116,118 @@ export default function Docs() {
                 <tr><td><code>usage.resets_at</code></td><td>ISO date</td><td>When the monthly quota resets</td></tr>
               </tbody>
             </table>
+          </section>
+
+          {/* ── Invoices ── */}
+          <section id="invoices">
+            <h2>Generate Invoice</h2>
+            <p><code>POST /v1/invoices/generate</code></p>
+            <p>
+              Generate professional invoices, receipts, proforma invoices, and credit notes.
+              Returns fully rendered HTML ready to display or print-to-PDF client-side.
+            </p>
+
+            <h3>Request Body</h3>
+            <table className="docs-table">
+              <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>type</code></td><td>string</td><td>No</td><td>Document type: <code>invoice</code>, <code>receipt</code>, <code>proforma</code>, or <code>credit-note</code>. Default: <code>invoice</code></td></tr>
+                <tr><td><code>from</code></td><td>object</td><td>Yes</td><td>Sender details. Requires <code>name</code>. Optional: <code>address</code>, <code>email</code>, <code>phone</code>, <code>tax_id</code></td></tr>
+                <tr><td><code>to</code></td><td>object</td><td>Yes</td><td>Recipient details. Requires <code>name</code>. Optional: <code>address</code>, <code>email</code>, <code>phone</code>, <code>tax_id</code></td></tr>
+                <tr><td><code>items</code></td><td>array</td><td>Yes</td><td>Line items. Each requires <code>description</code>, <code>quantity</code>, <code>unit_price</code>. Optional: <code>notes</code></td></tr>
+                <tr><td><code>invoice_number</code></td><td>string</td><td>No</td><td>Unique invoice identifier</td></tr>
+                <tr><td><code>issue_date</code></td><td>string</td><td>No</td><td>Issue date (default: today)</td></tr>
+                <tr><td><code>due_date</code></td><td>string</td><td>No</td><td>Payment due date</td></tr>
+                <tr><td><code>currency</code></td><td>string</td><td>No</td><td>Default: <code>USD</code>. Supported: USD, EUR, GBP, CAD, AUD, NGN, KES, GHS, ZAR, INR, AED, SGD</td></tr>
+                <tr><td><code>tax_rate</code></td><td>number</td><td>No</td><td>Tax percentage (e.g. 10 for 10%). Default: 0</td></tr>
+                <tr><td><code>discount_percent</code></td><td>number</td><td>No</td><td>Discount percentage. Default: 0</td></tr>
+                <tr><td><code>notes</code></td><td>string</td><td>No</td><td>Notes shown on invoice</td></tr>
+                <tr><td><code>payment_instructions</code></td><td>string</td><td>No</td><td>Bank details or payment instructions</td></tr>
+                <tr><td><code>logo_url</code></td><td>string</td><td>No</td><td>Public URL of logo image</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Example Request</h3>
+            <pre className="code-block">{`curl -X POST https://api.ebenova.dev/v1/invoices/generate \\
+  -H "Authorization: Bearer sk_live_your_api_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "type": "invoice",
+    "from": {
+      "name": "Acme Design Ltd.",
+      "address": "12 Marina, Lagos, Nigeria",
+      "email": "billing@acme.com"
+    },
+    "to": {
+      "name": "John Smith",
+      "address": "456 Oak Ave, London, UK",
+      "email": "john@example.com"
+    },
+    "items": [
+      {
+        "description": "Website Design",
+        "quantity": 1,
+        "unit_price": 2500
+      }
+    ],
+    "invoice_number": "INV-2026-001",
+    "issue_date": "April 1, 2026",
+    "due_date": "April 30, 2026",
+    "currency": "USD"
+  }'`}</pre>
+
+            <h3>Response</h3>
+            <table className="docs-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>success</code></td><td>boolean</td><td>true if successful</td></tr>
+                <tr><td><code>invoice_id</code></td><td>string</td><td>Unique invoice identifier (e.g. <code>inv_mnb3xqmn_xt2sq</code>)</td></tr>
+                <tr><td><code>invoice_number</code></td><td>string</td><td>Your provided invoice number</td></tr>
+                <tr><td><code>type</code></td><td>string</td><td>Document type generated</td></tr>
+                <tr><td><code>currency</code></td><td>string</td><td>Currency code</td></tr>
+                <tr><td><code>subtotal</code></td><td>number</td><td>Subtotal before tax/discount</td></tr>
+                <tr><td><code>tax_amount</code></td><td>number</td><td>Calculated tax amount</td></tr>
+                <tr><td><code>discount_amount</code></td><td>number</td><td>Calculated discount amount</td></tr>
+                <tr><td><code>total</code></td><td>number</td><td>Final total amount</td></tr>
+                <tr><td><code>html</code></td><td>string</td><td>Fully rendered HTML invoice</td></tr>
+                <tr><td><code>usage</code></td><td>object</td><td>Usage stats (documents remaining)</td></tr>
+                <tr><td><code>generated_at</code></td><td>ISO date</td><td>Generation timestamp</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Example Response</h3>
+            <pre className="code-block">{`{
+  "success": true,
+  "invoice_id": "inv_mnb3xqmn_xt2sq",
+  "invoice_number": "INV-2026-001",
+  "type": "invoice",
+  "currency": "USD",
+  "subtotal": 2500,
+  "tax_amount": 0,
+  "discount_amount": 0,
+  "total": 2500,
+  "html": "<!DOCTYPE html>\\n<html>...",
+  "usage": {
+    "documents_used": 1,
+    "documents_remaining": 99,
+    "monthly_limit": 100,
+    "resets_at": "2026-04-01T00:00:00Z"
+  },
+  "generated_at": "2026-03-29T01:55:44.835Z"
+}`}</pre>
+
+            <h3>Supported Types</h3>
+            <ul>
+              <li><strong>invoice</strong> — Standard invoice with due date</li>
+              <li><strong>receipt</strong> — Proof of payment (no due date)</li>
+              <li><strong>proforma</strong> — Proforma invoice for customs/quotes</li>
+              <li><strong>credit-note</strong> — Credit note for refunds/adjustments</li>
+            </ul>
+
+            <h3>PDF Generation</h3>
+            <p>
+              The API returns HTML. To get a PDF, render the HTML and use <code>window.print()</code> or send the HTML to a PDF microservice like Puppeteer.
+            </p>
           </section>
 
           {/* ── List Types ── */}
@@ -266,21 +379,42 @@ const result = await client.documents.generate({
 console.log(result.document)`}</pre>
 
             <h3>MCP Server (Claude Desktop / Cursor)</h3>
-            <p>Use the Ebenova API directly from Claude Desktop or Cursor. Add to your MCP config:</p>
+            <p>Use the Ebenova API directly from Claude Desktop, Cursor, or any MCP-compatible AI tool. No extra setup — one config block and you're done.</p>
             <pre className="code-block">{`{
   "mcpServers": {
     "ebenova-legal": {
       "command": "npx",
-      "args": ["-y", "@ebenova/legal-docs-mcp"],
-      "env": { "EBENOVA_API_KEY": "sk_live_your_key" }
+      "args": ["-y", "ebenova-legal-docs-mcp"],
+      "env": {
+        "EBENOVA_API_KEY": "sk_live_your_key_here"
+      }
     }
   }
 }`}</pre>
+
+            <h4>Config file location</h4>
+            <table className="docs-table">
+              <thead><tr><th>Platform</th><th>Path</th></tr></thead>
+              <tbody>
+                <tr><td>macOS</td><td><code>~/Library/Application Support/Claude/claude_desktop_config.json</code></td></tr>
+                <tr><td>Windows</td><td><code>%APPDATA%\Claude\claude_desktop_config.json</code></td></tr>
+                <tr><td>Cursor</td><td>Settings → MCP → Add server</td></tr>
+              </tbody>
+            </table>
+
+            <h4>Example prompts once connected</h4>
+            <ul>
+              <li><em>"Generate an NDA between Acme Inc. and John Smith, 2 years, mutual, Nigerian law."</em></li>
+              <li><em>"Create a freelance contract for a $5,000 web project."</em></li>
+              <li><em>"Here's our WhatsApp conversation — turn it into a tenancy agreement."</em></li>
+              <li><em>"What legal document types do you support?"</em></li>
+            </ul>
+
             <p>
-              Config file location: <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> (macOS)
-              or <code>%APPDATA%\Claude\claude_desktop_config.json</code> (Windows).
+              The MCP server is also listed on{' '}
+              <a href="https://smithery.ai/server/ebenova/legal-docs" target="_blank" rel="noopener noreferrer">Smithery</a>.
+              Source code on <a href="https://github.com/dgtalquantumleap-ai/legal-docs-mcp" target="_blank" rel="noopener noreferrer">GitHub</a>.
             </p>
-            <p>Once connected, you can say: <em>"Generate an NDA between Acme Inc. and John Smith, 2 years, mutual, Nigerian law."</em></p>
           </section>
 
           {/* ── Pricing ── */}
