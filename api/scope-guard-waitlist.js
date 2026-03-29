@@ -37,7 +37,7 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: 'Ebenova <api@ebenova.dev>',
+        from: 'Signova <info@getsignova.com>',
         to: ['info@ebenova.net'],
         subject: `🛡️ Scope Guard waitlist: ${email}`,
         html: `
@@ -49,7 +49,7 @@ export default async function handler(req, res) {
               They want the 50% discount for 3 months ($9.99/mo).
             </p>
             <hr style="border:none;border-top:1px solid #eee;margin:24px 0;"/>
-            <p style="color:#999;font-size:12px;">ebenova.dev · Ebenova Solutions</p>
+            <p style="color:#999;font-size:12px;">getsignova.com · Ebenova Solutions</p>
           </div>
         `,
       }),
@@ -60,22 +60,22 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: 'Ebenova <api@ebenova.dev>',
+        from: 'Signova <info@getsignova.com>',
         to: [email],
         subject: "You're on the Scope Guard waitlist — 50% off when we launch",
         html: `
           <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#0e0e0e;color:#f0ece4;">
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:32px;">
-              <div style="width:32px;height:32px;border-radius:8px;background:#c9a84c;color:#0e0e0e;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;">E</div>
-              <span style="font-size:20px;font-weight:600;color:#f0ece4;">ebenova.dev</span>
+              <div style="width:32px;height:32px;border-radius:8px;background:#c9a84c;color:#0e0e0e;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;">S</div>
+              <span style="font-size:20px;font-weight:600;color:#f0ece4;">Signova</span>
             </div>
             <h2 style="color:#c9a84c;margin-bottom:16px;">You're on the list. 🛡️</h2>
             <p style="color:#9a9690;line-height:1.7;margin-bottom:20px;">
-              Thanks for signing up for <strong style="color:#f0ece4;">Scope Guard</strong> early access.
+              Thanks for signing up for <strong style="color:#f0ece4;">Signova Scope Guard</strong> early access.
             </p>
             <p style="color:#9a9690;line-height:1.7;margin-bottom:20px;">
               Scope Guard detects when client requests violate your contract and auto-drafts professional 
-              responses — change orders, pushback emails, and contract references. Launching April 2026.
+              responses — change orders, pushback emails, and contract references. Launching as part of Signova Pro.
             </p>
             <p style="color:#9a9690;line-height:1.7;margin-bottom:32px;">
               As an early signup you'll get <strong style="color:#f0ece4;">50% off for 3 months</strong> 
@@ -83,12 +83,12 @@ export default async function handler(req, res) {
             </p>
             <div style="background:#161616;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;margin-bottom:32px;">
               <p style="color:#9a9690;font-size:14px;margin-bottom:12px;">In the meantime, generate legal documents at:</p>
-              <a href="https://www.getsignova.com/scope-guard" style="color:#c9a84c;font-weight:600;">getsignova.com/scope-guard</a>
+              <a href="https://www.getsignova.com" style="color:#c9a84c;font-weight:600;">getsignova.com</a>
             </div>
             <hr style="border:none;border-top:1px solid #2a2a2a;margin:32px 0;"/>
             <p style="color:#5a5754;font-size:12px;">
-              Ebenova Solutions · Calgary, Alberta<br/>
-              <a href="mailto:api@ebenova.dev" style="color:#5a5754;">api@ebenova.dev</a>
+              Signova · Ebenova Solutions<br/>
+              <a href="mailto:info@getsignova.com" style="color:#5a5754;">info@getsignova.com</a>
             </p>
           </div>
         `,
