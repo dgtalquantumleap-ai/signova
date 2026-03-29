@@ -58,6 +58,9 @@
     }
   ],
   "functions": {
+    "api/scope-guard-analyze.js": {
+      "maxDuration": 60
+    },
     "api/v1/scope/analyze.js": {
       "maxDuration": 60
     },

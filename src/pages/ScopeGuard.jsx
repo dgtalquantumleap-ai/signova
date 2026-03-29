@@ -10,13 +10,7 @@ const VIOLATIONS_DEMO = [
   { icon: '💸', title: 'Unpaid extras', example: '"Can you handle the hosting setup too? It\'s tiny."', response: 'Flags the request as outside scope and drafts a professional pushback.' },
 ]
 
-// ── Free-tier gating (3 uses, no account needed) ────────────────────────────
-function getFreeUses() {
-  try { return parseInt(localStorage.getItem('sg_free_uses') || '0', 10) } catch { return 0 }
-}
-function incrementFreeUses() {
-  try { localStorage.setItem('sg_free_uses', String(getFreeUses() + 1)) } catch {}
-}
+// Free-tier uses tracked server-side via IP (no localStorage needed)
 const FREE_LIMIT = 3
 
 export default function ScopeGuard() {
@@ -31,7 +25,8 @@ export default function ScopeGuard() {
   const [toolError, setToolError] = useState('')
   const [selectedResponse, setSelectedResponse] = useState(0)
   const [copied, setCopied] = useState(false)
-  const [freeUsed] = useState(getFreeUses())
+  const [freeUsed, setFreeUsed] = useState(0)
+  const [remainingUses, setRemainingUses] = useState(FREE_LIMIT)
 
   // Upgrade / waitlist state
   const [showUpgrade, setShowUpgrade] = useState(false)
@@ -52,22 +47,21 @@ export default function ScopeGuard() {
       return
     }
 
-    // Free tier gate
-    if (freeUsed >= FREE_LIMIT) {
-      setShowUpgrade(true)
-      return
-    }
-
     setAnalyzing(true)
     try {
-      const res = await fetch('/api/v1/scope/analyze', {
+      const res = await fetch('/api/scope-guard-analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contract_text: contractText, client_message: clientMessage, communication_channel: channel }),
       })
       const data = await res.json()
+      if (res.status === 429) {
+        setShowUpgrade(true)
+        return
+      }
       if (!data.success) throw new Error(data.error?.message || 'Analysis failed')
-      incrementFreeUses()
+      setFreeUsed(prev => prev + 1)
+      if (typeof data.remaining_uses === 'number') setRemainingUses(data.remaining_uses)
       setResult(data)
       setSelectedResponse(0)
     } catch (err) {
@@ -93,7 +87,7 @@ export default function ScopeGuard() {
     navigator.clipboard.writeText(text).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000) })
   }
 
-  const usesLeft = Math.max(0, FREE_LIMIT - freeUsed)
+  const usesLeft = remainingUses
 
   return (
     <div className="sg-page">
