@@ -83,7 +83,7 @@ export default async function handler(req, res) {
             </p>
             <div style="background:#161616;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;margin-bottom:32px;">
               <p style="color:#9a9690;font-size:14px;margin-bottom:12px;">In the meantime, generate legal documents at:</p>
-              <a href="https://ebenova.dev" style="color:#c9a84c;font-weight:600;">ebenova.dev</a>
+              <a href="https://www.getsignova.com/scope-guard" style="color:#c9a84c;font-weight:600;">getsignova.com/scope-guard</a>
             </div>
             <hr style="border:none;border-top:1px solid #2a2a2a;margin:32px 0;"/>
             <p style="color:#5a5754;font-size:12px;">
