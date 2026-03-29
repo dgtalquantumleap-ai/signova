@@ -131,10 +131,6 @@ async function handleMessage(msg, apiKey) {
   return jsonrpcError(id, -32601, `Method not found: ${method}`)
 }
 
-export const config = {
-  api: { bodyParser: false },
-}
-
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
