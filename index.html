@@ -137,8 +137,8 @@
     </script>
 
     <!-- ══════════════════════════════════════════════════════════════════════
-         CRITICAL CSS — Inlined for instant LCP
-         Renders nav + hero title + top 3 cards before any external CSS loads
+         CRITICAL CSS — Inlined for instant LCP (targets <2.5s)
+         Renders nav + hero title + CTA + top 3 cards before any external CSS loads
          ══════════════════════════════════════════════════════════════════════ -->
     <style>
       /* Critical variables */
@@ -148,20 +148,23 @@
         --gold: #c9a84c;
         --text: #ffffff;
         --text2: #a0a0a0;
+        --text3: #666666;
         --border: rgba(255,255,255,0.1);
         --font-display: 'Playfair Display', Georgia, serif;
+        --radius: 12px;
       }
-      
+
       /* Reset */
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-      
+
       body {
         font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
         background: var(--bg);
         color: var(--text);
         -webkit-font-smoothing: antialiased;
+        line-height: 1.5;
       }
-      
+
       /* Nav — critical for layout shift prevention */
       .nav {
         position: fixed; top: 0; left: 0; right: 0; z-index: 100;
@@ -171,14 +174,41 @@
         border-bottom: 1px solid var(--border);
         height: 64px;
       }
-      
+      .nav-inner {
+        max-width: 1100px; margin: 0 auto;
+        display: flex; align-items: center; justify-content: space-between;
+        height: 64px;
+      }
+      .logo { display: flex; align-items: center; gap: 10px; }
+      .logo-mark {
+        width: 32px; height: 32px; border-radius: 8px;
+        background: var(--gold); color: #0e0e0e;
+        font-family: var(--font-display); font-size: 18px; font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .logo-text { font-family: var(--font-display); font-size: 20px; font-weight: 600; color: var(--text); }
+      .nav-links { display: flex; gap: 32px; }
+      .nav-links a { font-size: 14px; color: var(--text2); text-decoration: none; transition: color 0.2s; }
+      .nav-links a:hover { color: var(--text); }
+      .nav-cta-link { color: var(--gold) !important; font-weight: 600; }
+      .hamburger { display: none; background: none; border: none; cursor: pointer; }
+
       /* Hero — critical for LCP */
       .hero {
         position: relative;
         padding: 160px 24px 100px;
         text-align: center;
         min-height: 100vh;
+        contain: layout style;
       }
+      .hero-glow {
+        position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+        width: 800px; height: 600px; border-radius: 50%;
+        background: radial-gradient(ellipse, rgba(201,168,76,0.12) 0%, transparent 70%);
+        pointer-events: none; z-index: 0;
+        will-change: transform;
+      }
+      .hero-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
       
       .hero-title {
         font-family: var(--font-display);
@@ -187,28 +217,107 @@
         line-height: 1.15;
         color: var(--text);
         margin-bottom: 24px;
+        /* LCP FIX: Prevent font swap flash */
+        font-display: optional;
       }
       
+      .hero-sub {
+        font-size: 18px;
+        color: var(--text2);
+        line-height: 1.6;
+        margin-bottom: 32px;
+        max-width: 640px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      .hero-jurisdictions {
+        display: flex; align-items: center; justify-content: center; gap: 12px;
+        font-size: 14px; color: var(--text2); margin-bottom: 32px; flex-wrap: wrap;
+      }
+      .jurisdiction-divider { color: var(--border); }
+      .jurisdiction-more { color: var(--gold); }
+
+      /* Buttons — critical for CLS prevention */
+      .btn-primary {
+        background: var(--gold); color: #0e0e0e;
+        border: none; border-radius: var(--radius);
+        padding: 16px 32px; font-size: 16px; font-weight: 600;
+        cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+        display: inline-flex; align-items: center; gap: 8px;
+      }
+      .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,0.3); }
+      .btn-large { padding: 18px 40px; font-size: 18px; }
+      .btn-arrow { font-size: 20px; }
+
+      /* Top 3 cards — above the fold */
+      .hero-top3 {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+        margin-top: 48px;
+      }
+      .top3-card {
+        background: var(--bg2); border: 1px solid var(--border);
+        border-radius: var(--radius); padding: 24px;
+        display: flex; flex-direction: column; align-items: center; gap: 12px;
+        cursor: pointer; transition: border-color 0.2s;
+      }
+      .top3-card:hover { border-color: rgba(201,168,76,0.4); }
+      .top3-icon { font-size: 32px; }
+      .top3-name { font-size: 15px; font-weight: 600; color: var(--text); }
+      .top3-go { font-size: 13px; color: var(--gold); font-weight: 600; }
+      
+      .more-docs-link {
+        background: none; border: none; color: var(--text2);
+        font-size: 14px; cursor: pointer; margin-top: 24px;
+        text-decoration: underline; text-underline-offset: 4px;
+      }
+      .more-docs-link:hover { color: var(--text); }
+
       /* Mobile critical overrides */
-      @media (max-width: 640px) {
+      @media (max-width: 768px) {
+        .nav-links { display: none; }
+        .hamburger { display: block; width: 24px; height: 24px; position: relative; }
+        .ham-line {
+          position: absolute; width: 100%; height: 2px; background: var(--text);
+          transition: transform 0.3s;
+        }
+        .ham-line:nth-child(1) { top: 4px; }
+        .ham-line:nth-child(2) { top: 11px; }
+        .ham-line:nth-child(3) { top: 18px; }
         .hero { padding: 80px 16px 24px; min-height: auto; }
-        .hero-title { font-size: 24px !important; line-height: 1.2 !important; margin-bottom: 10px !important; }
+        .hero-title { font-size: 28px !important; line-height: 1.2 !important; margin-bottom: 16px !important; }
+        .hero-sub { font-size: 15px !important; line-height: 1.5 !important; }
+        .hero-top3 { grid-template-columns: 1fr; gap: 12px; margin-top: 32px; }
+        .btn-large { padding: 16px 24px; font-size: 16px; width: 100%; justify-content: center; }
       }
-      
+
       @media (max-width: 380px) {
         .hero { padding: 76px 12px 20px; }
-        .hero-title { font-size: 22px !important; }
+        .hero-title { font-size: 24px !important; }
+        .hero-sub { font-size: 14px !important; }
       }
     </style>
 
-    <!-- Fonts — non-blocking with font-display: swap -->
+    <!-- Fonts — optimized for LCP (font-display: swap, preload critical) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Preload Playfair Display 700 (hero headline font) — eliminates font-swap LCP delay -->
+    <!-- LCP FIX: Preload Playfair Display 700 only (hero headline) - eliminates FOUT -->
     <link rel="preload" as="font" type="font/woff2" crossorigin
       href="https://fonts.gstatic.com/s/playfairdisplay/v37/nuFiD-vYSZviVYUb_rj3ij__anPXDTzYhA.woff2">
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap"></noscript>
+    <!-- Load full font stylesheet non-blocking -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap"></noscript>
+    <!-- LCP FIX: Inline font-face for critical font to prevent layout shift -->
+    <style>
+      @font-face {
+        font-family: 'Playfair Display';
+        font-style: normal;
+        font-weight: 700;
+        font-display: optional;
+        src: url(https://fonts.gstatic.com/s/playfairdisplay/v37/nuFiD-vYSZviVYUb_rj3ij__anPXDTzYhA.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+    </style>
   </head>
   <body>
     <!-- Critical inline shell — renders instantly before JS loads, eliminates blank LCP -->

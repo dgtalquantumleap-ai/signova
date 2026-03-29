@@ -76,7 +76,7 @@ const DEFAULT_LAWYER_FEE = '$150–$400'
 function useGeo() {
   const [currency, setCurrency] = useState(DEFAULT_CURRENCY)
   const [countryCode, setCountryCode] = useState(null)
-  
+
   useEffect(() => {
     // Check cache first — synchronous, no network, safe to run immediately
     const cached = sessionStorage.getItem('sig_geo')
@@ -88,9 +88,9 @@ function useGeo() {
       } catch {}
       return
     }
-    
-    // FIX: Defer geo-detection until AFTER first paint + idle time
-    // This prevents the fetch from blocking LCP (was inflating to 8.9s)
+
+    // LCP FIX: Defer geo-detection until AFTER LCP fires (idle + 2s delay)
+    // This ensures the fetch never competes with LCP element rendering
     const doFetch = () => {
       fetch('https://ipapi.co/json/')
         .then(r => r.json())
@@ -106,19 +106,20 @@ function useGeo() {
         })
         .catch(() => {})
     }
-    
-    // Wait for idle + 1 second after page load to avoid impacting LCP
+
+    // LCP FIX: Wait for idle + 2 seconds after page load
+    // This ensures LCP element paints before any geo-related updates
     const timeoutId = setTimeout(() => {
       if (typeof requestIdleCallback !== 'undefined') {
         requestIdleCallback(doFetch, { timeout: 5000 })
       } else {
         doFetch()
       }
-    }, 1000)
-    
+    }, 2000) // Increased from 1000ms to 2000ms for better LCP
+
     return () => clearTimeout(timeoutId)
   }, [])
-  
+
   return { currency, countryCode }
 }
 
@@ -541,6 +542,7 @@ export default function Landing() {
       <section className="hero">
         <div className="hero-glow" />
         <div className="hero-inner">
+          {/* LCP FIX: fetchpriority="high" tells browser this is the LCP element */}
           <h1 className="hero-title" fetchpriority="high">
             Professional legal documents for freelancers, landlords, and businesses globally.
           </h1>
