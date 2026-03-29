@@ -1,6 +1,44 @@
-// api/mcp.js — HTTP MCP endpoint (Streamable HTTP, stateless, no Zod)
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
+// api/mcp.js — Minimal MCP HTTP handler (pure JSON-RPC, no SDK dependency)
+// Implements MCP Streamable HTTP transport manually for Vercel serverless
+
+const TOOLS = [
+  {
+    name: 'generate_legal_document',
+    description: 'Generate a professionally drafted legal document. 27 document types, 18 jurisdictions including Nigeria, UK, US, Canada, Ghana, Kenya, UAE and more.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        document_type: { type: 'string', description: 'Type of document e.g. nda, freelance-contract, tenancy-agreement, privacy-policy' },
+        fields: { type: 'object', description: 'Document-specific fields as key-value pairs', additionalProperties: true },
+        jurisdiction: { type: 'string', description: 'Governing jurisdiction e.g. Nigeria, United Kingdom, United States' },
+      },
+      required: ['document_type', 'fields'],
+    },
+  },
+  {
+    name: 'extract_from_conversation',
+    description: 'Extract structured legal document fields from a raw conversation (WhatsApp, email, chat). Optionally auto-generate the full document.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        conversation: { type: 'string', description: 'Raw conversation text, max 10,000 characters' },
+        target_document: { type: 'string', description: 'Target document type (AI suggests if omitted)' },
+        auto_generate: { type: 'boolean', description: 'If true, also generate the full document after extraction' },
+      },
+      required: ['conversation'],
+    },
+  },
+  {
+    name: 'list_document_types',
+    description: 'List all 27 supported legal document types grouped by category.',
+    inputSchema: { type: 'object', properties: {} },
+  },
+  {
+    name: 'check_usage',
+    description: 'Check how many documents have been generated this month and what quota remains.',
+    inputSchema: { type: 'object', properties: {} },
+  },
+]
 
 const API_BASE = 'https://www.getsignova.com'
 
@@ -30,100 +68,106 @@ async function getApi(path, key) {
   return r.json()
 }
 
-function buildServer(apiKey) {
-  const server = new McpServer({ name: 'ebenova-legal-docs', version: '1.0.0' })
+function jsonrpc(id, result) {
+  return { jsonrpc: '2.0', id, result }
+}
 
-  server.tool(
-    'generate_legal_document',
-    'Generate a professionally drafted legal document. 27 document types, 18 jurisdictions.',
-    {
-      type: 'object',
-      properties: {
-        document_type: { type: 'string', description: 'Type of document e.g. nda, freelance-contract, tenancy-agreement' },
-        fields: { type: 'object', description: 'Document fields as key-value pairs', additionalProperties: true },
-        jurisdiction: { type: 'string', description: 'Governing jurisdiction e.g. Nigeria, UK, US' },
-      },
-      required: ['document_type', 'fields'],
-    },
-    async ({ document_type, fields, jurisdiction }) => {
-      const data = await callApi('/v1/documents/generate', { document_type, fields, jurisdiction }, apiKey)
-      if (!data.success) return { content: [{ type: 'text', text: `Error: ${data.error?.message || 'Failed'}` }], isError: true }
-      return { content: [{ type: 'text', text: data.document }] }
-    }
-  )
+function jsonrpcError(id, code, message) {
+  return { jsonrpc: '2.0', id, error: { code, message } }
+}
 
-  server.tool(
-    'extract_from_conversation',
-    'Extract legal document fields from a raw conversation (WhatsApp, email, chat).',
-    {
-      type: 'object',
-      properties: {
-        conversation: { type: 'string', description: 'Raw conversation text, max 10,000 characters' },
-        target_document: { type: 'string', description: 'Target document type (AI suggests if omitted)' },
-        auto_generate: { type: 'boolean', description: 'If true, also generate the full document' },
-      },
-      required: ['conversation'],
-    },
-    async ({ conversation, target_document, auto_generate }) => {
-      const data = await callApi('/v1/extract/conversation', { conversation, target_document, auto_generate }, apiKey)
-      if (!data.success) return { content: [{ type: 'text', text: `Error: ${data.error?.message}` }], isError: true }
-      return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] }
-    }
-  )
+async function handleMessage(msg, apiKey) {
+  const { id, method, params } = msg
 
-  server.tool(
-    'list_document_types',
-    'List all 27 supported legal document types grouped by category.',
-    { type: 'object', properties: {} },
-    async () => {
-      const data = await getApi('/v1/documents/types', apiKey)
-      if (!data.success) return { content: [{ type: 'text', text: 'Error fetching types.' }], isError: true }
-      const lines = [`${data.total} document types:`]
-      for (const [cat, docs] of Object.entries(data.grouped || {})) {
-        lines.push(`\n${cat}:`)
-        for (const d of docs) lines.push(`  - ${d.type}: ${d.label}`)
+  if (method === 'initialize') {
+    return jsonrpc(id, {
+      protocolVersion: '2024-11-05',
+      capabilities: { tools: {} },
+      serverInfo: { name: 'ebenova-legal-docs', version: '1.0.0' },
+    })
+  }
+
+  if (method === 'notifications/initialized') return null
+
+  if (method === 'tools/list') {
+    return jsonrpc(id, { tools: TOOLS })
+  }
+
+  if (method === 'tools/call') {
+    const { name, arguments: args = {} } = params || {}
+    try {
+      let text = ''
+      if (name === 'generate_legal_document') {
+        const data = await callApi('/v1/documents/generate', args, apiKey)
+        text = data.success ? data.document : `Error: ${data.error?.message || 'Failed'}`
+      } else if (name === 'extract_from_conversation') {
+        const data = await callApi('/v1/extract/conversation', args, apiKey)
+        text = data.success ? JSON.stringify(data, null, 2) : `Error: ${data.error?.message}`
+      } else if (name === 'list_document_types') {
+        const data = await getApi('/v1/documents/types', apiKey)
+        if (data.success) {
+          const lines = [`${data.total} document types:`]
+          for (const [cat, docs] of Object.entries(data.grouped || {})) {
+            lines.push(`\n${cat}:`)
+            for (const d of docs) lines.push(`  - ${d.type}: ${d.label}`)
+          }
+          text = lines.join('\n')
+        } else { text = 'Error fetching types.' }
+      } else if (name === 'check_usage') {
+        const data = await getApi('/v1/keys/usage', apiKey)
+        if (data.success) {
+          const cm = data.current_month
+          text = `${cm.documents_used}/${cm.monthly_limit} used (${cm.documents_remaining} remaining)`
+        } else { text = `Error: ${data.error?.message}` }
+      } else {
+        return jsonrpcError(id, -32601, `Unknown tool: ${name}`)
       }
-      return { content: [{ type: 'text', text: lines.join('\n') }] }
+      return jsonrpc(id, { content: [{ type: 'text', text }] })
+    } catch (err) {
+      return jsonrpc(id, { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true })
     }
-  )
+  }
 
-  server.tool(
-    'check_usage',
-    'Check monthly document quota and remaining usage.',
-    { type: 'object', properties: {} },
-    async () => {
-      const data = await getApi('/v1/keys/usage', apiKey)
-      if (!data.success) return { content: [{ type: 'text', text: `Error: ${data.error?.message}` }], isError: true }
-      const cm = data.current_month
-      return { content: [{ type: 'text', text: `${cm.documents_used}/${cm.monthly_limit} used (${cm.documents_remaining} remaining)` }] }
-    }
-  )
-
-  return server
+  return jsonrpcError(id, -32601, `Method not found: ${method}`)
 }
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, mcp-session-id')
+
   if (req.method === 'OPTIONS') return res.status(200).end()
+  if (req.method === 'GET') {
+    return res.status(200).json({ name: 'ebenova-legal-docs', version: '1.0.0', protocol: 'MCP' })
+  }
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' })
+  }
 
   try {
     const apiKey = getApiKey(req)
-    const server = buildServer(apiKey)
-    const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined })
-    await server.connect(transport)
-
     let body = req.body
     if (typeof body === 'string') {
-      try { body = JSON.parse(body) } catch { body = undefined }
+      try { body = JSON.parse(body) } catch { body = {} }
     }
 
-    await transport.handleRequest(req, res, body)
-  } catch (err) {
-    console.error('[mcp] handler error:', err)
-    if (!res.headersSent) {
-      res.status(500).json({ error: err.message, stack: err.stack })
+    // Handle batch or single message
+    const messages = Array.isArray(body) ? body : [body]
+    const responses = []
+
+    for (const msg of messages) {
+      const response = await handleMessage(msg, apiKey)
+      if (response !== null) responses.push(response)
     }
+
+    res.setHeader('Content-Type', 'application/json')
+    if (responses.length === 0) return res.status(202).end()
+    if (responses.length === 1 && !Array.isArray(body)) {
+      return res.status(200).json(responses[0])
+    }
+    return res.status(200).json(responses)
+  } catch (err) {
+    console.error('[mcp] error:', err.message)
+    return res.status(500).json({ error: err.message })
   }
 }
