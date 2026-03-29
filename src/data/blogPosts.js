@@ -1397,6 +1397,88 @@ export const BLOG_POSTS = [
     cta: { label: 'Generate NDA Free →', href: '/generate/nda' }
   },
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SCOPE GUARD LAUNCH POSTS — Added March 29, 2026
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  {
+    slug: 'scope-guard-ai-contract-enforcement',
+    title: 'Introducing Scope Guard: AI-Powered Contract Enforcement for Freelancers',
+    description: 'Stop scope creep before it costs you. Scope Guard analyzes client messages against your contract and drafts professional responses in seconds.',
+    date: '2026-03-29',
+    readTime: '5 min read',
+    category: 'Product Launch',
+    keywords: 'scope creep AI, contract enforcement AI, freelance contract analyzer, AI response generator, scope guard freelancer',
+    sections: [
+      {
+        heading: 'The Problem: Scope Creep is Everywhere',
+        body: `You signed a contract for a 5-page website. Two weeks in, your client sends this message:\n\n"Hey! Can you also add a login page with user authentication? Shouldn't take long!"\n\nSound familiar? This is scope creep. And it's costing freelancers thousands of dollars every year. The problem isn't just the extra work — it's knowing:\n\n1. Is this actually outside my contract?\n2. How do I respond without damaging the relationship?\n3. What should I charge for this additional work?\n\nMost freelancers either say yes and work for free, say no awkwardly, or ghost the message. There's a better way.`
+      },
+      {
+        heading: 'Enter Scope Guard',
+        body: `Scope Guard is an AI-powered contract enforcement tool built specifically for freelancers. Here's how it works:\n\nStep 1: Upload Your Contract — Paste your freelance agreement, service contract, or any signed document. Scope Guard reads and understands the terms.\n\nStep 2: Paste the Client Message — Copy the client's email, WhatsApp message, Slack DM, or SMS — whatever channel they used.\n\nStep 3: Get Instant Analysis — Within seconds, Scope Guard tells you: Violation Detected (or not), Severity Level (LOW, MEDIUM, HIGH), Contract Reference (which clause applies), and 3 Professional Response Options ready to send.`
+      },
+      {
+        heading: 'What Scope Guard Detects',
+        body: `Scope Guard identifies 6 types of violations:\n\n• SCOPE — "Can you also build a blog section?"\n• REVISION — "Just one more round of changes!" (when limit reached)\n• TIMELINE — "Actually, we need this by Friday, not end of month."\n• PAYMENT — "We'll pay after the project is complete." (when deposit required)\n• IP — "We'll own all the code, including your reusable components."\n• TERMINATION — "If this isn't done by Friday, we're canceling." (no cause)`
+      },
+      {
+        heading: '3 Response Options, Always',
+        body: `For every violation, Scope Guard generates three professional responses:\n\n1. Friendly Pushback — Polite but clear — explains why this is additional work.\n2. Propose Change Order (Recommended) — Offers a formal change order with pricing and timeline.\n3. Firm Contract Reference — Cites the specific contract clause — for repeat offenders.\n\nYou choose the tone that fits your relationship.`
+      },
+      {
+        heading: 'Pricing: Free to Try',
+        body: `Free Tier: 3 free analyses, no account needed, all violation types, 3 response drafts.\n\nPro Tier: $9.99/month (early access — $19.99 after launch) — Unlimited analyses, 500 documents/month, contract storage, change order generation, 18 jurisdictions.\n\nFor Developers: Scope Guard is also available as an API. Starter ($29/mo): 50 analyses/month. Growth ($79/mo): 500 analyses/month. Scale ($199/mo): 2,000 analyses/month.`
+      },
+    ],
+    cta: { label: 'Try Scope Guard Free →', href: '/scope-guard' }
+  },
+
+  {
+    slug: 'how-to-stop-scope-creep-freelance',
+    title: 'How to Stop Scope Creep: 7 Proven Strategies for Freelancers',
+    description: 'Scope creep costs freelancers an average of 28% in unpaid work. Learn 7 battle-tested strategies to protect your time and get paid for every hour.',
+    date: '2026-03-29',
+    readTime: '8 min read',
+    category: 'Freelance',
+    keywords: 'scope creep freelancer, how to stop scope creep, freelance contract tips, change order template, client management',
+    sections: [
+      {
+        heading: 'The Scope Creep Epidemic',
+        body: `Here's what the data says:\n\n• 28% of freelance work goes unpaid due to scope creep (FreshBooks)\n• Average freelancer loses $11,000/year to unpaid scope additions\n• 64% of freelancers report stress from difficult client conversations\n• 1 in 3 projects experience significant scope expansion\n\nScope creep happens when a project's requirements gradually expand beyond the original agreement — without additional compensation. Individually, each request seems small. Together, they turn profitable projects into money-losing nightmares.`
+      },
+      {
+        heading: 'Strategy 1: Write a Detailed Contract (Not an Email)',
+        body: `Bad: "I'll build your website for $3,000. Let me know!"\n\nGood: List every page, every feature, every deliverable. Be specific about what is included AND what is excluded. Specificity prevents "I thought that was included" conversations.`
+      },
+      {
+        heading: 'Strategy 2: Define What Is NOT Included',
+        body: `Most contracts list what is included. Smart contracts also list what is excluded:\n\nOut of Scope: Login/user authentication systems, Third-party integrations not listed above, Content writing or copyediting, Stock photography licensing, Hosting setup or domain registration, Revisions beyond the 2 rounds included.\n\nWhen you explicitly exclude something, clients think twice before asking.`
+      },
+      {
+        heading: 'Strategy 3: Use Change Orders for Everything',
+        body: `The moment a client requests additional work, stop. Don't say "Sure, I can add that!" Do say: "Great idea! Let me send over a change order with the additional cost and timeline."\n\nA change order describes the additional work, states the additional cost, extends the timeline (if needed), and requires client signature before work begins. Clients often realize their "small request" isn't so small when there's a price tag.`
+      },
+      {
+        heading: 'Strategy 4: Respond Within 24 Hours (With a Template)',
+        body: `Don't let scope creep requests sit. The longer you wait, the harder it becomes to say no.\n\nUse this template: "Hi [Client], Thanks for reaching out about [request]! This sounds like a great addition to the project. Since it's outside our original scope, I'll send over a change order with the additional cost and timeline. Once you approve, I can get started right away."\n\nKey points: Acknowledge the request positively, state clearly it's outside scope, offer a path forward (change order), don't apologize for charging.`
+      },
+      {
+        heading: 'Strategy 5: Build a "Scope Creep Fund" Into Your Pricing',
+        body: `Here's a secret: Experienced freelancers know scope creep is inevitable. Solution: Add 15-20% buffer to your project price.\n\nExample: Project estimate: $3,000, Scope creep buffer (20%): $600, Total quote: $3,600.\n\nIf scope creep happens: You're covered. If it doesn't: You earned extra (or can offer a discount on the next project).`
+      },
+      {
+        heading: 'Strategy 6: Use AI to Analyze Messages Instantly',
+        body: `This is the new way. Tools like Scope Guard use AI to:\n\n• Compare client messages against your contract\n• Detect scope violations in seconds\n• Draft professional responses for you\n\nPaste your contract and client message. Get back: Violation detected (SCOPE, HIGH severity), Contract reference (Section 1.1), 3 response drafts (friendly, change order, firm).\n\nNo more second-guessing. The AI tells you objectively: This is outside your contract.`
+      },
+      {
+        heading: 'Strategy 7: Have the Conversation Early',
+        body: `Don't wait for scope creep to happen. In your kickoff call, say:\n\n"One thing I want to mention — sometimes during projects, clients think of additional features or changes. That's totally normal! When that happens, I'll send over a quick change order so we're both clear on the additional cost and timeline. That way, there are no surprises at the end."\n\nThis sets expectations upfront, makes change orders feel normal (not confrontational), and filters out clients who expect free work.`
+      },
+    ],
+    cta: { label: 'Try Scope Guard Free →', href: '/scope-guard' }
+  },
+
 ]
 
 export function getPostBySlug(slug) {
