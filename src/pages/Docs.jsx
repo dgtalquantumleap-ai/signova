@@ -34,6 +34,7 @@ export default function Docs() {
             <li><a href="#usage">Check Usage</a></li>
             <li><a href="#document-types">Document Type Reference</a></li>
             <li><a href="#sdk">SDKs &amp; MCP</a></li>
+            <li><a href="#billing">Billing API</a></li>
             <li><a href="#pricing">Pricing</a></li>
             <li><a href="#errors">Error Codes</a></li>
           </ul>
@@ -407,7 +408,10 @@ console.log(result.document)`}</pre>
               <li><em>"Generate an NDA between Acme Inc. and John Smith, 2 years, mutual, Nigerian law."</em></li>
               <li><em>"Create a freelance contract for a $5,000 web project."</em></li>
               <li><em>"Here's our WhatsApp conversation — turn it into a tenancy agreement."</em></li>
+              <li><em>"Create an invoice for Acme Corp — 3 hours consulting at $150/hour, due in 30 days."</em></li>
+              <li><em>"Generate a receipt for the $500 payment I received from John Smith."</em></li>
               <li><em>"What legal document types do you support?"</em></li>
+              <li><em>"How many documents have I generated this month?"</em></li>
             </ul>
 
             <p>
@@ -415,6 +419,55 @@ console.log(result.document)`}</pre>
               <a href="https://smithery.ai/server/ebenova/legal-docs" target="_blank" rel="noopener noreferrer">Smithery</a>.
               Source code on <a href="https://github.com/dgtalquantumleap-ai/legal-docs-mcp" target="_blank" rel="noopener noreferrer">GitHub</a>.
             </p>
+          </section>
+
+          {/* ── Billing ── */}
+          <section id="billing">
+            <h2>Billing API</h2>
+            <p>Programmatically create subscription checkouts for your users.</p>
+
+            <h3>Create Checkout Session</h3>
+            <p><code>POST /v1/billing/checkout</code></p>
+            <p>Creates a Stripe Checkout session and returns a URL to redirect users to.</p>
+
+            <h4>Request Body</h4>
+            <table className="docs-table">
+              <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>tier</code></td><td>string</td><td>Yes</td><td><code>starter</code>, <code>growth</code>, or <code>scale</code></td></tr>
+                <tr><td><code>email</code></td><td>string</td><td>No</td><td>Pre-fill customer email</td></tr>
+                <tr><td><code>success_url</code></td><td>string</td><td>No</td><td>Redirect URL after successful payment</td></tr>
+                <tr><td><code>cancel_url</code></td><td>string</td><td>No</td><td>Redirect URL if user cancels</td></tr>
+              </tbody>
+            </table>
+
+            <h4>Example</h4>
+            <pre className="code-block">{`curl -X POST https://api.ebenova.dev/v1/billing/checkout \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "tier": "starter",
+    "email": "user@example.com",
+    "success_url": "https://yourapp.com/success",
+    "cancel_url": "https://yourapp.com/pricing"
+  }'`}</pre>
+
+            <h4>Response</h4>
+            <pre className="code-block">{`{
+  "success": true,
+  "checkout_url": "https://checkout.stripe.com/c/pay/cs_live_...",
+  "session_id": "cs_live_...",
+  "tier": "starter",
+  "label": "Starter — 100 docs/month"
+}`}</pre>
+            <p>Redirect your user to <code>checkout_url</code> to complete payment.</p>
+
+            <h3>Customer Portal</h3>
+            <p><code>POST /v1/billing/portal</code> (requires authentication)</p>
+            <p>Creates a Stripe Customer Portal session for managing subscriptions, updating payment methods, and viewing invoices.</p>
+            <pre className="code-block">{`curl -X POST https://api.ebenova.dev/v1/billing/portal \\
+  -H "Authorization: Bearer sk_live_your_api_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{ "return_url": "https://yourapp.com/dashboard" }'`}</pre>
           </section>
 
           {/* ── Pricing ── */}

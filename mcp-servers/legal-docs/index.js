@@ -17,7 +17,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod'
 
-const API_BASE = process.env.EBENOVA_API_BASE || 'https://www.getsignova.com'
+const API_BASE = process.env.EBENOVA_API_BASE || 'https://api.ebenova.dev'
 const API_KEY = process.env.EBENOVA_API_KEY || ''
 
 if (!API_KEY) {

@@ -79,7 +79,7 @@ export default function ScopeGuard() {
       <Helmet>
         <title>Scope Guard — Stop Scope Creep Before It Costs You | Signova</title>
         <meta name="description" content="Scope Guard detects when client requests violate your contract and auto-drafts professional responses. Coming April 2026. Join the waitlist for early access." />
-        <link rel="canonical" href="https://ebenova.dev/scope-guard" />
+        <link rel="canonical" href="https://www.getsignova.com/scope-guard" />
         <meta property="og:title" content="Scope Guard — AI-powered contract enforcement for freelancers" />
         <meta property="og:description" content="Paste a client message. Scope Guard reads your contract, detects the violation, and drafts your response in seconds." />
       </Helmet>
@@ -87,10 +87,10 @@ export default function ScopeGuard() {
       {/* Nav */}
       <nav className="sg-nav">
         <div className="sg-logo" onClick={() => navigate('/')}>
-          <span className="sg-logo-mark">E</span>
-          <span className="sg-logo-text">ebenova.dev</span>
+          <span className="sg-logo-mark">S</span>
+          <span className="sg-logo-text">Signova</span>
         </div>
-        <a href="/docs" className="sg-nav-link">Docs</a>
+        <a href="https://www.getsignova.com" className="sg-nav-link">← Back to Signova</a>
       </nav>
 
       {/* Hero */}
@@ -337,14 +337,14 @@ export default function ScopeGuard() {
       {/* Footer */}
       <footer className="sg-footer">
         <div className="sg-logo" onClick={() => navigate('/')}>
-          <span className="sg-logo-mark">E</span>
-          <span className="sg-logo-text">ebenova.dev</span>
+          <span className="sg-logo-mark">S</span>
+          <span className="sg-logo-text">Signova</span>
         </div>
         <div className="sg-footer-links">
-          <a href="/">Home</a>
-          <a href="/docs">Docs</a>
-          <a href="https://www.getsignova.com">Signova</a>
-          <a href="mailto:api@ebenova.dev">Contact</a>
+          <a href="https://www.getsignova.com">Home</a>
+          <a href="https://www.getsignova.com/#documents">Documents</a>
+          <a href="https://ebenova.dev/docs">API Docs</a>
+          <a href="mailto:hello@getsignova.com">Contact</a>
         </div>
         <p className="sg-footer-copy">© 2026 Ebenova Solutions · Calgary, Alberta</p>
       </footer>

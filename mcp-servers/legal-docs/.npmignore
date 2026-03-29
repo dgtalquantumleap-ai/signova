@@ -1,0 +1,16 @@
+# Exclude everything that users don't need when running the MCP server
+.smithery/
+.git/
+node_modules/
+*.map
+NEXT_STEPS.md
+PUBLISH_FINAL_STEPS.md
+PUBLISH_MANUAL.md
+PUBLISH_NOW.md
+README_SMITHERY.md
+SMITHERY_PUBLISHING_GUIDE.md
+SOCIAL_MEDIA_KIT.md
+publish-to-smithery.bat
+smithery.yaml
+.gitignore
+.npmignore

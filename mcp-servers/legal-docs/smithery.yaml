@@ -40,13 +40,19 @@ configSchema:
 
 # Installation methods
 installation:
-  npm: "npx -y @ebenova/legal-docs-mcp"
+  npm: "npx -y ebenova-legal-docs"
   docker: "docker run -e EBENOVA_API_KEY=your_key ebenova/legal-docs-mcp"
   claude_desktop:
     command: npx
-    args: ["-y", "@ebenova/legal-docs-mcp"]
+    args: ["-y", "ebenova-legal-docs"]
     env:
       EBENOVA_API_KEY: "sk_live_your_key"
+
+# Runtime configuration (for Docker deployment)
+startCommand: "node index.js"
+entryPoint: "index.js"
+runtime: nodejs
+buildCommand: ""
 
 # Tool capabilities
 capabilities:

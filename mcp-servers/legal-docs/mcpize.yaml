@@ -1,0 +1,20 @@
+# MCPize Configuration
+# Docs: https://mcpize.com/docs/mcpize-yaml
+
+version: 1
+
+name: "Ebenova Legal Docs"
+slug: "ebenova-legal-docs"
+
+runtime: typescript
+
+build:
+  install: "npm install"
+  command: "npm run build"
+
+start:
+  type: stdio
+  command: "node dist/index.js"
+
+bridge:
+  mode: stdio

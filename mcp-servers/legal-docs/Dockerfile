@@ -1,6 +1,18 @@
 FROM node:22-alpine
+
 WORKDIR /app
+
 COPY package*.json ./
-RUN npm ci --only=production --ignore-scripts
+
+RUN npm install
+
 COPY . .
-CMD ["node", "index.js"]
+
+# Runtime environment
+ENV EBENOVA_API_KEY=""
+ENV EBENOVA_API_BASE="https://api.ebenova.dev"
+ENV NODE_ENV="production"
+
+EXPOSE 3000
+
+CMD ["node", "src/index.js"]

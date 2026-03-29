@@ -1,15 +1,14 @@
 {
-  "name": "@ebenova/legal-docs-mcp",
-  "version": "1.0.0",
-  "description": "MCP server for the Ebenova Legal Document API. Generate NDAs, contracts, tenancy agreements and 24 more document types across 18 jurisdictions — directly from Claude Desktop, Cursor, or any MCP-compatible AI client.",
+  "name": "ebenova-legal-docs-mcp",
+  "version": "1.1.0",
+  "description": "MCP server for the Ebenova API. Generate legal documents (NDAs, contracts, tenancy agreements), invoices, and receipts — directly from Claude Desktop, Cursor, or any MCP-compatible AI assistant.",
   "type": "module",
-  "main": "index.js",
-  "module": "src/index.js",
+  "main": "src/index.js",
   "bin": {
-    "ebenova-legal-docs-mcp": "index.js"
+    "ebenova-legal-docs-mcp": "src/index.js"
   },
   "scripts": {
-    "start": "node index.js",
+    "start": "node src/index.js",
     "publish:smithery": "smithery publish"
   },
   "dependencies": {
@@ -23,6 +22,9 @@
     "contracts",
     "nda",
     "tenancy",
+    "invoice",
+    "receipt",
+    "billing",
     "africa",
     "nigeria",
     "ebenova",

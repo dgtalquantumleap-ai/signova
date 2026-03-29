@@ -36,6 +36,8 @@ tags:
     description: Extract structured fields from raw conversations
   - name: Keys
     description: API key management
+  - name: Billing
+    description: Subscription checkout and customer portal
 
 paths:
 
@@ -242,6 +244,80 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UsageResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /v1/billing/checkout:
+    post:
+      operationId: createCheckoutSession
+      summary: Create a subscription checkout session
+      description: |
+        Creates a Stripe Checkout session for subscribing to an API plan.
+        Returns a checkout URL — redirect your user there to complete payment.
+        No authentication required.
+      tags: [Billing]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckoutRequest'
+            examples:
+              starter:
+                summary: Subscribe to Starter plan
+                value:
+                  tier: starter
+                  email: user@example.com
+                  success_url: https://yourapp.com/success
+                  cancel_url: https://yourapp.com/pricing
+      responses:
+        '200':
+          description: Checkout session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckoutResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /v1/billing/portal:
+    post:
+      operationId: createPortalSession
+      summary: Create a customer portal session
+      description: |
+        Creates a Stripe Customer Portal session for managing subscriptions.
+        Requires authentication. The API key must be linked to a Stripe customer.
+      tags: [Billing]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                return_url:
+                  type: string
+                  description: URL to redirect after portal session
+                  example: https://yourapp.com/dashboard
+      responses:
+        '200':
+          description: Portal session created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  portal_url:
+                    type: string
+                    description: URL to redirect user to Stripe portal
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -561,6 +637,49 @@ components:
         generated_at:
           type: string
           format: date-time
+
+    CheckoutRequest:
+      type: object
+      required: [tier]
+      properties:
+        tier:
+          type: string
+          enum: [starter, growth, scale]
+          description: Subscription tier to checkout
+          example: starter
+        email:
+          type: string
+          description: Pre-fill customer email in checkout form
+          example: user@example.com
+        success_url:
+          type: string
+          description: Redirect URL after successful payment
+          default: https://ebenova.dev/dashboard?subscribed=1
+        cancel_url:
+          type: string
+          description: Redirect URL if user cancels
+          default: https://ebenova.dev/pricing
+
+    CheckoutResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        checkout_url:
+          type: string
+          description: Stripe Checkout URL — redirect user here
+          example: https://checkout.stripe.com/c/pay/cs_live_...
+        session_id:
+          type: string
+          description: Stripe session ID for verification
+          example: cs_live_a1b2c3...
+        tier:
+          type: string
+          example: starter
+        label:
+          type: string
+          description: Human-readable tier description
+          example: "Starter — 100 docs/month"
 
     Error:
       type: object

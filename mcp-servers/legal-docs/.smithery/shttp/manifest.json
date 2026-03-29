@@ -1,0 +1,186 @@
+{
+  "payload": {
+    "type": "hosted",
+    "stateful": false,
+    "hasAuthAdapter": false,
+    "serverCard": {
+      "serverInfo": {
+        "name": "ebenova-legal-docs",
+        "version": "1.0.0"
+      },
+      "tools": [
+        {
+          "name": "generate_legal_document",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "document_type": {
+                    "type": "string",
+                    "enum": [
+                      "nda",
+                      "freelance-contract",
+                      "service-agreement",
+                      "consulting-agreement",
+                      "independent-contractor",
+                      "business-partnership",
+                      "joint-venture",
+                      "distribution-agreement",
+                      "supply-agreement",
+                      "business-proposal",
+                      "purchase-agreement",
+                      "employment-offer-letter",
+                      "non-compete-agreement",
+                      "loan-agreement",
+                      "payment-terms-agreement",
+                      "shareholder-agreement",
+                      "hire-purchase",
+                      "tenancy-agreement",
+                      "quit-notice",
+                      "deed-of-assignment",
+                      "power-of-attorney",
+                      "landlord-agent-agreement",
+                      "facility-manager-agreement",
+                      "privacy-policy",
+                      "terms-of-service",
+                      "mou",
+                      "letter-of-intent"
+                    ],
+                    "description": "The type of legal document to generate"
+                  },
+                  "fields": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    },
+                    "description": "Document-specific fields as key-value pairs. Include all relevant parties, terms, dates, and conditions."
+                  },
+                  "jurisdiction": {
+                    "type": "string",
+                    "description": "Governing law / jurisdiction, e.g. \"Nigeria\", \"United States — California\", \"United Kingdom\""
+                  }
+                },
+                "required": [
+                  "document_type",
+                  "fields"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "inputSchema"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "execution": {
+            "taskSupport": "forbidden"
+          }
+        },
+        {
+          "name": "extract_from_conversation",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "conversation": {
+                    "type": "string",
+                    "description": "The raw conversation text — WhatsApp, email, or any chat format. Max 10,000 characters."
+                  },
+                  "target_document": {
+                    "type": "string",
+                    "description": "The document type to extract fields for. If omitted, the AI will suggest the best type."
+                  },
+                  "auto_generate": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If true, generate the full document after extraction (counts as 1 document against your quota)."
+                  }
+                },
+                "required": [
+                  "conversation"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "inputSchema"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "execution": {
+            "taskSupport": "forbidden"
+          }
+        },
+        {
+          "name": "list_document_types",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "inputSchema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "inputSchema"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "execution": {
+            "taskSupport": "forbidden"
+          }
+        },
+        {
+          "name": "check_usage",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "inputSchema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "inputSchema"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "execution": {
+            "taskSupport": "forbidden"
+          }
+        }
+      ],
+      "resources": [],
+      "prompts": []
+    },
+    "source": {
+      "commit": "41b7f077df7a4f16ed8183a356d609e2da3f0e56",
+      "branch": "main"
+    }
+  },
+  "artifacts": {
+    "module": "module.js",
+    "sourcemap": "module.js.map"
+  },
+  "name": "ebenova-legal-docs"
+}

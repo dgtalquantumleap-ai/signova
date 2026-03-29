@@ -1,0 +1,52 @@
+{
+  "$schema": "https://glama.ai/mcp/glama-schema.json",
+  "name": "Ebenova Legal Docs MCP",
+  "description": "Generate professionally drafted legal documents via AI — NDAs, freelance contracts, tenancy agreements, privacy policies, and 23 more document types across 18 jurisdictions including Nigeria, Kenya, Ghana, UK, US, and Canada. Also extracts document fields from WhatsApp and email conversations.",
+  "version": "1.0.2",
+  "license": "MIT",
+  "homepage": "https://ebenova.dev",
+  "repository": "https://github.com/dgtalquantumleap-ai/legal-docs-mcp",
+  "author": {
+    "name": "Ebenova Solutions",
+    "email": "api@ebenova.dev",
+    "url": "https://ebenova.dev"
+  },
+  "categories": [
+    "legal",
+    "documents",
+    "business",
+    "productivity",
+    "africa"
+  ],
+  "tools": [
+    {
+      "name": "generate_legal_document",
+      "description": "Generate a professionally drafted legal document. 27 types across 18 jurisdictions."
+    },
+    {
+      "name": "extract_from_conversation",
+      "description": "Extract structured legal document fields from a WhatsApp, email, or chat conversation."
+    },
+    {
+      "name": "list_document_types",
+      "description": "List all 27 supported legal document types grouped by category."
+    },
+    {
+      "name": "check_usage",
+      "description": "Check monthly document quota usage and remaining documents."
+    }
+  ],
+  "secrets": [
+    {
+      "name": "EBENOVA_API_KEY",
+      "description": "Your Ebenova API key. Get a free key at https://ebenova.dev/dashboard",
+      "required": true
+    }
+  ],
+  "installation": {
+    "npm": "npx -y ebenova-legal-docs-mcp",
+    "env": {
+      "EBENOVA_API_KEY": "sk_live_your_key_here"
+    }
+  }
+}
