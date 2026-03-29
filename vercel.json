@@ -44,6 +44,16 @@
     },
     {
       "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.ebenova.dev" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "api.ebenova.dev" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ],
