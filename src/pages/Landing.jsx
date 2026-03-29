@@ -523,6 +523,7 @@ export default function Landing() {
           <div className={`nav-links ${navOpen ? 'open' : ''}`}>
             <a href="#documents" onClick={closeNav} aria-label="Browse documents">Documents</a>
             <a href="#how" onClick={closeNav} aria-label="How Signova works">How it works</a>
+            <a href="/scope-guard" onClick={closeNav} aria-label="Protect against scope creep">Scope Guard</a>
             <a href="#faq" onClick={closeNav} aria-label="Frequently asked questions">FAQ</a>
             <a href="/blog" onClick={closeNav} aria-label="Read our blog">Blog</a>
             <a href="#documents" onClick={closeNav} className="nav-cta-link" aria-label="Start generating your document">Start free →</a>
@@ -791,6 +792,7 @@ export default function Landing() {
           <div className="footer-links">
             <a href="/privacy">Privacy Policy</a>
             <a href="/terms">Terms of Service</a>
+            <a href="/scope-guard">Scope Guard</a>
             <a href="/contact">Contact</a>
           </div>
           <p className="footer-disc">

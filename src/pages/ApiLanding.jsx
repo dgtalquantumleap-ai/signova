@@ -16,6 +16,16 @@ const API_CARDS = [
     link: '/docs#generate',
   },
   {
+    id: 'scope-guard',
+    icon: '🛡️',
+    title: 'Scope Guard API',
+    desc: 'AI-powered contract enforcement. Detect scope violations and generate professional responses or change orders.',
+    features: ['Violation detection', '3 response drafts', 'Change order generation', 'Pro tier required'],
+    endpoint: 'POST /v1/scope/analyze',
+    cta: 'View API Docs',
+    link: '/docs#scope-guard',
+  },
+  {
     id: 'invoices',
     icon: '🧾',
     title: 'Invoice & Receipt API',
@@ -460,6 +470,7 @@ export default function ApiLanding() {
             <div className="footer-col">
               <h4>Product</h4>
               <a href="#apis">APIs</a>
+              <a href="/docs#scope-guard">Scope Guard API</a>
               <a href="#pricing">Pricing</a>
               <a href="#mcp">MCP Servers</a>
               <a href="/docs">Documentation</a>
