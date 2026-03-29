@@ -150,6 +150,15 @@ export default async function handler(req, res) {
     if (typeof body === 'string') {
       try { body = JSON.parse(body) } catch { body = {} }
     }
+    // Vercel may not parse body for ESM functions — manually read stream if needed
+    if (!body || (typeof body === 'object' && Object.keys(body).length === 0)) {
+      body = await new Promise((resolve) => {
+        let raw = ''
+        req.on('data', chunk => { raw += chunk })
+        req.on('end', () => { try { resolve(JSON.parse(raw)) } catch { resolve({}) } })
+        req.on('error', () => resolve({}))
+      })
+    }
 
     // Handle batch or single message
     const messages = Array.isArray(body) ? body : [body]
