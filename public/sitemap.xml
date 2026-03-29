@@ -200,6 +200,27 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- Scope Guard -->
+  <url>
+    <loc>https://www.getsignova.com/scope-guard</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Scope Guard -->
+  <url>
+    <loc>https://www.getsignova.com/scope-guard</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Scope Guard -->
+  <url>
+    <loc>https://www.getsignova.com/scope-guard</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
   <!-- Blog -->
   <url>
     <loc>https://www.getsignova.com/blog</loc>
