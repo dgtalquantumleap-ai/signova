@@ -34,6 +34,8 @@ tags:
     description: Generate invoices, receipts, proformas and credit notes
   - name: Extraction
     description: Extract structured fields from raw conversations
+  - name: Scope Guard
+    description: AI-powered contract enforcement and scope violation detection
   - name: Keys
     description: API key management
   - name: Billing
@@ -162,6 +164,116 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /v1/scope/analyze:
+    post:
+      operationId: analyzeScopeViolation
+      summary: Analyze message for scope violations
+      description: |
+        Analyzes a client message against your contract to detect scope violations.
+        Returns violation details, severity, and 3 professional response drafts.
+
+        **Pro Tier Required:** Available on Growth, Scale, and Enterprise plans only.
+      tags: [Scope Guard]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScopeAnalyzeRequest'
+            examples:
+              analyze:
+                summary: Analyze client message
+                value:
+                  contract_text: "SCOPE OF WORK: Website design with 5 pages, 2 rounds of revisions included..."
+                  client_message: "Can you also add a blog section? Shouldn't take long."
+                  communication_channel: email
+      responses:
+        '200':
+          description: Analysis successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScopeAnalyzeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Pro tier required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error:
+                  code: PRO_REQUIRED
+                  message: Scope Guard requires a Pro plan (Growth, Scale, or Enterprise)
+                  hint: Upgrade at https://ebenova.dev/pricing
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /v1/scope/change-order:
+    post:
+      operationId: generateChangeOrder
+      summary: Generate change order document
+      description: |
+        Generates a formal change order document for additional work requested by the client.
+        Returns a professionally formatted document ready to send.
+
+        **Pro Tier Required:** Available on Growth, Scale, and Enterprise plans only.
+      tags: [Scope Guard]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeOrderRequest'
+            examples:
+              change_order:
+                summary: Generate change order
+                value:
+                  additional_work: "Blog section with 3 template pages, CMS integration, and SEO optimization"
+                  additional_cost: 640
+                  freelancer_name: "Acme Design Studio"
+                  client_name: "TechCorp Inc."
+                  currency: USD
+                  timeline_extension_days: 5
+                  jurisdiction: "United States - California"
+      responses:
+        '200':
+          description: Change order generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangeOrderResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Pro tier required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error:
+                  code: PRO_REQUIRED
+                  message: Scope Guard requires a Pro plan
+                  hint: Upgrade at https://ebenova.dev/pricing
         '429':
           $ref: '#/components/responses/RateLimited'
         '500':
@@ -680,6 +792,198 @@ components:
           type: string
           description: Human-readable tier description
           example: "Starter — 100 docs/month"
+
+    ScopeAnalyzeRequest:
+      type: object
+      required: [contract_text, client_message]
+      properties:
+        contract_text:
+          type: string
+          description: The full contract text (min 50 characters, max 50,000)
+          example: "SCOPE OF WORK: Website design with 5 pages, 2 rounds of revisions included..."
+          minLength: 50
+          maxLength: 50000
+        client_message:
+          type: string
+          description: The client message to analyze for scope violations
+          example: "Can you also add a blog section? Shouldn't take long."
+        communication_channel:
+          type: string
+          description: Channel where the message was received
+          enum: [email, whatsapp, slack, sms, other]
+          default: email
+          example: email
+
+    ScopeAnalyzeResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        violation_detected:
+          type: boolean
+          description: true if scope violations were found
+          example: true
+        violations:
+          type: array
+          description: List of detected violations
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [SCOPE, REVISION, TIMELINE, PAYMENT, IP, TERMINATION]
+                example: SCOPE
+              severity:
+                type: string
+                enum: [LOW, MEDIUM, HIGH]
+                example: MEDIUM
+              description:
+                type: string
+                description: Clear explanation of the violation
+                example: "Client requesting blog section not included in original scope"
+              contract_reference:
+                type: string
+                description: Section or clause reference if identifiable
+                example: "Section 1.1 - Scope of Work"
+              client_claim:
+                type: string
+                description: What the client is requesting
+                example: "Add blog section"
+        response_options:
+          type: array
+          description: 3 professional response drafts
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [PUSHBACK, CHANGE_ORDER, FIRM]
+                example: CHANGE_ORDER
+              label:
+                type: string
+                example: "Propose Change Order"
+              draft:
+                type: string
+                description: Full response draft text
+                example: "Hi [Client], I'd be happy to add a blog section..."
+              recommended:
+                type: boolean
+                example: true
+        suggested_change_order:
+          type: object
+          nullable: true
+          description: Suggested change order if applicable
+          properties:
+            applicable:
+              type: boolean
+              example: true
+            additional_work_description:
+              type: string
+              example: "Blog section design and development"
+            estimated_hours:
+              type: integer
+              example: 8
+            suggested_cost_usd:
+              type: number
+              example: 640
+            timeline_extension_days:
+              type: integer
+              example: 5
+        summary:
+          type: string
+          description: One sentence summary
+          example: "Scope violation detected: additional work requested."
+        usage:
+          $ref: '#/components/schemas/UsageBlock'
+        meta:
+          type: object
+          properties:
+            contract_length:
+              type: integer
+              example: 1500
+            message_length:
+              type: integer
+              example: 52
+            channel:
+              type: string
+              example: email
+
+    ChangeOrderRequest:
+      type: object
+      required: [additional_work, additional_cost]
+      properties:
+        additional_work:
+          type: string
+          description: Description of the additional work requested
+          example: "Blog section with 3 template pages, CMS integration, and SEO optimization"
+        additional_cost:
+          type: number
+          description: Additional cost in specified currency
+          example: 640
+        freelancer_name:
+          type: string
+          description: Freelancer/service provider name
+          example: "Acme Design Studio"
+        client_name:
+          type: string
+          description: Client name
+          example: "TechCorp Inc."
+        currency:
+          type: string
+          description: Currency code
+          default: USD
+          example: USD
+        timeline_extension_days:
+          type: integer
+          description: Additional days needed
+          example: 5
+        jurisdiction:
+          type: string
+          description: Governing law
+          default: International
+          example: "United States - California"
+
+    ChangeOrderResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        document:
+          type: string
+          description: Full change order document text
+          example: "CHANGE ORDER #1\n\nThis Change Order modifies the original agreement..."
+        change_order_details:
+          type: object
+          properties:
+            freelancer_name:
+              type: string
+              example: "Acme Design Studio"
+            client_name:
+              type: string
+              example: "TechCorp Inc."
+            additional_work:
+              type: string
+              example: "Blog section with 3 template pages..."
+            additional_cost:
+              type: number
+              example: 640
+            currency:
+              type: string
+              example: USD
+            timeline_extension_days:
+              type: integer
+              example: 5
+            jurisdiction:
+              type: string
+              example: "United States - California"
+            generated_at:
+              type: string
+              format: date-time
+              example: "2026-03-29T12:00:00Z"
+        usage:
+          $ref: '#/components/schemas/UsageBlock'
 
     Error:
       type: object

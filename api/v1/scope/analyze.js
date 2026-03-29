@@ -3,7 +3,7 @@
 // Analyzes a client message against a contract for scope violations.
 // Pro tier required.
 
-import { authenticate } from '../../../lib/api-auth.js'
+import { authenticate, recordUsage, buildUsageBlock } from '../../../lib/api-auth.js'
 
 const PRO_TIERS = ['growth', 'scale', 'enterprise']
 
@@ -155,6 +155,8 @@ export default async function handler(req, res) {
       throw new Error('Failed to parse AI response')
     }
 
+    await recordUsage(auth)
+
     return res.status(200).json({
       success: true,
       violation_detected: result.violation_detected,
@@ -162,6 +164,7 @@ export default async function handler(req, res) {
       response_options: result.response_options || [],
       suggested_change_order: result.suggested_change_order || null,
       summary: result.summary || '',
+      usage: buildUsageBlock(auth),
       meta: {
         contract_length: contract_text.length,
         message_length: client_message.length,

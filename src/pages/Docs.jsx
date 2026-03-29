@@ -31,6 +31,7 @@ export default function Docs() {
             <li><a href="#invoices">Generate Invoice</a></li>
             <li><a href="#types">List Document Types</a></li>
             <li><a href="#extract">Extract from Conversation</a></li>
+            <li><a href="#scope-guard">Scope Guard API</a></li>
             <li><a href="#usage">Check Usage</a></li>
             <li><a href="#document-types">Document Type Reference</a></li>
             <li><a href="#sdk">SDKs &amp; MCP</a></li>
@@ -284,6 +285,156 @@ export default function Docs() {
   },
   "missing_fields": ["paymentSchedule", "cautionDeposit", "utilities"]
 }`}</pre>
+          </section>
+
+          {/* ── Scope Guard API ── */}
+          <section id="scope-guard">
+            <h2>Scope Guard API</h2>
+            <p>
+              AI-powered contract enforcement. Analyze client messages for scope violations and generate
+              professional responses or change orders.
+            </p>
+            <p>
+              <strong>Pro Tier Required:</strong> Scope Guard is available on Growth, Scale, and Enterprise plans only.
+            </p>
+
+            <h3>Analyze Message for Violations</h3>
+            <p><code>POST /v1/scope/analyze</code></p>
+            <p>
+              Analyzes a client message against your contract to detect scope violations.
+              Returns violation details, severity, and 3 professional response drafts.
+            </p>
+
+            <h4>Request Body</h4>
+            <table className="docs-table">
+              <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>contract_text</code></td><td>string</td><td>Yes</td><td>The full contract text (min 50 chars, max 50,000)</td></tr>
+                <tr><td><code>client_message</code></td><td>string</td><td>Yes</td><td>The client's message to analyze</td></tr>
+                <tr><td><code>communication_channel</code></td><td>string</td><td>No</td><td>Channel type: email, whatsapp, slack, sms, other (default: email)</td></tr>
+              </tbody>
+            </table>
+
+            <h4>Example Request</h4>
+            <pre className="code-block">{`curl -X POST https://api.ebenova.dev/v1/scope/analyze \\
+  -H "Authorization: Bearer sk_live_your_api_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "contract_text": "SCOPE OF WORK: Website design with 5 pages, 2 rounds of revisions included...",
+    "client_message": "Can you also add a blog section? Shouldn't take long.",
+    "communication_channel": "email"
+  }'`}</pre>
+
+            <h4>Response</h4>
+            <table className="docs-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>success</code></td><td>boolean</td><td>true if analysis successful</td></tr>
+                <tr><td><code>violation_detected</code></td><td>boolean</td><td>true if scope violations found</td></tr>
+                <tr><td><code>violations</code></td><td>array</td><td>List of detected violations with type, severity, description</td></tr>
+                <tr><td><code>response_options</code></td><td>array</td><td>3 professional response drafts (PUSHBACK, CHANGE_ORDER, FIRM)</td></tr>
+                <tr><td><code>suggested_change_order</code></td><td>object</td><td>Suggested change order details if applicable</td></tr>
+                <tr><td><code>summary</code></td><td>string</td><td>One sentence summary of analysis</td></tr>
+                <tr><td><code>usage</code></td><td>object</td><td>Usage stats (documents remaining)</td></tr>
+              </tbody>
+            </table>
+
+            <h4>Example Response</h4>
+            <pre className="code-block">{`{
+  "success": true,
+  "violation_detected": true,
+  "violations": [
+    {
+      "type": "SCOPE",
+      "severity": "MEDIUM",
+      "description": "Client requesting blog section not included in original scope",
+      "contract_reference": "Section 1.1 - Scope of Work"
+    }
+  ],
+  "response_options": [
+    {
+      "type": "CHANGE_ORDER",
+      "label": "Propose Change Order",
+      "draft": "Hi [Client], I'd be happy to add a blog section...",
+      "recommended": true
+    }
+  ],
+  "suggested_change_order": {
+    "applicable": true,
+    "additional_work_description": "Blog section design and development",
+    "estimated_hours": 8,
+    "suggested_cost_usd": 640
+  },
+  "summary": "Scope violation detected: additional work requested.",
+  "usage": {
+    "documents_used": 1,
+    "documents_remaining": 499,
+    "monthly_limit": 500,
+    "resets_at": "2026-04-01T00:00:00Z"
+  }
+}`}</pre>
+
+            <h3>Generate Change Order</h3>
+            <p><code>POST /v1/scope/change-order</code></p>
+            <p>
+              Generates a formal change order document for additional work requested by the client.
+              Returns a professionally formatted document ready to send.
+            </p>
+
+            <h4>Request Body</h4>
+            <table className="docs-table">
+              <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>additional_work</code></td><td>string</td><td>Yes</td><td>Description of the additional work requested</td></tr>
+                <tr><td><code>additional_cost</code></td><td>number</td><td>Yes</td><td>Additional cost in USD (or specified currency)</td></tr>
+                <tr><td><code>freelancer_name</code></td><td>string</td><td>No</td><td>Your name/company name</td></tr>
+                <tr><td><code>client_name</code></td><td>string</td><td>No</td><td>Client's name/company name</td></tr>
+                <tr><td><code>currency</code></td><td>string</td><td>No</td><td>Currency code (default: USD)</td></tr>
+                <tr><td><code>timeline_extension_days</code></td><td>number</td><td>No</td><td>Additional days needed for the work</td></tr>
+                <tr><td><code>jurisdiction</code></td><td>string</td><td>No</td><td>Governing law (default: International)</td></tr>
+              </tbody>
+            </table>
+
+            <h4>Example Request</h4>
+            <pre className="code-block">{`curl -X POST https://api.ebenova.dev/v1/scope/change-order \\
+  -H "Authorization: Bearer sk_live_your_api_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "additional_work": "Blog section with 3 template pages, CMS integration, and SEO optimization",
+    "additional_cost": 640,
+    "freelancer_name": "Acme Design Studio",
+    "client_name": "TechCorp Inc.",
+    "currency": "USD",
+    "timeline_extension_days": 5,
+    "jurisdiction": "United States - California"
+  }'`}</pre>
+
+            <h4>Response</h4>
+            <table className="docs-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>success</code></td><td>boolean</td><td>true if generation successful</td></tr>
+                <tr><td><code>document</code></td><td>string</td><td>Full change order document text</td></tr>
+                <tr><td><code>change_order_details</code></td><td>object</td><td>Details of the change order</td></tr>
+                <tr><td><code>usage</code></td><td>object</td><td>Usage stats (documents remaining)</td></tr>
+              </tbody>
+            </table>
+
+            <h4>Error Codes</h4>
+            <table className="docs-table">
+              <thead><tr><th>HTTP Status</th><th>Code</th><th>Meaning</th></tr></thead>
+              <tbody>
+                <tr><td>400</td><td><code>INVALID_CONTRACT</code></td><td>contract_text missing or too short</td></tr>
+                <tr><td>400</td><td><code>INVALID_MESSAGE</code></td><td>client_message missing</td></tr>
+                <tr><td>400</td><td><code>MISSING_FIELD</code></td><td>Required field missing (change-order)</td></tr>
+                <tr><td>401</td><td><code>MISSING_AUTH</code></td><td>No Authorization header</td></tr>
+                <tr><td>401</td><td><code>INVALID_API_KEY</code></td><td>API key not found or invalid</td></tr>
+                <tr><td>403</td><td><code>PRO_REQUIRED</code></td><td>Scope Guard requires Growth/Scale/Enterprise plan</td></tr>
+                <tr><td>429</td><td><code>MONTHLY_LIMIT_REACHED</code></td><td>Monthly document quota exceeded</td></tr>
+                <tr><td>500</td><td><code>ANALYSIS_FAILED</code></td><td>AI analysis failed — retry</td></tr>
+                <tr><td>500</td><td><code>GENERATION_FAILED</code></td><td>Document generation failed — retry</td></tr>
+              </tbody>
+            </table>
           </section>
 
           {/* ── Usage ── */}

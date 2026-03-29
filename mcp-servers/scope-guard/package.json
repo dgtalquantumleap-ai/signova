@@ -1,0 +1,33 @@
+{
+  "name": "@ebenova/scope-guard-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for Scope Guard — AI-powered contract enforcement and scope violation detection",
+  "type": "module",
+  "bin": {
+    "scope-guard-mcp": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"No tests yet\""
+  },
+  "keywords": [
+    "mcp",
+    "scope-guard",
+    "contract",
+    "legal",
+    "ebenova",
+    "ai"
+  ],
+  "author": "Ebenova Solutions",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ebenova/scope-guard-mcp"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

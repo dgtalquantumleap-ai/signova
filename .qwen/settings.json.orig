@@ -1,21 +1,10 @@
 {
   "projectName": "Signova — AI Legal Document Generator",
-  "stack": [
-    "React",
-    "Vite",
-    "Vercel",
-    "Node.js",
-    "Claude API"
-  ],
+  "stack": ["React", "Vite", "Vercel", "Node.js", "Claude API"],
   "codingStyle": "functional",
   "preferComments": true,
   "autoGenerateTests": false,
-  "contextAwareness": [
-    "package.json",
-    "vercel.json",
-    ".env.example",
-    "src/pages/Landing.jsx"
-  ],
+  "contextAwareness": ["package.json", "vercel.json", ".env.example", "src/pages/Landing.jsx"],
   "currentFocus": "Conversion optimization — 5-second test, hero section clarity, CTA visibility",
   "distractionGuard": {
     "blockNewFeatures": true,
@@ -28,6 +17,5 @@
     "analyticsCheck": "What events should I be tracking in Landing.jsx to understand who's landing here and what they're doing? Suggest specific useEffect hooks and event names.",
     "geoCurrencyCheck": "Review the useCurrency() hook in Landing.jsx. Is the geo-pricing working correctly for Nigeria visitors? Are the Naira rates accurate?",
     "mobileOptimization": "Review mobile CSS in Landing.jsx. Microsoft Clarity shows 5% scroll depth on mobile. What's pushing the CTA below the fold on mobile?"
-  },
-  "$version": 3
+  }
 }
