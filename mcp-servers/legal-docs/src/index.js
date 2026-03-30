@@ -277,6 +277,110 @@ When to use:
     }
   )
 
+  // ─── Tool: generate_invoice ──────────────────────────────────────────────
+
+  server.tool(
+    'generate_invoice',
+    {
+      description: `Generate a professional invoice, receipt, proforma, or credit note.
+
+Use this tool when the user needs to create any billing document.
+
+When to use:
+- "Create an invoice for my client for $500 of consulting work"
+- "Generate a receipt for a payment I received"
+- "Make a proforma invoice for a new project quote"
+- "Create a credit note for a refund of $200"`,
+      inputSchema: z.object({
+        type: z.enum(['invoice', 'receipt', 'proforma', 'credit-note']).optional().default('invoice'),
+        from_name: z.string().describe('Your name or business name'),
+        from_email: z.string().optional(),
+        to_name: z.string().describe('Client name or business name'),
+        to_email: z.string().optional(),
+        items: z.array(z.object({
+          description: z.string(),
+          quantity: z.number(),
+          unit_price: z.number(),
+        })).describe('Line items'),
+        currency: z.enum(['USD','EUR','GBP','CAD','AUD','NGN','KES','GHS','ZAR','INR','AED','SGD']).optional().default('USD'),
+        invoice_number: z.string().optional(),
+        tax_rate: z.number().optional().default(0),
+        notes: z.string().optional(),
+      }),
+    },
+    async ({ type, from_name, from_email, to_name, to_email, items, currency, invoice_number, tax_rate, notes }) => {
+      const data = await callApi('/v1/invoices/generate', {
+        type, from: { name: from_name, email: from_email },
+        to: { name: to_name, email: to_email },
+        items, currency, invoice_number, tax_rate, notes,
+      })
+      if (!data.success) {
+        return { content: [{ type: 'text', text: `Error: ${data.error?.message || 'Invoice generation failed'}` }], isError: true }
+      }
+      const lines = [
+        `**${(type || 'invoice').toUpperCase()} generated** — ${data.invoice_id}`,
+        `**Total:** ${data.currency} ${data.total?.toFixed(2)}`,
+        '',
+        'Full HTML invoice generated. Open in browser and print to PDF.',
+        data.usage ? `\n---\n*${data.usage.documents_used} / ${data.usage.monthly_limit} documents used this month*` : '',
+      ].filter(Boolean)
+      return { content: [{ type: 'text', text: lines.join('\n') }] }
+    }
+  )
+
+  // ─── Tool: analyze_scope_creep ────────────────────────────────────────────
+
+  server.tool(
+    'analyze_scope_creep',
+    {
+      description: `Analyze a client message against your contract to detect scope violations and get professional response drafts.
+
+Use this tool when the user receives a message from a client that might be asking for more than what was agreed.
+
+When to use:
+- "My client just sent this message — is it scope creep?"
+- "Analyze this client request against my contract"
+- "Help me respond to this client asking for extra work"
+- "Draft a change order for this request"`,
+      inputSchema: z.object({
+        contract_text: z.string().describe('Your full contract text (paste the signed agreement)'),
+        client_message: z.string().describe('The client message to analyze'),
+        communication_channel: z.enum(['email', 'whatsapp', 'slack', 'sms', 'other']).optional().default('email'),
+      }),
+    },
+    async ({ contract_text, client_message, communication_channel }) => {
+      const data = await callApi('/v1/scope/analyze', { contract_text, client_message, communication_channel })
+      if (!data.success) {
+        return { content: [{ type: 'text', text: `Error: ${data.error?.message || 'Analysis failed'}${data.error?.hint ? `\nHint: ${data.error.hint}` : ''}` }], isError: true }
+      }
+      const lines = []
+      if (data.violation_detected) {
+        lines.push(`⚠️ **${data.violations?.length} violation(s) detected**`)
+        lines.push(`${data.summary}`, '')
+        for (const v of data.violations || []) {
+          lines.push(`**${v.type}** (${v.severity}): ${v.description}`)
+          if (v.contract_reference) lines.push(`  📄 ${v.contract_reference}`)
+        }
+        lines.push('')
+        lines.push('**Response options:**')
+        for (const [i, opt] of (data.response_options || []).entries()) {
+          lines.push(`\n**Option ${i + 1} — ${opt.label}${opt.recommended ? ' ✓ Recommended' : ''}:**`)
+          lines.push(opt.draft)
+        }
+        if (data.suggested_change_order?.applicable) {
+          const co = data.suggested_change_order
+          lines.push(`\n**Suggested change order:** ${co.additional_work_description}`)
+          if (co.suggested_cost_usd) lines.push(`Est. cost: $${co.suggested_cost_usd.toLocaleString()} USD`)
+          if (co.timeline_extension_days) lines.push(`Timeline: +${co.timeline_extension_days} days`)
+        }
+      } else {
+        lines.push(`✅ **No violations detected**`)
+        lines.push(data.summary || 'The client message appears to be within the original scope.')
+      }
+      return { content: [{ type: 'text', text: lines.join('\n') }] }
+    }
+  )
+
   return server
 }
 

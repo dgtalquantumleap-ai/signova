@@ -4,8 +4,17 @@
 // Pro tier required.
 
 import { authenticate, recordUsage, buildUsageBlock } from '../../../lib/api-auth.js'
+import { getRedis } from '../../../lib/redis.js'
+import { ScopeGuardAnalyzeSchema, formatValidationError } from '../../../lib/validators.js'
+import { logError, logRequest, logDetailedError } from '../../../lib/logger.js'
 
 const PRO_TIERS = ['growth', 'scale', 'enterprise']
+
+function scopeGuardRedisKey(apiKey, stat) {
+  const year = new Date().getUTCFullYear()
+  const month = String(new Date().getUTCMonth() + 1).padStart(2, '0')
+  return `scope_guard:${apiKey}:${year}-${month}:${stat}`
+}
 
 async function parseBody(req) {
   if (req.body && typeof req.body === 'object' && req.body !== null) return req.body
@@ -78,6 +87,7 @@ Respond ONLY with valid JSON in this exact format:
 }
 
 export default async function handler(req, res) {
+  const startTime = Date.now()
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
@@ -90,6 +100,10 @@ export default async function handler(req, res) {
 
   // Pro tier gate
   if (!PRO_TIERS.includes(auth.keyData.tier)) {
+    logError('POST /v1/scope/analyze', { 
+      code: 'PRO_REQUIRED',
+      tier: auth.keyData.tier,
+    })
     return res.status(403).json({
       success: false,
       error: {
@@ -101,34 +115,35 @@ export default async function handler(req, res) {
     })
   }
 
+  // Validate input with Zod
   const body = await parseBody(req)
-  const { contract_text, client_message, communication_channel = 'email' } = body
+  let validated
+  try {
+    validated = ScopeGuardAnalyzeSchema.parse(body)
+  } catch (err) {
+    logError('POST /v1/scope/analyze', { 
+      code: 'VALIDATION_ERROR',
+      details: formatValidationError(err)
+    })
+    return res.status(400).json({ 
+      success: false, 
+      error: formatValidationError(err)
+    })
+  }
 
-  if (!contract_text || typeof contract_text !== 'string' || contract_text.trim().length < 50) {
-    return res.status(400).json({
-      success: false,
-      error: { code: 'INVALID_CONTRACT', message: 'contract_text is required (min 50 characters)' },
-    })
-  }
-  if (!client_message || typeof client_message !== 'string' || client_message.trim().length < 5) {
-    return res.status(400).json({
-      success: false,
-      error: { code: 'INVALID_MESSAGE', message: 'client_message is required' },
-    })
-  }
-
-  if (contract_text.length > 50000) {
-    return res.status(400).json({
-      success: false,
-      error: { code: 'CONTRACT_TOO_LONG', message: 'contract_text must be under 50,000 characters' },
-    })
-  }
+  const { contract_text, client_message, channel } = validated
 
   const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: 'AI service not configured' } })
+  if (!apiKey) {
+    logError('POST /v1/scope/analyze', { 
+      code: 'SERVER_MISCONFIGURED',
+      message: 'ANTHROPIC_API_KEY not set'
+    })
+    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: 'AI service not configured' } })
+  }
 
   try {
-    const prompt = buildAnalysisPrompt(contract_text, client_message, communication_channel)
+    const prompt = buildAnalysisPrompt(contract_text, client_message, channel)
 
     const aiRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -155,7 +170,40 @@ export default async function handler(req, res) {
       throw new Error('Failed to parse AI response')
     }
 
+    // Track Scope Guard usage
+    try {
+      const redis = getRedis()
+      await redis.incr(scopeGuardRedisKey(auth.key, 'analyze_calls'))
+      
+      if (result.violation_detected) {
+        await redis.incr(scopeGuardRedisKey(auth.key, 'violations_detected'))
+      }
+
+      // Track response types chosen
+      if (result.response_options && Array.isArray(result.response_options)) {
+        for (const option of result.response_options) {
+          if (option.recommended) {
+            if (option.type === 'FIRM') {
+              await redis.incr(scopeGuardRedisKey(auth.key, 'firm_responses'))
+            } else if (option.type === 'PUSHBACK') {
+              await redis.incr(scopeGuardRedisKey(auth.key, 'pushback_responses'))
+            } else if (option.type === 'CHANGE_ORDER') {
+              await redis.incr(scopeGuardRedisKey(auth.key, 'change_orders_pending'))
+            }
+          }
+        }
+      }
+    } catch (statsErr) {
+      console.error('[scope/analyze] stats tracking error:', statsErr.message)
+      // Don't fail the request if stats tracking fails
+    }
+
     await recordUsage(auth)
+
+    logRequest('POST /v1/scope/analyze', 'POST', 200, Date.now() - startTime, { 
+      tier: auth.keyData?.tier,
+      violation_detected: result.violation_detected,
+    })
 
     return res.status(200).json({
       success: true,
@@ -168,11 +216,14 @@ export default async function handler(req, res) {
       meta: {
         contract_length: contract_text.length,
         message_length: client_message.length,
-        channel: communication_channel,
+        channel,
       },
     })
   } catch (err) {
-    console.error('[scope/analyze] error:', err.message)
+    logDetailedError('POST /v1/scope/analyze', err, { 
+      tier: auth.keyData?.tier,
+      contract_length: contract_text.length,
+    })
     return res.status(500).json({ success: false, error: { code: 'ANALYSIS_FAILED', message: err.message } })
   }
 }

@@ -19,6 +19,7 @@ const AboutPage = lazy(() => import('./pages/AboutPage'))
 const ContactPage = lazy(() => import('./pages/ContactPage'))
 const Docs      = lazy(() => import('./pages/Docs'))
 const Dashboard   = lazy(() => import('./pages/Dashboard'))
+const GetStarted  = lazy(() => import('./pages/GetStarted'))
 const ScopeGuard  = lazy(() => import('./pages/ScopeGuard'))
 
 const PageShell = () => (
@@ -58,6 +59,7 @@ export default function App() {
         <Route path="/team" element={<AboutPage />} />
         <Route path="/pricing" element={<Landing />} />
         <Route path="/docs" element={<Docs />} />
+        <Route path="/get-started" element={<GetStarted />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/scope-guard" element={<ScopeGuard />} />
         <Route path="/:slug" element={<DocLanding />} />

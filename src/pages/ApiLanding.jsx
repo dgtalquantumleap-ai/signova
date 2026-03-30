@@ -50,7 +50,7 @@ const API_CARDS = [
     icon: '💸',
     title: 'Africa Payouts API',
     desc: 'Send payments to bank accounts and mobile money across 10+ African countries.',
-    features: ['Coming Q2 2026', 'Mobile money + bank', 'Real-time settlement'],
+    features: ['Join waitlist for early access', 'Mobile money + bank', 'Real-time settlement'],
     endpoint: 'POST /v1/payouts/send',
     cta: 'Join Waitlist',
     link: '/contact',
@@ -86,7 +86,8 @@ const PRICING_TIERS = [
     name: 'Free',
     price: 0,
     docs: 5,
-    cta: 'Get API Key',
+    cta: 'Get Free API Key',
+    tier: 'free',
     highlight: false,
     features: [
       '5 documents/month',
@@ -99,7 +100,8 @@ const PRICING_TIERS = [
     name: 'Starter',
     price: 29,
     docs: 100,
-    cta: 'Start Free Trial',
+    cta: 'Upgrade to Starter',
+    tier: 'starter',
     highlight: true,
     features: [
       '100 documents/month',
@@ -113,7 +115,8 @@ const PRICING_TIERS = [
     name: 'Growth',
     price: 79,
     docs: 500,
-    cta: 'Start Free Trial',
+    cta: 'Upgrade to Growth',
+    tier: 'growth',
     highlight: false,
     features: [
       '500 documents/month',
@@ -129,6 +132,7 @@ const PRICING_TIERS = [
     price: 199,
     docs: 2000,
     cta: 'Contact Sales',
+    tier: 'scale',
     highlight: false,
     features: [
       '2,000 documents/month',
@@ -181,7 +185,16 @@ export default function ApiLanding() {
 
   const handleGetApiKey = () => {
     track('api_cta_click', { cta: 'get_api_key', location: 'hero' })
-    navigate('/docs#authentication')
+    navigate('/dashboard')
+  }
+
+  const handlePricingCta = (tier) => {
+    track('pricing_cta_click', { tier })
+    if (tier === 'free' || tier === 'starter' || tier === 'growth') {
+      navigate('/dashboard')
+    } else if (tier === 'scale') {
+      window.location.href = 'mailto:api@ebenova.dev?subject=Scale%20Tier%20Inquiry'
+    }
   }
 
   const handleViewDocs = () => {
@@ -361,7 +374,10 @@ export default function ApiLanding() {
                   ))}
                 </ul>
 
-                <button className={`api-price-cta ${tier.highlight ? 'highlight' : ''}`}>
+                <button 
+                  className={`api-price-cta ${tier.highlight ? 'highlight' : ''}`}
+                  onClick={() => handlePricingCta(tier.tier)}
+                >
                   {tier.cta}
                 </button>
               </div>

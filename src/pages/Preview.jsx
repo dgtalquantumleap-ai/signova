@@ -22,7 +22,9 @@ function useIsNigeria() {
         const parsed = JSON.parse(cached)
         // sig_geo stores { currency: { code, ... }, countryCode: 'NG' }
         setIsNG(parsed.countryCode === 'NG' || parsed.currency?.code === 'NGN')
-      } catch {}
+      } catch {
+        // Ignore JSON parse errors for cached data
+      }
       return
     }
     fetch('https://ipapi.co/json/')
@@ -58,7 +60,9 @@ export default function Preview() {
   const [promoMsg, setPromoMsg] = useState('')
   const [promoError, setPromoError] = useState('')
   const [promoOpen, setPromoOpen] = useState(false)
+  // eslint-disable-next-line no-unused-vars
   const [promoEmail, setPromoEmail] = useState('')
+  // eslint-disable-next-line no-unused-vars
   const [promoEmailSubmitted, setPromoEmailSubmitted] = useState(false)
   const [promoEmailLoading, setPromoEmailLoading] = useState(false)
   const [pendingPromoUnlock, setPendingPromoUnlock] = useState(false)

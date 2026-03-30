@@ -4,8 +4,15 @@
 // Pro tier required.
 
 import { authenticate, recordUsage, buildUsageBlock } from '../../../lib/api-auth.js'
+import { getRedis } from '../../../lib/redis.js'
 
 const PRO_TIERS = ['growth', 'scale', 'enterprise']
+
+function scopeGuardRedisKey(apiKey, stat) {
+  const year = new Date().getUTCFullYear()
+  const month = String(new Date().getUTCMonth() + 1).padStart(2, '0')
+  return `scope_guard:${apiKey}:${year}-${month}:${stat}`
+}
 
 async function parseBody(req) {
   if (req.body && typeof req.body === 'object' && req.body !== null) return req.body
@@ -112,6 +119,15 @@ export default async function handler(req, res) {
     if (!aiData.content?.[0]?.text) throw new Error('No AI response')
 
     const document = aiData.content[0].text
+
+    // Track Scope Guard usage
+    try {
+      const redis = getRedis()
+      await redis.incr(scopeGuardRedisKey(auth.key, 'change_orders_generated'))
+    } catch (statsErr) {
+      console.error('[scope/change-order] stats tracking error:', statsErr.message)
+      // Don't fail the request if stats tracking fails
+    }
 
     await recordUsage(auth)
 

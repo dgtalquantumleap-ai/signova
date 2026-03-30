@@ -1,5 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Helmet } from 'react-helmet-async'
+import UsageChart from '../components/UsageChart'
+import ScopeGuardStats from '../components/ScopeGuardStats'
+import RevenueMetrics from '../components/RevenueMetrics'
 import './Dashboard.css'
 
 const API = 'https://www.getsignova.com'
@@ -31,12 +34,21 @@ export default function Dashboard() {
   const [copied, setCopied] = useState(false)
   const [upgrading, setUpgrading] = useState(null)
   const [error, setError] = useState('')
+  const [scopeGuardStats, setScopeGuardStats] = useState(null)
+  const [revenueMetrics, setRevenueMetrics] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
 
   // ── Boot: check for session or magic token ──────────────────────────────────
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const magicToken = params.get('token')
     const storedSession = localStorage.getItem('ebenova_session')
+    const adminToken = localStorage.getItem('admin_token')
+
+    if (adminToken) {
+      setIsAdmin(true)
+      fetchRevenueMetrics(adminToken)
+    }
 
     if (magicToken) {
       verifyMagicToken(magicToken)
@@ -45,13 +57,15 @@ export default function Dashboard() {
         const s = JSON.parse(storedSession)
         setSession(s)
         setActiveKey(s.api_keys?.[0])
-        fetchUsage(s.api_keys?.[0]?.key)
+        const key = s.api_keys?.[0]?.key
+        fetchUsage(key)
+        fetchScopeGuardStats(key)
         setView('dashboard')
       } catch { localStorage.removeItem('ebenova_session'); setView('login') }
     } else {
       setView('login')
     }
-  }, [])
+  }, [fetchUsage, fetchScopeGuardStats, fetchRevenueMetrics])
 
   async function verifyMagicToken(token) {
     setView('loading')
@@ -67,7 +81,9 @@ export default function Dashboard() {
         localStorage.setItem('ebenova_session', JSON.stringify(s))
         setSession(s)
         setActiveKey(data.api_keys?.[0])
-        fetchUsage(data.api_keys?.[0]?.key)
+        const key = data.api_keys?.[0]?.key
+        fetchUsage(key)
+        fetchScopeGuardStats(key)
         setView('dashboard')
         window.history.replaceState({}, '', '/dashboard')
       } else {
@@ -85,6 +101,28 @@ export default function Dashboard() {
       })
       const data = await res.json()
       if (data.success) setUsage(data)
+    } catch {}
+  }, [])
+
+  const fetchScopeGuardStats = useCallback(async (key) => {
+    if (!key) return
+    try {
+      const res = await fetch(`${API}/api/v1/scope/stats`, {
+        headers: { Authorization: `Bearer ${key}` },
+      })
+      const data = await res.json()
+      if (data.success) setScopeGuardStats(data)
+    } catch {}
+  }, [])
+
+  const fetchRevenueMetrics = useCallback(async (adminToken) => {
+    if (!adminToken) return
+    try {
+      const res = await fetch(`${API}/api/v1/admin/revenue`, {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+      const data = await res.json()
+      if (data.success) setRevenueMetrics(data)
     } catch {}
   }, [])
 
@@ -235,6 +273,13 @@ export default function Dashboard() {
             )}
           </section>
 
+          {/* Usage trend chart */}
+          {usage?.history && usage.history.length > 0 && (
+            <section className="dash-card">
+              <UsageChart history={usage.history} />
+            </section>
+          )}
+
           {/* API Keys */}
           <section className="dash-card">
             <h2 className="dash-card-title">Your API Key</h2>
@@ -277,6 +322,22 @@ export default function Dashboard() {
               </div>
             )}
           </section>
+
+          {/* Scope Guard Stats */}
+          {isProUser && scopeGuardStats && (
+            <section className="dash-card">
+              <h2 className="dash-card-title">📊 Scope Guard Activity</h2>
+              <ScopeGuardStats stats={scopeGuardStats} />
+            </section>
+          )}
+
+          {/* Revenue Dashboard (Admin Only) */}
+          {isAdmin && revenueMetrics && (
+            <section className="dash-card dash-admin-section">
+              <h2 className="dash-card-title">💰 Revenue Dashboard</h2>
+              <RevenueMetrics metrics={revenueMetrics.metrics} monthlyData={revenueMetrics.monthlyRevenue} />
+            </section>
+          )}
 
           {/* Upgrade Plans (only for free/starter) */}
           {!['scale','enterprise'].includes(tier) && (
