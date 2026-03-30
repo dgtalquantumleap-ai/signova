@@ -1,5 +1,6 @@
-// api/mcp.js — Minimal MCP HTTP handler (pure JSON-RPC, no SDK dependency)
-// Implements MCP Streamable HTTP transport manually for Vercel serverless
+// api/mcp.js — MCP Streamable HTTP endpoint for Smithery/MCPize/Claude.ai
+// Pure JSON-RPC implementation, no SDK dependency (avoids Zod version conflicts)
+// Spec: https://modelcontextprotocol.io/specification/2024-11-05/transports
 
 const TOOLS = [
   {
@@ -8,9 +9,9 @@ const TOOLS = [
     inputSchema: {
       type: 'object',
       properties: {
-        document_type: { type: 'string', description: 'Type of document e.g. nda, freelance-contract, tenancy-agreement, privacy-policy' },
+        document_type: { type: 'string', description: 'e.g. nda, freelance-contract, tenancy-agreement, privacy-policy' },
         fields: { type: 'object', description: 'Document-specific fields as key-value pairs', additionalProperties: true },
-        jurisdiction: { type: 'string', description: 'Governing jurisdiction e.g. Nigeria, United Kingdom, United States' },
+        jurisdiction: { type: 'string', description: 'e.g. Nigeria, United Kingdom, United States' },
       },
       required: ['document_type', 'fields'],
     },
@@ -23,7 +24,7 @@ const TOOLS = [
       properties: {
         conversation: { type: 'string', description: 'Raw conversation text, max 10,000 characters' },
         target_document: { type: 'string', description: 'Target document type (AI suggests if omitted)' },
-        auto_generate: { type: 'boolean', description: 'If true, also generate the full document after extraction' },
+        auto_generate: { type: 'boolean', description: 'If true, generate the full document after extraction' },
       },
       required: ['conversation'],
     },
@@ -40,29 +41,29 @@ const TOOLS = [
   },
   {
     name: 'get_document_templates',
-    description: 'Get field schemas for document types. Returns all required and optional fields with types, labels, and placeholders. Use this to build dynamic forms or understand what fields a document needs before generating it.',
+    description: 'Get field schemas for document types — required fields, types, labels, placeholders.',
     inputSchema: {
       type: 'object',
       properties: {
-        document_type: { type: 'string', description: 'Specific document type to get schema for (e.g. nda, tenancy-agreement). Omit to list all types.' },
+        document_type: { type: 'string', description: 'Specific type to get schema for, or omit for all types.' },
       },
     },
   },
   {
     name: 'batch_generate_documents',
-    description: 'Generate multiple legal documents in a single call. Max 10 documents per batch. Each document is generated independently — if one fails, others still succeed.',
+    description: 'Generate up to 10 legal documents in a single call.',
     inputSchema: {
       type: 'object',
       properties: {
         documents: {
           type: 'array',
-          description: 'Array of document specs, each with document_type, fields, and optional jurisdiction',
+          description: 'Array of {document_type, fields, jurisdiction?} objects',
           items: {
             type: 'object',
             properties: {
-              document_type: { type: 'string', description: 'Type of document e.g. nda, freelance-contract' },
-              fields: { type: 'object', description: 'Document fields as key-value pairs', additionalProperties: true },
-              jurisdiction: { type: 'string', description: 'Governing jurisdiction' },
+              document_type: { type: 'string' },
+              fields: { type: 'object', additionalProperties: true },
+              jurisdiction: { type: 'string' },
             },
             required: ['document_type', 'fields'],
           },
@@ -72,37 +73,53 @@ const TOOLS = [
     },
   },
   {
-    name: 'link_contract_payment',
-    description: 'Link a generated contract to a payment reference (bank transfer, invoice, etc). Creates a bidirectional association so you can look up contracts by payment ref or payments by contract ID.',
+    name: 'analyze_scope_creep',
+    description: 'Analyze a client message against an original contract to detect scope violations and draft professional responses.',
     inputSchema: {
       type: 'object',
       properties: {
-        contract_id: { type: 'string', description: 'Unique contract identifier' },
-        document_type: { type: 'string', description: 'Type of document (e.g. tenancy-agreement)' },
-        payment_ref: { type: 'string', description: 'Payment reference (bank transfer ref, invoice number, etc)' },
-        payment_amount: { type: 'number', description: 'Payment amount' },
-        payment_currency: { type: 'string', description: 'Currency code (e.g. NGN, USD, GBP)' },
-        payment_status: { type: 'string', description: 'Status: pending, paid, overdue, disputed' },
-        parties: { type: 'array', items: { type: 'string' }, description: 'Names of parties involved' },
-        notes: { type: 'string', description: 'Optional notes' },
+        contract_text: { type: 'string', description: 'Full text of the original contract (min 50 chars)' },
+        client_message: { type: 'string', description: "The client's request or message to analyze" },
+        communication_channel: { type: 'string', description: 'email, whatsapp, slack, or other' },
       },
-      required: ['contract_id', 'payment_ref'],
+      required: ['contract_text', 'client_message'],
     },
   },
   {
-    name: 'lookup_contract_link',
-    description: 'Look up a contract-payment link by contract ID or payment reference.',
+    name: 'generate_change_order',
+    description: 'Generate a formal change order document when additional work is requested beyond the original contract scope.',
     inputSchema: {
       type: 'object',
       properties: {
-        contract_id: { type: 'string', description: 'Contract ID to look up' },
-        payment_ref: { type: 'string', description: 'Payment reference to look up' },
+        freelancer_name: { type: 'string' },
+        client_name: { type: 'string' },
+        original_scope: { type: 'string', description: 'Brief description of original agreed work' },
+        additional_work: { type: 'string', description: 'Description of the new/additional work' },
+        additional_cost: { type: 'number', description: 'Additional cost in the specified currency' },
+        currency: { type: 'string', description: 'e.g. USD, NGN, GBP' },
+        timeline_extension_days: { type: 'number', description: 'Extra business days needed' },
+        jurisdiction: { type: 'string' },
       },
+      required: ['additional_work', 'additional_cost'],
     },
   },
 ]
 
 const API_BASE = 'https://www.getsignova.com'
+
+// ── Body parsing — same pattern as working API routes ──────────────────────
+// Vercel pre-parses req.body for application/json requests.
+// If req.body is already a parsed object, use it directly.
+// Otherwise fall back to reading the raw stream (handles edge cases).
+async function parseBody(req) {
+  if (req.body && typeof req.body === 'object') return req.body
+  return new Promise((resolve) => {
+    let data = ''
+    req.on('data', chunk => { data += chunk })
+    req.on('end', () => { try { resolve(data ? JSON.parse(data) : {}) } catch { resolve({}) } })
+    req.on('error', () => resolve({}))
+  })
+}
 
 function getApiKey(req) {
   const auth = (req.headers['authorization'] || '').replace('Bearer ', '').trim()
@@ -130,142 +147,145 @@ async function getApi(path, key) {
   return r.json()
 }
 
-function jsonrpc(id, result) {
-  return { jsonrpc: '2.0', id, result }
-}
+function ok(id, result) { return { jsonrpc: '2.0', id: id ?? null, result } }
+function err(id, code, message) { return { jsonrpc: '2.0', id: id ?? null, error: { code, message } } }
+function text(str) { return { content: [{ type: 'text', text: str }] } }
 
-function jsonrpcError(id, code, message) {
-  return { jsonrpc: '2.0', id, error: { code, message } }
-}
-
+// ── MCP message handler ────────────────────────────────────────────────────
 async function handleMessage(msg, apiKey) {
-  const { id, method, params } = msg
+  const { id, method, params } = msg || {}
 
+  if (!method) return err(id, -32600, 'Invalid Request: missing method')
+
+  // ── Lifecycle ────────────────────────────────────────────────────────────
   if (method === 'initialize') {
-    return jsonrpc(id, {
+    return ok(id, {
       protocolVersion: '2024-11-05',
-      capabilities: { tools: {} },
-      serverInfo: { name: 'ebenova-legal-docs', version: '1.0.0' },
+      capabilities: { tools: { listChanged: false } },
+      serverInfo: { name: 'ebenova-legal-docs', version: '1.2.2' },
     })
   }
 
-  if (method === 'notifications/initialized') return null
+  if (method === 'notifications/initialized') return null  // one-way, no response
 
-  if (method === 'tools/list') {
-    return jsonrpc(id, { tools: TOOLS })
-  }
+  if (method === 'ping') return ok(id, {})
+
+  // ── Tools ────────────────────────────────────────────────────────────────
+  if (method === 'tools/list') return ok(id, { tools: TOOLS })
 
   if (method === 'tools/call') {
     const { name, arguments: args = {} } = params || {}
+    if (!name) return err(id, -32602, 'Invalid params: missing tool name')
     try {
-      let text = ''
-      if (name === 'generate_legal_document') {
-        const data = await callApi('/v1/documents/generate', args, apiKey)
-        text = data.success ? data.document : `Error: ${data.error?.message || 'Failed'}`
-      } else if (name === 'extract_from_conversation') {
-        const data = await callApi('/v1/extract/conversation', args, apiKey)
-        text = data.success ? JSON.stringify(data, null, 2) : `Error: ${data.error?.message}`
-      } else if (name === 'list_document_types') {
-        const data = await getApi('/v1/documents/types', apiKey)
-        if (data.success) {
-          const lines = [`${data.total} document types:`]
-          for (const [cat, docs] of Object.entries(data.grouped || {})) {
-            lines.push(`\n${cat}:`)
-            for (const d of docs) lines.push(`  - ${d.type}: ${d.label}`)
-          }
-          text = lines.join('\n')
-        } else { text = 'Error fetching types.' }
-      } else if (name === 'check_usage') {
-        const data = await getApi('/v1/keys/usage', apiKey)
-        if (data.success) {
-          const cm = data.current_month
-          text = `${cm.documents_used}/${cm.monthly_limit} used (${cm.documents_remaining} remaining)`
-        } else { text = `Error: ${data.error?.message}` }
-      } else if (name === 'get_document_templates') {
-        const type = args.document_type
-        const path = type ? `/v1/documents/templates?type=${type}` : '/v1/documents/templates'
-        const data = await getApi(path, apiKey)
-        if (data.success) {
-          if (type && data.fields) {
-            const lines = [`${data.label} (${data.category})`, `Fields:`]
-            for (const f of data.fields) {
-              lines.push(`  - ${f.key}: ${f.label} (${f.type}${f.required ? ', required' : ''})${f.placeholder ? ` — e.g. "${f.placeholder}"` : ''}`)
-            }
-            text = lines.join('\n')
-          } else {
-            text = `${data.total} document templates available:\n` + data.templates.map(t => `  - ${t.type}: ${t.label} (${t.field_count} fields, ${t.required_fields} required)`).join('\n')
-          }
-        } else { text = `Error: ${data.error?.message}` }
-      } else if (name === 'batch_generate_documents') {
-        const data = await callApi('/v1/documents/batch', args, apiKey)
-        if (data.success) {
-          const lines = [`Batch complete: ${data.succeeded}/${data.total} succeeded`]
-          for (const r of data.results) {
-            lines.push(`  [${r.index}] ${r.document_type}: ${r.success ? 'OK' : 'FAILED — ' + (r.error?.message || 'unknown')}`)
-          }
-          if (data.results.some(r => r.success && r.document)) {
-            lines.push('\n--- Generated Documents ---')
-            for (const r of data.results.filter(r => r.success && r.document)) {
-              lines.push(`\n=== ${r.document_type} [${r.index}] ===\n${r.document.substring(0, 500)}...`)
-            }
-          }
-          text = lines.join('\n')
-        } else { text = `Error: ${data.error?.message}` }
-      } else if (name === 'link_contract_payment') {
-        const data = await callApi('/v1/contracts/link', args, apiKey)
-        if (data.success) {
-          const l = data.link
-          text = `Linked contract ${l.contract_id} to payment ${l.payment_ref} (${l.payment_status}, ${l.payment_currency} ${l.payment_amount || 'N/A'})`
-        } else { text = `Error: ${data.error?.message}` }
-      } else if (name === 'lookup_contract_link') {
-        const params = args.contract_id ? `contract_id=${args.contract_id}` : `payment_ref=${args.payment_ref}`
-        const data = await getApi(`/v1/contracts/link?${params}`, apiKey)
-        if (data.success) {
-          const l = data.link
-          text = `Contract: ${l.contract_id}\nPayment Ref: ${l.payment_ref}\nStatus: ${l.payment_status}\nAmount: ${l.payment_currency} ${l.payment_amount || 'N/A'}\nLinked: ${l.linked_at}\nParties: ${(l.parties || []).join(', ') || 'N/A'}`
-        } else { text = `Error: ${data.error?.message || 'Not found'}` }
-      } else {
-        return jsonrpcError(id, -32601, `Unknown tool: ${name}`)
-      }
-      return jsonrpc(id, { content: [{ type: 'text', text }] })
-    } catch (err) {
-      return jsonrpc(id, { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true })
+      const result = await callTool(name, args, apiKey)
+      return ok(id, result)
+    } catch (e) {
+      return ok(id, text(`Error: ${e.message}`))
     }
   }
 
-  return jsonrpcError(id, -32601, `Method not found: ${method}`)
+  return err(id, -32601, `Method not found: ${method}`)
 }
 
+async function callTool(name, args, apiKey) {
+  if (name === 'generate_legal_document') {
+    const data = await callApi('/v1/documents/generate', args, apiKey)
+    return text(data.success ? data.document : `Error: ${data.error?.message || 'Failed'}`)
+  }
+
+  if (name === 'extract_from_conversation') {
+    const data = await callApi('/v1/extract/conversation', args, apiKey)
+    if (!data.success) return text(`Error: ${data.error?.message}`)
+    if (args.auto_generate && data.document) return text(data.document)
+    return text(JSON.stringify({ suggested_document: data.suggested_document, extracted_fields: data.extracted_fields, missing_fields: data.missing_fields }, null, 2))
+  }
+
+  if (name === 'list_document_types') {
+    const data = await getApi('/v1/documents/types', apiKey)
+    if (!data.success) return text('Error fetching types.')
+    const lines = [`${data.total} document types:`]
+    for (const [cat, docs] of Object.entries(data.grouped || {})) {
+      lines.push(`\n${cat.replace(/_/g, ' ')}:`)
+      for (const d of docs) lines.push(`  - ${d.type}: ${d.label}`)
+    }
+    return text(lines.join('\n'))
+  }
+
+  if (name === 'check_usage') {
+    const data = await getApi('/v1/keys/usage', apiKey)
+    if (!data.success) return text(`Error: ${data.error?.message}`)
+    const cm = data.current_month
+    return text(`${cm.documents_used}/${cm.monthly_limit} documents used (${cm.documents_remaining} remaining). Resets ${new Date(cm.resets_at).toLocaleDateString()}`)
+  }
+
+  if (name === 'get_document_templates') {
+    const type = args.document_type
+    const path = type ? `/v1/documents/templates?type=${encodeURIComponent(type)}` : '/v1/documents/templates'
+    const data = await getApi(path, apiKey)
+    if (!data.success) return text(`Error: ${data.error?.message}`)
+    if (type && data.fields) {
+      const lines = [`${data.label} (${data.category})`, `Fields:`]
+      for (const f of data.fields) lines.push(`  - ${f.key}: ${f.label} (${f.type}${f.required ? ', required' : ''})${f.placeholder ? ` — e.g. "${f.placeholder}"` : ''}`)
+      return text(lines.join('\n'))
+    }
+    return text(`${data.total} templates:\n` + data.templates.map(t => `  - ${t.type}: ${t.label} (${t.field_count} fields)`).join('\n'))
+  }
+
+  if (name === 'batch_generate_documents') {
+    const data = await callApi('/v1/documents/batch', args, apiKey)
+    if (!data.success) return text(`Error: ${data.error?.message}`)
+    const lines = [`Batch: ${data.succeeded}/${data.total} succeeded`]
+    for (const r of data.results) lines.push(`  [${r.index}] ${r.document_type}: ${r.success ? '✓' : '✗ ' + r.error?.message}`)
+    return text(lines.join('\n'))
+  }
+
+  if (name === 'analyze_scope_creep') {
+    const data = await callApi('/v1/scope/analyze', args, apiKey)
+    if (!data.success) return text(`Error: ${data.error?.message}`)
+    const lines = [data.summary || '']
+    if (data.violations?.length) {
+      lines.push(`\nViolations detected (${data.violations.length}):`)
+      for (const v of data.violations) lines.push(`  [${v.severity}] ${v.type}: ${v.description}${v.contract_reference ? ` (${v.contract_reference})` : ''}`)
+    }
+    if (data.response_options?.length) {
+      lines.push('\nDrafted responses:')
+      for (const r of data.response_options) lines.push(`\n--- ${r.label}${r.recommended ? ' (RECOMMENDED)' : ''} ---\n${r.draft}`)
+    }
+    return text(lines.join('\n'))
+  }
+
+  if (name === 'generate_change_order') {
+    const data = await callApi('/v1/scope/change-order', args, apiKey)
+    if (!data.success) return text(`Error: ${data.error?.message}`)
+    return text(data.document)
+  }
+
+  return { content: [{ type: 'text', text: `Unknown tool: ${name}` }], isError: true }
+}
+
+// ── Vercel handler ─────────────────────────────────────────────────────────
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, mcp-session-id')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, mcp-session-id, accept')
 
   if (req.method === 'OPTIONS') return res.status(200).end()
+
+  // GET — MCP spec: return 405 if SSE not supported (tells clients to use POST only)
   if (req.method === 'GET') {
-    return res.status(200).json({ name: 'ebenova-legal-docs', version: '1.0.0', protocol: 'MCP' })
+    return res.status(405).json({ error: 'SSE not supported. Use POST for JSON-RPC.' })
   }
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
-  }
+
+  // DELETE — MCP session termination (stateless, always succeed)
+  if (req.method === 'DELETE') return res.status(200).end()
+
+  if (req.method !== 'POST') return res.status(405).end()
 
   try {
     const apiKey = getApiKey(req)
-    let body = req.body
-    if (typeof body === 'string') {
-      try { body = JSON.parse(body) } catch { body = {} }
-    }
-    // Vercel may not parse body for ESM functions — manually read stream if needed
-    if (!body || (typeof body === 'object' && Object.keys(body).length === 0)) {
-      body = await new Promise((resolve) => {
-        let raw = ''
-        req.on('data', chunk => { raw += chunk })
-        req.on('end', () => { try { resolve(JSON.parse(raw)) } catch { resolve({}) } })
-        req.on('error', () => resolve({}))
-      })
-    }
+    const body = await parseBody(req)
 
-    // Handle batch or single message
+    // Handle batch (array) or single message
     const messages = Array.isArray(body) ? body : [body]
     const responses = []
 
@@ -276,12 +296,10 @@ export default async function handler(req, res) {
 
     res.setHeader('Content-Type', 'application/json')
     if (responses.length === 0) return res.status(202).end()
-    if (responses.length === 1 && !Array.isArray(body)) {
-      return res.status(200).json(responses[0])
-    }
-    return res.status(200).json(responses)
-  } catch (err) {
-    console.error('[mcp] error:', err.message)
-    return res.status(500).json({ error: err.message })
+    const payload = Array.isArray(body) ? responses : responses[0]
+    return res.status(200).json(payload)
+  } catch (e) {
+    console.error('[mcp]', e.message)
+    return res.status(500).json(err(null, -32603, 'Internal error'))
   }
 }
