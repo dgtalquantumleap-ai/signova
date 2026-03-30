@@ -1,0 +1,1461 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Ebenova API",
+    "version": "1.0.0",
+    "description": "Developer-first APIs for legal documents, invoices, and African business workflows.\nOne integration, multiple tools.\n\n**Base URL:** `https://api.ebenova.dev`\n\n**Authentication:** All endpoints (except `/v1/documents/types`) require a Bearer token:\n```\nAuthorization: Bearer sk_live_your_api_key\n```\n\nGet your API key at https://ebenova.dev/dashboard\n",
+    "contact": {
+      "email": "api@ebenova.dev",
+      "url": "https://ebenova.dev"
+    },
+    "license": {
+      "name": "Proprietary",
+      "url": "https://ebenova.dev/terms"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.ebenova.dev",
+      "description": "Production"
+    },
+    {
+      "url": "https://www.getsignova.com",
+      "description": "Signova (alias)"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Documents",
+      "description": "Generate legally compliant documents — 27 types, 18 jurisdictions"
+    },
+    {
+      "name": "Invoices",
+      "description": "Generate invoices, receipts, proformas and credit notes"
+    },
+    {
+      "name": "Extraction",
+      "description": "Extract structured fields from raw conversations"
+    },
+    {
+      "name": "Scope Guard",
+      "description": "AI-powered contract enforcement and scope violation detection"
+    },
+    {
+      "name": "Keys",
+      "description": "API key management"
+    },
+    {
+      "name": "Billing",
+      "description": "Subscription checkout and customer portal"
+    }
+  ],
+  "paths": {
+    "/v1/documents/generate": {
+      "post": {
+        "operationId": "generateDocument",
+        "summary": "Generate a legal document",
+        "description": "Generates a professionally drafted legal document using AI.\nThe document is returned as plain text, ready to copy, download, or render as PDF/DOCX.\n\n**When to use this endpoint:** Any time you need to create a legal document —\nNDA, contract, tenancy agreement, privacy policy, etc.\n",
+        "tags": [
+          "Documents"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateDocumentRequest"
+              },
+              "examples": {
+                "nda": {
+                  "summary": "Non-Disclosure Agreement",
+                  "value": {
+                    "document_type": "nda",
+                    "fields": {
+                      "disclosingParty": "Acme Inc.",
+                      "receivingParty": "John Smith",
+                      "purpose": "Discussing a potential partnership to build a mobile application",
+                      "duration": "2 years",
+                      "mutual": "Yes — mutual NDA"
+                    },
+                    "jurisdiction": "Nigeria"
+                  }
+                },
+                "tenancy": {
+                  "summary": "Tenancy Agreement",
+                  "value": {
+                    "document_type": "tenancy-agreement",
+                    "fields": {
+                      "landlord": "Chief Emeka Okafor",
+                      "tenant": "Mrs. Amaka Nwosu",
+                      "property": "Flat 3B, No. 14 Admiralty Way, Lekki Phase 1, Lagos",
+                      "rentAmount": "₦1,200,000 per annum",
+                      "duration": "1 year"
+                    },
+                    "jurisdiction": "Nigeria"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Document generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateDocumentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/documents/types": {
+      "get": {
+        "operationId": "listDocumentTypes",
+        "summary": "List all supported document types",
+        "description": "Returns all 27 supported document types, grouped by category. No authentication required.",
+        "tags": [
+          "Documents"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of document types",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentTypesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/extract/conversation": {
+      "post": {
+        "operationId": "extractFromConversation",
+        "summary": "Extract fields from a conversation",
+        "description": "Parses a raw WhatsApp chat, email thread, or any text conversation and extracts\nstructured fields for a legal document.\n\nSet `auto_generate: true` to also generate the full document in one call.\nThis counts as 1 document against your monthly quota.\n\n**When to use this endpoint:** When you have unstructured conversation data\nand want to auto-populate a legal document.\n",
+        "tags": [
+          "Extraction"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtractRequest"
+              },
+              "examples": {
+                "extract_only": {
+                  "summary": "Extract fields only",
+                  "value": {
+                    "conversation": "[3/20/26, 10:15 AM] Emeka: Hi John, so we agreed on 1 year tenancy right?\n[3/20/26, 10:16 AM] John: Yes, starting April 1st. Rent is 1.2M per year.\n[3/20/26, 10:17 AM] Emeka: Great. The property is Flat 3B, 14 Admiralty Way, Lekki.\n",
+                    "target_document": "tenancy-agreement",
+                    "auto_generate": false
+                  }
+                },
+                "extract_and_generate": {
+                  "summary": "Extract and generate document",
+                  "value": {
+                    "conversation": "We agreed on an NDA. I'm Acme Inc disclosing to John Smith about our new product. 2 year duration, mutual.",
+                    "target_document": "nda",
+                    "auto_generate": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Extraction successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtractResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/scope/analyze": {
+      "post": {
+        "operationId": "analyzeScopeViolation",
+        "summary": "Analyze message for scope violations",
+        "description": "Analyzes a client message against your contract to detect scope violations.\nReturns violation details, severity, and 3 professional response drafts.\n\n**Pro Tier Required:** Available on Growth, Scale, and Enterprise plans only.\n",
+        "tags": [
+          "Scope Guard"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScopeAnalyzeRequest"
+              },
+              "examples": {
+                "analyze": {
+                  "summary": "Analyze client message",
+                  "value": {
+                    "contract_text": "SCOPE OF WORK: Website design with 5 pages, 2 rounds of revisions included...",
+                    "client_message": "Can you also add a blog section? Shouldn't take long.",
+                    "communication_channel": "email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Analysis successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScopeAnalyzeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "description": "Pro tier required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "error": {
+                    "code": "PRO_REQUIRED",
+                    "message": "Scope Guard requires a Pro plan (Growth, Scale, or Enterprise)",
+                    "hint": "Upgrade at https://ebenova.dev/pricing"
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/scope/change-order": {
+      "post": {
+        "operationId": "generateChangeOrder",
+        "summary": "Generate change order document",
+        "description": "Generates a formal change order document for additional work requested by the client.\nReturns a professionally formatted document ready to send.\n\n**Pro Tier Required:** Available on Growth, Scale, and Enterprise plans only.\n",
+        "tags": [
+          "Scope Guard"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeOrderRequest"
+              },
+              "examples": {
+                "change_order": {
+                  "summary": "Generate change order",
+                  "value": {
+                    "additional_work": "Blog section with 3 template pages, CMS integration, and SEO optimization",
+                    "additional_cost": 640,
+                    "freelancer_name": "Acme Design Studio",
+                    "client_name": "TechCorp Inc.",
+                    "currency": "USD",
+                    "timeline_extension_days": 5,
+                    "jurisdiction": "United States - California"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Change order generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangeOrderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "description": "Pro tier required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "error": {
+                    "code": "PRO_REQUIRED",
+                    "message": "Scope Guard requires a Pro plan",
+                    "hint": "Upgrade at https://ebenova.dev/pricing"
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/invoices/generate": {
+      "post": {
+        "operationId": "generateInvoice",
+        "summary": "Generate an invoice or receipt",
+        "description": "Generates a professional HTML invoice, receipt, proforma invoice, or credit note.\nReturns fully rendered HTML ready to display or print-to-PDF client-side.\n\n**When to use this endpoint:** Any time you need to create a billing document —\ninvoice, receipt, proforma, or credit note.\n",
+        "tags": [
+          "Invoices"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateInvoiceRequest"
+              },
+              "examples": {
+                "invoice": {
+                  "summary": "Basic invoice",
+                  "value": {
+                    "type": "invoice",
+                    "from": {
+                      "name": "Acme Design Ltd.",
+                      "address": "12 Marina, Lagos, Nigeria",
+                      "email": "billing@acme.com",
+                      "tax_id": "NG-12345678"
+                    },
+                    "to": {
+                      "name": "John Smith",
+                      "address": "456 Oak Ave, London, UK",
+                      "email": "john@example.com"
+                    },
+                    "items": [
+                      {
+                        "description": "Website Design",
+                        "quantity": 1,
+                        "unit_price": 2500
+                      },
+                      {
+                        "description": "Monthly Maintenance",
+                        "quantity": 3,
+                        "unit_price": 400
+                      }
+                    ],
+                    "invoice_number": "INV-2026-001",
+                    "issue_date": "April 1, 2026",
+                    "due_date": "April 30, 2026",
+                    "currency": "USD",
+                    "tax_rate": 10,
+                    "notes": "Thank you for your business!"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Invoice generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateInvoiceResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/keys/usage": {
+      "get": {
+        "operationId": "getKeyUsage",
+        "summary": "Get API key usage stats",
+        "description": "Returns current month usage and 3-month history for the authenticated API key.",
+        "tags": [
+          "Keys"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usage statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/v1/billing/checkout": {
+      "post": {
+        "operationId": "createCheckoutSession",
+        "summary": "Create a subscription checkout session",
+        "description": "Creates a Stripe Checkout session for subscribing to an API plan.\nReturns a checkout URL — redirect your user there to complete payment.\nNo authentication required.\n",
+        "tags": [
+          "Billing"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckoutRequest"
+              },
+              "examples": {
+                "starter": {
+                  "summary": "Subscribe to Starter plan",
+                  "value": {
+                    "tier": "starter",
+                    "email": "user@example.com",
+                    "success_url": "https://yourapp.com/success",
+                    "cancel_url": "https://yourapp.com/pricing"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Checkout session created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckoutResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/billing/portal": {
+      "post": {
+        "operationId": "createPortalSession",
+        "summary": "Create a customer portal session",
+        "description": "Creates a Stripe Customer Portal session for managing subscriptions.\nRequires authentication. The API key must be linked to a Stripe customer.\n",
+        "tags": [
+          "Billing"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "return_url": {
+                    "type": "string",
+                    "description": "URL to redirect after portal session",
+                    "example": "https://yourapp.com/dashboard"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Portal session created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "portal_url": {
+                      "type": "string",
+                      "description": "URL to redirect user to Stripe portal"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "API Key",
+        "description": "Format: `Bearer sk_live_your_key`. Get your key at ebenova.dev/dashboard"
+      }
+    },
+    "schemas": {
+      "GenerateDocumentRequest": {
+        "type": "object",
+        "required": [
+          "document_type",
+          "fields"
+        ],
+        "properties": {
+          "document_type": {
+            "type": "string",
+            "description": "The type of document to generate",
+            "example": "nda",
+            "enum": [
+              "nda",
+              "freelance-contract",
+              "service-agreement",
+              "consulting-agreement",
+              "independent-contractor",
+              "business-partnership",
+              "joint-venture",
+              "distribution-agreement",
+              "supply-agreement",
+              "business-proposal",
+              "purchase-agreement",
+              "employment-offer-letter",
+              "non-compete-agreement",
+              "loan-agreement",
+              "payment-terms-agreement",
+              "shareholder-agreement",
+              "hire-purchase",
+              "tenancy-agreement",
+              "quit-notice",
+              "deed-of-assignment",
+              "power-of-attorney",
+              "landlord-agent-agreement",
+              "facility-manager-agreement",
+              "privacy-policy",
+              "terms-of-service",
+              "mou",
+              "letter-of-intent"
+            ]
+          },
+          "fields": {
+            "type": "object",
+            "description": "Document-specific fields. See the field reference at ebenova.dev/docs/legal for required fields per document type.",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            },
+            "example": {
+              "disclosingParty": "Acme Inc.",
+              "receivingParty": "John Smith",
+              "purpose": "Discussing potential partnership",
+              "duration": "2 years"
+            }
+          },
+          "jurisdiction": {
+            "type": "string",
+            "description": "Governing law / jurisdiction (e.g. \"Nigeria\", \"United States — California\")",
+            "example": "Nigeria"
+          }
+        }
+      },
+      "GenerateDocumentResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "document_type": {
+            "type": "string",
+            "example": "nda"
+          },
+          "document": {
+            "type": "string",
+            "description": "The full generated document text"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/UsageBlock"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ExtractRequest": {
+        "type": "object",
+        "required": [
+          "conversation"
+        ],
+        "properties": {
+          "conversation": {
+            "type": "string",
+            "description": "Raw conversation text (WhatsApp, email, chat). Max 10,000 characters.",
+            "example": "We agreed on an NDA. I'm Acme Inc disclosing to John Smith. 2 year duration, mutual."
+          },
+          "target_document": {
+            "type": "string",
+            "description": "The document type to extract fields for. If omitted, the model will suggest the best type.",
+            "example": "nda"
+          },
+          "auto_generate": {
+            "type": "boolean",
+            "description": "If true, generate the full document after extraction. Counts as 1 document.",
+            "default": false
+          }
+        }
+      },
+      "ExtractResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "suggested_document": {
+            "type": "string",
+            "description": "The document type that was identified or used",
+            "example": "nda"
+          },
+          "confidence": {
+            "type": "number",
+            "format": "float",
+            "description": "Confidence score for the suggested document type (0–1). Present when target_document was not specified.",
+            "example": 0.92
+          },
+          "extracted_fields": {
+            "type": "object",
+            "description": "Structured fields extracted from the conversation",
+            "additionalProperties": true
+          },
+          "missing_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Fields that could not be determined from the conversation"
+          },
+          "document": {
+            "type": "string",
+            "description": "The generated document text. Present only when auto_generate is true."
+          },
+          "usage": {
+            "$ref": "#/components/schemas/UsageBlock",
+            "description": "Present only when auto_generate is true."
+          }
+        }
+      },
+      "DocumentTypesResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "total": {
+            "type": "integer",
+            "example": 27
+          },
+          "types": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Flat list of all document type slugs"
+          },
+          "grouped": {
+            "type": "object",
+            "description": "Document types grouped by category",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "UsageResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "key": {
+            "type": "object",
+            "properties": {
+              "owner": {
+                "type": "string"
+              },
+              "tier": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string",
+                "nullable": true
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          },
+          "current_month": {
+            "$ref": "#/components/schemas/UsageBlock"
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "month": {
+                  "type": "string",
+                  "example": "2026-03"
+                },
+                "documents_generated": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "UsageBlock": {
+        "type": "object",
+        "properties": {
+          "documents_used": {
+            "type": "integer",
+            "example": 15
+          },
+          "documents_remaining": {
+            "type": "integer",
+            "example": 85
+          },
+          "monthly_limit": {
+            "type": "integer",
+            "example": 100
+          },
+          "resets_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "GenerateInvoiceRequest": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "items"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "invoice",
+              "receipt",
+              "proforma",
+              "credit-note"
+            ],
+            "default": "invoice"
+          },
+          "from": {
+            "$ref": "#/components/schemas/InvoiceParty"
+          },
+          "to": {
+            "$ref": "#/components/schemas/InvoiceParty"
+          },
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/InvoiceItem"
+            }
+          },
+          "invoice_number": {
+            "type": "string",
+            "example": "INV-2026-001"
+          },
+          "issue_date": {
+            "type": "string",
+            "example": "April 1, 2026"
+          },
+          "due_date": {
+            "type": "string",
+            "example": "April 30, 2026"
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "USD",
+              "EUR",
+              "GBP",
+              "CAD",
+              "AUD",
+              "NGN",
+              "KES",
+              "GHS",
+              "ZAR",
+              "INR",
+              "AED",
+              "SGD"
+            ],
+            "default": "USD"
+          },
+          "tax_rate": {
+            "type": "number",
+            "description": "Tax percentage (e.g. 10 for 10%)",
+            "default": 0
+          },
+          "discount_percent": {
+            "type": "number",
+            "description": "Discount percentage applied to subtotal",
+            "default": 0
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notes shown on the invoice (e.g. payment terms, thank-you message)"
+          },
+          "payment_instructions": {
+            "type": "string",
+            "description": "Bank details or payment instructions"
+          },
+          "logo_url": {
+            "type": "string",
+            "description": "Public URL of your logo image (PNG/JPG, displayed top-left)"
+          }
+        }
+      },
+      "InvoiceParty": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Acme Inc."
+          },
+          "address": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "tax_id": {
+            "type": "string"
+          }
+        }
+      },
+      "InvoiceItem": {
+        "type": "object",
+        "required": [
+          "description",
+          "quantity",
+          "unit_price"
+        ],
+        "properties": {
+          "description": {
+            "type": "string",
+            "example": "Website Development"
+          },
+          "quantity": {
+            "type": "number",
+            "example": 1
+          },
+          "unit_price": {
+            "type": "number",
+            "example": 2500
+          },
+          "notes": {
+            "type": "string",
+            "description": "Optional sub-description shown beneath the item"
+          }
+        }
+      },
+      "GenerateInvoiceResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "invoice_id": {
+            "type": "string",
+            "example": "inv_m8x3k_ab12c"
+          },
+          "invoice_number": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "subtotal": {
+            "type": "number"
+          },
+          "discount_amount": {
+            "type": "number"
+          },
+          "tax_amount": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "html": {
+            "type": "string",
+            "description": "Fully rendered HTML invoice — display in an iframe or print to PDF"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/UsageBlock"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CheckoutRequest": {
+        "type": "object",
+        "required": [
+          "tier"
+        ],
+        "properties": {
+          "tier": {
+            "type": "string",
+            "enum": [
+              "starter",
+              "growth",
+              "scale"
+            ],
+            "description": "Subscription tier to checkout",
+            "example": "starter"
+          },
+          "email": {
+            "type": "string",
+            "description": "Pre-fill customer email in checkout form",
+            "example": "user@example.com"
+          },
+          "success_url": {
+            "type": "string",
+            "description": "Redirect URL after successful payment",
+            "default": "https://ebenova.dev/dashboard?subscribed=1"
+          },
+          "cancel_url": {
+            "type": "string",
+            "description": "Redirect URL if user cancels",
+            "default": "https://ebenova.dev/pricing"
+          }
+        }
+      },
+      "CheckoutResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "checkout_url": {
+            "type": "string",
+            "description": "Stripe Checkout URL — redirect user here",
+            "example": "https://checkout.stripe.com/c/pay/cs_live_..."
+          },
+          "session_id": {
+            "type": "string",
+            "description": "Stripe session ID for verification",
+            "example": "cs_live_a1b2c3..."
+          },
+          "tier": {
+            "type": "string",
+            "example": "starter"
+          },
+          "label": {
+            "type": "string",
+            "description": "Human-readable tier description",
+            "example": "Starter — 100 docs/month"
+          }
+        }
+      },
+      "ScopeAnalyzeRequest": {
+        "type": "object",
+        "required": [
+          "contract_text",
+          "client_message"
+        ],
+        "properties": {
+          "contract_text": {
+            "type": "string",
+            "description": "The full contract text (min 50 characters, max 50,000)",
+            "example": "SCOPE OF WORK: Website design with 5 pages, 2 rounds of revisions included...",
+            "minLength": 50,
+            "maxLength": 50000
+          },
+          "client_message": {
+            "type": "string",
+            "description": "The client message to analyze for scope violations",
+            "example": "Can you also add a blog section? Shouldn't take long."
+          },
+          "communication_channel": {
+            "type": "string",
+            "description": "Channel where the message was received",
+            "enum": [
+              "email",
+              "whatsapp",
+              "slack",
+              "sms",
+              "other"
+            ],
+            "default": "email",
+            "example": "email"
+          }
+        }
+      },
+      "ScopeAnalyzeResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "violation_detected": {
+            "type": "boolean",
+            "description": "true if scope violations were found",
+            "example": true
+          },
+          "violations": {
+            "type": "array",
+            "description": "List of detected violations",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "SCOPE",
+                    "REVISION",
+                    "TIMELINE",
+                    "PAYMENT",
+                    "IP",
+                    "TERMINATION"
+                  ],
+                  "example": "SCOPE"
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "LOW",
+                    "MEDIUM",
+                    "HIGH"
+                  ],
+                  "example": "MEDIUM"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Clear explanation of the violation",
+                  "example": "Client requesting blog section not included in original scope"
+                },
+                "contract_reference": {
+                  "type": "string",
+                  "description": "Section or clause reference if identifiable",
+                  "example": "Section 1.1 - Scope of Work"
+                },
+                "client_claim": {
+                  "type": "string",
+                  "description": "What the client is requesting",
+                  "example": "Add blog section"
+                }
+              }
+            }
+          },
+          "response_options": {
+            "type": "array",
+            "description": "3 professional response drafts",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "PUSHBACK",
+                    "CHANGE_ORDER",
+                    "FIRM"
+                  ],
+                  "example": "CHANGE_ORDER"
+                },
+                "label": {
+                  "type": "string",
+                  "example": "Propose Change Order"
+                },
+                "draft": {
+                  "type": "string",
+                  "description": "Full response draft text",
+                  "example": "Hi [Client], I'd be happy to add a blog section..."
+                },
+                "recommended": {
+                  "type": "boolean",
+                  "example": true
+                }
+              }
+            }
+          },
+          "suggested_change_order": {
+            "type": "object",
+            "nullable": true,
+            "description": "Suggested change order if applicable",
+            "properties": {
+              "applicable": {
+                "type": "boolean",
+                "example": true
+              },
+              "additional_work_description": {
+                "type": "string",
+                "example": "Blog section design and development"
+              },
+              "estimated_hours": {
+                "type": "integer",
+                "example": 8
+              },
+              "suggested_cost_usd": {
+                "type": "number",
+                "example": 640
+              },
+              "timeline_extension_days": {
+                "type": "integer",
+                "example": 5
+              }
+            }
+          },
+          "summary": {
+            "type": "string",
+            "description": "One sentence summary",
+            "example": "Scope violation detected: additional work requested."
+          },
+          "usage": {
+            "$ref": "#/components/schemas/UsageBlock"
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "contract_length": {
+                "type": "integer",
+                "example": 1500
+              },
+              "message_length": {
+                "type": "integer",
+                "example": 52
+              },
+              "channel": {
+                "type": "string",
+                "example": "email"
+              }
+            }
+          }
+        }
+      },
+      "ChangeOrderRequest": {
+        "type": "object",
+        "required": [
+          "additional_work",
+          "additional_cost"
+        ],
+        "properties": {
+          "additional_work": {
+            "type": "string",
+            "description": "Description of the additional work requested",
+            "example": "Blog section with 3 template pages, CMS integration, and SEO optimization"
+          },
+          "additional_cost": {
+            "type": "number",
+            "description": "Additional cost in specified currency",
+            "example": 640
+          },
+          "freelancer_name": {
+            "type": "string",
+            "description": "Freelancer/service provider name",
+            "example": "Acme Design Studio"
+          },
+          "client_name": {
+            "type": "string",
+            "description": "Client name",
+            "example": "TechCorp Inc."
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency code",
+            "default": "USD",
+            "example": "USD"
+          },
+          "timeline_extension_days": {
+            "type": "integer",
+            "description": "Additional days needed",
+            "example": 5
+          },
+          "jurisdiction": {
+            "type": "string",
+            "description": "Governing law",
+            "default": "International",
+            "example": "United States - California"
+          }
+        }
+      },
+      "ChangeOrderResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "document": {
+            "type": "string",
+            "description": "Full change order document text",
+            "example": "CHANGE ORDER #1\n\nThis Change Order modifies the original agreement..."
+          },
+          "change_order_details": {
+            "type": "object",
+            "properties": {
+              "freelancer_name": {
+                "type": "string",
+                "example": "Acme Design Studio"
+              },
+              "client_name": {
+                "type": "string",
+                "example": "TechCorp Inc."
+              },
+              "additional_work": {
+                "type": "string",
+                "example": "Blog section with 3 template pages..."
+              },
+              "additional_cost": {
+                "type": "number",
+                "example": 640
+              },
+              "currency": {
+                "type": "string",
+                "example": "USD"
+              },
+              "timeline_extension_days": {
+                "type": "integer",
+                "example": 5
+              },
+              "jurisdiction": {
+                "type": "string",
+                "example": "United States - California"
+              },
+              "generated_at": {
+                "type": "string",
+                "format": "date-time",
+                "example": "2026-03-29T12:00:00Z"
+              }
+            }
+          },
+          "usage": {
+            "$ref": "#/components/schemas/UsageBlock"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "INVALID_API_KEY"
+              },
+              "message": {
+                "type": "string",
+                "example": "Invalid API key"
+              },
+              "hint": {
+                "type": "string",
+                "example": "Get your API key at ebenova.dev/dashboard"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request — missing or invalid parameters",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Unauthorized — invalid or missing API key",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "RateLimited": {
+        "description": "Rate limited — monthly document limit exceeded",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "ServerError": {
+        "description": "Server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  }
+}
