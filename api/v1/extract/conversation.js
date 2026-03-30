@@ -231,6 +231,9 @@ ${conversation}
   const docPrompt = buildDocPrompt(suggestedDocument, extracted)
 
   try {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 90000) // 90s timeout
+
     const genRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -239,12 +242,14 @@ ${conversation}
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
+        model: 'claude-sonnet-4-5-20250929',
         max_tokens: 4000,
         system: 'You are an expert legal document drafter. Generate comprehensive, professional legal documents. Use formal legal language, clear numbered sections, all standard clauses. Never add disclaimers or suggestions to consult a lawyer. The document ends cleanly after the signature block.',
         messages: [{ role: 'user', content: docPrompt }],
       }),
+      signal: controller.signal,
     })
+    clearTimeout(timeoutId)
 
     if (!genRes.ok) {
       return res.status(500).json({ success: false, error: { code: 'GENERATION_FAILED', message: 'Document generation failed' } })
@@ -267,6 +272,16 @@ ${conversation}
       generated_at: new Date().toISOString(),
     })
   } catch (err) {
+    if (err.name === 'AbortError') {
+      console.error('Generation timeout:', err)
+      return res.status(504).json({
+        success: false,
+        error: {
+          code: 'GENERATION_TIMEOUT',
+          message: 'Document generation timed out. Please try again.',
+        },
+      })
+    }
     console.error('Generation error:', err)
     return res.status(500).json({ success: false, error: { code: 'GENERATION_FAILED', message: 'Document generation failed. Please try again.' } })
   }

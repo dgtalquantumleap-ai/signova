@@ -3,17 +3,8 @@
 // Requires: Authorization: Bearer sk_live_...
 
 import { authenticate, recordUsage, buildUsageBlock } from '../../../lib/api-auth.js'
-
-const SUPPORTED_TYPES = [
-  'privacy-policy', 'terms-of-service', 'nda', 'freelance-contract',
-  'independent-contractor', 'hire-purchase', 'tenancy-agreement', 'quit-notice',
-  'deed-of-assignment', 'power-of-attorney', 'landlord-agent-agreement',
-  'facility-manager-agreement', 'service-agreement', 'consulting-agreement',
-  'employment-offer-letter', 'non-compete-agreement', 'payment-terms-agreement',
-  'business-partnership', 'joint-venture', 'loan-agreement', 'shareholder-agreement',
-  'mou', 'letter-of-intent', 'distribution-agreement', 'supply-agreement',
-  'business-proposal', 'purchase-agreement',
-]
+import { DocumentGenerateSchema, formatValidationError } from '../../../lib/validators.js'
+import { logError, logRequest, logDetailedError } from '../../../lib/logger.js'
 
 async function parseBody(req) {
   if (req.body && typeof req.body === 'object') return req.body
@@ -55,6 +46,7 @@ Output the complete document only, no preamble, explanation, or closing notes.`
 }
 
 export default async function handler(req, res) {
+  const startTime = Date.now()
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
@@ -70,49 +62,42 @@ export default async function handler(req, res) {
     return res.status(auth.status).json({ success: false, error: auth.error })
   }
 
-  // ── Parse + validate body ─────────────────────────────────────────────────
+  // ── Parse + validate body with Zod ───────────────────────────────────────
   const body = await parseBody(req)
-  const { document_type, fields, jurisdiction } = body
-
-  if (!document_type) {
-    return res.status(400).json({
-      success: false,
-      error: { code: 'MISSING_FIELD', message: 'document_type is required' },
-      supported_types: SUPPORTED_TYPES,
+  
+  let validated
+  try {
+    validated = DocumentGenerateSchema.parse(body)
+  } catch (err) {
+    logError('POST /v1/documents/generate', { 
+      code: 'VALIDATION_ERROR',
+      details: formatValidationError(err)
+    })
+    return res.status(400).json({ 
+      success: false, 
+      error: formatValidationError(err)
     })
   }
 
-  if (!SUPPORTED_TYPES.includes(document_type)) {
-    return res.status(400).json({
-      success: false,
-      error: { code: 'UNSUPPORTED_TYPE', message: `Unsupported document type: ${document_type}` },
-      supported_types: SUPPORTED_TYPES,
-    })
-  }
-
-  if (!fields || typeof fields !== 'object' || Object.keys(fields).length === 0) {
-    return res.status(400).json({
-      success: false,
-      error: {
-        code: 'MISSING_FIELD',
-        message: 'fields object is required and must not be empty',
-        hint: 'See field reference at ebenova.dev/docs/legal',
-      },
-    })
-  }
-
-  const enrichedFields = { ...fields }
-  if (jurisdiction) enrichedFields.jurisdiction = jurisdiction
+  const { document_type, fields, jurisdiction } = validated
+  const enrichedFields = { ...fields, jurisdiction }
 
   // ── Generate ──────────────────────────────────────────────────────────────
   const anthropicKey = process.env.ANTHROPIC_API_KEY
   if (!anthropicKey) {
+    logError('POST /v1/documents/generate', { 
+      code: 'SERVER_MISCONFIGURED',
+      message: 'ANTHROPIC_API_KEY not set'
+    })
     return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: 'Server misconfigured' } })
   }
 
   const prompt = buildPrompt(document_type, enrichedFields)
 
   try {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 90000) // 90s timeout
+
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -121,17 +106,22 @@ export default async function handler(req, res) {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
+        model: 'claude-sonnet-4-5-20250929',
         max_tokens: 4000,
         system:
           'You are an expert legal document drafter with deep knowledge of international law. Generate comprehensive, professional legal documents tailored precisely to the details provided. Use formal legal language, clear numbered sections, and include all standard clauses. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.',
         messages: [{ role: 'user', content: prompt }],
       }),
+      signal: controller.signal,
     })
+    clearTimeout(timeoutId)
 
     if (!response.ok) {
       const err = await response.json()
-      console.error('Anthropic error:', err)
+      logDetailedError('POST /v1/documents/generate', new Error('Anthropic API error'), { 
+        anthropic_response: err,
+        document_type,
+      })
       return res.status(500).json({ success: false, error: { code: 'GENERATION_FAILED', message: 'Document generation failed' } })
     }
 
@@ -141,6 +131,11 @@ export default async function handler(req, res) {
     // Record usage only after successful generation
     await recordUsage(auth)
 
+    logRequest('POST /v1/documents/generate', 'POST', 200, Date.now() - startTime, { 
+      document_type,
+      tier: auth.keyData?.tier,
+    })
+
     return res.status(200).json({
       success: true,
       document_type,
@@ -149,7 +144,24 @@ export default async function handler(req, res) {
       generated_at: new Date().toISOString(),
     })
   } catch (err) {
-    console.error('Generate error:', err)
+    if (err.name === 'AbortError') {
+      logError('POST /v1/documents/generate', {
+        code: 'ANTHROPIC_TIMEOUT',
+        message: 'Anthropic API request timed out after 90s',
+        document_type,
+      })
+      return res.status(504).json({
+        success: false,
+        error: {
+          code: 'GENERATION_TIMEOUT',
+          message: 'Document generation timed out. Please try again.',
+        },
+      })
+    }
+    logDetailedError('POST /v1/documents/generate', err, {
+      document_type,
+      tier: auth.keyData?.tier,
+    })
     return res.status(500).json({ success: false, error: { code: 'GENERATION_FAILED', message: 'Document generation failed. Please try again.' } })
   }
 }
