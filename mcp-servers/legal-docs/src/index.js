@@ -300,6 +300,101 @@ When to use:
     }
   )
 
+  // ─── Tool: generate_change_order ──────────────────────────────────────────
+
+  server.tool(
+    'generate_change_order',
+    {
+      description: `Generate a formal change order when scope changes are detected.
+
+Use this after analyzing scope creep with analyze_scope_creep.
+
+Typically drafted automatically after scope violations are confirmed by the client.
+
+When to use:
+- "Generate a change order for the additional work we discussed"
+- "Create a formal change order for this scope addition"
+- "Draft a change order adding 20 hours of UX design work for $3000"
+
+**Requires Pro tier or higher** (Growth/Scale/Enterprise plan)`,
+      inputSchema: z.object({
+        freelancer_name: z.string().describe('Your name or business name'),
+        client_name: z.string().describe('Client name or business name'),
+        original_scope: z.string().describe('Summary of original contract scope'),
+        additional_work: z.string().describe('Description of additional work requested'),
+        additional_cost: z.number().describe('Additional cost (numeric, e.g., 3000 for $3000)'),
+        currency: z.enum(['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'NGN', 'KES', 'GHS', 'ZAR', 'INR', 'AED', 'SGD']).optional().default('USD'),
+        timeline_extension_days: z.number().optional().describe('Additional days needed (e.g., 5 for 5 business days)'),
+        jurisdiction: z.string().optional().describe('Governing law/jurisdiction (e.g., "Nigeria", "US - California")'),
+        contract_date: z.string().optional().describe('Original contract date (e.g., "January 15, 2026")'),
+        change_order_number: z.number().optional().default(1).describe('Change order number (1, 2, 3, etc.)'),
+      }),
+    },
+    async ({ freelancer_name, client_name, original_scope, additional_work, additional_cost, currency, timeline_extension_days, jurisdiction, contract_date, change_order_number }) => {
+      const data = await callApi('/v1/scope/change-order', {
+        freelancer_name, client_name, original_scope, additional_work, additional_cost,
+        currency, timeline_extension_days, jurisdiction, contract_date, change_order_number,
+      })
+      if (!data.success) {
+        return {
+          content: [{ type: 'text', text: `Error: ${data.error?.message || 'Change order generation failed'}${data.error?.hint ? `\nHint: ${data.error.hint}` : ''}` }],
+          isError: true,
+        }
+      }
+      return {
+        content: [{
+          type: 'text',
+          text: [
+            `**Change Order #${change_order_number} Generated**`,
+            `From: ${freelancer_name}`,
+            `To: ${client_name}`,
+            `Additional Work: ${additional_work}`,
+            `Cost: ${currency} ${additional_cost.toLocaleString()}`,
+            data.timeline_extension_days ? `Timeline Extension: +${data.timeline_extension_days} business days` : '',
+            '',
+            '---',
+            '',
+            data.document,
+            '',
+            data.usage ? `*${data.usage.documents_used} / ${data.usage.monthly_limit} documents used this month*` : '',
+          ].filter(Boolean).join('\n'),
+        }],
+      }
+    }
+  )
+
+  // ─── Tool: check_usage ─────────────────────────────────────────────────────
+
+  server.tool(
+    'check_usage',
+    {
+      description: 'Check your API quota — how many documents/month you\'ve used and what\'s remaining. Shows monthly history and reset date.',
+      inputSchema: z.object({}),
+    },
+    async () => {
+      const data = await getApi('/v1/keys/usage')
+      if (!data.success) {
+        return { content: [{ type: 'text', text: `Error: ${data.error?.message || 'Could not fetch usage'}` }], isError: true }
+      }
+      const cm = data.current_month
+      const text = [
+        `**${data.key?.tier?.toUpperCase() || 'UNKNOWN'} Plan**`,
+        `Owner: ${data.key?.owner || 'Unknown'}`,
+        '',
+        `**This Month:** ${cm.documents_used} / ${cm.monthly_limit} documents used`,
+        `**Remaining:** ${cm.documents_remaining} documents`,
+        `**Resets:** ${new Date(cm.resets_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
+      ]
+      if (data.history?.length > 0) {
+        text.push('', '**3-Month History:**')
+        for (const h of data.history) {
+          text.push(`  ${h.month}: ${h.documents_generated} documents`)
+        }
+      }
+      return { content: [{ type: 'text', text: text.join('\n') }] }
+    }
+  )
+
   return server
 }
 
@@ -322,7 +417,7 @@ async function main() {
   // Build mode: just verify server starts, then exit
   if (isBuildMode) {
     process.stderr.write('[ebenova-legal-docs-mcp] Build mode: Server initialized successfully\n')
-    process.stderr.write('[ebenova-legal-docs-mcp] Tools registered: generate_legal_document, generate_invoice, extract_from_conversation, list_document_types, check_usage\n')
+    process.stderr.write('[ebenova-legal-docs-mcp] Tools registered: generate_legal_document, extract_from_conversation, list_document_types, generate_invoice, analyze_scope_creep, generate_change_order, check_usage\n')
     process.exit(0)
     return
   }
