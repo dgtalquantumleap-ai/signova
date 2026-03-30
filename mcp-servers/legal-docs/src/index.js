@@ -175,7 +175,7 @@ When to use:
   server.tool(
     'generate_invoice',
     {
-      description: `Generate a professional HTML invoice, receipt, proforma invoice, or credit note.
+      description: `Generate a professional invoice, receipt, proforma invoice, or credit note.
 
 Use this tool when the user needs to create any billing document — invoices, receipts,
 proforma invoices, or credit notes. Returns fully rendered HTML ready to display or print-to-PDF.
@@ -183,14 +183,12 @@ proforma invoices, or credit notes. Returns fully rendered HTML ready to display
 Supports 12 currencies: USD, EUR, GBP, CAD, AUD, NGN, KES, GHS, ZAR, INR, AED, SGD.
 
 When to use:
-- "Create an invoice for my client"
-- "Generate a receipt for this payment"
-- "Make a proforma invoice for the quote"
-- "I need a credit note for the refund"`,
+- "Create an invoice for my client for $500"
+- "Generate a receipt for a payment"
+- "Make a proforma invoice for a quote"
+- "Create a credit note for a refund"`,
       inputSchema: z.object({
-        type: z.enum(['invoice', 'receipt', 'proforma', 'credit-note']).optional().default('invoice').describe(
-          'Type of billing document to generate'
-        ),
+        type: z.enum(['invoice', 'receipt', 'proforma', 'credit-note']).optional().default('invoice').describe('Type of billing document'),
         from: z.object({
           name: z.string().describe('Your company/business name'),
           address: z.string().optional().describe('Your address'),
@@ -214,7 +212,7 @@ When to use:
         invoice_number: z.string().optional().describe('Invoice/receipt number (e.g., INV-2026-001)'),
         issue_date: z.string().optional().describe('Issue date (e.g., "April 1, 2026")'),
         due_date: z.string().optional().describe('Due date (e.g., "April 30, 2026")'),
-        currency: z.enum(['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'NGN', 'KES', 'GHS', 'ZAR', 'INR', 'AED', 'SGD']).optional().default('USD').describe('Currency code'),
+        currency: z.enum(['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'NGN', 'KES', 'GHS', 'ZAR', 'INR', 'AED', 'SGD']).optional().default('USD'),
         tax_rate: z.number().optional().default(0).describe('Tax percentage (e.g., 10 for 10%)'),
         discount_percent: z.number().optional().default(0).describe('Discount percentage'),
         notes: z.string().optional().describe('Notes shown on the invoice'),
@@ -229,12 +227,12 @@ When to use:
       })
       if (!data.success) {
         return {
-          content: [{ type: 'text', text: `Error: ${data.error?.message || 'Invoice generation failed'}${data.error?.hint ? `\nHint: ${data.error.hint}` : ''}` }],
+          content: [{ type: 'text', text: `Error: ${data.error?.message || 'Invoice generation failed'}` }],
           isError: true,
         }
       }
       const summary = [
-        `**${data.type?.toUpperCase() || 'INVOICE'} Generated**`,
+        `**${(type || 'invoice').toUpperCase()} Generated**`,
         `Invoice ID: ${data.invoice_id}`,
         data.invoice_number ? `Number: ${data.invoice_number}` : '',
         `Currency: ${data.currency}`,
@@ -243,92 +241,9 @@ When to use:
         data.tax_amount > 0 ? `Tax: ${data.tax_amount.toFixed(2)}` : '',
         `**Total: ${data.currency} ${data.total?.toFixed(2)}**`,
         '',
-        '---',
-        '',
-        'The HTML invoice is included below. Render it in a browser or convert to PDF using print.',
-        '',
-        '```html',
-        data.html,
-        '```',
-        data.usage ? `\n---\n*${data.usage.documents_used} / ${data.usage.monthly_limit} documents used this month*` : '',
+        data.usage ? `*${data.usage.documents_used} / ${data.usage.monthly_limit} documents used this month*` : '',
       ].filter(Boolean).join('\n')
       return { content: [{ type: 'text', text: summary }] }
-    }
-  )
-
-  // ─── Tool: check_usage ─────────────────────────────────────────────────────
-
-  server.tool(
-    'check_usage',
-    {
-      description: 'Check how many documents have been generated this month and what is remaining in your quota.',
-      inputSchema: z.object({}),
-    },
-    async () => {
-      const data = await getApi('/v1/keys/usage')
-      if (!data.success) return { content: [{ type: 'text', text: `Error: ${data.error?.message}` }], isError: true }
-      const cm = data.current_month
-      const text = [
-        `**API Key:** ${data.key?.owner || 'Unknown'} (${data.key?.tier || '?'} plan)`,
-        `**This month:** ${cm.documents_used} / ${cm.monthly_limit} documents used (${cm.documents_remaining} remaining)`,
-        `**Resets:** ${new Date(cm.resets_at).toLocaleDateString('en-GB', { month: 'long', day: 'numeric', year: 'numeric' })}`,
-      ]
-      if (data.history?.length > 0) {
-        text.push('', '**Monthly history:**')
-        for (const h of data.history) text.push(`  - ${h.month}: ${h.documents_generated} documents`)
-      }
-      return { content: [{ type: 'text', text: text.join('\n') }] }
-    }
-  )
-
-  // ─── Tool: generate_invoice ──────────────────────────────────────────────
-
-  server.tool(
-    'generate_invoice',
-    {
-      description: `Generate a professional invoice, receipt, proforma, or credit note.
-
-Use this tool when the user needs to create any billing document.
-
-When to use:
-- "Create an invoice for my client for $500 of consulting work"
-- "Generate a receipt for a payment I received"
-- "Make a proforma invoice for a new project quote"
-- "Create a credit note for a refund of $200"`,
-      inputSchema: z.object({
-        type: z.enum(['invoice', 'receipt', 'proforma', 'credit-note']).optional().default('invoice'),
-        from_name: z.string().describe('Your name or business name'),
-        from_email: z.string().optional(),
-        to_name: z.string().describe('Client name or business name'),
-        to_email: z.string().optional(),
-        items: z.array(z.object({
-          description: z.string(),
-          quantity: z.number(),
-          unit_price: z.number(),
-        })).describe('Line items'),
-        currency: z.enum(['USD','EUR','GBP','CAD','AUD','NGN','KES','GHS','ZAR','INR','AED','SGD']).optional().default('USD'),
-        invoice_number: z.string().optional(),
-        tax_rate: z.number().optional().default(0),
-        notes: z.string().optional(),
-      }),
-    },
-    async ({ type, from_name, from_email, to_name, to_email, items, currency, invoice_number, tax_rate, notes }) => {
-      const data = await callApi('/v1/invoices/generate', {
-        type, from: { name: from_name, email: from_email },
-        to: { name: to_name, email: to_email },
-        items, currency, invoice_number, tax_rate, notes,
-      })
-      if (!data.success) {
-        return { content: [{ type: 'text', text: `Error: ${data.error?.message || 'Invoice generation failed'}` }], isError: true }
-      }
-      const lines = [
-        `**${(type || 'invoice').toUpperCase()} generated** — ${data.invoice_id}`,
-        `**Total:** ${data.currency} ${data.total?.toFixed(2)}`,
-        '',
-        'Full HTML invoice generated. Open in browser and print to PDF.',
-        data.usage ? `\n---\n*${data.usage.documents_used} / ${data.usage.monthly_limit} documents used this month*` : '',
-      ].filter(Boolean)
-      return { content: [{ type: 'text', text: lines.join('\n') }] }
     }
   )
 
