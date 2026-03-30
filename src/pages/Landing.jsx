@@ -545,10 +545,10 @@ export default function Landing() {
         <div className="hero-inner">
           {/* LCP FIX: fetchpriority="high" tells browser this is the LCP element */}
           <h1 className="hero-title" fetchpriority="high">
-            Professional legal documents for freelancers, landlords, and businesses globally.
+            Got burned on a handshake deal? Get a signed-ready contract in 3 minutes.
           </h1>
           <p className="hero-sub">
-            Tenancy agreements. Freelance contracts. NDAs. Deeds of assignment. 27 document types — jurisdiction-aware, WhatsApp-ready, free to preview. No account. No lawyer fees.
+            Paste your WhatsApp negotiation — we extract the terms and generate a proper legal document instantly. 27 document types, jurisdiction-aware for Nigeria, UK, US and 180+ countries. Free preview, $4.99 to download. No lawyer. No account.
           </p>
 
           {/* Jurisdiction badges — above the fold for trust */}
