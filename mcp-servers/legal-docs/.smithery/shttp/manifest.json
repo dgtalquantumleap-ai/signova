@@ -149,13 +149,218 @@
           }
         },
         {
-          "name": "check_usage",
+          "name": "generate_invoice",
           "inputSchema": {
             "type": "object",
             "properties": {
               "inputSchema": {
                 "type": "object",
-                "properties": {},
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "invoice",
+                      "receipt",
+                      "proforma",
+                      "credit-note"
+                    ],
+                    "default": "invoice",
+                    "description": "Type of billing document"
+                  },
+                  "from": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Your company/business name"
+                      },
+                      "address": {
+                        "type": "string",
+                        "description": "Your address"
+                      },
+                      "email": {
+                        "type": "string",
+                        "description": "Your email"
+                      },
+                      "phone": {
+                        "type": "string",
+                        "description": "Your phone"
+                      },
+                      "tax_id": {
+                        "type": "string",
+                        "description": "Your tax ID"
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Sender/seller details"
+                  },
+                  "to": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Client/customer name"
+                      },
+                      "address": {
+                        "type": "string",
+                        "description": "Client address"
+                      },
+                      "email": {
+                        "type": "string",
+                        "description": "Client email"
+                      },
+                      "phone": {
+                        "type": "string",
+                        "description": "Client phone"
+                      },
+                      "tax_id": {
+                        "type": "string",
+                        "description": "Client tax ID"
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Recipient/buyer details"
+                  },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "description": {
+                          "type": "string",
+                          "description": "Item description"
+                        },
+                        "quantity": {
+                          "type": "number",
+                          "description": "Quantity"
+                        },
+                        "unit_price": {
+                          "type": "number",
+                          "description": "Unit price"
+                        },
+                        "notes": {
+                          "type": "string",
+                          "description": "Optional item notes"
+                        }
+                      },
+                      "required": [
+                        "description",
+                        "quantity",
+                        "unit_price"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "description": "Line items"
+                  },
+                  "invoice_number": {
+                    "type": "string",
+                    "description": "Invoice/receipt number (e.g., INV-2026-001)"
+                  },
+                  "issue_date": {
+                    "type": "string",
+                    "description": "Issue date (e.g., \"April 1, 2026\")"
+                  },
+                  "due_date": {
+                    "type": "string",
+                    "description": "Due date (e.g., \"April 30, 2026\")"
+                  },
+                  "currency": {
+                    "type": "string",
+                    "enum": [
+                      "USD",
+                      "EUR",
+                      "GBP",
+                      "CAD",
+                      "AUD",
+                      "NGN",
+                      "KES",
+                      "GHS",
+                      "ZAR",
+                      "INR",
+                      "AED",
+                      "SGD"
+                    ],
+                    "default": "USD"
+                  },
+                  "tax_rate": {
+                    "type": "number",
+                    "default": 0,
+                    "description": "Tax percentage (e.g., 10 for 10%)"
+                  },
+                  "discount_percent": {
+                    "type": "number",
+                    "default": 0,
+                    "description": "Discount percentage"
+                  },
+                  "notes": {
+                    "type": "string",
+                    "description": "Notes shown on the invoice"
+                  },
+                  "payment_instructions": {
+                    "type": "string",
+                    "description": "Bank details or payment instructions"
+                  },
+                  "logo_url": {
+                    "type": "string",
+                    "description": "Public URL of your logo image"
+                  }
+                },
+                "required": [
+                  "from",
+                  "to",
+                  "items"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "inputSchema"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "execution": {
+            "taskSupport": "forbidden"
+          }
+        },
+        {
+          "name": "analyze_scope_creep",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "contract_text": {
+                    "type": "string",
+                    "description": "Your full contract text (paste the signed agreement)"
+                  },
+                  "client_message": {
+                    "type": "string",
+                    "description": "The client message to analyze"
+                  },
+                  "communication_channel": {
+                    "type": "string",
+                    "enum": [
+                      "email",
+                      "whatsapp",
+                      "slack",
+                      "sms",
+                      "other"
+                    ],
+                    "default": "email"
+                  }
+                },
+                "required": [
+                  "contract_text",
+                  "client_message"
+                ],
                 "additionalProperties": false
               }
             },
@@ -174,7 +379,7 @@
       "prompts": []
     },
     "source": {
-      "commit": "41b7f077df7a4f16ed8183a356d609e2da3f0e56",
+      "commit": "b2ad32daf90208f54d4baa8ef1b90f69f33e8723",
       "branch": "main"
     }
   },
@@ -182,5 +387,5 @@
     "module": "module.js",
     "sourcemap": "module.js.map"
   },
-  "name": "ebenova-legal-docs"
+  "name": "legal-docs-mcp"
 }
