@@ -373,6 +373,111 @@
           "execution": {
             "taskSupport": "forbidden"
           }
+        },
+        {
+          "name": "generate_change_order",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "freelancer_name": {
+                    "type": "string",
+                    "description": "Your name or business name"
+                  },
+                  "client_name": {
+                    "type": "string",
+                    "description": "Client name or business name"
+                  },
+                  "original_scope": {
+                    "type": "string",
+                    "description": "Summary of original contract scope"
+                  },
+                  "additional_work": {
+                    "type": "string",
+                    "description": "Description of additional work requested"
+                  },
+                  "additional_cost": {
+                    "type": "number",
+                    "description": "Additional cost (numeric, e.g., 3000 for $3000)"
+                  },
+                  "currency": {
+                    "type": "string",
+                    "enum": [
+                      "USD",
+                      "EUR",
+                      "GBP",
+                      "CAD",
+                      "AUD",
+                      "NGN",
+                      "KES",
+                      "GHS",
+                      "ZAR",
+                      "INR",
+                      "AED",
+                      "SGD"
+                    ],
+                    "default": "USD"
+                  },
+                  "timeline_extension_days": {
+                    "type": "number",
+                    "description": "Additional days needed (e.g., 5 for 5 business days)"
+                  },
+                  "jurisdiction": {
+                    "type": "string",
+                    "description": "Governing law/jurisdiction (e.g., \"Nigeria\", \"US - California\")"
+                  },
+                  "contract_date": {
+                    "type": "string",
+                    "description": "Original contract date (e.g., \"January 15, 2026\")"
+                  },
+                  "change_order_number": {
+                    "type": "number",
+                    "default": 1,
+                    "description": "Change order number (1, 2, 3, etc.)"
+                  }
+                },
+                "required": [
+                  "freelancer_name",
+                  "client_name",
+                  "original_scope",
+                  "additional_work",
+                  "additional_cost"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "inputSchema"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "execution": {
+            "taskSupport": "forbidden"
+          }
+        },
+        {
+          "name": "check_usage",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "inputSchema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "inputSchema"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "execution": {
+            "taskSupport": "forbidden"
+          }
         }
       ],
       "resources": [],
