@@ -103,6 +103,35 @@ const TOOLS = [
       required: ['additional_work', 'additional_cost'],
     },
   },
+  {
+    name: 'link_contract_payment',
+    description: 'Link a generated contract to a payment reference (bank transfer, invoice, etc). Creates a bidirectional association for lookup by contract ID or payment ref.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        contract_id: { type: 'string', description: 'Unique contract identifier' },
+        document_type: { type: 'string', description: 'Type of document (e.g. tenancy-agreement)' },
+        payment_ref: { type: 'string', description: 'Payment reference (bank transfer ref, invoice number, etc)' },
+        payment_amount: { type: 'number', description: 'Payment amount' },
+        payment_currency: { type: 'string', description: 'Currency code (e.g. NGN, USD, GBP)' },
+        payment_status: { type: 'string', description: 'Status: pending, paid, overdue, disputed' },
+        parties: { type: 'array', items: { type: 'string' }, description: 'Names of parties involved' },
+        notes: { type: 'string', description: 'Optional notes' },
+      },
+      required: ['contract_id', 'payment_ref'],
+    },
+  },
+  {
+    name: 'lookup_contract_link',
+    description: 'Look up a contract-payment link by contract ID or payment reference.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        contract_id: { type: 'string', description: 'Contract ID to look up' },
+        payment_ref: { type: 'string', description: 'Payment reference to look up' },
+      },
+    },
+  },
 ]
 
 const API_BASE = 'https://www.getsignova.com'
@@ -258,6 +287,21 @@ async function callTool(name, args, apiKey) {
     const data = await callApi('/v1/scope/change-order', args, apiKey)
     if (!data.success) return text(`Error: ${data.error?.message}`)
     return text(data.document)
+  }
+
+  if (name === 'link_contract_payment') {
+    const data = await callApi('/v1/contracts/link', args, apiKey)
+    if (!data.success) return text(`Error: ${data.error?.message}`)
+    const l = data.link
+    return text(`Linked contract ${l.contract_id} to payment ${l.payment_ref} (${l.payment_status}, ${l.payment_currency} ${l.payment_amount || 'N/A'})`)
+  }
+
+  if (name === 'lookup_contract_link') {
+    const params = args.contract_id ? `contract_id=${args.contract_id}` : `payment_ref=${args.payment_ref}`
+    const data = await getApi(`/v1/contracts/link?${params}`, apiKey)
+    if (!data.success) return text(`Error: ${data.error?.message || 'Not found'}`)
+    const l = data.link
+    return text(`Contract: ${l.contract_id}\nPayment Ref: ${l.payment_ref}\nStatus: ${l.payment_status}\nAmount: ${l.payment_currency} ${l.payment_amount || 'N/A'}\nLinked: ${l.linked_at}\nParties: ${(l.parties || []).join(', ') || 'N/A'}`)
   }
 
   return { content: [{ type: 'text', text: `Unknown tool: ${name}` }], isError: true }
