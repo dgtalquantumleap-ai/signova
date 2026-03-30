@@ -58,6 +58,9 @@
     }
   ],
   "functions": {
+    "api/warmup.js": {
+      "maxDuration": 30
+    },
     "api/scope-guard-analyze.js": {
       "maxDuration": 60
     },
@@ -126,6 +129,12 @@
       ]
     },
     {
+      "source": "/(.*\\.webp)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }
+      ]
+    },
+    {
       "source": "/(.*\\.(?:png|jpg|jpeg|svg|gif|webp|ico))",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }
@@ -151,6 +160,12 @@
         { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
         { "key": "X-DNS-Prefetch-Control", "value": "on" }
       ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/warmup",
+      "schedule": "*/5 * * * *"
     }
   ]
 }

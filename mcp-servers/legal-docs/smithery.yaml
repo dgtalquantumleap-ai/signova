@@ -2,7 +2,7 @@
 # https://smithery.ai/docs/build/publish
 
 name: ebenova-legal-docs
-version: 1.0.0
+version: 1.2.0
 description: Generate professional legal documents via API. 27 document types across 18 jurisdictions.
 
 # Server metadata
@@ -22,6 +22,8 @@ keywords:
   - nigeria
   - africa
   - api
+  - invoice
+  - receipt
 
 # Configuration schema (required for API keys)
 configSchema:
@@ -29,9 +31,9 @@ configSchema:
   properties:
     EBENOVA_API_KEY:
       type: string
-      description: "Your Ebenova API key. Get one free at https://ebenova.dev/docs"
-      default: ""
-      required: true
+      description: "Your Ebenova API key. Get one free at https://ebenova.dev/dashboard"
+      default: "sk_test_sandbox"
+      required: false
     EBENOVA_API_BASE:
       type: string
       description: "API base URL (optional, defaults to https://api.ebenova.dev)"
@@ -40,17 +42,17 @@ configSchema:
 
 # Installation methods
 installation:
-  npm: "npx -y ebenova-legal-docs"
+  npm: "npx -y ebenova-legal-docs-mcp"
   docker: "docker run -e EBENOVA_API_KEY=your_key ebenova/legal-docs-mcp"
   claude_desktop:
     command: npx
-    args: ["-y", "ebenova-legal-docs"]
+    args: ["-y", "ebenova-legal-docs-mcp"]
     env:
       EBENOVA_API_KEY: "sk_live_your_key"
 
 # Runtime configuration (for Docker deployment)
-startCommand: "node index.js"
-entryPoint: "index.js"
+startCommand: "node src/index.js"
+entryPoint: "src/index.js"
 runtime: nodejs
 buildCommand: ""
 
@@ -59,6 +61,8 @@ capabilities:
   tools:
     - name: generate_legal_document
       description: "Generate a legal document (NDA, contract, tenancy agreement, etc.)"
+    - name: generate_invoice
+      description: "Generate invoices, receipts, proforma invoices, and credit notes"
     - name: extract_from_conversation
       description: "Extract structured fields from WhatsApp/email conversations"
     - name: list_document_types
@@ -72,6 +76,8 @@ examples:
     prompt: "Create an NDA between Acme Inc. and John Smith for a partnership discussion, 2 years, mutual, under Nigerian law"
   - name: "Extract from WhatsApp chat"
     prompt: "Extract the key terms from this WhatsApp conversation and create a tenancy agreement: [paste conversation]"
+  - name: "Generate an invoice"
+    prompt: "Create an invoice for $2,500 website design services for John Smith"
   - name: "List available documents"
     prompt: "What types of legal documents can you generate?"
 
@@ -79,7 +85,8 @@ examples:
 pricing:
   free_tier: "5 documents/month free"
   starter: "$29/month for 100 documents"
-  pro: "$19.99/month for 500 documents + Scope Guard"
+  growth: "$79/month for 500 documents"
+  scale: "$199/month for 2,000 documents"
 
 # Support contacts
 support:

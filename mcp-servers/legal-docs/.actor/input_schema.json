@@ -1,0 +1,16 @@
+{
+  "title": "Legal Docs MCP Input",
+  "description": "Configure the Legal Docs MCP Actor",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "ebenovaApiKey": {
+      "title": "Ebenova API Key",
+      "type": "string",
+      "description": "Your Ebenova API key (sk_live_...)",
+      "editor": "textinput",
+      "isSecret": true
+    }
+  },
+  "required": []
+}

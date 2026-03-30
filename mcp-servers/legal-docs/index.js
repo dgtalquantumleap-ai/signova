@@ -17,8 +17,10 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod'
 
+const LEGAL_DISCLAIMER = '⚠️ **Legal Disclaimer:** These documents are AI-generated templates for informational purposes only and do not constitute legal advice. While we strive for accuracy, we make no guarantees regarding completeness or suitability for your situation. Laws vary by jurisdiction and change frequently. You should consult with a qualified attorney licensed in your jurisdiction before using, executing, or relying on any document. Use at your own risk.'
+
 const API_BASE = process.env.EBENOVA_API_BASE || 'https://api.ebenova.dev'
-const API_KEY = process.env.EBENOVA_API_KEY || ''
+let API_KEY = process.env.EBENOVA_API_KEY || ''
 
 if (!API_KEY) {
   process.stderr.write('[ebenova-legal-docs-mcp] WARNING: EBENOVA_API_KEY is not set. Requests will fail.\n')
@@ -108,7 +110,7 @@ When to use:
         type: 'text',
         text: data.document + (data.usage
           ? `\n\n---\n*${data.usage.documents_used} / ${data.usage.monthly_limit} documents used this month — ${data.usage.documents_remaining} remaining*`
-          : ''),
+          : '') + '\n\n' + LEGAL_DISCLAIMER,
       }],
     }
   }
@@ -169,6 +171,7 @@ When to use:
             '',
             data.document,
             data.usage ? `\n---\n*${data.usage.documents_used} / ${data.usage.monthly_limit} documents used this month*` : '',
+            '\n' + LEGAL_DISCLAIMER,
           ].filter(Boolean).join('\n'),
         }],
       }
@@ -185,6 +188,7 @@ When to use:
           data.missing_fields?.length > 0 ? `\n**Missing fields:** ${data.missing_fields.join(', ')}` : '',
           '',
           'Call `generate_legal_document` with these fields to create the document.',
+          '\n' + LEGAL_DISCLAIMER,
         ].filter(Boolean).join('\n'),
       }],
     }

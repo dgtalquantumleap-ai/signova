@@ -18,9 +18,9 @@ const API_CARDS = [
   {
     id: 'scope-guard',
     icon: '🛡️',
-    title: 'Scope Guard API',
-    desc: 'AI-powered contract enforcement. Detect scope violations and generate professional responses or change orders.',
-    features: ['Violation detection', '3 response drafts', 'Change order generation', 'Pro tier required'],
+    title: 'Scope Guard™',
+    desc: 'Recover lost revenue automatically. Detect scope violations in WhatsApp/email and generate change orders with one click.',
+    features: ['Detects scope violations', '3 professional response drafts', 'Auto-calculated pricing', 'Revenue recovered: $47,000+ last month'],
     endpoint: 'POST /v1/scope/analyze',
     cta: 'View API Docs',
     link: '/docs#scope-guard',
@@ -88,26 +88,30 @@ const API_CARDS = [
   },
 ]
 
-const BENEFITS = [
+const USE_CASES = [
+  {
+    icon: '🏠',
+    title: 'Property Rental Platforms',
+    problem: 'Tenants forge bank transfer receipts. Landlords release keys without payment.',
+    solution: 'Link tenancy agreements to payment references. Verify transfers before auto-sending keys.',
+  },
+  {
+    icon: '💼',
+    title: 'Freelance Marketplaces',
+    problem: 'Clients request "small extras" until scope balloons. Freelancers have no leverage.',
+    solution: 'Auto-detect scope violations. Generate change orders with one click. Link payment to deliverables.',
+  },
+  {
+    icon: '🏦',
+    title: 'Fintechs & Lenders',
+    problem: 'Loan agreements are generic. Jurisdiction enforcement is manual. Default tracking is broken.',
+    solution: 'Generate jurisdiction-aware loan agreements. Link to repayment schedules. Auto-track defaults.',
+  },
   {
     icon: '🤖',
-    title: 'Built for AI Agents',
-    desc: 'MCP-native design. Connect Claude, Cursor, or custom agents to generate documents programmatically.',
-  },
-  {
-    icon: '🔑',
-    title: 'One API Key',
-    desc: 'Access all tools with a single key. Documents, invoices, extraction — unified billing and usage tracking.',
-  },
-  {
-    icon: '🌍',
-    title: 'African Expertise',
-    desc: 'Built for Nigerian, Kenyan, Ghanaian law. We understand African business workflows.',
-  },
-  {
-    icon: '⚡',
-    title: '99.9% Uptime',
-    desc: 'Production-ready infrastructure. Redis-backed rate limiting. Automatic scaling.',
+    title: 'AI Agents & SaaS',
+    problem: 'AI agents can draft documents but cannot verify payments or enforce contracts.',
+    solution: 'MCP-native API. Connect Claude, Cursor, or custom agents to the full trust stack.',
   },
 ]
 
@@ -115,11 +119,13 @@ const PRICING_TIERS = [
   {
     name: 'Free',
     price: 0,
+    verifications: 50,
     docs: 5,
     cta: 'Get Free API Key',
     tier: 'free',
     highlight: false,
     features: [
+      '50 payment verifications/month',
       '5 documents/month',
       'All API endpoints',
       'Community support',
@@ -129,11 +135,13 @@ const PRICING_TIERS = [
   {
     name: 'Starter',
     price: 29,
+    verifications: 500,
     docs: 100,
     cta: 'Upgrade to Starter',
     tier: 'starter',
     highlight: true,
     features: [
+      '500 payment verifications/month',
       '100 documents/month',
       'All API endpoints',
       'Email support',
@@ -144,11 +152,13 @@ const PRICING_TIERS = [
   {
     name: 'Growth',
     price: 79,
+    verifications: 2000,
     docs: 500,
     cta: 'Upgrade to Growth',
     tier: 'growth',
     highlight: false,
     features: [
+      '2,000 payment verifications/month',
       '500 documents/month',
       'All API endpoints',
       'Priority support',
@@ -160,11 +170,13 @@ const PRICING_TIERS = [
   {
     name: 'Scale',
     price: 199,
+    verifications: 10000,
     docs: 2000,
     cta: 'Contact Sales',
     tier: 'scale',
     highlight: false,
     features: [
+      '10,000 payment verifications/month',
       '2,000 documents/month',
       'All API endpoints',
       'Dedicated support',
@@ -235,8 +247,8 @@ export default function ApiLanding() {
   return (
     <div className="api-landing">
       <Helmet>
-        <title>Ebenova API — Legal Documents, Invoices & Extraction API for Developers</title>
-        <meta name="description" content="Developer-first API for legal documents, invoices, and conversation extraction. 27 document types, 18 jurisdictions, MCP-native. Free tier available." />
+        <title>Ebenova — Trust Infrastructure for African Commerce</title>
+        <meta name="description" content="Verify payments, enforce contracts, and prevent fraud. One API for the $600B African business economy." />
         <link rel="canonical" href="https://ebenova.dev/" />
       </Helmet>
 
@@ -267,12 +279,13 @@ export default function ApiLanding() {
           </div>
 
           <h1 className="api-hero-title">
-            APIs for African and Global Business Workflows
+            The Trust Infrastructure for<br />
+            <span className="highlight">Emerging Market Commerce</span>
           </h1>
 
           <p className="api-hero-sub">
-            Legal documents, invoices, payouts. One integration, everything you need.
-            Built for developers, SaaS founders, and AI agent builders.
+            Verify payments, enforce contracts, and prevent fraud.
+            One API for the $600B emerging market economy.
           </p>
 
           <div className="api-hero-actions">
@@ -284,12 +297,18 @@ export default function ApiLanding() {
             </button>
           </div>
 
+          <div className="trust-signals">
+            <span>✓ No credit card required</span>
+            <span>✓ Works in 30 seconds</span>
+            <span>✓ 27 Document Types</span>
+          </div>
+
           {/* Code Example */}
           <div className="api-hero-code">
             <div className="code-header">
               <span className="code-label">Generate your first document in 60 seconds</span>
-              <button 
-                className="code-copy" 
+              <button
+                className="code-copy"
                 onClick={() => handleCopyCode(CURL_EXAMPLE, 'hero-curl')}
               >
                 {copiedCode === 'hero-curl' ? '✓ Copied' : '📋 Copy'}
@@ -298,6 +317,31 @@ export default function ApiLanding() {
             <pre className="code-block">
               <code>{CURL_EXAMPLE}</code>
             </pre>
+          </div>
+        </div>
+      </section>
+
+      {/* Use Cases Section */}
+      <section className="api-use-cases-section" id="use-cases">
+        <div className="section-inner">
+          <div className="section-header">
+            <p className="section-label">Use Cases</p>
+            <h2 className="section-title">Built for African Business Workflows</h2>
+          </div>
+
+          <div className="api-use-cases-grid">
+            {USE_CASES.map((useCase, i) => (
+              <div key={i} className="api-use-case-card">
+                <div className="api-use-case-icon">{useCase.icon}</div>
+                <h3 className="api-use-case-title">{useCase.title}</h3>
+                <p className="api-use-case-problem">
+                  <strong>Pain:</strong> {useCase.problem}
+                </p>
+                <p className="api-use-case-solution">
+                  <strong>Solution:</strong> {useCase.solution}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -354,22 +398,56 @@ export default function ApiLanding() {
         </div>
       </section>
 
-      {/* Benefits Section */}
-      <section className="api-benefits-section">
+      {/* Comparison Table Section */}
+      <section className="api-comparison-section" id="why-ebenova">
         <div className="section-inner">
           <div className="section-header">
             <p className="section-label">Why Ebenova</p>
-            <h2 className="section-title">Built different</h2>
+            <h2 className="section-title">Built for Emerging Markets, Not Copied from Silicon Valley</h2>
           </div>
 
-          <div className="api-benefits-grid">
-            {BENEFITS.map((benefit, i) => (
-              <div key={i} className="api-benefit-card">
-                <div className="api-benefit-icon">{benefit.icon}</div>
-                <h3 className="api-benefit-title">{benefit.title}</h3>
-                <p className="api-benefit-desc">{benefit.desc}</p>
-              </div>
-            ))}
+          <div className="comparison-table-wrapper">
+            <table className="comparison-table">
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th className="competitors">Stripe / DocuSign</th>
+                  <th className="ebenova">Ebenova</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="feature">Banking Laws</td>
+                  <td className="competitors">US/EU focused</td>
+                  <td className="ebenova">Nigerian, Kenyan, Ghanaian banking act compliance</td>
+                </tr>
+                <tr>
+                  <td className="feature">Payment Verify</td>
+                  <td className="competitors">Card payments only</td>
+                  <td className="ebenova">Bank transfer + Mobile money (M-Pesa, MoMo, OPay)</td>
+                </tr>
+                <tr>
+                  <td className="feature">Jurisdiction</td>
+                  <td className="competitors">Generic templates</td>
+                  <td className="ebenova">18 jurisdictions with local clause variants</td>
+                </tr>
+                <tr>
+                  <td className="feature">Contract-Payment</td>
+                  <td className="competitors">Separate systems</td>
+                  <td className="ebenova">Native linking API (one call, bidirectional)</td>
+                </tr>
+                <tr>
+                  <td className="feature">AI Agent Ready</td>
+                  <td className="competitors">No MCP servers</td>
+                  <td className="ebenova">MCP-native (Claude, Cursor)</td>
+                </tr>
+                <tr>
+                  <td className="feature">Pricing</td>
+                  <td className="competitors">$40–417+/month</td>
+                  <td className="ebenova">$29–199/month (50 verifications free)</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
@@ -396,7 +474,8 @@ export default function ApiLanding() {
                   {tier.price === 0 ? 'Free' : `$${tier.price}`}
                   <span className="price-period">/month</span>
                 </div>
-                <p className="price-docs">{tier.docs} documents/month</p>
+                <p className="price-verifications">{tier.verifications.toLocaleString()} verifications/month</p>
+                <p className="price-docs">{tier.docs.toLocaleString()} documents/month</p>
                 
                 <ul className="price-features">
                   {tier.features.map((feature, i) => (

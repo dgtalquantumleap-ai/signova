@@ -6,15 +6,26 @@ version: 1
 name: "Ebenova Legal Docs"
 slug: "ebenova-legal-docs"
 
-runtime: typescript
+runtime: nodejs
 
+# No build step needed - pure Node.js server
 build:
   install: "npm install"
-  command: "npm run build"
+  # No build command - source files are ready to run
 
 start:
   type: stdio
-  command: "node dist/index.js"
+  command: "node src/index.js"
 
 bridge:
   mode: stdio
+
+# Environment variables required
+env:
+  EBENOVA_API_KEY:
+    description: "Your Ebenova API key"
+    required: true
+  EBENOVA_API_BASE:
+    description: "API base URL"
+    default: "https://api.ebenova.dev"
+    required: false
