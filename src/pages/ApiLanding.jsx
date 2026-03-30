@@ -6,6 +6,17 @@ import './ApiLanding.css'
 
 const API_CARDS = [
   {
+    id: 'scope-guard',
+    icon: '🛡️',
+    title: 'Scope Guard™ API',
+    desc: 'Your client just asked for something not in the contract. Paste the contract + their message. Get back: what they\'re violating, 3 professional response drafts, and a change order price. One API call.',
+    features: ['Detects 6 violation types', '3 professional response drafts', 'Auto-calculated change order pricing', 'Zero API competitors — industry first'],
+    endpoint: 'POST /v1/scope/analyze',
+    cta: 'View API Docs',
+    link: '/docs#scope-guard',
+    highlight: true,
+  },
+  {
     id: 'documents',
     icon: '📄',
     title: 'Legal Documents API',
@@ -14,16 +25,6 @@ const API_CARDS = [
     endpoint: 'POST /v1/documents/generate',
     cta: 'Generate Document',
     link: '/docs#generate',
-  },
-  {
-    id: 'scope-guard',
-    icon: '🛡️',
-    title: 'Scope Guard™',
-    desc: 'Recover lost revenue automatically. Detect scope violations in WhatsApp/email and generate change orders with one click.',
-    features: ['Detects scope violations', '3 professional response drafts', 'Auto-calculated pricing', 'Revenue recovered: $47,000+ last month'],
-    endpoint: 'POST /v1/scope/analyze',
-    cta: 'View API Docs',
-    link: '/docs#scope-guard',
   },
   {
     id: 'invoices',

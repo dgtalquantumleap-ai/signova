@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
+import { trackWaExtraction, trackWaExtractionSuccess } from '../lib/analytics'
 import './WhatsApp.css'
 
 // Geo-aware doc ordering — most relevant first per region
@@ -259,6 +260,7 @@ export default function WhatsApp() {
     setExtracting(true)
     setError('')
     setExtracted(null)
+    trackWaExtraction(docType)
     try {
       const res = await fetch('/api/extract-terms', {
         method: 'POST',
@@ -270,6 +272,8 @@ export default function WhatsApp() {
         setError(data.error || 'Extraction failed. Please try again.')
         return
       }
+      const fieldCount = Object.keys(data.fields || {}).length
+      trackWaExtractionSuccess(docType, fieldCount)
       setExtracted(data)
     } catch {
       setError('Something went wrong. Please try again.')
