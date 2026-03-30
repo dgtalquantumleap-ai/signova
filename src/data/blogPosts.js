@@ -1479,6 +1479,72 @@ export const BLOG_POSTS = [
     cta: { label: 'Try Scope Guard Free →', href: '/scope-guard' }
   },
 
+  {
+    slug: 'client-wont-pay-freelancer',
+    title: "My Client Won't Pay — What Can I Do? (Freelancer Guide 2026)",
+    description: "Client refusing to pay for completed work? Here are your real options — from emails that work to legal documents that protect you — even if you had no contract.",
+    date: '2026-03-23',
+    readTime: '6 min read',
+    category: 'Freelancing',
+    keywords: "client won't pay freelancer, freelancer unpaid invoice, client refusing to pay, what to do client not paying, freelance payment dispute",
+    sections: [
+      {
+        heading: "First: Don't panic — you have more options than you think",
+        body: `Getting ghosted after delivering work is one of the most demoralising things that can happen to a freelancer. You spent time, energy, and skill on a project — and now the client has gone quiet or is actively refusing to pay.\n\nBefore you do anything, breathe. Even without a formal contract, you likely have options. The strength of those options depends on what documentation you have — even WhatsApp messages count as evidence in many jurisdictions.`
+      },
+      {
+        heading: 'Step 1: Send a formal payment demand email (with a deadline)',
+        body: `Most non-payment situations aren't deliberate fraud — they're disorganised clients who deprioritise freelancers. A formal email changes the tone from "reminder" to "this is serious."\n\nSubject: Invoice [Number] — Payment Required by [Date]\n\nDear [Client], I'm following up on payment for [project], delivered on [date]. The amount due is [amount]. Payment was due [X days] ago. Please make payment by [specific date]. If I don't receive payment by that date, I will need to pursue other options to recover the amount owed.\n\nThe key elements: specific deadline, specific amount, specific consequence. Vague emails get vague responses.`
+      },
+      {
+        heading: 'Step 2: Gather all your evidence — WhatsApp counts',
+        body: `Even without a formal contract, the following constitute evidence of a business agreement:\n\n- WhatsApp messages where the client described the project and agreed to pay\n- Email threads with project scope and pricing\n- Screenshots of their approval of your work\n- Bank transfer records showing any upfront payment\n- Invoices you sent (even if they didn't respond)\n\nIn Nigeria, the UK, Canada, and most jurisdictions, written electronic communications can establish a contract even if nothing was formally signed. Take screenshots of everything now, before the client can delete conversations.`
+      },
+      {
+        heading: 'Step 3: Send a Payment Terms Agreement (even now, after the fact)',
+        body: `If the client acknowledges the debt but claims they can't pay right now, get it in writing immediately. A Payment Terms Agreement documents the exact amount owed, the reason for the debt, a payment schedule they agree to, and late payment penalties if they miss instalments.\n\nThis turns a verbal "I'll pay you next month" into an enforceable document. Generate a Payment Terms Agreement on Signova in 2 minutes — free to preview, $4.99 to download.`
+      },
+      {
+        heading: 'Step 4: For future projects — the contract you needed',
+        body: `The most painful lesson from non-payment situations is simple: a proper freelance contract before work starts eliminates most of this.\n\nA good freelance contract specifies exactly what deliverables are included, the payment schedule (ideally with a deposit before you start), what happens if the client misses a payment deadline, and who owns the work until payment is received.\n\nYou don't need a lawyer. Generate a Freelance Contract on Signova in 3 minutes — jurisdiction-aware for Nigeria, Kenya, UK, Canada, India, and 180+ countries. No account required.`
+      },
+      {
+        heading: 'What if nothing works?',
+        body: `If the client is ignoring all contact:\n\n- Nigeria: File at your State Small Claims Court (claims under ₦5,000,000 in Lagos). Simpler than full litigation.\n- UK: Use the Government's Money Claim Online service for debts up to £100,000.\n- Canada: Provincial Small Claims Court handles freelance disputes routinely.\n- US: Small Claims Court — limits vary from $5,000 to $25,000 depending on state.\n\nA signed contract or documented WhatsApp agreement significantly strengthens your case.`
+      },
+    ],
+    cta: { label: 'Generate a Freelance Contract Free →', href: '/generate/freelance-contract' }
+  },
+
+  {
+    slug: 'freelance-contract-template-nigeria',
+    title: 'Free Freelance Contract Template Nigeria 2026 — Generate in 3 Minutes',
+    description: 'A complete freelance contract for Nigerian designers, developers, writers, and consultants. Download free, use the right law, stop chasing unpaid invoices.',
+    date: '2026-03-23',
+    readTime: '5 min read',
+    category: 'Freelancing',
+    keywords: 'freelance contract template Nigeria, freelance agreement Nigeria, client contract Nigeria, Nigerian freelancer contract 2026',
+    sections: [
+      {
+        heading: 'Why Nigerian freelancers need a proper contract',
+        body: `Nigeria's freelance economy is growing fast — Upwork, Fiverr, and local platforms are generating hundreds of thousands of freelance transactions every year. But most of those transactions happen over WhatsApp with no written agreement.\n\nWhen things go wrong — and they do — the freelancer almost always loses. The client disputes the deliverables. The scope has changed. The payment keeps getting deferred. Without a written contract, you have no leverage.\n\nA freelance contract doesn't prevent bad clients. It makes your position clear — and it changes the power dynamic before work starts.`
+      },
+      {
+        heading: 'What a Nigerian freelance contract must include',
+        body: `A solid Nigerian freelance contract should cover:\n\n1. Parties — your full name and the client's full name.\n2. Scope of work — exactly what you are delivering. "Website design" is not specific. "5-page WordPress website with 2 rounds of revision" is specific.\n3. Deliverables and timeline — what you will hand over, and when.\n4. Payment terms — the total amount, payment schedule (deposit + completion), and currency.\n5. Revision policy — how many rounds are included. Anything beyond that is a change order.\n6. IP ownership — who owns the work? Typically the client owns the final deliverable once paid in full.\n7. Termination clause — what happens if either party exits early.\n8. Governing law — specify Nigerian law and which state.`
+      },
+      {
+        heading: 'The payment clause that stops scope creep',
+        body: `The most important line in any Nigerian freelance contract: "Ownership of all deliverables remains with [Your Name] until full payment is received."\n\nThis one clause gives you leverage. If a client refuses to pay, they don't legally own the work. Pair it with a milestone structure: 50% upfront before work starts, 50% on delivery. You're never working entirely for free.`
+      },
+      {
+        heading: 'Generate your Nigerian freelance contract free',
+        body: `Signova generates jurisdiction-aware freelance contracts for Nigeria in under 3 minutes. Answer a few questions — your name, the client's name, what you're delivering, how much you're charging — and Signova produces a properly structured contract that references Nigerian law.\n\nFree to preview. $4.99 to download as a clean PDF. No account, no subscription. You've probably spent more than $4.99 chasing a single unpaid invoice. One contract prevents all of that.`
+      },
+    ],
+    cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
+  },
+
 ]
 
 export function getPostBySlug(slug) {
