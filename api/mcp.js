@@ -38,6 +38,68 @@ const TOOLS = [
     description: 'Check how many documents have been generated this month and what quota remains.',
     inputSchema: { type: 'object', properties: {} },
   },
+  {
+    name: 'get_document_templates',
+    description: 'Get field schemas for document types. Returns all required and optional fields with types, labels, and placeholders. Use this to build dynamic forms or understand what fields a document needs before generating it.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        document_type: { type: 'string', description: 'Specific document type to get schema for (e.g. nda, tenancy-agreement). Omit to list all types.' },
+      },
+    },
+  },
+  {
+    name: 'batch_generate_documents',
+    description: 'Generate multiple legal documents in a single call. Max 10 documents per batch. Each document is generated independently — if one fails, others still succeed.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        documents: {
+          type: 'array',
+          description: 'Array of document specs, each with document_type, fields, and optional jurisdiction',
+          items: {
+            type: 'object',
+            properties: {
+              document_type: { type: 'string', description: 'Type of document e.g. nda, freelance-contract' },
+              fields: { type: 'object', description: 'Document fields as key-value pairs', additionalProperties: true },
+              jurisdiction: { type: 'string', description: 'Governing jurisdiction' },
+            },
+            required: ['document_type', 'fields'],
+          },
+        },
+      },
+      required: ['documents'],
+    },
+  },
+  {
+    name: 'link_contract_payment',
+    description: 'Link a generated contract to a payment reference (bank transfer, invoice, etc). Creates a bidirectional association so you can look up contracts by payment ref or payments by contract ID.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        contract_id: { type: 'string', description: 'Unique contract identifier' },
+        document_type: { type: 'string', description: 'Type of document (e.g. tenancy-agreement)' },
+        payment_ref: { type: 'string', description: 'Payment reference (bank transfer ref, invoice number, etc)' },
+        payment_amount: { type: 'number', description: 'Payment amount' },
+        payment_currency: { type: 'string', description: 'Currency code (e.g. NGN, USD, GBP)' },
+        payment_status: { type: 'string', description: 'Status: pending, paid, overdue, disputed' },
+        parties: { type: 'array', items: { type: 'string' }, description: 'Names of parties involved' },
+        notes: { type: 'string', description: 'Optional notes' },
+      },
+      required: ['contract_id', 'payment_ref'],
+    },
+  },
+  {
+    name: 'lookup_contract_link',
+    description: 'Look up a contract-payment link by contract ID or payment reference.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        contract_id: { type: 'string', description: 'Contract ID to look up' },
+        payment_ref: { type: 'string', description: 'Payment reference to look up' },
+      },
+    },
+  },
 ]
 
 const API_BASE = 'https://www.getsignova.com'
@@ -119,6 +181,49 @@ async function handleMessage(msg, apiKey) {
           const cm = data.current_month
           text = `${cm.documents_used}/${cm.monthly_limit} used (${cm.documents_remaining} remaining)`
         } else { text = `Error: ${data.error?.message}` }
+      } else if (name === 'get_document_templates') {
+        const type = args.document_type
+        const path = type ? `/v1/documents/templates?type=${type}` : '/v1/documents/templates'
+        const data = await getApi(path, apiKey)
+        if (data.success) {
+          if (type && data.fields) {
+            const lines = [`${data.label} (${data.category})`, `Fields:`]
+            for (const f of data.fields) {
+              lines.push(`  - ${f.key}: ${f.label} (${f.type}${f.required ? ', required' : ''})${f.placeholder ? ` — e.g. "${f.placeholder}"` : ''}`)
+            }
+            text = lines.join('\n')
+          } else {
+            text = `${data.total} document templates available:\n` + data.templates.map(t => `  - ${t.type}: ${t.label} (${t.field_count} fields, ${t.required_fields} required)`).join('\n')
+          }
+        } else { text = `Error: ${data.error?.message}` }
+      } else if (name === 'batch_generate_documents') {
+        const data = await callApi('/v1/documents/batch', args, apiKey)
+        if (data.success) {
+          const lines = [`Batch complete: ${data.succeeded}/${data.total} succeeded`]
+          for (const r of data.results) {
+            lines.push(`  [${r.index}] ${r.document_type}: ${r.success ? 'OK' : 'FAILED — ' + (r.error?.message || 'unknown')}`)
+          }
+          if (data.results.some(r => r.success && r.document)) {
+            lines.push('\n--- Generated Documents ---')
+            for (const r of data.results.filter(r => r.success && r.document)) {
+              lines.push(`\n=== ${r.document_type} [${r.index}] ===\n${r.document.substring(0, 500)}...`)
+            }
+          }
+          text = lines.join('\n')
+        } else { text = `Error: ${data.error?.message}` }
+      } else if (name === 'link_contract_payment') {
+        const data = await callApi('/v1/contracts/link', args, apiKey)
+        if (data.success) {
+          const l = data.link
+          text = `Linked contract ${l.contract_id} to payment ${l.payment_ref} (${l.payment_status}, ${l.payment_currency} ${l.payment_amount || 'N/A'})`
+        } else { text = `Error: ${data.error?.message}` }
+      } else if (name === 'lookup_contract_link') {
+        const params = args.contract_id ? `contract_id=${args.contract_id}` : `payment_ref=${args.payment_ref}`
+        const data = await getApi(`/v1/contracts/link?${params}`, apiKey)
+        if (data.success) {
+          const l = data.link
+          text = `Contract: ${l.contract_id}\nPayment Ref: ${l.payment_ref}\nStatus: ${l.payment_status}\nAmount: ${l.payment_currency} ${l.payment_amount || 'N/A'}\nLinked: ${l.linked_at}\nParties: ${(l.parties || []).join(', ') || 'N/A'}`
+        } else { text = `Error: ${data.error?.message || 'Not found'}` }
       } else {
         return jsonrpcError(id, -32601, `Unknown tool: ${name}`)
       }
