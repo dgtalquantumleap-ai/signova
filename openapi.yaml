@@ -36,6 +36,8 @@ tags:
     description: Extract structured fields from raw conversations
   - name: Scope Guard
     description: AI-powered contract enforcement and scope violation detection
+  - name: Insights
+    description: Reddit + Nairaland monitoring — keyword alerts with AI reply drafts. Base URL `https://insights.ebenova.dev`
   - name: Keys
     description: API key management
   - name: Billing
@@ -340,6 +342,288 @@ paths:
           $ref: '#/components/responses/RateLimited'
         '500':
           $ref: '#/components/responses/ServerError'
+
+  # ── Insights API (base: https://insights.ebenova.dev) ─────────────────────
+
+  /v1/monitors:
+    get:
+      operationId: listMonitors
+      summary: List Reddit monitors
+      description: |
+        Returns all monitors owned by the authenticated API key.
+        Requires an API key with `insights: true` access.
+
+        **Base URL for Insights endpoints:** `https://insights.ebenova.dev`
+      tags: [Insights]
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of monitors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  monitors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MonitorSummary'
+                  count:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsightsAccessRequired'
+
+    post:
+      operationId: createMonitor
+      summary: Create a Reddit monitor
+      description: |
+        Creates a keyword monitor. The worker will start scanning Reddit and Nairaland
+        for matching posts within the next poll cycle (15 minutes).
+
+        Plan limits:
+        - **Starter:** 3 monitors, 20 keywords each
+        - **Growth:** 20 monitors, 100 keywords each
+        - **Scale:** 100 monitors, 500 keywords each
+      tags: [Insights]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMonitorRequest'
+            examples:
+              basic:
+                summary: Monitor freelance-related posts
+                value:
+                  name: Signova Monitor
+                  productContext: Signova helps freelancers create contracts and detect scope creep. Great for developers, designers, and agencies.
+                  alertEmail: alerts@yourcompany.com
+                  keywords:
+                    - keyword: freelance contract
+                      subreddits: [freelance, freelancers]
+                    - keyword: scope creep
+                      subreddits: [freelance, webdev, SaaS]
+                    - keyword: client refused to pay
+                      subreddits: [freelance, smallbusiness]
+      responses:
+        '201':
+          description: Monitor created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateMonitorResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          description: Monitor limit reached for current plan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /v1/monitors/{id}:
+    delete:
+      operationId: deleteMonitor
+      summary: Deactivate a monitor
+      description: Deactivates a monitor so it stops scanning. Data is preserved for 7 days.
+      tags: [Insights]
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Monitor ID (e.g., mon_abc123)
+      responses:
+        '200':
+          description: Monitor deactivated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  monitor_id:
+                    type: string
+                  active:
+                    type: boolean
+                    example: false
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/matches:
+    get:
+      operationId: listMatches
+      summary: List recent matches for a monitor
+      description: |
+        Returns recent Reddit/Nairaland posts that matched a monitor's keywords.
+        Each match includes the post, keyword that triggered it, subreddit safety flag,
+        and an AI-generated reply draft (if applicable).
+
+        Results are stored for 7 days.
+      tags: [Insights]
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: monitor_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Monitor ID to fetch matches for
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+          description: Number of matches to return
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: Pagination offset
+      responses:
+        '200':
+          description: List of matches
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchesResponse'
+              example:
+                success: true
+                monitor_id: mon_abc123
+                count: 2
+                matches:
+                  - id: 1abc23
+                    title: Client won't pay after 3 weeks — no contract
+                    url: https://reddit.com/r/freelance/comments/1abc23
+                    subreddit: freelance
+                    author: devguy_works
+                    score: 47
+                    comments: 23
+                    keyword: freelance contract
+                    source: reddit
+                    approved: true
+                    draft: "Went through this last year. First thing: write up exactly what was agreed..."
+                    createdAt: '2026-03-31T08:12:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/matches/draft:
+    post:
+      operationId: regenerateDraft
+      summary: Regenerate AI reply draft for a match
+      description: |
+        Re-runs the AI draft generation for a specific match using the latest product context.
+        Useful after updating your product context or if the original draft was skipped.
+      tags: [Insights]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [monitor_id, match_id]
+              properties:
+                monitor_id:
+                  type: string
+                  description: Monitor ID
+                match_id:
+                  type: string
+                  description: Match ID to regenerate draft for
+      responses:
+        '200':
+          description: Draft regenerated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  match_id:
+                    type: string
+                  draft:
+                    type: string
+                    nullable: true
+                    description: The regenerated draft, or null if AI decided to skip
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/matches/feedback:
+    post:
+      operationId: rateMatchDraft
+      summary: Rate a reply draft (thumbs up / down)
+      description: |
+        Records feedback on a draft. Used to improve AI draft quality over time.
+        Pass `up` if the draft was useful, `down` if not.
+      tags: [Insights]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [monitor_id, match_id, feedback]
+              properties:
+                monitor_id:
+                  type: string
+                match_id:
+                  type: string
+                feedback:
+                  type: string
+                  enum: [up, down]
+      responses:
+        '200':
+          description: Feedback recorded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  match_id:
+                    type: string
+                  feedback:
+                    type: string
+                    enum: [up, down]
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   /v1/keys/usage:
     get:
@@ -1004,6 +1288,177 @@ components:
               type: string
               example: Get your API key at ebenova.dev/dashboard
 
+    MonitorSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          example: mon_abc123
+        name:
+          type: string
+          example: My SaaS Monitor
+        active:
+          type: boolean
+        keyword_count:
+          type: integer
+        keywords:
+          type: array
+          items:
+            type: string
+        alert_email:
+          type: string
+        plan:
+          type: string
+          enum: [starter, growth, scale]
+        last_poll_at:
+          type: string
+          format: date-time
+          nullable: true
+        total_matches_found:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    MonitorKeyword:
+      type: object
+      required: [keyword]
+      properties:
+        keyword:
+          type: string
+          description: The keyword or phrase to search for
+          example: freelance contract
+        subreddits:
+          type: array
+          items:
+            type: string
+          description: Subreddits to restrict search to (empty = global search)
+          example: [freelance, freelancers]
+        productContext:
+          type: string
+          description: Per-keyword product context override (optional, overrides monitor-level context)
+          maxLength: 500
+
+    CreateMonitorRequest:
+      type: object
+      required: [name, keywords]
+      properties:
+        name:
+          type: string
+          description: Human-readable name for this monitor
+          maxLength: 100
+          example: My SaaS
+        keywords:
+          type: array
+          description: Keywords to monitor
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/MonitorKeyword'
+        productContext:
+          type: string
+          description: |
+            Description of your product/service. Used to generate contextually relevant AI reply drafts.
+            Be specific — mention what problem you solve, who you help, and how.
+          maxLength: 2000
+          example: We help freelancers create contracts and detect scope creep in under 30 seconds.
+        alertEmail:
+          type: string
+          description: Email to send match alerts to (defaults to API key owner)
+          example: alerts@yourcompany.com
+
+    CreateMonitorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        monitor_id:
+          type: string
+          example: mon_abc123
+        name:
+          type: string
+        keyword_count:
+          type: integer
+        keywords:
+          type: array
+          items:
+            type: string
+        plan:
+          type: string
+        alert_email:
+          type: string
+        active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        next_poll_eta:
+          type: string
+          example: Within 15 minutes
+
+    MatchResult:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1abc23
+        title:
+          type: string
+        url:
+          type: string
+        subreddit:
+          type: string
+        author:
+          type: string
+        score:
+          type: integer
+        comments:
+          type: integer
+        body:
+          type: string
+          description: Post body snippet (up to 600 characters)
+        keyword:
+          type: string
+          description: The keyword that triggered this match
+        source:
+          type: string
+          enum: [reddit, nairaland]
+        approved:
+          type: boolean
+          description: true if the subreddit is on the approved posting whitelist
+        draft:
+          type: string
+          nullable: true
+          description: AI-generated reply draft, or null if skipped
+        feedback:
+          type: string
+          enum: [up, down]
+          nullable: true
+          description: User feedback on the draft
+        createdAt:
+          type: string
+          format: date-time
+        storedAt:
+          type: string
+          format: date-time
+
+    MatchesResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        monitor_id:
+          type: string
+        matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/MatchResult'
+        count:
+          type: integer
+        offset:
+          type: integer
+        limit:
+          type: integer
+
   responses:
     BadRequest:
       description: Bad request — missing or invalid parameters
@@ -1025,6 +1480,30 @@ components:
             $ref: '#/components/schemas/Error'
     ServerError:
       description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InsightsAccessRequired:
+      description: API key does not have Insights access
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: INSIGHTS_ACCESS_REQUIRED
+              message: This key does not have Insights access.
+              hint: See ebenova.dev/insights to enable Insights on your plan
+    Forbidden:
+      description: Forbidden — resource belongs to another owner
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found
       content:
         application/json:
           schema:

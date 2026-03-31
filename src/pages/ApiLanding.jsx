@@ -77,6 +77,16 @@ const API_CARDS = [
     link: '/docs#contract-link',
   },
   {
+    id: 'insights',
+    icon: '📡',
+    title: 'Insights — Reddit Monitor API',
+    desc: 'Monitor Reddit and Nairaland for keywords about your product. Get email alerts with AI-drafted replies every 15 minutes. Built for founders doing distribution.',
+    features: ['Reddit + Nairaland monitoring', 'AI reply drafts (community tone)', 'Subreddit safety system', 'Multi-tenant — serve multiple clients'],
+    endpoint: 'POST /v1/monitors',
+    cta: 'Learn More',
+    link: '/insights',
+  },
+  {
     id: 'payouts',
     icon: '💸',
     title: 'Africa Payouts API',
@@ -264,6 +274,7 @@ export default function ApiLanding() {
             <a href="#apis">APIs</a>
             <a href="#pricing">Pricing</a>
             <a href="#mcp">MCP</a>
+            <a href="/insights">Insights</a>
             <a href="/docs">Docs</a>
             <a href="/contact" className="api-nav-cta">Contact</a>
           </div>
@@ -597,6 +608,7 @@ export default function ApiLanding() {
               <h4>Product</h4>
               <a href="#apis">APIs</a>
               <a href="/docs#scope-guard">Scope Guard API</a>
+              <a href="/insights">Insights</a>
               <a href="#pricing">Pricing</a>
               <a href="#mcp">MCP Servers</a>
               <a href="/docs">Documentation</a>

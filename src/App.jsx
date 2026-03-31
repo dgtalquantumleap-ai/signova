@@ -30,12 +30,20 @@ const PageShell = () => (
 // Serve the correct root page based on which domain is being visited.
 // ebenova.dev  → ApiLanding (the API platform homepage)
 // getsignova.com / anything else → Landing (the Signova product homepage)
-function RootPage() {
+function isEbenovaDomain() {
   const hostname = window.location.hostname
-  const isEbenova = hostname === 'ebenova.dev'
+  return hostname === 'ebenova.dev'
     || hostname === 'www.ebenova.dev'
     || hostname === 'api.ebenova.dev'
-  return isEbenova ? <ApiLanding /> : <Landing />
+}
+
+function RootPage() {
+  return isEbenovaDomain() ? <ApiLanding /> : <Landing />
+}
+
+// /insights belongs to ebenova.dev only — show 404 on getsignova.com
+function InsightsPage() {
+  return isEbenovaDomain() ? <Insights /> : <NotFound />
 }
 
 export default function App() {
@@ -63,7 +71,7 @@ export default function App() {
         <Route path="/get-started" element={<GetStarted />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/scope-guard" element={<ScopeGuard />} />
-        <Route path="/insights" element={<Insights />} />
+        <Route path="/insights" element={<InsightsPage />} />
         <Route path="/:slug" element={<DocLanding />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
