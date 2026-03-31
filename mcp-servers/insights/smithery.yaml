@@ -2,7 +2,7 @@
 # https://smithery.ai/docs/build/publish
 
 name: ebenova-insights
-version: 1.0.0
+version: 1.0.1
 description: Monitor Reddit and Nairaland for keywords about your product. Get email alerts with AI-drafted replies every 15 minutes.
 
 author: Ebenova Solutions <api@ebenova.dev>

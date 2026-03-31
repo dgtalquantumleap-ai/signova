@@ -1,6 +1,6 @@
 {
   "name": "@ebenova/insights-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP server for Ebenova Insights — monitor Reddit and Nairaland for keywords, get AI-drafted replies, manage monitors. For Claude Desktop, Cursor, and any MCP-compatible AI assistant.",
   "type": "module",
   "main": "index.js",
