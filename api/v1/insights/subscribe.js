@@ -1,0 +1,129 @@
+// api/v1/insights/subscribe.js
+// POST /v1/insights/subscribe
+// Adds email to Insights waitlist and sends confirmation email.
+// Body: { email, plan? }
+
+import { getRedis } from '../../../lib/redis.js'
+import { Resend } from 'resend'
+
+async function parseBody(req) {
+  if (req.body && typeof req.body === 'object') return req.body
+  return new Promise((resolve, reject) => {
+    let data = ''
+    req.on('data', chunk => { data += chunk })
+    req.on('end', () => { try { resolve(data ? JSON.parse(data) : {}) } catch { resolve({}) } })
+    req.on('error', reject)
+  })
+}
+
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+
+  if (req.method === 'OPTIONS') return res.status(200).end()
+  if (req.method !== 'POST') {
+    return res.status(405).json({ success: false, error: { code: 'METHOD_NOT_ALLOWED', message: 'Use POST' } })
+  }
+
+  const body = await parseBody(req)
+  const { email, plan = 'starter' } = body
+
+  if (!email || !email.includes('@')) {
+    return res.status(400).json({
+      success: false,
+      error: { code: 'MISSING_EMAIL', message: 'A valid email is required' },
+    })
+  }
+
+  const normalizedEmail = email.toLowerCase().trim()
+
+  try {
+    const redis = getRedis()
+    const existing = await redis.get(`insights:waitlist:${normalizedEmail}`)
+    if (existing) {
+      return res.status(200).json({
+        success: true,
+        already_on_waitlist: true,
+        message: "You're already on the waitlist — we'll email you when access opens.",
+      })
+    }
+
+    await redis.sadd('insights:waitlist', normalizedEmail)
+    await redis.set(`insights:waitlist:${normalizedEmail}`, JSON.stringify({
+      email: normalizedEmail,
+      plan,
+      joinedAt: new Date().toISOString(),
+      source: req.headers['referer'] || 'direct',
+    }))
+  } catch (err) {
+    console.error('[insights/subscribe] Redis error:', err.message)
+    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: 'Failed to save' } })
+  }
+
+  if (process.env.RESEND_API_KEY) {
+    const resend = new Resend(process.env.RESEND_API_KEY)
+    try {
+      await resend.emails.send({
+        from: 'Akin at Ebenova <akin@ebenova.dev>',
+        to: normalizedEmail,
+        subject: "You're on the Insights waitlist",
+        html: buildConfirmationEmail(normalizedEmail, plan),
+      })
+    } catch (err) {
+      console.error('[insights/subscribe] Resend error:', err.message)
+    }
+
+    try {
+      await resend.emails.send({
+        from: 'Insights Waitlist <insights@ebenova.dev>',
+        to: process.env.ALERT_EMAIL || 'info@ebenova.net',
+        subject: `🎯 New Insights waitlist: ${normalizedEmail} (${plan})`,
+        html: `<p><strong>${normalizedEmail}</strong> joined the Insights waitlist.<br>Plan interest: <strong>${plan}</strong><br>Time: ${new Date().toUTCString()}</p><p>Reply directly to close them.</p>`,
+      })
+    } catch (_) {}
+  }
+
+  return res.status(200).json({
+    success: true,
+    mode: 'waitlist',
+    message: "You're on the waitlist. We'll email you when access opens.",
+    plan,
+  })
+}
+
+function buildConfirmationEmail(email, plan) {
+  return `<!DOCTYPE html>
+<html>
+<body style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;background:#f5f5f5;">
+  <div style="background:#0e0e0e;padding:24px;border-radius:8px;margin-bottom:20px;">
+    <div style="font-size:18px;font-weight:700;color:#f0ece4;">📡 Ebenova Insights</div>
+    <div style="font-size:13px;color:#9a9690;margin-top:4px;">Reddit monitoring for growing products</div>
+  </div>
+  <div style="background:#fff;padding:24px;border-radius:8px;border:1px solid #eee;">
+    <h2 style="margin:0 0 12px;font-size:20px;color:#1a1a1a;">You're on the waitlist ✓</h2>
+    <p style="color:#555;line-height:1.6;margin:0 0 16px;">
+      We're opening to beta customers soon. You'll get access at the founding member rate of
+      <strong>$49/month</strong> — locked for life as long as you stay subscribed.
+    </p>
+    <p style="color:#555;line-height:1.6;margin:0 0 20px;">
+      While you wait: reply to this email with the keywords and products you want to monitor.
+      I'll have your setup ready the moment we open beta.
+    </p>
+    <div style="padding:16px;background:#f9f9f9;border-left:4px solid #c9a84c;border-radius:4px;margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a08c00;margin-bottom:8px;">What you're getting</div>
+      <ul style="margin:0;padding-left:18px;color:#444;font-size:14px;line-height:2;">
+        <li>Real-time Reddit + Nairaland keyword alerts</li>
+        <li>AI reply drafts (sound human, not promotional)</li>
+        <li>Founding member rate locked for life</li>
+        <li>Free upgrade to semantic search (V2)</li>
+      </ul>
+    </div>
+    <p style="color:#888;font-size:13px;margin:0;">
+      — Akin, Ebenova<br>
+      <a href="mailto:akin@ebenova.dev" style="color:#c9a84c;">akin@ebenova.dev</a>
+    </p>
+  </div>
+</body>
+</html>`
+}
