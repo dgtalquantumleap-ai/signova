@@ -229,10 +229,11 @@ export default function WhatsApp() {
       return () => { mounted = false }
     }
 
-    fetch('https://ipapi.co/json/', { signal: controller.signal })
+    // Use our own API endpoint which leverages Vercel geo headers (free, unlimited)
+    fetch('/api/geo', { signal: controller.signal })
       .then(r => r.json())
       .then(d => {
-        if (!mounted) return
+        if (!mounted || !d.country_code) return
         const cc = d.country_code || 'DEFAULT'
         setCountryCode(cc)
         const priority = GEO_DOC_PRIORITY[cc] || GEO_DOC_PRIORITY.DEFAULT

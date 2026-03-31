@@ -24,17 +24,24 @@ keywords:
 
 configSchema:
   type: object
+  required:
+    - EBENOVA_API_KEY
   properties:
     EBENOVA_API_KEY:
       type: string
       description: "Your Ebenova API key with Insights access. Get one at https://ebenova.dev/insights"
-      default: "sandbox-test-key"
-      required: false
+      required: true
     INSIGHTS_API_BASE:
       type: string
       description: "Insights API base URL (optional, defaults to https://api.ebenova.dev)"
       default: "https://api.ebenova.dev"
       required: false
+
+deployment:
+  type: stdio
+  command: node
+  args:
+    - index.js
 
 installation:
   npm: "npx -y @ebenova/insights-mcp"

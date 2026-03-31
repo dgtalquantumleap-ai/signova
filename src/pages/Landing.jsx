@@ -92,17 +92,21 @@ function useGeo() {
     // LCP FIX: Defer geo-detection until AFTER LCP fires (idle + 2s delay)
     // This ensures the fetch never competes with LCP element rendering
     const doFetch = () => {
-      fetch('https://ipapi.co/json/')
+      // Use our own API endpoint which leverages Vercel geo headers (free, unlimited)
+      // Falls back to ipapi.co if not on Vercel
+      fetch('/api/geo')
         .then(r => r.json())
         .then(data => {
-          const c = CURRENCY_MAP[data.country_code] || DEFAULT_CURRENCY
-          const cc = data.country_code || null
-          sessionStorage.setItem('sig_geo', JSON.stringify({ currency: c, countryCode: cc }))
-          // Use startTransition to mark this as low-priority update
-          startTransition(() => {
-            setCurrency(c)
-            setCountryCode(cc)
-          })
+          if (data.country_code) {
+            const c = CURRENCY_MAP[data.country_code] || DEFAULT_CURRENCY
+            const cc = data.country_code || null
+            sessionStorage.setItem('sig_geo', JSON.stringify({ currency: c, countryCode: cc }))
+            // Use startTransition to mark this as low-priority update
+            startTransition(() => {
+              setCurrency(c)
+              setCountryCode(cc)
+            })
+          }
         })
         .catch(() => {})
     }

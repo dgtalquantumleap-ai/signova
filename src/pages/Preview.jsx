@@ -27,7 +27,8 @@ function useIsNigeria() {
       }
       return
     }
-    fetch('https://ipapi.co/json/')
+    // Use our own API endpoint which leverages Vercel geo headers (free, unlimited)
+    fetch('/api/geo')
       .then(r => r.json())
       .then(d => setIsNG(d.country_code === 'NG'))
       .catch(() => {})
