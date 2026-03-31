@@ -24,7 +24,7 @@
     },
     {
       "source": "/v1/insights/monitors",
-      "destination": "/api/v1/insights/monitors/router"
+      "destination": "/api/v1/insights/monitors/list"
     },
     {
       "source": "/v1/insights/monitors/:id",

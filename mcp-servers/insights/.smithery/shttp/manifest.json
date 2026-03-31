@@ -1,0 +1,265 @@
+{
+  "payload": {
+    "type": "hosted",
+    "stateful": false,
+    "hasAuthAdapter": false,
+    "serverCard": {
+      "serverInfo": {
+        "name": "ebenova-insights",
+        "version": "1.0.0"
+      },
+      "tools": [
+        {
+          "name": "list_monitors",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "inputSchema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "inputSchema"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "execution": {
+            "taskSupport": "forbidden"
+          }
+        },
+        {
+          "name": "create_monitor",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "description": "Name for this monitor, e.g. \"Signova - Freelance Subs\""
+                  },
+                  "keywords": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "keyword": {
+                          "type": "string",
+                          "description": "Keyword or phrase to search for, e.g. \"freelance contract\""
+                        },
+                        "subreddits": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Subreddits to scope to (empty = global Reddit search)"
+                        },
+                        "productContext": {
+                          "type": "string",
+                          "maxLength": 500,
+                          "description": "Per-keyword product context (overrides monitor-level context)"
+                        }
+                      },
+                      "required": [
+                        "keyword"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "minItems": 1,
+                    "description": "Keywords to monitor"
+                  },
+                  "productContext": {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "description": "Describe your product. Be specific: what problem you solve, who you help, and how. This shapes every AI reply draft."
+                  },
+                  "alertEmail": {
+                    "type": "string",
+                    "description": "Email to send match alerts to (defaults to your API key owner email)"
+                  }
+                },
+                "required": [
+                  "name",
+                  "keywords"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "inputSchema"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "execution": {
+            "taskSupport": "forbidden"
+          }
+        },
+        {
+          "name": "delete_monitor",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "monitor_id": {
+                    "type": "string",
+                    "description": "Monitor ID to deactivate (e.g. mon_abc123). Use list_monitors to find IDs."
+                  }
+                },
+                "required": [
+                  "monitor_id"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "inputSchema"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "execution": {
+            "taskSupport": "forbidden"
+          }
+        },
+        {
+          "name": "get_matches",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "monitor_id": {
+                    "type": "string",
+                    "description": "Monitor ID to fetch matches for. Use list_monitors if you need to find it."
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100,
+                    "default": 10,
+                    "description": "Number of matches to return (default 10, max 100)"
+                  },
+                  "offset": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 0,
+                    "description": "Pagination offset"
+                  }
+                },
+                "required": [
+                  "monitor_id"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "inputSchema"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "execution": {
+            "taskSupport": "forbidden"
+          }
+        },
+        {
+          "name": "regenerate_draft",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "monitor_id": {
+                    "type": "string",
+                    "description": "Monitor ID the match belongs to"
+                  },
+                  "match_id": {
+                    "type": "string",
+                    "description": "Match ID to regenerate draft for"
+                  }
+                },
+                "required": [
+                  "monitor_id",
+                  "match_id"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "inputSchema"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "execution": {
+            "taskSupport": "forbidden"
+          }
+        },
+        {
+          "name": "rate_draft",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "monitor_id": {
+                    "type": "string",
+                    "description": "Monitor ID the match belongs to"
+                  },
+                  "match_id": {
+                    "type": "string",
+                    "description": "Match ID to rate"
+                  },
+                  "feedback": {
+                    "type": "string",
+                    "enum": [
+                      "up",
+                      "down"
+                    ],
+                    "description": "\"up\" if the draft was useful, \"down\" if not"
+                  }
+                },
+                "required": [
+                  "monitor_id",
+                  "match_id",
+                  "feedback"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "inputSchema"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          },
+          "execution": {
+            "taskSupport": "forbidden"
+          }
+        }
+      ],
+      "resources": [],
+      "prompts": []
+    },
+    "source": {
+      "commit": "08827ecabbbd545a03317b12311558cc7780ce65",
+      "branch": "master"
+    }
+  },
+  "artifacts": {
+    "module": "module.js",
+    "sourcemap": "module.js.map"
+  },
+  "name": "ebenova-insights"
+}

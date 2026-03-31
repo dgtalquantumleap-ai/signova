@@ -6,7 +6,8 @@ import { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import './Insights.css'
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'https://api.ebenova.dev'
+const API_BASE   = import.meta.env.VITE_API_BASE   || 'https://api.ebenova.dev'
+const BILLING_BASE = import.meta.env.VITE_API_BASE || 'https://api.ebenova.dev'
 
 // ── Email preview mock data ───────────────────────────────────────────────────
 const PREVIEW_MATCHES = [
@@ -77,7 +78,44 @@ function EmailPreview() {
   )
 }
 
-// ── WaitlistForm ──────────────────────────────────────────────────────────────
+// ── CheckoutButton ────────────────────────────────────────────────────────────
+// Hits the billing/checkout endpoint and redirects to Stripe.
+function CheckoutButton({ tier, label, className = 'ins-btn-gold', children }) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError]     = useState('')
+
+  async function handleClick() {
+    setLoading(true); setError('')
+    try {
+      const res  = await fetch(`${BILLING_BASE}/v1/billing/checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tier }),
+      })
+      const data = await res.json()
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url
+      } else {
+        setError(data.error?.message || 'Checkout failed — try again')
+        setLoading(false)
+      }
+    } catch {
+      setError('Network error — try again')
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div>
+      <button className={className} onClick={handleClick} disabled={loading}>
+        {loading ? 'Redirecting to checkout…' : (children || label)}
+      </button>
+      {error && <div className="ins-error" style={{ marginTop: '8px' }}>{error}</div>}
+    </div>
+  )
+}
+
+// ── WaitlistForm (fallback for Scale / contact-us tier) ────────────────────────
 function WaitlistForm({ plan = 'starter', onSuccess }) {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
@@ -101,17 +139,16 @@ function WaitlistForm({ plan = 'starter', onSuccess }) {
     finally { setLoading(false) }
   }
 
-  if (success) return <div className="ins-success">✓ You're on the waitlist — check your inbox.</div>
+  if (success) return <div className="ins-success">✓ You're on the list — we'll be in touch.</div>
 
   return (
     <div>
       <form className="ins-waitlist-form" onSubmit={handleSubmit}>
         <input type="email" placeholder="your@email.com" value={email}
           onChange={e => setEmail(e.target.value)} required />
-        <button type="submit" disabled={loading}>{loading ? 'Joining…' : 'Join waitlist'}</button>
+        <button type="submit" disabled={loading}>{loading ? 'Sending…' : 'Contact us'}</button>
       </form>
       {error && <div className="ins-error">{error}</div>}
-      <div className="ins-waitlist-note">Founding member rate: $49/month · Locked for life</div>
     </div>
   )
 }
@@ -347,22 +384,22 @@ export default function Insights() {
           {[
             {
               name: 'Starter', price: '$49', period: '/month',
+              tier: 'insights_starter',
               desc: 'For indie builders monitoring one or two products.',
               features: ['3 monitors', '20 keywords per monitor', 'Reddit + Nairaland', 'AI reply drafts', 'Email alerts (15-min)', 'Subreddit safety system'],
-              cta: 'Join waitlist', style: 'outline', onClick: scrollToWaitlist,
             },
             {
               name: 'Growth', price: '$99', period: '/month', featured: true,
+              tier: 'insights_growth',
               desc: 'For teams actively using Reddit as a distribution channel.',
               features: ['20 monitors', '100 keywords per monitor', 'Reddit + Nairaland', 'AI drafts (Claude Haiku)', 'Feedback loop', 'Full REST API access', 'Semantic search (V2)'],
-              cta: 'Join waitlist', style: 'gold', onClick: scrollToWaitlist,
             },
             {
               name: 'Scale', price: '$249', period: '/month',
+              tier: 'insights_scale',
               desc: 'For agencies running multi-product monitoring at scale.',
-              features: ['Unlimited monitors', '500 keywords each', 'All platforms + custom', 'AI drafts (Claude Sonnet)', 'Priority support', 'API + webhooks', 'White-label ready'],
-              cta: 'Contact us', style: 'outline',
-              onClick: () => window.location.href = 'mailto:akin@ebenova.dev?subject=Insights Scale plan',
+              features: ['100 monitors', '500 keywords each', 'All platforms + custom', 'AI drafts (Claude Sonnet)', 'Priority support', 'API + webhooks', 'White-label ready'],
+              contactUs: true,
             },
           ].map(plan => (
             <div key={plan.name} className={`ins-plan ${plan.featured ? 'featured' : ''}`}>
@@ -373,7 +410,15 @@ export default function Insights() {
               <ul className="ins-plan-features">
                 {plan.features.map(f => <li key={f}>{f}</li>)}
               </ul>
-              <button className={`ins-plan-cta ${plan.style}`} onClick={plan.onClick}>{plan.cta}</button>
+              {plan.contactUs
+                ? <WaitlistForm plan={plan.tier} />
+                : <CheckoutButton
+                    tier={plan.tier}
+                    className={`ins-plan-cta ${plan.featured ? 'gold' : 'outline'}`}
+                  >
+                    Get {plan.name} →
+                  </CheckoutButton>
+              }
             </div>
           ))}
         </div>

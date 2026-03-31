@@ -8,7 +8,7 @@ description: Monitor Reddit and Nairaland for keywords about your product. Get e
 author: Ebenova Solutions <api@ebenova.dev>
 license: MIT
 homepage: https://ebenova.dev/insights
-repository: https://github.com/ebenova/insights-mcp
+repository: https://github.com/dgtalquantumleap-ai/insights-mcp
 
 keywords:
   - reddit
@@ -32,8 +32,8 @@ configSchema:
       required: false
     INSIGHTS_API_BASE:
       type: string
-      description: "Insights API base URL (optional, defaults to https://insights.ebenova.dev)"
-      default: "https://insights.ebenova.dev"
+      description: "Insights API base URL (optional, defaults to https://api.ebenova.dev)"
+      default: "https://api.ebenova.dev"
       required: false
 
 installation:

@@ -1,42 +1,61 @@
 {
-  "schemaVersion": "1.0",
-  "name": "@ebenova/legal-docs-mcp",
-  "version": "1.0.0",
-  "displayName": "Ebenova Legal Docs",
-  "description": "Generate legally compliant contracts, NDAs, and business documents via AI. 27 document types, 18 jurisdictions. Extract fields from WhatsApp/email conversations and auto-generate documents.",
-  "homepage": "https://ebenova.dev",
+  "name": "ebenova-insights",
+  "version": "1.0.2",
+  "description": "Monitor Reddit and Nairaland for keywords about your product. Get email alerts with AI-drafted replies every 15 minutes.",
+  "author": "Ebenova Solutions",
+  "homepage": "https://ebenova.dev/insights",
+  "repository": "https://github.com/dgtalquantumleap-ai/insights-mcp",
   "license": "MIT",
-  "url": "https://www.getsignova.com/mcp",
-  "runtime": "node",
-  "command": "npx",
-  "args": ["-y", "@ebenova/legal-docs-mcp"],
+  "installation": {
+    "npm": "npx -y @ebenova/insights-mcp",
+    "claude_desktop": {
+      "command": "npx",
+      "args": ["-y", "@ebenova/insights-mcp"],
+      "env": {
+        "EBENOVA_API_KEY": "sk_live_your_key"
+      }
+    }
+  },
   "configSchema": {
     "type": "object",
-    "required": ["EBENOVA_API_KEY"],
     "properties": {
       "EBENOVA_API_KEY": {
         "type": "string",
-        "description": "Your Ebenova API key. Get one free at https://ebenova.dev/dashboard",
-        "secret": true
+        "description": "Your Ebenova API key with Insights access. Get one at https://ebenova.dev/insights",
+        "required": true
+      },
+      "INSIGHTS_API_BASE": {
+        "type": "string",
+        "description": "Insights API base URL",
+        "default": "https://api.ebenova.dev",
+        "required": false
       }
     }
   },
   "tools": [
     {
-      "name": "generate_legal_document",
-      "description": "Generate a professionally drafted legal document. Supports 27 document types across 18 jurisdictions."
+      "name": "list_monitors",
+      "description": "List all your Reddit/Nairaland keyword monitors"
     },
     {
-      "name": "extract_from_conversation",
-      "description": "Extract structured legal document fields from a raw conversation (WhatsApp, email, chat) and optionally auto-generate the document."
+      "name": "create_monitor",
+      "description": "Create a new keyword monitor with subreddit targeting and product context"
     },
     {
-      "name": "list_document_types",
-      "description": "List all 27 supported legal document types, grouped by category."
+      "name": "delete_monitor",
+      "description": "Deactivate a monitor"
     },
     {
-      "name": "check_usage",
-      "description": "Check how many documents have been generated this month and what quota remains."
+      "name": "get_matches",
+      "description": "Fetch recent Reddit/Nairaland posts that matched your keywords"
+    },
+    {
+      "name": "regenerate_draft",
+      "description": "Re-generate the AI reply draft for a specific match"
+    },
+    {
+      "name": "rate_draft",
+      "description": "Rate a draft thumbs up or down to improve quality over time"
     }
   ]
 }
