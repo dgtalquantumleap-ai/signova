@@ -2,12 +2,12 @@
 # https://smithery.ai/docs/build/publish
 
 name: ebenova-insights
-version: 1.0.1
+version: 1.0.2
 description: Monitor Reddit and Nairaland for keywords about your product. Get email alerts with AI-drafted replies every 15 minutes.
 
 author: Ebenova Solutions <api@ebenova.dev>
 license: MIT
-homepage: https://ebenova.dev/insights
+homepage: https://ebenova.dev/.well-known/mcp/insights
 repository: https://github.com/dgtalquantumleap-ai/insights-mcp
 
 keywords:
