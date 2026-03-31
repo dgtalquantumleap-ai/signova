@@ -24,11 +24,7 @@
     },
     {
       "source": "/v1/insights/monitors",
-      "destination": "/api/v1/insights/monitors/list"
-    },
-    {
-      "source": "/v1/insights/monitors/create",
-      "destination": "/api/v1/insights/monitors/create"
+      "destination": "/api/v1/insights/monitors/router"
     },
     {
       "source": "/v1/insights/monitors/:id",
@@ -78,6 +74,11 @@
     {
       "source": "/(.*)",
       "has": [{ "type": "host", "value": "api.ebenova.dev" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "insights.ebenova.dev" }],
       "destination": "/index.html"
     },
     {
@@ -147,6 +148,21 @@
       "maxDuration": 30
     },
     "api/v1/insights/subscribe.js": {
+      "maxDuration": 30
+    },
+    "api/v1/insights/monitors/router.js": {
+      "maxDuration": 30
+    },
+    "api/v1/insights/monitors/list.js": {
+      "maxDuration": 30
+    },
+    "api/v1/insights/monitors/delete.js": {
+      "maxDuration": 30
+    },
+    "api/v1/insights/matches/list.js": {
+      "maxDuration": 30
+    },
+    "api/v1/insights/matches/feedback.js": {
       "maxDuration": 30
     }
   },

@@ -14,18 +14,26 @@
 import Stripe from 'stripe'
 
 const PRICE_IDS = {
-  // Set these in Vercel env vars after creating products in Stripe dashboard:
-  // stripe.com/products → Create product → Add price (recurring, monthly)
-  starter:    process.env.STRIPE_PRICE_STARTER,   // $29/mo
-  growth:     process.env.STRIPE_PRICE_GROWTH,    // $79/mo
-  scale:      process.env.STRIPE_PRICE_SCALE,     // $199/mo
+  // Main API plans (ebenova.dev/dashboard)
+  starter:           process.env.STRIPE_PRICE_STARTER,            // $29/mo
+  growth:            process.env.STRIPE_PRICE_GROWTH,             // $79/mo
+  scale:             process.env.STRIPE_PRICE_SCALE,              // $199/mo
+  // Insights plans (ebenova.dev/insights)
+  insights_starter:  process.env.STRIPE_PRICE_INSIGHTS_STARTER,   // $49/mo
+  insights_growth:   process.env.STRIPE_PRICE_INSIGHTS_GROWTH,    // $99/mo
+  insights_scale:    process.env.STRIPE_PRICE_INSIGHTS_SCALE,     // $249/mo
 }
 
 const TIER_LABELS = {
-  starter: 'Starter — 100 docs/month',
-  growth:  'Growth — 500 docs/month',
-  scale:   'Scale — 2,000 docs/month',
+  starter:          'Starter — 100 docs/month',
+  growth:           'Growth — 500 docs/month',
+  scale:            'Scale — 2,000 docs/month',
+  insights_starter: 'Insights Starter — 3 monitors, 20 keywords',
+  insights_growth:  'Insights Growth — 20 monitors, 100 keywords',
+  insights_scale:   'Insights Scale — 100 monitors, 500 keywords',
 }
+
+const INSIGHTS_TIERS = new Set(['insights_starter', 'insights_growth', 'insights_scale'])
 
 async function parseBody(req) {
   if (req.body && typeof req.body === 'object') return req.body
@@ -56,9 +64,20 @@ export default async function handler(req, res) {
   const {
     tier,
     email,
-    success_url = 'https://ebenova.dev/dashboard?subscribed=1',
-    cancel_url  = 'https://ebenova.dev/pricing',
+    success_url,
+    cancel_url,
   } = body
+
+  const isInsights = INSIGHTS_TIERS.has(tier)
+  const defaultSuccess = isInsights
+    ? 'https://ebenova.dev/insights?subscribed=1'
+    : 'https://ebenova.dev/dashboard?subscribed=1'
+  const defaultCancel = isInsights
+    ? 'https://ebenova.dev/insights'
+    : 'https://ebenova.dev/pricing'
+
+  const finalSuccessUrl = success_url || defaultSuccess
+  const finalCancelUrl  = cancel_url  || defaultCancel
 
   if (!tier || !PRICE_IDS[tier]) {
     return res.status(400).json({
@@ -89,11 +108,11 @@ export default async function handler(req, res) {
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
       ...(email ? { customer_email: email } : {}),
-      success_url: `${success_url}&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url,
-      metadata: { tier },
+      success_url: `${finalSuccessUrl}${finalSuccessUrl.includes('?') ? '&' : '?'}session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: finalCancelUrl,
+      metadata: { tier, product: isInsights ? 'insights' : 'api' },
       subscription_data: {
-        metadata: { tier },
+        metadata: { tier, product: isInsights ? 'insights' : 'api' },
       },
       allow_promotion_codes: true,
     })

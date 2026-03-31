@@ -170,6 +170,8 @@ export default function Dashboard() {
   const tier = session?.user?.tier || 'free'
   const tierInfo = TIERS[tier] || TIERS.free
   const isProUser = ['growth', 'scale', 'enterprise'].includes(tier)
+  const hasInsights = activeKey?.insights === true || session?.user?.insights === true
+  const insightsPlan = activeKey?.insightsPlan || session?.user?.insightsPlan || null
   const usedDocs = usage?.current_month?.documents_used ?? 0
   const limitDocs = usage?.current_month?.monthly_limit ?? tierInfo.limit
   const pct = typeof limitDocs === 'number' ? Math.min(100, Math.round((usedDocs / limitDocs) * 100)) : 0
@@ -364,6 +366,62 @@ export default function Dashboard() {
               </div>
             </section>
           )}
+
+          {/* ── Insights Section ──────────────────────────────────────────── */}
+          <section className="dash-card">
+            <div className="dash-card-title-row">
+              <h2 className="dash-card-title">📡 Ebenova Insights</h2>
+              {!hasInsights && <span className="dash-pro-badge">Add-on</span>}
+            </div>
+            {hasInsights ? (
+              <div className="dash-scope-active">
+                <p>
+                  Reddit + Nairaland monitoring is active on your account.
+                  Plan: <strong>{insightsPlan ? insightsPlan.charAt(0).toUpperCase() + insightsPlan.slice(1) : 'Starter'}</strong>
+                </p>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '12px' }}>
+                  <a href="https://ebenova.dev/insights" className="dash-btn-secondary" style={{ textDecoration: 'none' }}>
+                    📅 View Monitors
+                  </a>
+                  <a href="https://ebenova.dev/docs#insights" className="dash-btn-secondary" style={{ textDecoration: 'none' }}>
+                    📚 API Docs
+                  </a>
+                </div>
+                <code className="dash-code-block" style={{ marginTop: '12px' }}>GET https://insights.ebenova.dev/v1/monitors</code>
+                <code className="dash-code-block">POST https://insights.ebenova.dev/v1/monitors</code>
+              </div>
+            ) : (
+              <div className="dash-scope-locked">
+                <p style={{ marginBottom: '16px' }}>
+                  Monitor Reddit and Nairaland 24/7. Get email alerts with AI-drafted replies every 15 minutes.
+                  Built for founders doing distribution.
+                </p>
+                <div className="dash-plans-grid">
+                  {[
+                    { tier: 'insights_starter', label: 'Starter', price: 49, features: ['3 monitors', '20 keywords each', 'Reddit + Nairaland', 'AI reply drafts', 'Email alerts'] },
+                    { tier: 'insights_growth',  label: 'Growth',  price: 99, features: ['20 monitors', '100 keywords each', 'AI drafts (Claude Haiku)', 'Full REST API', 'Semantic search (V2)'], featured: true },
+                    { tier: 'insights_scale',   label: 'Scale',   price: 249, features: ['100 monitors', '500 keywords each', 'AI drafts (Claude Sonnet)', 'API + webhooks', 'White-label'] },
+                  ].map(plan => (
+                    <div key={plan.tier} className={`dash-plan-card ${plan.featured ? 'dash-plan-featured' : ''}`}>
+                      {plan.featured && <div className="dash-plan-popular">Most Popular</div>}
+                      <h3>{plan.label}</h3>
+                      <div className="dash-plan-price">${plan.price}<span>/mo</span></div>
+                      <ul className="dash-plan-features">
+                        {plan.features.map(f => <li key={f}>✓ {f}</li>)}
+                      </ul>
+                      <button
+                        className={`dash-btn-plan ${plan.featured ? 'dash-btn-primary' : 'dash-btn-secondary'}`}
+                        onClick={() => handleUpgrade(plan.tier)}
+                        disabled={!!upgrading}
+                      >
+                        {upgrading === plan.tier ? 'Loading…' : `Get Insights ${plan.label} →`}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
 
           {/* Quick Start */}
           <section className="dash-card">

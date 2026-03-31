@@ -21,6 +21,12 @@ const TIER_LIMITS = {
   scale:   2000,
 }
 
+const INSIGHTS_PLAN_MAP = {
+  insights_starter: 'starter',
+  insights_growth:  'growth',
+  insights_scale:   'scale',
+}
+
 function generateKey() {
   return `sk_live_${randomBytes(24).toString('hex')}`
 }
@@ -33,6 +39,48 @@ async function getRawBody(req) {
     req.on('end', () => resolve(Buffer.concat(chunks)))
     req.on('error', reject)
   })
+}
+
+async function provisionInsightsKey(redis, email, insightsPlan, stripeCustomerId, stripeSubscriptionId) {
+  // For Insights, we add insights:true to the key.
+  // If the customer already has a main API key, upgrade it in place.
+  // Otherwise create a new free-tier key with insights enabled.
+  const existingKeyRef = await redis.get(`customer:${stripeCustomerId}:apikey`)
+
+  if (existingKeyRef) {
+    const raw = await redis.get(apiKeyRedisKey(existingKeyRef))
+    if (raw) {
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw
+      parsed.insights = true
+      parsed.insightsPlan = insightsPlan
+      parsed.disabled = false
+      parsed.stripeSubscriptionId = stripeSubscriptionId
+      await redis.set(apiKeyRedisKey(existingKeyRef), JSON.stringify(parsed))
+      console.log(`Updated existing key for ${email} → insights: true, insightsPlan: ${insightsPlan}`)
+      return { key: existingKeyRef, isNew: false }
+    }
+  }
+
+  // No existing key — provision a new free key with Insights enabled
+  const key = generateKey()
+  const keyData = {
+    owner: email,
+    tier: 'free',
+    monthlyLimit: TIER_LIMITS.free || 5,
+    label: `Insights ${insightsPlan.charAt(0).toUpperCase() + insightsPlan.slice(1)}`,
+    createdAt: new Date().toISOString(),
+    disabled: false,
+    insights: true,
+    insightsPlan,
+    stripeCustomerId,
+    stripeSubscriptionId,
+  }
+
+  await redis.set(apiKeyRedisKey(key), JSON.stringify(keyData))
+  await redis.set(`customer:${stripeCustomerId}:apikey`, key)
+  await redis.set(`customer:${stripeCustomerId}:email`, email)
+  console.log(`Provisioned Insights key for ${email} → insightsPlan: ${insightsPlan}`)
+  return { key, isNew: true }
 }
 
 async function provisionKey(redis, email, tier, stripeCustomerId, stripeSubscriptionId) {
@@ -134,22 +182,25 @@ export default async function handler(req, res) {
         const customer = await stripe.customers.retrieve(session.customer)
 
         const email = customer.email || session.customer_details?.email
-        const tier = subscription.metadata?.tier || session.metadata?.tier || 'starter'
+        const tier    = subscription.metadata?.tier    || session.metadata?.tier    || 'starter'
+        const product = subscription.metadata?.product || session.metadata?.product || 'api'
 
         if (!email) {
           console.error('No email found for checkout session:', session.id)
           break
         }
 
-        const { key, isNew } = await provisionKey(
-          redis, email, tier,
-          session.customer,
-          session.subscription,
-        )
-
-        // Send key to user via email (Resend)
-        if (isNew) {
-          await sendWelcomeEmail(email, key, tier)
+        if (product === 'insights') {
+          const insightsPlan = INSIGHTS_PLAN_MAP[tier] || 'starter'
+          const { key, isNew } = await provisionInsightsKey(
+            redis, email, insightsPlan, session.customer, session.subscription,
+          )
+          if (isNew) await sendInsightsWelcomeEmail(email, key, insightsPlan)
+        } else {
+          const { key, isNew } = await provisionKey(
+            redis, email, tier, session.customer, session.subscription,
+          )
+          if (isNew) await sendWelcomeEmail(email, key, tier)
         }
 
         break
@@ -157,7 +208,8 @@ export default async function handler(req, res) {
 
       case 'customer.subscription.updated': {
         const sub = event.data.object
-        const tier = sub.metadata?.tier
+        const tier    = sub.metadata?.tier
+        const product = sub.metadata?.product || 'api'
         if (!tier) break
 
         const customerId = sub.customer
@@ -168,8 +220,14 @@ export default async function handler(req, res) {
         if (!keyData) break
 
         const parsed = typeof keyData === 'string' ? JSON.parse(keyData) : keyData
-        parsed.tier = tier
-        parsed.monthlyLimit = TIER_LIMITS[tier] || parsed.monthlyLimit
+
+        if (product === 'insights') {
+          parsed.insights = sub.status === 'active'
+          parsed.insightsPlan = INSIGHTS_PLAN_MAP[tier] || 'starter'
+        } else {
+          parsed.tier = tier
+          parsed.monthlyLimit = TIER_LIMITS[tier] || parsed.monthlyLimit
+        }
         parsed.disabled = sub.status !== 'active'
         await redis.set(apiKeyRedisKey(existingKey), JSON.stringify(parsed))
         break
@@ -177,7 +235,23 @@ export default async function handler(req, res) {
 
       case 'customer.subscription.deleted': {
         const sub = event.data.object
-        await disableKey(redis, sub.customer, 'subscription_cancelled')
+        const product = sub.metadata?.product || 'api'
+        if (product === 'insights') {
+          // Remove Insights access but keep the key active for main API
+          const existingKey = await redis.get(`customer:${sub.customer}:apikey`)
+          if (existingKey) {
+            const raw = await redis.get(apiKeyRedisKey(existingKey))
+            if (raw) {
+              const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw
+              parsed.insights = false
+              parsed.insightsPlan = null
+              await redis.set(apiKeyRedisKey(existingKey), JSON.stringify(parsed))
+              console.log(`Removed Insights access for customer ${sub.customer}`)
+            }
+          }
+        } else {
+          await disableKey(redis, sub.customer, 'subscription_cancelled')
+        }
         break
       }
 
@@ -195,6 +269,38 @@ export default async function handler(req, res) {
     console.error('Webhook handler error:', err)
     return res.status(500).json({ error: 'Handler failed' })
   }
+}
+
+async function sendInsightsWelcomeEmail(email, apiKey, insightsPlan) {
+  const resendKey = process.env.RESEND_API_KEY
+  if (!resendKey) return
+  const planLabels = { starter: 'Starter (3 monitors)', growth: 'Growth (20 monitors)', scale: 'Scale (100 monitors)' }
+  try {
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${resendKey}` },
+      body: JSON.stringify({
+        from: 'Akin at Ebenova <akin@ebenova.dev>',
+        to: email,
+        subject: `Your Ebenova Insights key — ${planLabels[insightsPlan] || insightsPlan}`,
+        html: `
+          <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:40px 24px;">
+            <h1 style="font-size:22px;color:#1a1a1a;margin-bottom:8px">📡 Insights access activated</h1>
+            <p style="color:#555;margin-bottom:24px">You're on <strong>${planLabels[insightsPlan]}</strong>. Here's your API key to access the Insights API and set up monitors.</p>
+            <div style="background:#1a1a1a;border-radius:8px;padding:20px;margin-bottom:24px">
+              <p style="color:#999;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px">API Key (has Insights access)</p>
+              <code style="color:#c9a84c;font-family:monospace;font-size:14px;word-break:break-all">${apiKey}</code>
+            </div>
+            <p style="color:#555;font-size:14px;margin-bottom:16px">Add it to your MCP config or API requests:</p>
+            <div style="background:#f5f5f5;border-radius:8px;padding:16px;margin-bottom:28px">
+              <code style="font-family:monospace;font-size:12px;color:#333">Authorization: Bearer ${apiKey}</code>
+            </div>
+            <a href="https://ebenova.dev/insights" style="display:inline-block;background:#c9a84c;color:#0e0e0e;padding:14px 28px;border-radius:8px;font-weight:600;text-decoration:none;">Go to Insights dashboard →</a>
+            <p style="color:#999;font-size:13px;margin-top:28px">Questions? Reply to this email — I'll set up your first monitor for you.</p>
+          </div>`,
+      }),
+    })
+  } catch (err) { console.error('Insights welcome email failed:', err.message) }
 }
 
 async function sendWelcomeEmail(email, apiKey, tier) {
