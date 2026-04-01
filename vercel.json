@@ -28,7 +28,7 @@
     },
     {
       "source": "/v1/insights/monitors/:id",
-      "destination": "/api/v1/insights/monitors/delete"
+      "destination": "/api/v1/insights/monitors/delete?id=$id"
     },
     {
       "source": "/v1/insights/matches",

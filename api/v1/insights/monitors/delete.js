@@ -25,8 +25,11 @@ export default async function handler(req, res) {
     })
   }
 
+  // Vercel passes :id as ?id=$id from the rewrite rule.
+  // Also parse from URL path as fallback for direct calls.
   const monitorId = req.query?.id
     || (req.url ? new URL(req.url, 'http://x').searchParams.get('id') : null)
+    || (req.url?.split('/').pop()?.startsWith('mon_') ? req.url.split('/').pop() : null)
 
   if (!monitorId) {
     return res.status(400).json({

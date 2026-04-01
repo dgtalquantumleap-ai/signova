@@ -127,7 +127,7 @@ export default async function handler(req, res) {
     return res.status(403).json({ success: false, error: { code: 'FORBIDDEN', message: 'Not your monitor' } })
   }
 
-  const matchRaw = await redis.get(`insights:match:${matchId}`)
+  const matchRaw = await redis.get(`insights:match:${monitorId}:${matchId}`)
   if (!matchRaw) {
     return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Match not found' } })
   }
@@ -144,7 +144,7 @@ export default async function handler(req, res) {
   match.draft = draft
   match.draftGeneratedAt = new Date().toISOString()
   match.draftModel = useClaude ? 'claude-haiku' : 'groq-llama-3.3-70b'
-  await redis.set(`insights:match:${matchId}`, JSON.stringify(match))
+  await redis.set(`insights:match:${monitorId}:${matchId}`, JSON.stringify(match))
 
   return res.status(200).json({
     success: true,

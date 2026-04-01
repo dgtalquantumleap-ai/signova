@@ -61,7 +61,7 @@ export default async function handler(req, res) {
     return res.status(403).json({ success: false, error: { code: 'FORBIDDEN', message: 'Not your monitor' } })
   }
 
-  const matchRaw = await redis.get(`insights:match:${matchId}`)
+  const matchRaw = await redis.get(`insights:match:${monitorId}:${matchId}`)
   if (!matchRaw) {
     return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Match not found' } })
   }
@@ -70,7 +70,7 @@ export default async function handler(req, res) {
   match.feedback = feedback
   match.feedbackNote = note || null
   match.feedbackAt = new Date().toISOString()
-  await redis.set(`insights:match:${matchId}`, JSON.stringify(match))
+  await redis.set(`insights:match:${monitorId}:${matchId}`, JSON.stringify(match))
 
   // Track aggregate feedback per monitor (used for future prompt tuning)
   await redis.incr(`insights:feedback:${monitorId}:${feedback}`)

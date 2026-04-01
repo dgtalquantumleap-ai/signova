@@ -82,11 +82,12 @@ When to use: "What monitors do I have?", "Show my Insights monitors", "When did 
     if (data.count === 0) return { content: [{ type: 'text', text: 'No monitors found. Use `create_monitor` to set one up.' }] }
     const lines = [`**${data.count} monitor(s):**`, '']
     for (const m of data.monitors) {
+      const monId = m.monitor_id || m.id  // Vercel returns monitor_id, api-server returns id
       lines.push(
-        `**${m.name}** (\`${m.id}\`)`,
+        `**${m.name}** (\`${monId}\`)`,
         `  ${m.active ? '🟢 Active' : '🔴 Inactive'} · Plan: ${(m.plan || 'N/A').toUpperCase()}`,
         `  Keywords: ${m.keyword_count} · Alert: ${m.alert_email || 'not set'}`,
-        `  Last polled: ${m.last_poll_at ? new Date(m.last_poll_at).toLocaleString() : 'not yet'} · Matches: ${m.total_matches_found || 0}`,
+        `  Last polled: ${m.last_poll_at ? new Date(m.last_poll_at).toLocaleString() : 'not yet'} · Matches: ${m.total_matches || m.total_matches_found || 0}`,
         '',
       )
     }
@@ -112,7 +113,7 @@ When to use: "Set up a monitor for my product", "Start watching r/freelance for 
       alertEmail: z.string().optional().describe('Email for match alerts (defaults to API key owner email)'),
     }),
   }, async ({ name, keywords, productContext, alertEmail }) => {
-    const data = await post('/v1/insights/monitors/create', { name, keywords, productContext, alertEmail })
+    const data = await post('/v1/insights/monitors', { name, keywords, productContext, alertEmail })
     if (!data.success) return { content: [{ type: 'text', text: `Error: ${data.error?.message}\n${data.error?.hint || ''}` }], isError: true }
     return { content: [{ type: 'text', text: [
       `✅ **Monitor created: ${data.name}**`,

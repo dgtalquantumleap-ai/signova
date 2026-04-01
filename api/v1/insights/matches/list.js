@@ -50,18 +50,18 @@ export default async function handler(req, res) {
     return res.status(403).json({ success: false, error: { code: 'FORBIDDEN', message: 'Not your monitor' } })
   }
 
-  // ZRANGE with REV = newest first (scores are Unix timestamps)
-  const total = await redis.zcard(`insights:matches:${monitorId}`) || 0
-  const matchIds = await redis.zrange(
+  // Matches stored as Redis LIST by the monitor worker (lpush), newest entries at head
+  const total = await redis.llen(`insights:matches:${monitorId}`) || 0
+  const matchIds = await redis.lrange(
     `insights:matches:${monitorId}`,
     offset,
-    offset + limit - 1,
-    { rev: true }
+    offset + limit - 1
   ) || []
 
   const matches = []
   for (const matchId of matchIds) {
-    const matchRaw = await redis.get(`insights:match:${matchId}`)
+    // Keys stored as insights:match:{monitorId}:{postId} by monitor-v2.js
+    const matchRaw = await redis.get(`insights:match:${monitorId}:${matchId}`)
     if (!matchRaw) continue
     const m = typeof matchRaw === 'string' ? JSON.parse(matchRaw) : matchRaw
     matches.push({
