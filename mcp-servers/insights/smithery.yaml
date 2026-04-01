@@ -54,6 +54,7 @@ installation:
 startCommand: "node index.js"
 entryPoint: "index.js"
 runtime: nodejs
+serverCard: "https://api.ebenova.dev/.well-known/mcp/server-card.json"
 
 capabilities:
   tools:

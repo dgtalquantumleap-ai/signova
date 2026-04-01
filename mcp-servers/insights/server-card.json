@@ -1,0 +1,80 @@
+{
+  "name": "ebenova-insights",
+  "version": "1.0.2",
+  "description": "Monitor Reddit and Nairaland for keywords about your product. Get AI-drafted reply suggestions every 15 minutes.",
+  "vendor": "Ebenova Solutions",
+  "homepage": "https://ebenova.dev/insights",
+  "license": "MIT",
+  "tools": [
+    {
+      "name": "list_monitors",
+      "description": "List all your Reddit/Nairaland keyword monitors",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "create_monitor",
+      "description": "Create a new keyword monitor with subreddit targeting and product context",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "description": "Monitor name" },
+          "keywords": { "type": "array", "items": { "type": "string" }, "description": "Keywords to monitor" },
+          "subreddits": { "type": "array", "items": { "type": "string" }, "description": "Subreddits to search (optional)" },
+          "product_context": { "type": "string", "description": "Description of your product for AI reply drafts" }
+        },
+        "required": ["name", "keywords"]
+      }
+    },
+    {
+      "name": "delete_monitor",
+      "description": "Deactivate a monitor",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "monitor_id": { "type": "string" }
+        },
+        "required": ["monitor_id"]
+      }
+    },
+    {
+      "name": "get_matches",
+      "description": "Fetch recent Reddit/Nairaland posts that matched your keywords",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "monitor_id": { "type": "string" },
+          "limit": { "type": "number", "description": "Max results to return (default 20)" }
+        },
+        "required": ["monitor_id"]
+      }
+    },
+    {
+      "name": "regenerate_draft",
+      "description": "Re-generate the AI reply draft for a specific match",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "monitor_id": { "type": "string" },
+          "match_id": { "type": "string" }
+        },
+        "required": ["monitor_id", "match_id"]
+      }
+    },
+    {
+      "name": "rate_draft",
+      "description": "Rate a draft thumbs up or down to improve quality over time",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "monitor_id": { "type": "string" },
+          "match_id": { "type": "string" },
+          "rating": { "type": "string", "enum": ["up", "down"] }
+        },
+        "required": ["monitor_id", "match_id", "rating"]
+      }
+    }
+  ]
+}

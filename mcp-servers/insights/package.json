@@ -1,6 +1,6 @@
 {
   "name": "@ebenova/insights-mcp",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "MCP server for Ebenova Insights — monitor Reddit and Nairaland for keywords, get AI-drafted replies, manage monitors. For Claude Desktop, Cursor, and any MCP-compatible AI assistant.",
   "type": "module",
   "main": "index.js",
@@ -29,20 +29,19 @@
   "smithery": {
     "name": "ebenova-insights",
     "entryPoint": "index.js",
+    "serverCard": "https://api.ebenova.dev/.well-known/mcp/server-card.json",
     "configSchema": {
       "type": "object",
+      "required": ["EBENOVA_API_KEY"],
       "properties": {
         "EBENOVA_API_KEY": {
           "type": "string",
-          "description": "Your Ebenova API key with Insights access. Get one at https://ebenova.dev/insights",
-          "default": "",
-          "required": true
+          "description": "Your Ebenova API key with Insights access. Get one at https://ebenova.dev/insights"
         },
         "INSIGHTS_API_BASE": {
           "type": "string",
-          "description": "Insights API base URL (optional, defaults to https://insights.ebenova.dev)",
-          "default": "https://insights.ebenova.dev",
-          "required": false
+          "description": "Insights API base URL (optional)",
+          "default": "https://api.ebenova.dev"
         }
       }
     }

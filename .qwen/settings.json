@@ -53,7 +53,9 @@
       "Bash(vercel *)",
       "Bash(npm version *)",
       "Bash(git add *)",
-      "WebFetch(ebenova.dev)"
+      "WebFetch(ebenova.dev)",
+      "Bash(npm run *)",
+      "Bash(powershell *)"
     ]
   }
 }

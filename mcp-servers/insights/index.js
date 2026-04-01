@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// @ebenova/insights-mcp v1.0.2
+// @ebenova/insights-mcp v1.0.3
 // MCP server for Ebenova Insights — Reddit + Nairaland keyword monitoring.
 //
 // Tools: list_monitors, create_monitor, delete_monitor,
@@ -69,7 +69,7 @@ function createServer(config = {}) {
     return lines.join('\n')
   }
 
-  const server = new McpServer({ name: 'ebenova-insights', version: '1.0.2' })
+  const server = new McpServer({ name: 'ebenova-insights', version: '1.0.3' })
 
   // ── list_monitors ────────────────────────────────────────────────────────
   server.tool('list_monitors', {
@@ -188,14 +188,21 @@ When to use: "Thumbs up on match 1abc23", "That reply was off — thumbs down"`,
   return server
 }
 
-// ── Smithery export + CLI entrypoint ─────────────────────────────────────────
+// ── Smithery exports ──────────────────────────────────────────────────────────
 
-// Required by Smithery: export a default factory function that accepts config.
-export default function (config) {
+// Smithery calls createSandboxServer() during scanning (no real credentials needed).
+export function createSandboxServer() {
+  return createServer({
+    EBENOVA_API_KEY: 'sandbox-scan-key',
+    INSIGHTS_API_BASE: 'https://api.ebenova.dev',
+  })
+}
+
+// Smithery also tries the default export as a factory — support both patterns.
+export default function createServerFromConfig(config = {}) {
   return createServer(config)
 }
 
-// Also export named for backwards compat
 export { createServer }
 
 async function main() {

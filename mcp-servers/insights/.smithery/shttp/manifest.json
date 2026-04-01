@@ -6,7 +6,7 @@
     "serverCard": {
       "serverInfo": {
         "name": "ebenova-insights",
-        "version": "1.0.0"
+        "version": "1.0.3"
       },
       "tools": [
         {
@@ -41,7 +41,7 @@
                   "name": {
                     "type": "string",
                     "maxLength": 100,
-                    "description": "Name for this monitor, e.g. \"Signova - Freelance Subs\""
+                    "description": "Monitor name, e.g. \"Signova - Freelance\""
                   },
                   "keywords": {
                     "type": "array",
@@ -50,19 +50,19 @@
                       "properties": {
                         "keyword": {
                           "type": "string",
-                          "description": "Keyword or phrase to search for, e.g. \"freelance contract\""
+                          "description": "Keyword or phrase, e.g. \"freelance contract\""
                         },
                         "subreddits": {
                           "type": "array",
                           "items": {
                             "type": "string"
                           },
-                          "description": "Subreddits to scope to (empty = global Reddit search)"
+                          "description": "Subreddits to scope to (empty = all Reddit)"
                         },
                         "productContext": {
                           "type": "string",
                           "maxLength": 500,
-                          "description": "Per-keyword product context (overrides monitor-level context)"
+                          "description": "Per-keyword product context (optional)"
                         }
                       },
                       "required": [
@@ -70,17 +70,16 @@
                       ],
                       "additionalProperties": false
                     },
-                    "minItems": 1,
-                    "description": "Keywords to monitor"
+                    "minItems": 1
                   },
                   "productContext": {
                     "type": "string",
                     "maxLength": 2000,
-                    "description": "Describe your product. Be specific: what problem you solve, who you help, and how. This shapes every AI reply draft."
+                    "description": "Describe your product: what problem you solve, who you help. Shapes all AI reply drafts."
                   },
                   "alertEmail": {
                     "type": "string",
-                    "description": "Email to send match alerts to (defaults to your API key owner email)"
+                    "description": "Email for match alerts (defaults to API key owner email)"
                   }
                 },
                 "required": [
@@ -110,7 +109,7 @@
                 "properties": {
                   "monitor_id": {
                     "type": "string",
-                    "description": "Monitor ID to deactivate (e.g. mon_abc123). Use list_monitors to find IDs."
+                    "description": "Monitor ID, e.g. mon_abc123. Use list_monitors to find IDs."
                   }
                 },
                 "required": [
@@ -139,20 +138,18 @@
                 "properties": {
                   "monitor_id": {
                     "type": "string",
-                    "description": "Monitor ID to fetch matches for. Use list_monitors if you need to find it."
+                    "description": "Monitor ID. Use list_monitors if you need to find it."
                   },
                   "limit": {
                     "type": "integer",
                     "minimum": 1,
                     "maximum": 100,
-                    "default": 10,
-                    "description": "Number of matches to return (default 10, max 100)"
+                    "default": 10
                   },
                   "offset": {
                     "type": "integer",
                     "minimum": 0,
-                    "default": 0,
-                    "description": "Pagination offset"
+                    "default": 0
                   }
                 },
                 "required": [
@@ -180,12 +177,10 @@
                 "type": "object",
                 "properties": {
                   "monitor_id": {
-                    "type": "string",
-                    "description": "Monitor ID the match belongs to"
+                    "type": "string"
                   },
                   "match_id": {
-                    "type": "string",
-                    "description": "Match ID to regenerate draft for"
+                    "type": "string"
                   }
                 },
                 "required": [
@@ -214,20 +209,17 @@
                 "type": "object",
                 "properties": {
                   "monitor_id": {
-                    "type": "string",
-                    "description": "Monitor ID the match belongs to"
+                    "type": "string"
                   },
                   "match_id": {
-                    "type": "string",
-                    "description": "Match ID to rate"
+                    "type": "string"
                   },
                   "feedback": {
                     "type": "string",
                     "enum": [
                       "up",
                       "down"
-                    ],
-                    "description": "\"up\" if the draft was useful, \"down\" if not"
+                    ]
                   }
                 },
                 "required": [
@@ -253,8 +245,8 @@
       "prompts": []
     },
     "source": {
-      "commit": "08827ecabbbd545a03317b12311558cc7780ce65",
-      "branch": "master"
+      "commit": "2f08a08fd518bc407b59f68e08bb0a2d6af210d6",
+      "branch": "main"
     }
   },
   "artifacts": {

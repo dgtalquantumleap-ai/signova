@@ -21015,37 +21015,32 @@ var StdioServerTransport = class {
 
 // index.js
 function createServer(config2 = {}) {
-  const API_BASE = config2.INSIGHTS_API_BASE || process.env.INSIGHTS_API_BASE || "https://insights.ebenova.dev";
+  const API_BASE = config2.INSIGHTS_API_BASE || process.env.INSIGHTS_API_BASE || "https://api.ebenova.dev";
   const API_KEY = config2.EBENOVA_API_KEY || process.env.EBENOVA_API_KEY || "";
-  const isSandbox = API_KEY === "sk_test_sandbox" || API_KEY === "sandbox-test-key";
-  if (!API_KEY && !isSandbox) {
-    process.stderr.write("[ebenova-insights-mcp] WARNING: EBENOVA_API_KEY is not set.\n");
+  if (!API_KEY) {
+    process.stderr.write("[ebenova-insights-mcp] WARNING: EBENOVA_API_KEY not set.\n");
     process.stderr.write("[ebenova-insights-mcp] Get an Insights key at https://ebenova.dev/insights\n");
   }
-  function headers() {
-    return { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` };
-  }
-  async function get(path) {
-    const res = await fetch(`${API_BASE}${path}`, { method: "GET", headers: headers() });
-    return res.json();
-  }
-  async function post(path, body) {
+  const headers = () => ({
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${API_KEY}`
+  });
+  async function apiFetch(method, path, body) {
     const res = await fetch(`${API_BASE}${path}`, {
-      method: "POST",
+      method,
       headers: headers(),
-      body: JSON.stringify(body)
+      ...body ? { body: JSON.stringify(body) } : {}
     });
     return res.json();
   }
-  async function del(path) {
-    const res = await fetch(`${API_BASE}${path}`, { method: "DELETE", headers: headers() });
-    return res.json();
-  }
+  const get = (path) => apiFetch("GET", path);
+  const post = (path, body) => apiFetch("POST", path, body);
+  const del = (path) => apiFetch("DELETE", path);
   function formatMatch(m, index) {
     const lines = [
       `**${index + 1}. ${m.title}**`,
       `${m.source === "nairaland" ? "\u{1F1F3}\u{1F1EC} Nairaland" : "\u{1F4CC} r/" + m.subreddit} \xB7 u/${m.author} \xB7 \u2B06\uFE0F ${m.score} \xB7 \u{1F4AC} ${m.comments}`,
-      `Keyword: \`${m.keyword}\` \xB7 ${m.approved ? "\u2705 Safe to reply" : "\u26D4 DO NOT POST \u2014 not an approved subreddit"}`,
+      `Keyword: \`${m.keyword}\` \xB7 ${m.approved ? "\u2705 Safe to reply" : "\u26D4 DO NOT POST"}`,
       `\u{1F517} ${m.url}`
     ];
     if (m.body) lines.push(`> ${m.body.slice(0, 200)}${m.body.length > 200 ? "\u2026" : ""}`);
@@ -21057,273 +21052,139 @@ function createServer(config2 = {}) {
     if (m.feedback) lines.push(`_You rated this: ${m.feedback === "up" ? "\u{1F44D}" : "\u{1F44E}"}_`);
     return lines.join("\n");
   }
-  const server = new McpServer({ name: "ebenova-insights", version: "1.0.0" });
-  server.tool(
-    "list_monitors",
-    {
-      description: `List all your Ebenova Insights monitors.
-
-Use this to see what keyword monitors are currently active, when they last ran,
-and how many Reddit/Nairaland matches they've found.
-
-When to use:
-- "What monitors do I have set up?"
-- "How many keywords am I monitoring?"
-- "When did my monitor last run?"
-- "Show me my Insights monitors"`,
-      inputSchema: external_exports.object({})
-    },
-    async () => {
-      const data = await get("/v1/monitors");
-      if (!data.success) {
-        return {
-          content: [{ type: "text", text: `Error: ${data.error?.message || "Could not fetch monitors"}
-${data.error?.hint || ""}` }],
-          isError: true
-        };
-      }
-      if (data.count === 0) {
-        return {
-          content: [{ type: "text", text: "No monitors found. Use `create_monitor` to set one up." }]
-        };
-      }
-      const lines = [`**${data.count} monitor${data.count !== 1 ? "s" : ""}:**`, ""];
-      for (const m of data.monitors) {
-        lines.push(
-          `**${m.name}** (\`${m.id}\`)`,
-          `  Status: ${m.active ? "\u{1F7E2} Active" : "\u{1F534} Inactive"} \xB7 Plan: ${m.plan?.toUpperCase() || "N/A"}`,
-          `  Keywords: ${m.keyword_count} (${(m.keywords || []).slice(0, 5).join(", ")}${m.keyword_count > 5 ? "\u2026" : ""})`,
-          `  Alert email: ${m.alert_email || "Not set"}`,
-          `  Last polled: ${m.last_poll_at ? new Date(m.last_poll_at).toLocaleString() : "Not yet"}`,
-          `  Total matches: ${m.total_matches_found || 0}`,
-          ""
-        );
-      }
-      return { content: [{ type: "text", text: lines.join("\n") }] };
-    }
-  );
-  server.tool(
-    "create_monitor",
-    {
-      description: `Create a new Ebenova Insights monitor to watch Reddit and Nairaland for keywords.
-
-Monitors poll every 15 minutes. When posts match your keywords, you'll get an email alert
-with post details and AI-drafted replies in community tone (not sales copy).
-
-Plan limits:
-- Starter: 3 monitors, 20 keywords each
-- Growth: 20 monitors, 100 keywords each
-- Scale: 100 monitors, 500 keywords each
-
-When to use:
-- "Set up a monitor for my product"
-- "Start watching Reddit for mentions of scope creep"
-- "Create an Insights monitor for [product name]"
-- "Monitor r/freelance and r/webdev for NDA questions"`,
-      inputSchema: external_exports.object({
-        name: external_exports.string().max(100).describe('Name for this monitor, e.g. "Signova - Freelance Subs"'),
-        keywords: external_exports.array(external_exports.object({
-          keyword: external_exports.string().describe('Keyword or phrase to search for, e.g. "freelance contract"'),
-          subreddits: external_exports.array(external_exports.string()).optional().describe("Subreddits to scope to (empty = global Reddit search)"),
-          productContext: external_exports.string().max(500).optional().describe("Per-keyword product context (overrides monitor-level context)")
-        })).min(1).describe("Keywords to monitor"),
-        productContext: external_exports.string().max(2e3).optional().describe(
-          "Describe your product. Be specific: what problem you solve, who you help, and how. This shapes every AI reply draft."
-        ),
-        alertEmail: external_exports.string().optional().describe("Email to send match alerts to (defaults to your API key owner email)")
-      })
-    },
-    async ({ name, keywords, productContext, alertEmail }) => {
-      const data = await post("/v1/monitors", { name, keywords, productContext, alertEmail });
-      if (!data.success) {
-        return {
-          content: [{ type: "text", text: `Error: ${data.error?.message || "Could not create monitor"}
-${data.error?.hint || ""}` }],
-          isError: true
-        };
-      }
-      const lines = [
-        `\u2705 **Monitor created: ${data.name}**`,
-        `ID: \`${data.monitor_id}\``,
-        `Keywords: ${data.keyword_count} (${(data.keywords || []).join(", ")})`,
-        `Plan: ${data.plan?.toUpperCase()}`,
-        `Alerts \u2192 ${data.alert_email}`,
-        `First results: ${data.next_poll_eta || "within 15 minutes"}`,
-        "",
-        "Use `get_matches` with this monitor ID to see results once the first poll runs."
-      ];
-      return { content: [{ type: "text", text: lines.join("\n") }] };
-    }
-  );
-  server.tool(
-    "delete_monitor",
-    {
-      description: `Deactivate an Ebenova Insights monitor. The monitor stops scanning immediately.
-Match data is preserved for 7 days. Use list_monitors to find monitor IDs.
-
-When to use:
-- "Stop monitoring for [keyword]"
-- "Deactivate monitor mon_abc123"
-- "I don't need this monitor anymore"`,
-      inputSchema: external_exports.object({
-        monitor_id: external_exports.string().describe("Monitor ID to deactivate (e.g. mon_abc123). Use list_monitors to find IDs.")
-      })
-    },
-    async ({ monitor_id }) => {
-      const data = await del(`/v1/monitors/${monitor_id}`);
-      if (!data.success) {
-        return {
-          content: [{ type: "text", text: `Error: ${data.error?.message || "Could not deactivate monitor"}` }],
-          isError: true
-        };
-      }
-      return {
-        content: [{ type: "text", text: `\u2705 Monitor \`${data.monitor_id}\` deactivated. Scanning stopped. Match data retained for 7 days.` }]
-      };
-    }
-  );
-  server.tool(
-    "get_matches",
-    {
-      description: `Fetch recent Reddit and Nairaland matches for an Insights monitor.
-
-Returns posts that matched your keywords, with post content, subreddit safety status,
-and AI-drafted replies. Results are stored for 7 days.
-
-When to use:
-- "Show me today's Reddit mentions"
-- "What matched my Signova monitor?"
-- "Get the latest Insights matches for mon_abc123"
-- "Check my Reddit monitor results"
-- "Any new posts about freelance contracts?"`,
-      inputSchema: external_exports.object({
-        monitor_id: external_exports.string().describe("Monitor ID to fetch matches for. Use list_monitors if you need to find it."),
-        limit: external_exports.number().int().min(1).max(100).optional().default(10).describe("Number of matches to return (default 10, max 100)"),
-        offset: external_exports.number().int().min(0).optional().default(0).describe("Pagination offset")
-      })
-    },
-    async ({ monitor_id, limit, offset }) => {
-      const data = await get(`/v1/matches?monitor_id=${monitor_id}&limit=${limit}&offset=${offset}`);
-      if (!data.success) {
-        return {
-          content: [{ type: "text", text: `Error: ${data.error?.message || "Could not fetch matches"}` }],
-          isError: true
-        };
-      }
-      if (data.count === 0) {
-        return {
-          content: [{ type: "text", text: `No matches found for monitor \`${monitor_id}\` yet.
-
-If you just created it, check back in ~15 minutes after the first poll runs.` }]
-        };
-      }
-      const lines = [
-        `**${data.count} match${data.count !== 1 ? "es" : ""} for \`${monitor_id}\`** (offset: ${data.offset})`,
+  const server = new McpServer({ name: "ebenova-insights", version: "1.0.3" });
+  server.tool("list_monitors", {
+    description: `List all your Ebenova Insights monitors.
+When to use: "What monitors do I have?", "Show my Insights monitors", "When did my monitor last run?"`,
+    inputSchema: external_exports.object({})
+  }, async () => {
+    const data = await get("/v1/insights/monitors");
+    if (!data.success) return { content: [{ type: "text", text: `Error: ${data.error?.message}
+${data.error?.hint || ""}` }], isError: true };
+    if (data.count === 0) return { content: [{ type: "text", text: "No monitors found. Use `create_monitor` to set one up." }] };
+    const lines = [`**${data.count} monitor(s):**`, ""];
+    for (const m of data.monitors) {
+      const monId = m.monitor_id || m.id;
+      lines.push(
+        `**${m.name}** (\`${monId}\`)`,
+        `  ${m.active ? "\u{1F7E2} Active" : "\u{1F534} Inactive"} \xB7 Plan: ${(m.plan || "N/A").toUpperCase()}`,
+        `  Keywords: ${m.keyword_count} \xB7 Alert: ${m.alert_email || "not set"}`,
+        `  Last polled: ${m.last_poll_at ? new Date(m.last_poll_at).toLocaleString() : "not yet"} \xB7 Matches: ${m.total_matches || m.total_matches_found || 0}`,
         ""
-      ];
-      for (const [i, m] of data.matches.entries()) {
-        lines.push(formatMatch(m, i), "", "---", "");
-      }
-      if (data.count === limit) {
-        lines.push(`_Showing ${limit} results. Use \`offset: ${offset + limit}\` to see more._`);
-      }
-      return { content: [{ type: "text", text: lines.join("\n") }] };
+      );
     }
-  );
-  server.tool(
-    "regenerate_draft",
-    {
-      description: `Regenerate the AI reply draft for a specific Reddit/Nairaland match.
-
-Use this when the original draft was skipped (null), or when you want a fresh take
-using updated product context. The new draft is saved and replaces the old one.
-
-When to use:
-- "Regenerate the draft for match 1abc23"
-- "The draft was empty, try again"
-- "Get a new reply suggestion for this post"`,
-      inputSchema: external_exports.object({
-        monitor_id: external_exports.string().describe("Monitor ID the match belongs to"),
-        match_id: external_exports.string().describe("Match ID to regenerate draft for")
-      })
-    },
-    async ({ monitor_id, match_id }) => {
-      const data = await post("/v1/matches/draft", { monitor_id, match_id });
-      if (!data.success) {
-        return {
-          content: [{ type: "text", text: `Error: ${data.error?.message || "Draft regeneration failed"}` }],
-          isError: true
-        };
-      }
-      if (!data.draft) {
-        return {
-          content: [{ type: "text", text: `Match \`${match_id}\`: AI decided to skip this one (post not relevant enough for a natural reply). This is intentional \u2014 better no draft than a forced one.` }]
-        };
-      }
-      return {
-        content: [{
-          type: "text",
-          text: `\u270F\uFE0F **New draft for \`${match_id}\`:**
+    return { content: [{ type: "text", text: lines.join("\n") }] };
+  });
+  server.tool("create_monitor", {
+    description: `Create a new monitor to watch Reddit and Nairaland for keywords about your product.
+Polls every 15 minutes. Sends email alerts with AI-drafted replies in community tone.
+Plan limits: Starter = 3 monitors / 20 keywords. Growth = 20 monitors / 100 keywords.
+When to use: "Set up a monitor for my product", "Start watching r/freelance for scope creep"`,
+    inputSchema: external_exports.object({
+      name: external_exports.string().max(100).describe('Monitor name, e.g. "Signova - Freelance"'),
+      keywords: external_exports.array(external_exports.object({
+        keyword: external_exports.string().describe('Keyword or phrase, e.g. "freelance contract"'),
+        subreddits: external_exports.array(external_exports.string()).optional().describe("Subreddits to scope to (empty = all Reddit)"),
+        productContext: external_exports.string().max(500).optional().describe("Per-keyword product context (optional)")
+      })).min(1),
+      productContext: external_exports.string().max(2e3).optional().describe(
+        "Describe your product: what problem you solve, who you help. Shapes all AI reply drafts."
+      ),
+      alertEmail: external_exports.string().optional().describe("Email for match alerts (defaults to API key owner email)")
+    })
+  }, async ({ name, keywords, productContext, alertEmail }) => {
+    const data = await post("/v1/insights/monitors", { name, keywords, productContext, alertEmail });
+    if (!data.success) return { content: [{ type: "text", text: `Error: ${data.error?.message}
+${data.error?.hint || ""}` }], isError: true };
+    return { content: [{ type: "text", text: [
+      `\u2705 **Monitor created: ${data.name}**`,
+      `ID: \`${data.monitor_id}\`  \xB7  Keywords: ${data.keyword_count}`,
+      `Alerts \u2192 ${data.alert_email}  \xB7  First results: ${data.next_poll_eta || "within 15 min"}`
+    ].join("\n") }] };
+  });
+  server.tool("delete_monitor", {
+    description: `Deactivate an Insights monitor. Scanning stops immediately. Match data kept 7 days.
+When to use: "Stop monitoring for [keyword]", "Deactivate monitor mon_abc123"`,
+    inputSchema: external_exports.object({
+      monitor_id: external_exports.string().describe("Monitor ID, e.g. mon_abc123. Use list_monitors to find IDs.")
+    })
+  }, async ({ monitor_id }) => {
+    const data = await del(`/v1/insights/monitors/${monitor_id}`);
+    if (!data.success) return { content: [{ type: "text", text: `Error: ${data.error?.message}` }], isError: true };
+    return { content: [{ type: "text", text: `\u2705 Monitor \`${data.monitor_id}\` deactivated.` }] };
+  });
+  server.tool("get_matches", {
+    description: `Fetch recent Reddit and Nairaland matches for a monitor.
+Returns posts with content, subreddit safety status, and AI-drafted replies. Stored 7 days.
+When to use: "Show me today's Reddit mentions", "What matched my Signova monitor?", "Check my Reddit results"`,
+    inputSchema: external_exports.object({
+      monitor_id: external_exports.string().describe("Monitor ID. Use list_monitors if you need to find it."),
+      limit: external_exports.number().int().min(1).max(100).optional().default(10),
+      offset: external_exports.number().int().min(0).optional().default(0)
+    })
+  }, async ({ monitor_id, limit, offset }) => {
+    const data = await get(`/v1/insights/matches?monitor_id=${monitor_id}&limit=${limit}&offset=${offset}`);
+    if (!data.success) return { content: [{ type: "text", text: `Error: ${data.error?.message}` }], isError: true };
+    if (data.count === 0) return { content: [{ type: "text", text: `No matches yet for \`${monitor_id}\`. If just created, check back in ~15 min.` }] };
+    const lines = [`**${data.count} match(es) for \`${monitor_id}\`:**`, ""];
+    for (const [i, m] of data.matches.entries()) lines.push(formatMatch(m, i), "", "---", "");
+    if (data.count === limit) lines.push(`_Use offset: ${offset + limit} to see more._`);
+    return { content: [{ type: "text", text: lines.join("\n") }] };
+  });
+  server.tool("regenerate_draft", {
+    description: `Re-generate the AI reply draft for a specific match. Use when draft was null or you want a fresh take.
+When to use: "Regenerate the draft for match 1abc23", "The draft was empty, try again"`,
+    inputSchema: external_exports.object({
+      monitor_id: external_exports.string(),
+      match_id: external_exports.string()
+    })
+  }, async ({ monitor_id, match_id }) => {
+    const data = await post("/v1/insights/matches/draft", { monitor_id, match_id });
+    if (!data.success) return { content: [{ type: "text", text: `Error: ${data.error?.message}` }], isError: true };
+    if (!data.draft) return { content: [{ type: "text", text: `AI skipped this match \u2014 post not relevant enough for a natural reply. Better no draft than a forced one.` }] };
+    return { content: [{ type: "text", text: `\u270F\uFE0F **New draft for \`${match_id}\`:**
 
 ${data.draft}
 
-Use \`rate_draft\` to give feedback on this draft.`
-        }]
-      };
-    }
-  );
-  server.tool(
-    "rate_draft",
-    {
-      description: `Rate an AI reply draft thumbs up (useful) or thumbs down (not useful).
-Feedback is stored and used to improve draft quality over time.
-
-When to use:
-- "This draft was great \u2014 thumbs up on match 1abc23"
-- "That reply was off \u2014 thumbs down"
-- "Rate the draft for this match"`,
-      inputSchema: external_exports.object({
-        monitor_id: external_exports.string().describe("Monitor ID the match belongs to"),
-        match_id: external_exports.string().describe("Match ID to rate"),
-        feedback: external_exports.enum(["up", "down"]).describe('"up" if the draft was useful, "down" if not')
-      })
-    },
-    async ({ monitor_id, match_id, feedback }) => {
-      const data = await post("/v1/matches/feedback", { monitor_id, match_id, feedback });
-      if (!data.success) {
-        return {
-          content: [{ type: "text", text: `Error: ${data.error?.message || "Feedback not recorded"}` }],
-          isError: true
-        };
-      }
-      const emoji2 = feedback === "up" ? "\u{1F44D}" : "\u{1F44E}";
-      return {
-        content: [{ type: "text", text: `${emoji2} Feedback recorded for match \`${match_id}\`. Thanks \u2014 this helps improve future drafts.` }]
-      };
-    }
-  );
+Use \`rate_draft\` to give feedback.` }] };
+  });
+  server.tool("rate_draft", {
+    description: `Rate a reply draft thumbs up or down. Feedback improves future draft quality.
+When to use: "Thumbs up on match 1abc23", "That reply was off \u2014 thumbs down"`,
+    inputSchema: external_exports.object({
+      monitor_id: external_exports.string(),
+      match_id: external_exports.string(),
+      feedback: external_exports.enum(["up", "down"])
+    })
+  }, async ({ monitor_id, match_id, feedback }) => {
+    const data = await post("/v1/insights/matches/feedback", { monitor_id, match_id, feedback });
+    if (!data.success) return { content: [{ type: "text", text: `Error: ${data.error?.message}` }], isError: true };
+    return { content: [{ type: "text", text: `${feedback === "up" ? "\u{1F44D}" : "\u{1F44E}"} Feedback recorded for \`${match_id}\`.` }] };
+  });
   return server;
 }
 function createSandboxServer() {
-  return createServer({ EBENOVA_API_KEY: "sandbox-test-key" });
+  return createServer({
+    EBENOVA_API_KEY: "sandbox-scan-key",
+    INSIGHTS_API_BASE: "https://api.ebenova.dev"
+  });
+}
+function createServerFromConfig(config2 = {}) {
+  return createServer(config2);
 }
 async function main() {
-  const isBuildMode = process.env.EBENOVA_API_KEY === "sk_test_sandbox" || !process.stdin.isTTY;
   const server = createServer();
-  if (isBuildMode) {
-    process.stderr.write("[ebenova-insights-mcp] Build mode: Server initialized successfully\n");
-    process.stderr.write("[ebenova-insights-mcp] Tools: list_monitors, create_monitor, delete_monitor, get_matches, regenerate_draft, rate_draft\n");
-    process.exit(0);
-    return;
-  }
   const transport = new StdioServerTransport();
   await server.connect(transport);
 }
 main().catch((err) => {
-  console.error("[ebenova-insights-mcp] Fatal error:", err);
+  process.stderr.write(`[ebenova-insights-mcp] Fatal: ${err.message}
+`);
   process.exit(1);
 });
 export {
-  createSandboxServer
+  createSandboxServer,
+  createServer,
+  createServerFromConfig as default
 };
 //# sourceMappingURL=module.js.map
