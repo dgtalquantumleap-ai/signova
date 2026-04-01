@@ -1,8 +1,9 @@
 User-agent: *
 Allow: /
 
-# Sitemap location
-Sitemap: https://www.getsignova.com/sitemap.xml
-
 # Disallow API routes from indexing
 Disallow: /api/
+
+# Sitemaps — both consumer product and API platform
+Sitemap: https://www.getsignova.com/sitemap.xml
+Sitemap: https://www.ebenova.dev/sitemap.xml
