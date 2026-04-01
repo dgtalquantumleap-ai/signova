@@ -300,16 +300,17 @@ export default function ApiLanding() {
         <div className="api-hero-inner">
           <div className="api-hero-badge">
             <span className="badge-dot" />
-            Now in Public Beta
+            Now Live · Public Access
           </div>
 
           <h1 className="api-hero-title">
-            The legal document API that<br />
-            <span className="highlight">actually knows Nigerian law.</span>
+            Legal document generation for<br />
+            <span className="highlight">the markets others skip.</span>
           </h1>
 
           <p className="api-hero-sub">
-            Generate NDAs, freelance contracts, tenancy agreements and invoices for Nigeria, Kenya, Ghana — and 180+ countries — in one API call. 27 document types. 18 jurisdictions. MCP-native for AI agents.
+            27 document types. Native coverage for Nigeria, Kenya, Ghana, and 180+ countries.
+            Contracts, invoices, scope enforcement — one API. MCP-native for AI agents.
           </p>
 
           <div className="api-hero-actions">
@@ -323,8 +324,9 @@ export default function ApiLanding() {
 
           <div className="trust-signals">
             <span>✓ No credit card required</span>
-            <span>✓ Nigerian law supported</span>
+            <span>✓ Nigeria · Kenya · Ghana · 180+ countries</span>
             <span>✓ 27 Document Types</span>
+            <span>✓ Free tier · No commitment</span>
           </div>
 
           {/* Code Example */}
@@ -427,7 +429,7 @@ export default function ApiLanding() {
         <div className="section-inner">
           <div className="section-header">
             <p className="section-label">Why Ebenova</p>
-            <h2 className="section-title">Built for Emerging Markets, Not Copied from Silicon Valley</h2>
+            <h2 className="section-title">Built for African Business, Not Copied from Silicon Valley</h2>
           </div>
 
           <div className="comparison-table-wrapper">
@@ -469,6 +471,11 @@ export default function ApiLanding() {
                   <td className="feature">Pricing</td>
                   <td className="competitors">$40–417+/month</td>
                   <td className="ebenova">$29–199/month (50 verifications free)</td>
+                </tr>
+                <tr>
+                  <td className="feature">Documentation</td>
+                  <td className="competitors">Comprehensive, US-focused examples</td>
+                  <td className="ebenova">Full REST docs + MCP guide + Nigeria/Kenya/Ghana code examples</td>
                 </tr>
               </tbody>
             </table>
@@ -645,7 +652,7 @@ export default function ApiLanding() {
           </div>
         </div>
         <div className="api-footer-copy">
-          © 2026 Ebenova Solutions · Calgary, Alberta
+          © 2026 Ebenova Solutions · Africa-first · Built in Canada
         </div>
       </footer>
     </div>
