@@ -49,6 +49,7 @@ function InsightsPage() {
 export default function App() {
   return (
     <Suspense fallback={<PageShell />}>
+      <a href="#main-content" className="skip-nav">Skip to main content</a>
       <Routes>
         <Route path="/" element={<RootPage />} />
         <Route path="/api" element={<ApiLanding />} />

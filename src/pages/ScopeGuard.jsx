@@ -93,8 +93,18 @@ export default function ScopeGuard() {
     <div className="sg-page">
       <Helmet>
         <title>Scope Guard — Stop Scope Creep Before It Costs You | Signova</title>
-        <meta name="description" content="Paste your contract and client message. Scope Guard detects violations and drafts 3 professional responses in seconds. Free to try." />
+        <meta name="description" content="Paste your contract and client message. Scope Guard detects violations and drafts 3 professional responses in seconds. Free to try, no account needed." />
         <link rel="canonical" href="https://www.getsignova.com/scope-guard" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Signova" />
+        <meta property="og:url" content="https://www.getsignova.com/scope-guard" />
+        <meta property="og:title" content="Scope Guard — Detect Scope Creep in Seconds" />
+        <meta property="og:description" content="Paste your contract and the client's message. Get 3 professional responses and a change order in seconds. Free to try." />
+        <meta property="og:image" content="https://www.getsignova.com/og-image.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Scope Guard — Detect Scope Creep in Seconds" />
+        <meta name="twitter:description" content="Paste your contract + client message. Scope Guard spots the violation and drafts your response. Free to try." />
+        <meta name="twitter:image" content="https://www.getsignova.com/og-image.png" />
       </Helmet>
 
       <nav className="sg-nav">

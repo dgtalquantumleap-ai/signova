@@ -1,5 +1,20 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Skip navigation — accessibility */
+.skip-nav {
+  position: absolute; left: -9999px; top: auto;
+  width: 1px; height: 1px; overflow: hidden;
+  z-index: 9999;
+}
+.skip-nav:focus {
+  position: fixed; left: 16px; top: 16px;
+  width: auto; height: auto; overflow: visible;
+  background: var(--gold, #c9a84c); color: #0e0e0e;
+  padding: 12px 20px; border-radius: 6px;
+  font-weight: 700; font-size: 14px;
+  text-decoration: none;
+}
+
 :root {
   --bg: #0e0e0e;
   --bg2: #1a1a1a;

@@ -274,6 +274,27 @@ export default function ApiLanding() {
         <meta name="twitter:title" content="Ebenova — Developer APIs for Legal Documents & Emerging Markets" />
         <meta name="twitter:description" content="27 document types, 18 jurisdictions, invoice generation, Reddit monitoring, and MCP servers for AI agents. Free tier." />
         <meta name="twitter:image" content="https://www.ebenova.dev/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "Ebenova API",
+          "url": "https://www.ebenova.dev",
+          "description": "Developer-first API platform for legal document generation, invoices, contract enforcement, and Reddit monitoring. 27 document types across 18 jurisdictions including Nigeria, Kenya, Ghana, UK, US, and Canada.",
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Web",
+          "offers": [
+            { "@type": "Offer", "name": "Free Tier", "price": "0", "priceCurrency": "USD" },
+            { "@type": "Offer", "name": "Starter", "price": "29", "priceCurrency": "USD", "billingIncrement": "month" },
+            { "@type": "Offer", "name": "Growth", "price": "79", "priceCurrency": "USD", "billingIncrement": "month" },
+            { "@type": "Offer", "name": "Scale", "price": "199", "priceCurrency": "USD", "billingIncrement": "month" }
+          ],
+          "provider": {
+            "@type": "Organization",
+            "name": "Ebenova Solutions",
+            "url": "https://www.ebenova.dev",
+            "email": "api@ebenova.dev"
+          }
+        })}</script>
       </Helmet>
 
       {/* Navigation */}

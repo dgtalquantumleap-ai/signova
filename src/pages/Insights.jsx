@@ -4,6 +4,7 @@
 
 import { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import './Insights.css'
 
 const API_BASE   = import.meta.env.VITE_API_BASE   || 'https://api.ebenova.dev'
@@ -145,6 +146,7 @@ function WaitlistForm({ plan = 'starter', onSuccess }) {
     <div>
       <form className="ins-waitlist-form" onSubmit={handleSubmit}>
         <input type="email" placeholder="your@email.com" value={email}
+          aria-label="Email address"
           onChange={e => setEmail(e.target.value)} required />
         <button type="submit" disabled={loading}>{loading ? 'Sending…' : 'Contact us'}</button>
       </form>
@@ -165,7 +167,7 @@ function CodeBlock({ code, lang = 'bash' }) {
     <div className="ins-code-block">
       <div className="ins-code-header">
         <span className="ins-code-lang">{lang}</span>
-        <button className="ins-code-copy" onClick={copy}>{copied ? '✓ Copied' : 'Copy'}</button>
+        <button className="ins-code-copy" onClick={copy} aria-label={`Copy ${lang} code`}>{copied ? '✓ Copied' : 'Copy'}</button>
       </div>
       <pre><code>{code}</code></pre>
     </div>
@@ -173,7 +175,7 @@ function CodeBlock({ code, lang = 'bash' }) {
 }
 
 // ── API DOCS SNIPPETS ─────────────────────────────────────────────────────────
-const CREATE_MONITOR_SNIPPET = `curl -X POST https://api.ebenova.dev/v1/insights/monitors \\
+const CREATE_MONITOR_SNIPPET = `curl -X POST https://api.ebenova.dev/v1/insights/monitors/create \\
   -H "Authorization: Bearer sk_live_your_key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -213,6 +215,21 @@ export default function Insights() {
 
   return (
     <div className="ins-page">
+      <Helmet>
+        <title>Ebenova Insights — Reddit Monitoring for Founders | Know When Reddit Talks About Your Product</title>
+        <meta name="description" content="Monitor Reddit and Nairaland for keywords about your product. Get email alerts every 15 minutes with AI-drafted replies. Built for founders doing distribution." />
+        <link rel="canonical" href="https://www.ebenova.dev/insights" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Ebenova Insights" />
+        <meta property="og:url" content="https://www.ebenova.dev/insights" />
+        <meta property="og:title" content="Ebenova Insights — Reddit Monitoring for Founders" />
+        <meta property="og:description" content="Monitor Reddit and Nairaland for your keywords. Get alerts every 15 minutes with AI reply drafts in community tone. $49/month." />
+        <meta property="og:image" content="https://www.ebenova.dev/og-image.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Ebenova Insights — Reddit Monitoring for Founders" />
+        <meta name="twitter:description" content="Know when Reddit talks about your product. Email alerts + AI reply drafts every 15 minutes. Reddit + Nairaland." />
+        <meta name="twitter:image" content="https://www.ebenova.dev/og-image.png" />
+      </Helmet>
 
       {/* ── Nav ── */}
       <nav className="ins-nav">
@@ -330,7 +347,7 @@ export default function Insights() {
           <div className="ins-api-block">
             <div className="ins-api-endpoint">
               <span className="ins-method post">POST</span>
-              <span className="ins-path">https://insights.ebenova.dev/v1/monitors</span>
+              <span className="ins-path">https://api.ebenova.dev/v1/insights/monitors/create</span>
             </div>
             <p className="ins-api-desc">Create a keyword monitor. Set keywords, subreddits, your product context, and alert email.</p>
             <CodeBlock code={CREATE_MONITOR_SNIPPET} lang="bash" />
@@ -339,7 +356,7 @@ export default function Insights() {
           <div className="ins-api-block">
             <div className="ins-api-endpoint">
               <span className="ins-method get">GET</span>
-              <span className="ins-path">https://insights.ebenova.dev/v1/matches</span>
+              <span className="ins-path">https://api.ebenova.dev/v1/insights/matches</span>
             </div>
             <p className="ins-api-desc">Pull recent matches for a monitor. Returns posts, drafts, subreddit approval status, and feedback state.</p>
             <CodeBlock code={LIST_MATCHES_SNIPPET} lang="bash" />
