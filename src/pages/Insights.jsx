@@ -173,7 +173,7 @@ function CodeBlock({ code, lang = 'bash' }) {
 }
 
 // ── API DOCS SNIPPETS ─────────────────────────────────────────────────────────
-const CREATE_MONITOR_SNIPPET = `curl -X POST https://insights.ebenova.dev/v1/monitors \\
+const CREATE_MONITOR_SNIPPET = `curl -X POST https://api.ebenova.dev/v1/insights/monitors \\
   -H "Authorization: Bearer sk_live_your_key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -186,7 +186,7 @@ const CREATE_MONITOR_SNIPPET = `curl -X POST https://insights.ebenova.dev/v1/mon
     ]
   }'`
 
-const LIST_MATCHES_SNIPPET = `curl "https://insights.ebenova.dev/v1/matches?monitor_id=mon_abc123&limit=20" \\
+const LIST_MATCHES_SNIPPET = `curl "https://api.ebenova.dev/v1/insights/matches?monitor_id=mon_abc123&limit=20" \\
   -H "Authorization: Bearer sk_live_your_key"`
 
 const RESPONSE_SNIPPET = `{
@@ -351,13 +351,12 @@ export default function Insights() {
               <span>Method</span><span>Endpoint</span><span>Description</span>
             </div>
             {[
-              ['GET',    '/v1/monitors',          'List your monitors'],
-              ['POST',   '/v1/monitors',          'Create a monitor'],
-              ['DELETE', '/v1/monitors/:id',      'Deactivate a monitor'],
-              ['GET',    '/v1/matches',           'List matches for a monitor'],
-              ['POST',   '/v1/matches/draft',     'Regenerate AI draft'],
-              ['POST',   '/v1/matches/feedback',  'Rate a draft (up/down)'],
-              ['GET',    '/health',               'Service health check'],
+              ['GET',    '/v1/insights/monitors',          'List your monitors'],
+              ['POST',   '/v1/insights/monitors',          'Create a monitor'],
+              ['DELETE', '/v1/insights/monitors/:id',      'Deactivate a monitor'],
+              ['GET',    '/v1/insights/matches',           'List matches for a monitor'],
+              ['POST',   '/v1/insights/matches/draft',     'Regenerate AI draft'],
+              ['POST',   '/v1/insights/matches/feedback',  'Rate a draft (up/down)'],
             ].map(([method, path, desc]) => (
               <div key={path} className="ins-api-row">
                 <span className={`ins-method-sm ${method.toLowerCase()}`}>{method}</span>
@@ -368,7 +367,7 @@ export default function Insights() {
           </div>
 
           <div className="ins-api-auth-note">
-            All endpoints require <code>Authorization: Bearer sk_live_your_key</code> with <code>"insights": true</code> on the key.
+            Base URL: <code>https://api.ebenova.dev</code> &nbsp;·&nbsp; All endpoints require <code>Authorization: Bearer sk_live_your_key</code> with Insights access.
             {' '}<a href="mailto:akin@ebenova.dev">Email us</a> to get a key during beta.
           </div>
         </div>

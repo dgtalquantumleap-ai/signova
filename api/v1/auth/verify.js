@@ -74,14 +74,14 @@ export default async function handler(req, res) {
       // Store user
       await redis.set(userKey, JSON.stringify(newUser))
 
-      // Provision the free key
+      // Provision the free key — use camelCase to match api-auth.js expectations
       const keyData = {
-        key: freeApiKey,
         owner: email,
         tier: 'free',
+        monthlyLimit: 5,
         label: 'Default key',
-        monthly_limit: 5,
-        created_at: now,
+        createdAt: now,
+        disabled: false,
       }
       await redis.set(apiKeyRedisKey(freeApiKey), JSON.stringify(keyData))
 
@@ -98,7 +98,10 @@ export default async function handler(req, res) {
     const keyDetails = await Promise.all(
       (userData.api_keys || []).map(async k => {
         const kd = await redis.get(apiKeyRedisKey(k))
-        return kd ? (typeof kd === 'string' ? JSON.parse(kd) : kd) : null
+        if (!kd) return null
+        const parsed = typeof kd === 'string' ? JSON.parse(kd) : kd
+        // Expose the key string itself for the dashboard, plus all metadata
+        return { key: k, ...parsed }
       })
     )
 
@@ -108,6 +111,8 @@ export default async function handler(req, res) {
       user: {
         email: userData.email,
         tier: userData.tier,
+        insights: userData.insights || false,
+        insightsPlan: userData.insightsPlan || null,
         created_at: userData.created_at,
         stripe_customer_id: userData.stripe_customer_id || null,
       },
