@@ -236,7 +236,7 @@ export default function Insights() {
       <nav className="ins-nav">
         <a href="https://ebenova.dev" className="ins-nav-brand">
           <span className="ins-nav-logo">📡 Ebenova Insights</span>
-          <span className="ins-nav-badge">Beta</span>
+          <span className="ins-nav-badge">Live</span>
         </a>
         <div className="ins-nav-links">
           <a href="#how" className="ins-nav-link">How it works</a>
@@ -461,7 +461,7 @@ export default function Insights() {
           <span>·</span>
           <Link to="/terms">Terms</Link>
         </div>
-        <div className="ins-footer-copy">© {new Date().getFullYear()} Ebenova Solutions · Calgary, Canada</div>
+        <div className="ins-footer-copy">© {new Date().getFullYear()} Ebenova Solutions · Africa-first · Built in Canada</div>
       </footer>
 
     </div>
