@@ -511,7 +511,7 @@ export default function Landing() {
     <div className="landing">
       <Helmet>
         <title>Signova — Professional Legal Documents for Freelancers, Landlords & Businesses | Free Preview</title>
-        <meta name="description" content="Generate legal documents in minutes. NDAs, freelance contracts, tenancy agreements and 24 more. Free preview, $4.99 to download. 180+ countries including Nigeria, UK, US and Canada." />
+        <meta name="description" content="Generate legal documents in minutes. NDAs, freelance contracts, tenancy agreements and 24 more. Free preview, $4.99 to download. 180+ countries." />
         <meta name="keywords" content="legal document generator, NDA template, freelance contract template, tenancy agreement, business proposal template, NDA generator free, contract generator, legal documents online, document generator AI" />
         <link rel="canonical" href="https://www.getsignova.com/" />
         <link rel="alternate" hreflang="en" href="https://www.getsignova.com/" />
@@ -754,6 +754,7 @@ export default function Landing() {
                   className="pro-waitlist-input"
                   type="email"
                   placeholder="your@email.com"
+                  aria-label="Email address for Signova Pro waitlist"
                   value={waitlistEmail}
                   onChange={e => setWaitlistEmail(e.target.value)}
                   required

@@ -306,7 +306,7 @@ export default function WhatsApp() {
     <div className="wa-page">
       <Helmet>
         <title>Chat to Legal Document — Turn Any Conversation Into a Contract | Signova</title>
-        <meta name="description" content="Paste any WhatsApp, iMessage, Telegram, or email conversation. Signova extracts the agreed terms and generates a ready-to-sign legal document in 2 minutes. Free preview. 180+ countries." />
+        <meta name="description" content="Paste WhatsApp, iMessage, Telegram or email conversations. Signova extracts agreed terms and generates a legal document in 2 minutes. Free preview." />
         <meta name="keywords" content="whatsapp to contract, chat to legal document, email to contract, imessage to agreement, telegram to legal document, conversation to contract generator, whatsapp agreement generator" />
         <link rel="canonical" href="https://www.getsignova.com/whatsapp" />
         <meta property="og:title" content="Turn Any Conversation Into a Legal Document | Signova" />

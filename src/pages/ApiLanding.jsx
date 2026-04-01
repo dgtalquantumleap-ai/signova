@@ -267,14 +267,14 @@ export default function ApiLanding() {
         <meta property="og:url" content="https://www.ebenova.dev/" />
         <meta property="og:title" content="Ebenova — The legal API that actually knows Nigerian law." />
         <meta property="og:description" content="27 document types, 18 jurisdictions. Native coverage for Nigeria, Kenya, Ghana. Invoices, Reddit monitoring, MCP servers. Free tier." />
-        <meta property="og:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
+        <meta property="og:image" content="https://www.ebenova.dev/og-image-ebenova.svg" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@ebenova_dev" />
         <meta name="twitter:title" content="Ebenova — The legal API that actually knows Nigerian law." />
         <meta name="twitter:description" content="27 document types, 18 jurisdictions. Nigeria, Kenya, Ghana. Invoices, Reddit monitoring, MCP servers. Free tier." />
-        <meta name="twitter:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
+        <meta name="twitter:image" content="https://www.ebenova.dev/og-image-ebenova.svg" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",

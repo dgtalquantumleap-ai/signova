@@ -8,7 +8,7 @@ export default function AboutPage() {
     <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', fontFamily: 'var(--font-body)' }}>
       <Helmet>
         <title>About Signova — Built by a Nigerian Founder in Calgary</title>
-        <meta name="description" content="Signova is built by Olumide, a Nigerian founder in Calgary. Legal documents in 2 minutes for freelancers, landlords, and small businesses who can't afford a lawyer." />
+        <meta name="description" content="Signova is built by Olumide, a Nigerian founder in Calgary. Legal documents in 2 minutes for freelancers, landlords, and small businesses." />
         <link rel="canonical" href="https://www.getsignova.com/about" />
       </Helmet>
 
