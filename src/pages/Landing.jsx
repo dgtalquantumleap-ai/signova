@@ -511,8 +511,8 @@ export default function Landing() {
     <div className="landing">
       <Helmet>
         <title>Signova — Professional Legal Documents for Freelancers, Landlords & Businesses | Free Preview</title>
-        <meta name="description" content="Generate legal documents in minutes. NDAs, freelance contracts, tenancy agreements and 24 more. Free preview, $4.99 to download. 180+ countries." />
-        <meta name="keywords" content="legal document generator, NDA template, freelance contract template, tenancy agreement, business proposal template, NDA generator free, contract generator, legal documents online, document generator AI" />
+        <meta name="description" content="Generate legal contracts in 3 minutes. NDAs, freelance contracts, tenancy agreements and 24 more. Free preview, $4.99 to download. No lawyer needed." />
+        <meta name="keywords" content="legal document generator Nigeria, tenancy agreement Nigeria, NDA template, freelance contract, deed of assignment Nigeria, loan agreement template, business proposal template, MOU template, hire purchase agreement Nigeria, power of attorney Nigeria, employment offer letter, shareholder agreement, joint venture agreement, service agreement, distribution agreement, quit notice Nigeria, privacy policy generator, terms of service generator" />
         <link rel="canonical" href="https://www.getsignova.com/" />
         <link rel="alternate" hreflang="en" href="https://www.getsignova.com/" />
         <link rel="alternate" hreflang="x-default" href="https://www.getsignova.com/" />

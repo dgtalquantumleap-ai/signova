@@ -20,50 +20,8 @@
   ],
   "rewrites": [
     {
-      "source": "/insights/dashboard",
-      "has": [{ "type": "host", "value": "www.ebenova.dev" }],
-      "destination": "/index.html"
-    },
-    {
-      "source": "/insights",
-      "has": [{ "type": "host", "value": "www.ebenova.dev" }],
-      "destination": "/index.html"
-    },
-    {
       "source": "/mcp",
       "destination": "/api/mcp"
-    },
-    {
-      "source": "/v1/scope/(.*)",
-      "destination": "/api/v1/scope/$1"
-    },
-    {
-      "source": "/v1/insights/monitors",
-      "destination": "/api/v1/insights/monitors/list"
-    },
-    {
-      "source": "/v1/insights/monitors/:id",
-      "destination": "/api/v1/insights/monitors/delete?id=$id"
-    },
-    {
-      "source": "/v1/insights/matches",
-      "destination": "/api/v1/insights/matches/list"
-    },
-    {
-      "source": "/v1/insights/matches/draft",
-      "destination": "/api/v1/insights/matches/draft"
-    },
-    {
-      "source": "/v1/insights/matches/feedback",
-      "destination": "/api/v1/insights/matches/feedback"
-    },
-    {
-      "source": "/v1/insights/subscribe",
-      "destination": "/api/v1/insights/subscribe"
-    },
-    {
-      "source": "/v1/auth/(.*)",
-      "destination": "/api/v1/auth/$1"
     },
     {
       "source": "/v1/(.*)",
@@ -74,31 +32,23 @@
       "destination": "/api/$1"
     },
     {
-      "source": "/docs",
-      "destination": "/index.html"
-    },
-    {
       "source": "/api",
       "destination": "/index.html"
     },
     {
-      "source": "/(.*)",
-      "has": [{ "type": "host", "value": "www.ebenova.dev" }],
+      "source": "/docs",
       "destination": "/index.html"
     },
     {
-      "source": "/(.*)",
-      "has": [{ "type": "host", "value": "api.ebenova.dev" }],
+      "source": "/insights/dashboard",
       "destination": "/index.html"
     },
     {
-      "source": "/(.*)",
-      "has": [{ "type": "host", "value": "insights.ebenova.dev" }],
+      "source": "/insights",
       "destination": "/index.html"
     },
     {
-      "source": "/(.*)",
-      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "source": "/scope-guard",
       "destination": "/index.html"
     },
     {
@@ -107,84 +57,33 @@
     }
   ],
   "functions": {
-    "api/warmup.js": {
-      "maxDuration": 30
-    },
-    "api/scope-guard-analyze.js": {
-      "maxDuration": 60
-    },
-    "api/v1/documents/batch.js": {
-      "maxDuration": 120
-    },
-    "api/v1/documents/templates.js": {
-      "maxDuration": 10
-    },
-    "api/v1/contracts/link.js": {
-      "maxDuration": 15
-    },
-    "api/v1/scope/analyze.js": {
-      "maxDuration": 60
-    },
-    "api/v1/scope/change-order.js": {
-      "maxDuration": 60
-    },
-    "api/v1/auth/magic-link.js": {
-      "maxDuration": 30
-    },
-    "api/v1/auth/verify.js": {
-      "maxDuration": 30
-    },
-    "api/v1/documents/generate.js": {
-      "maxDuration": 120
-    },
-    "api/v1/extract/conversation.js": {
-      "maxDuration": 120
-    },
-    "api/v1/invoices/generate.js": {
-      "maxDuration": 60
-    },
-    "api/v1/keys/create.js": {
-      "maxDuration": 30
-    },
-    "api/v1/keys/usage.js": {
-      "maxDuration": 30
-    },
-    "api/v1/documents/types.js": {
-      "maxDuration": 30
-    },
-    "api/v1/billing/checkout.js": {
-      "maxDuration": 30
-    },
-    "api/v1/billing/webhook.js": {
-      "maxDuration": 30
-    },
-    "api/v1/billing/portal.js": {
-      "maxDuration": 30
-    },
-    "api/v1/insights/matches/draft.js": {
-      "maxDuration": 60
-    },
-    "api/v1/insights/monitors/create.js": {
-      "maxDuration": 30
-    },
-    "api/v1/insights/subscribe.js": {
-      "maxDuration": 30
-    },
-    "api/v1/insights/monitors/router.js": {
-      "maxDuration": 30
-    },
-    "api/v1/insights/monitors/list.js": {
-      "maxDuration": 30
-    },
-    "api/v1/insights/monitors/delete.js": {
-      "maxDuration": 30
-    },
-    "api/v1/insights/matches/list.js": {
-      "maxDuration": 30
-    },
-    "api/v1/insights/matches/feedback.js": {
-      "maxDuration": 30
-    }
+    "api/warmup.js": { "maxDuration": 30 },
+    "api/scope-guard-analyze.js": { "maxDuration": 60 },
+    "api/v1/documents/batch.js": { "maxDuration": 120 },
+    "api/v1/documents/templates.js": { "maxDuration": 10 },
+    "api/v1/contracts/link.js": { "maxDuration": 15 },
+    "api/v1/scope/analyze.js": { "maxDuration": 60 },
+    "api/v1/scope/change-order.js": { "maxDuration": 60 },
+    "api/v1/auth/magic-link.js": { "maxDuration": 30 },
+    "api/v1/auth/verify.js": { "maxDuration": 30 },
+    "api/v1/documents/generate.js": { "maxDuration": 120 },
+    "api/v1/extract/conversation.js": { "maxDuration": 120 },
+    "api/v1/invoices/generate.js": { "maxDuration": 60 },
+    "api/v1/keys/create.js": { "maxDuration": 30 },
+    "api/v1/keys/usage.js": { "maxDuration": 30 },
+    "api/v1/documents/types.js": { "maxDuration": 30 },
+    "api/v1/billing/checkout.js": { "maxDuration": 30 },
+    "api/v1/billing/webhook.js": { "maxDuration": 30 },
+    "api/v1/billing/portal.js": { "maxDuration": 30 },
+    "api/v1/insights/matches/draft.js": { "maxDuration": 60 },
+    "api/v1/insights/monitors/create.js": { "maxDuration": 30 },
+    "api/v1/insights/subscribe.js": { "maxDuration": 30 },
+    "api/v1/insights/monitors/router.js": { "maxDuration": 30 },
+    "api/v1/insights/monitors/list.js": { "maxDuration": 30 },
+    "api/v1/insights/monitors/delete.js": { "maxDuration": 30 },
+    "api/v1/insights/matches/list.js": { "maxDuration": 30 },
+    "api/v1/insights/matches/feedback.js": { "maxDuration": 30 },
+    "api/insights/request-access.js": { "maxDuration": 30 }
   },
   "headers": [
     {
@@ -234,13 +133,5 @@
         { "key": "X-DNS-Prefetch-Control", "value": "on" }
       ]
     }
-  ],
-  "crons": [
-    {
-      "path": "/api/warmup",
-      "schedule": "*/5 * * * *"
-    }
-  ],
-  "cleanUrls": true,
-  "trailingSlash": false
+  ]
 }

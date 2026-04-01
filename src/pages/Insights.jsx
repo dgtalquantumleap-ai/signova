@@ -217,19 +217,19 @@ export default function Insights() {
     <div className="ins-page">
       <Helmet>
         <title>Ebenova Insights — Reddit Monitoring for Founders | Know When Reddit Talks About Your Product</title>
-        <meta name="description" content="Monitor Reddit and Nairaland for your product keywords. Email alerts every 15 minutes with AI reply drafts in community tone. Built for founders." />
+        <meta name="description" content="Monitor Reddit and Nairaland for your keywords every 15 minutes. Get alerts with AI-drafted replies. Built for founders doing distribution." />
         <link rel="canonical" href="https://www.ebenova.dev/insights" />
         <link rel="alternate" hreflang="en" href="https://www.ebenova.dev/insights" />
         <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="Ebenova Insights" />
+        <meta property="og:site_name" content="Ebenova" />
         <meta property="og:url" content="https://www.ebenova.dev/insights" />
         <meta property="og:title" content="Ebenova Insights — Reddit Monitoring for Founders" />
-        <meta property="og:description" content="Monitor Reddit + Nairaland for your keywords. Alerts every 15 min with AI reply drafts. $49/month." />
-        <meta property="og:image" content="https://www.ebenova.dev/og-image-ebenova.svg" />
+        <meta property="og:description" content="Know when Reddit talks about your product. 15-min alerts with AI-drafted replies. Nairaland included." />
+        <meta property="og:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Ebenova Insights — Reddit Monitoring for Founders" />
-        <meta name="twitter:description" content="Know when Reddit talks about your product. Alerts + AI reply drafts every 15 minutes. Reddit + Nairaland." />
-        <meta name="twitter:image" content="https://www.ebenova.dev/og-image-ebenova.svg" />
+        <meta name="twitter:description" content="Know when Reddit talks about your product. 15-min alerts with AI-drafted replies. Nairaland included." />
+        <meta name="twitter:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
       </Helmet>
 
       {/* ── Nav ── */}

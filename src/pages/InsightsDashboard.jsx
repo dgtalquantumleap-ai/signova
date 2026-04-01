@@ -23,6 +23,10 @@ function LoginScreen({ onLogin }) {
   const [key, setKey]       = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError]   = useState('')
+  const [requestEmail, setRequestEmail] = useState('')
+  const [requestLoading, setRequestLoading] = useState(false)
+  const [requestSuccess, setRequestSuccess] = useState(false)
+  const [requestError, setRequestError] = useState('')
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -40,6 +44,29 @@ function LoginScreen({ onLogin }) {
     finally { setLoading(false) }
   }
 
+  async function handleRequestAccess(e) {
+    e.preventDefault()
+    if (!requestEmail.trim()) return
+    setRequestLoading(true); setRequestError('')
+    try {
+      const res = await fetch(`${API_BASE}/api/insights/request-access`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: requestEmail.trim() }),
+      })
+      const data = await res.json()
+      if (res.ok && data.success) {
+        setRequestSuccess(true)
+        setRequestEmail('')
+      } else {
+        setRequestError('Something went wrong. Email akin@ebenova.dev directly.')
+      }
+    } catch {
+      setRequestError('Something went wrong. Email akin@ebenova.dev directly.')
+    }
+    finally { setRequestLoading(false) }
+  }
+
   return (
     <div className="idb-login">
       <div className="idb-login-box">
@@ -47,21 +74,45 @@ function LoginScreen({ onLogin }) {
         <h1>Dashboard</h1>
         <p>Enter your API key to access your monitors and matches.</p>
         <form onSubmit={handleSubmit}>
+          <label htmlFor="insights-api-key" className="sr-only">API Key</label>
           <input
+            id="insights-api-key"
+            name="api_key"
             type="password"
             placeholder="sk_live_your_key"
             value={key}
             onChange={e => setKey(e.target.value)}
             autoFocus
             spellCheck={false}
+            required
+            autoComplete="current-password"
           />
           <button type="submit" disabled={loading || !key.trim()}>
             {loading ? 'Checking…' : 'Sign in →'}
           </button>
         </form>
         {error && <div className="idb-error">{error}</div>}
-        <div className="idb-login-help">
-          No key yet? <a href="mailto:akin@ebenova.dev">Email us</a> to get access.
+        <div className="idb-login-help" style={{ borderTop: '1px solid #1e1e1e', marginTop: '20px', paddingTop: '20px' }}>
+          {requestSuccess ? (
+            <div style={{ color: '#5ad45a', fontSize: '13px' }}>✓ Request received. We'll send your key within 24 hours.</div>
+          ) : (
+            <form onSubmit={handleRequestAccess}>
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                <input
+                  type="email"
+                  placeholder="your@email.com"
+                  value={requestEmail}
+                  onChange={e => setRequestEmail(e.target.value)}
+                  required
+                  style={{ flex: 1, background: '#0e0e0e', border: '1px solid #2a2a2a', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', color: '#f0ece4', outline: 'none' }}
+                />
+                <button type="submit" disabled={requestLoading || !requestEmail.trim()} style={{ background: '#c9a84c', color: '#0e0e0e', border: 'none', borderRadius: '8px', padding: '10px 16px', fontSize: '14px', fontWeight: '700', cursor: requestLoading ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}>
+                  {requestLoading ? 'Sending…' : 'Request Access →'}
+                </button>
+              </div>
+              {requestError && <div className="idb-error" style={{ fontSize: '12px', padding: '6px 10px' }}>{requestError}</div>}
+            </form>
+          )}
         </div>
       </div>
     </div>
@@ -332,8 +383,14 @@ export default function InsightsDashboard() {
   const [monitors, setMonitors]   = useState([])
   const [loggedIn, setLoggedIn]   = useState(false)
   const [loading, setLoading]     = useState(false)
+  const [networkError, setNetworkError] = useState(false)
   const [showCreate, setShowCreate] = useState(false)
   const [activeId, setActiveId]   = useState(null)
+
+  // Set document title on mount
+  useEffect(() => {
+    document.title = 'Ebenova Insights — Dashboard'
+  }, [])
 
   // Auto-login if key stored
   useEffect(() => {
@@ -343,23 +400,31 @@ export default function InsightsDashboard() {
 
   async function autoLogin(key) {
     setLoading(true)
+    setNetworkError(false)
     try {
       const data = await apiFetch('/v1/insights/monitors', key)
       if (data.success) {
         setApiKey(key)
-        setMonitors(data.monitors || [])
-        setActiveId(data.monitors?.[0]?.id || null)
+        const mons = (data.monitors || []).map(m => ({ ...m, id: m.id || m.monitor_id }))
+        setMonitors(mons)
+        setActiveId(mons[0]?.id || null)
         setLoggedIn(true)
       } else {
         localStorage.removeItem('insights_key')
       }
-    } catch (_) {}
+    } catch (_) {
+      // Network unreachable — don't wipe the stored key, let user retry
+      setNetworkError(true)
+    }
     setLoading(false)
   }
 
   function handleLogin(key, mons) {
-    setApiKey(key); setMonitors(mons)
-    setActiveId(mons?.[0]?.id || null)
+    setApiKey(key)
+    const normalized = (mons || []).map(m => ({ ...m, id: m.id || m.monitor_id }))
+    setMonitors(normalized)
+    setActiveId(normalized[0]?.id || null)
+    setNetworkError(false)
     setLoggedIn(true)
   }
 
@@ -391,13 +456,39 @@ export default function InsightsDashboard() {
     </div>
   )
 
+  if (networkError) return (
+    <div className="idb-splash">
+      <div className="idb-splash-logo">⚡</div>
+      <div className="idb-splash-text" style={{ color: '#fa5a5a', marginBottom: 12 }}>Can't reach the API</div>
+      <div className="idb-splash-text" style={{ marginBottom: 20, maxWidth: 340, textAlign: 'center', lineHeight: 1.5 }}>
+        Could not connect to <code>api.ebenova.dev</code>. Check your internet connection or try again shortly.
+      </div>
+      <button className="idb-btn-gold" onClick={() => autoLogin(apiKey)}>Retry</button>
+      <button style={{ marginTop: 10, background: 'none', border: 'none', color: '#555', fontSize: 12, cursor: 'pointer' }}
+        onClick={() => { localStorage.removeItem('insights_key'); setNetworkError(false) }}>Sign out</button>
+    </div>
+  )
+
   if (!loggedIn) return <LoginScreen onLogin={handleLogin} />
 
   return (
     <div className="idb-page">
       <Helmet>
-        <title>Insights Dashboard — Ebenova</title>
+        <title>Ebenova Insights — Dashboard</title>
+        <meta name="description" content="Monitor your Reddit and Nairaland keyword alerts. View AI-drafted replies and manage your monitors." />
         <meta name="robots" content="noindex" />
+        <link rel="canonical" href="https://www.ebenova.dev/insights/dashboard" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Ebenova" />
+        <meta property="og:url" content="https://www.ebenova.dev/insights/dashboard" />
+        <meta property="og:title" content="Ebenova Insights — Dashboard" />
+        <meta property="og:description" content="Monitor your Reddit and Nairaland keyword alerts. View AI-drafted replies and manage your monitors." />
+        <meta property="og:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@quantimleap100" />
+        <meta name="twitter:title" content="Ebenova Insights — Dashboard" />
+        <meta name="twitter:description" content="Monitor your Reddit and Nairaland keyword alerts. View AI-drafted replies and manage your monitors." />
+        <meta name="twitter:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
       </Helmet>
 
       {/* ── Sidebar ── */}

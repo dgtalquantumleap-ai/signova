@@ -33,18 +33,25 @@ const PageShell = () => (
 // getsignova.com / anything else → Landing (the Signova product homepage)
 function isEbenovaDomain() {
   const hostname = window.location.hostname
+  // localhost / 127.0.0.1 included so local dev can reach /insights routes
   return hostname === 'ebenova.dev'
     || hostname === 'www.ebenova.dev'
     || hostname === 'api.ebenova.dev'
+    || hostname === 'localhost'
+    || hostname === '127.0.0.1'
 }
 
 function RootPage() {
   return isEbenovaDomain() ? <ApiLanding /> : <Landing />
 }
 
-// /insights belongs to ebenova.dev only — show 404 on getsignova.com
+// /insights + /insights/dashboard belong to ebenova.dev only — show 404 on getsignova.com
 function InsightsPage() {
   return isEbenovaDomain() ? <Insights /> : <NotFound />
+}
+
+function InsightsDashboardPage() {
+  return isEbenovaDomain() ? <InsightsDashboard /> : <NotFound />
 }
 
 export default function App() {
@@ -74,7 +81,7 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/scope-guard" element={<ScopeGuard />} />
         <Route path="/insights" element={<InsightsPage />} />
-        <Route path="/insights/dashboard" element={<InsightsDashboard />} />
+        <Route path="/insights/dashboard" element={<InsightsDashboardPage />} />
         <Route path="/:slug" element={<DocLanding />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
