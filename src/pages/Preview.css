@@ -743,3 +743,54 @@
   .locked-title { font-size: 18px; }
   .locked-cta { padding: 12px 24px; font-size: 15px; }
 }
+
+/* ── Locked overlay email capture ── */
+.locked-email-alt {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0,0,0,0.08);
+}
+.locked-email-label {
+  font-size: 12px;
+  color: #888;
+  margin: 0 0 8px;
+}
+.locked-email-row {
+  display: flex;
+  gap: 6px;
+}
+.locked-email-input {
+  flex: 1;
+  padding: 9px 12px;
+  border: 1px solid #ddd;
+  border-radius: 7px;
+  font-size: 13px;
+  color: #111;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+  min-width: 0;
+}
+.locked-email-input:focus { border-color: #aaa; }
+.locked-email-input::placeholder { color: #bbb; }
+.locked-email-btn {
+  padding: 9px 14px;
+  border: 1px solid #ddd;
+  border-radius: 7px;
+  background: #f5f5f5;
+  color: #444;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.locked-email-btn:hover:not(:disabled) { background: #eee; }
+.locked-email-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.locked-email-done {
+  font-size: 12px;
+  color: #26a17b;
+  margin: 0;
+  text-align: center;
+}

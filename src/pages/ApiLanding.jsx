@@ -304,13 +304,12 @@ export default function ApiLanding() {
           </div>
 
           <h1 className="api-hero-title">
-            The Trust Infrastructure for<br />
-            <span className="highlight">Emerging Market Commerce</span>
+            The legal document API that<br />
+            <span className="highlight">actually knows Nigerian law.</span>
           </h1>
 
           <p className="api-hero-sub">
-            Verify payments, enforce contracts, and prevent fraud.
-            One API for the $600B emerging market economy.
+            Generate NDAs, freelance contracts, tenancy agreements and invoices for Nigeria, Kenya, Ghana — and 180+ countries — in one API call. 27 document types. 18 jurisdictions. MCP-native for AI agents.
           </p>
 
           <div className="api-hero-actions">
@@ -324,7 +323,7 @@ export default function ApiLanding() {
 
           <div className="trust-signals">
             <span>✓ No credit card required</span>
-            <span>✓ Works in 30 seconds</span>
+            <span>✓ Nigerian law supported</span>
             <span>✓ 27 Document Types</span>
           </div>
 

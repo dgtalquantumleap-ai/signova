@@ -54,6 +54,9 @@ export default function Preview() {
   const [preEmail, setPreEmail] = useState('')
   const [preEmailSubmitted, setPreEmailSubmitted] = useState(false)
   const [preEmailLoading, setPreEmailLoading] = useState(false)
+  const [lockedEmail, setLockedEmail] = useState('')
+  const [lockedEmailSubmitted, setLockedEmailSubmitted] = useState(false)
+  const [lockedEmailLoading, setLockedEmailLoading] = useState(false)
   const [showPreCapture, setShowPreCapture] = useState(false)
   const [promoCode, setPromoCode] = useState('')
   const [promoToken, setPromoToken] = useState(null)
@@ -97,6 +100,20 @@ export default function Preview() {
     } catch {}
     setPreEmailSubmitted(true)
     setPreEmailLoading(false)
+  }
+
+  const handleLockedEmailCapture = async () => {
+    if (!lockedEmail || !lockedEmail.includes('@')) return
+    setLockedEmailLoading(true)
+    try {
+      await fetch('/api/capture-buyer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: lockedEmail, docName: doc?.docName, source: 'locked_overlay' }),
+      })
+    } catch {}
+    setLockedEmailSubmitted(true)
+    setLockedEmailLoading(false)
   }
 
   const handleDownload = async () => {
@@ -551,6 +568,32 @@ export default function Preview() {
                         }
                       </button>
                       <p className="locked-guarantee">30-day money-back guarantee · Instant download</p>
+                      <div className="locked-email-alt">
+                        {lockedEmailSubmitted ? (
+                          <p className="locked-email-done">✓ Link saved — check your inbox</p>
+                        ) : (
+                          <>
+                            <p className="locked-email-label">Not ready to pay? Save a link to come back.</p>
+                            <div className="locked-email-row">
+                              <input
+                                type="email"
+                                className="locked-email-input"
+                                placeholder="your@email.com"
+                                value={lockedEmail}
+                                onChange={e => setLockedEmail(e.target.value)}
+                                onKeyDown={e => e.key === 'Enter' && handleLockedEmailCapture()}
+                              />
+                              <button
+                                className="locked-email-btn"
+                                onClick={handleLockedEmailCapture}
+                                disabled={lockedEmailLoading || !lockedEmail.includes('@')}
+                              >
+                                {lockedEmailLoading ? '…' : 'Save →'}
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
