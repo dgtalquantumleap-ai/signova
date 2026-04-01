@@ -220,5 +220,7 @@
       "path": "/api/warmup",
       "schedule": "*/5 * * * *"
     }
-  ]
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false
 }

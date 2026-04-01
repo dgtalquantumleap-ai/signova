@@ -258,22 +258,23 @@ export default function ApiLanding() {
   return (
     <div className="api-landing">
       <Helmet>
-        <title>Ebenova — Developer APIs for Legal Documents, Invoices & Emerging Markets</title>
-        <meta name="description" content="Generate 27 legal document types across 18 jurisdictions, create invoices, verify payments, and monitor Reddit — one API platform built for emerging market commerce. Free tier available." />
+        <title>Ebenova — The legal API that actually knows Nigerian law.</title>
+        <meta name="description" content="27 legal document types across 18 jurisdictions. Native coverage for Nigeria, Kenya, Ghana. Invoices, Reddit monitoring, MCP servers for AI agents. Free tier." />
         <link rel="canonical" href="https://www.ebenova.dev/" />
+        <link rel="alternate" hreflang="en" href="https://www.ebenova.dev/" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Ebenova" />
         <meta property="og:url" content="https://www.ebenova.dev/" />
-        <meta property="og:title" content="Ebenova — Developer APIs for Legal Documents & Emerging Markets" />
-        <meta property="og:description" content="27 document types, 18 jurisdictions, invoice generation, Reddit monitoring, and MCP servers for AI agents. Free tier. No credit card required." />
-        <meta property="og:image" content="https://www.ebenova.dev/og-image.png" />
+        <meta property="og:title" content="Ebenova — The legal API that actually knows Nigerian law." />
+        <meta property="og:description" content="27 document types, 18 jurisdictions. Native coverage for Nigeria, Kenya, Ghana. Invoices, Reddit monitoring, MCP servers. Free tier." />
+        <meta property="og:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@ebenova_dev" />
-        <meta name="twitter:title" content="Ebenova — Developer APIs for Legal Documents & Emerging Markets" />
-        <meta name="twitter:description" content="27 document types, 18 jurisdictions, invoice generation, Reddit monitoring, and MCP servers for AI agents. Free tier." />
-        <meta name="twitter:image" content="https://www.ebenova.dev/og-image.png" />
+        <meta name="twitter:title" content="Ebenova — The legal API that actually knows Nigerian law." />
+        <meta name="twitter:description" content="27 document types, 18 jurisdictions. Nigeria, Kenya, Ghana. Invoices, Reddit monitoring, MCP servers. Free tier." />
+        <meta name="twitter:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",
@@ -366,6 +367,7 @@ export default function ApiLanding() {
               <button
                 className="code-copy"
                 onClick={() => handleCopyCode(CURL_EXAMPLE, 'hero-curl')}
+                aria-label="Copy curl example"
               >
                 {copiedCode === 'hero-curl' ? '✓ Copied' : '📋 Copy'}
               </button>
@@ -602,6 +604,7 @@ export default function ApiLanding() {
                 <button 
                   className="code-copy" 
                   onClick={() => handleCopyCode(MCP_EXAMPLE, 'mcp-config')}
+                  aria-label="Copy MCP config"
                 >
                   {copiedCode === 'mcp-config' ? '✓ Copied' : '📋 Copy'}
                 </button>
