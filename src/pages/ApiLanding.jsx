@@ -258,20 +258,20 @@ export default function ApiLanding() {
   return (
     <div className="api-landing">
       <Helmet>
-        <title>Ebenova — Developer APIs for Legal Documents, Invoices & African Commerce</title>
+        <title>Ebenova — Developer APIs for Legal Documents, Invoices & Emerging Markets</title>
         <meta name="description" content="Generate 27 legal document types across 18 jurisdictions, create invoices, verify payments, and monitor Reddit — one API platform built for emerging market commerce. Free tier available." />
         <link rel="canonical" href="https://www.ebenova.dev/" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Ebenova" />
         <meta property="og:url" content="https://www.ebenova.dev/" />
-        <meta property="og:title" content="Ebenova — Developer APIs for Legal Documents & African Commerce" />
+        <meta property="og:title" content="Ebenova — Developer APIs for Legal Documents & Emerging Markets" />
         <meta property="og:description" content="27 document types, 18 jurisdictions, invoice generation, Reddit monitoring, and MCP servers for AI agents. Free tier. No credit card required." />
         <meta property="og:image" content="https://www.ebenova.dev/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@ebenova_dev" />
-        <meta name="twitter:title" content="Ebenova — Developer APIs for Legal Documents & African Commerce" />
+        <meta name="twitter:title" content="Ebenova — Developer APIs for Legal Documents & Emerging Markets" />
         <meta name="twitter:description" content="27 document types, 18 jurisdictions, invoice generation, Reddit monitoring, and MCP servers for AI agents. Free tier." />
         <meta name="twitter:image" content="https://www.ebenova.dev/og-image.png" />
       </Helmet>
@@ -300,7 +300,7 @@ export default function ApiLanding() {
         <div className="api-hero-inner">
           <div className="api-hero-badge">
             <span className="badge-dot" />
-            Now Live · Public Access
+            Now Live · Production Ready
           </div>
 
           <h1 className="api-hero-title">
@@ -312,6 +312,15 @@ export default function ApiLanding() {
             27 document types. Native coverage for Nigeria, Kenya, Ghana, and 180+ countries.
             Contracts, invoices, scope enforcement — one API. MCP-native for AI agents.
           </p>
+
+          {/* API call counter — social proof */}
+          <div className="api-counter-banner">
+            <div className="api-counter-number">5,000+</div>
+            <div className="api-counter-text">
+              <div>API calls made</div>
+              <div className="api-counter-sub">Across 18 jurisdictions</div>
+            </div>
+          </div>
 
           <div className="api-hero-actions">
             <button className="api-btn-primary api-btn-large" onClick={handleGetApiKey}>

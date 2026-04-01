@@ -615,6 +615,44 @@ export default function Preview() {
               <p className="proof-text">200+ documents generated this month</p>
             </div>
 
+            {/* Email capture — prominent, before payment CTA */}
+            {!paid && (
+              <div className="sidebar-email-capture">
+                {lockedEmailSubmitted ? (
+                  <div className="email-capture-done">
+                    ✓ Link saved — check your inbox
+                  </div>
+                ) : (
+                  <>
+                    <p className="email-capture-label">
+                      📧 Not ready to pay?
+                    </p>
+                    <p className="email-capture-sub">
+                      Get a link to this preview sent to your inbox. Come back anytime.
+                    </p>
+                    <div className="email-capture-row">
+                      <input
+                        type="email"
+                        className="email-capture-input"
+                        placeholder="your@email.com"
+                        value={lockedEmail}
+                        onChange={e => setLockedEmail(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && handleLockedEmailCapture()}
+                      />
+                      <button
+                        className="email-capture-btn"
+                        onClick={handleLockedEmailCapture}
+                        disabled={lockedEmailLoading || !lockedEmail.includes('@')}
+                      >
+                        {lockedEmailLoading ? '…' : 'Send →'}
+                      </button>
+                    </div>
+                    <p className="email-capture-privacy">No spam. Unsubscribe anytime.</p>
+                  </>
+                )}
+              </div>
+            )}
+
             <div className="sidebar-price">
               <span className="price-big">$4.99</span>
               <span className="price-label">one-time · instant download</span>

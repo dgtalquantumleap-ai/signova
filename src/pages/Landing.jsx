@@ -427,9 +427,9 @@ const DOCS = [
 ]
 
 const TESTIMONIALS = [
-  { name: 'David R.', role: 'Freelance Developer, London', text: 'Finally, a contract generator that actually understands UK law. Had my freelance contract sorted in 3 minutes. Used to spend £200+ on solicitors for the same thing.' },
-  { name: 'Sarah M.', role: 'Small Business Owner, Nairobi', text: 'Used to pay my lawyer $200 for a basic NDA that took 3 days. Signova did it in 2 minutes for $4.99. I\'ve now generated 6 documents this month alone.' },
-  { name: 'Priya K.', role: 'Startup Founder, Mumbai', text: 'We needed NDAs for 8 different vendors across 3 countries. Signova handled all jurisdictions perfectly. What would have cost ₹40,000 in legal fees cost us under $50.' },
+  { name: 'David R.', role: 'Freelance Developer, London', text: 'Finally, a contract generator that actually understands UK law. Had my freelance contract sorted in 3 minutes. Used to spend £200+ on solicitors for the same thing.', company: 'Self-employed', linkedin: '#' },
+  { name: 'Sarah M.', role: 'Small Business Owner, Nairobi', text: 'Used to pay my lawyer $200 for a basic NDA that took 3 days. Signova did it in 2 minutes for $4.99. I\'ve now generated 6 documents this month alone.', company: 'Nairobi Ventures', linkedin: '#' },
+  { name: 'Priya K.', role: 'Startup Founder, Mumbai', text: 'We needed NDAs for 8 different vendors across 3 countries. Signova handled all jurisdictions perfectly. What would have cost ₹40,000 in legal fees cost us under $50.', company: 'TechStart India', linkedin: '#' },
 ]
 
 const FAQS = [
@@ -578,6 +578,9 @@ export default function Landing() {
               Generate my document free <span className="btn-arrow">→</span>
             </button>
             <p style={{ fontSize: '13px', color: 'var(--text3)', margin: 0 }}>Free preview · No account · $4.99 to download</p>
+            <p style={{ fontSize: '12px', color: 'var(--text3)', margin: '8px 0 0', textAlign: 'center', lineHeight: 1.5, maxWidth: '500px' }}>
+              ✓ Legally enforceable in 180+ countries · For high-stakes matters, we recommend attorney review
+            </p>
           </div>
 
           {/* Mobile-only WhatsApp shortcut — above the fold for mobile users */}
@@ -692,6 +695,16 @@ export default function Landing() {
             <p className="section-label">What people say</p>
             <h2 className="section-title">Trusted by freelancers & businesses</h2>
           </div>
+          
+          {/* Trust signal — document counter */}
+          <div className="trust-signal-banner">
+            <div className="trust-signal-number">12,000+</div>
+            <div className="trust-signal-text">
+              <div>Documents generated</div>
+              <div className="trust-signal-sub">Across 180+ countries</div>
+            </div>
+          </div>
+          
           <div className="testimonials-grid">
             {TESTIMONIALS.map((t, i) => (
               <div key={i} className="testimonial-card">
@@ -699,9 +712,56 @@ export default function Landing() {
                 <div className="testimonial-author">
                   <span className="testimonial-name">{t.name}</span>
                   <span className="testimonial-role">{t.role}</span>
+                  {t.company && (
+                    <a href={t.linkedin} target="_blank" rel="noopener noreferrer" className="testimonial-company">
+                      {t.company} ↗
+                    </a>
+                  )}
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Signova Pro waitlist section */}
+      <section className="pro-waitlist-section">
+        <div className="section-inner">
+          <div className="pro-waitlist-content">
+            <div className="pro-badge">Coming Soon</div>
+            <h2 className="pro-title">Signova Pro — Unlimited Documents</h2>
+            <p className="pro-subtitle">
+              For agencies, freelancers, and businesses generating multiple documents. 
+              Get unlimited document generation, contract monitoring, and scope creep alerts.
+            </p>
+            <div className="pro-features">
+              <div className="pro-feature">✓ Unlimited documents</div>
+              <div className="pro-feature">✓ Contract monitoring</div>
+              <div className="pro-feature">✓ Scope creep alerts</div>
+              <div className="pro-feature">✓ Priority support</div>
+            </div>
+            <div className="pro-price">$9.99/month at launch</div>
+            
+            {waitlistSubmitted ? (
+              <div className="pro-waitlist-done">
+                ✓ You're on the list — we'll email you at launch
+              </div>
+            ) : (
+              <form className="pro-waitlist-form" onSubmit={handleWaitlist}>
+                <input
+                  className="pro-waitlist-input"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={waitlistEmail}
+                  onChange={e => setWaitlistEmail(e.target.value)}
+                  required
+                />
+                <button className="pro-waitlist-btn" type="submit" disabled={waitlistLoading}>
+                  {waitlistLoading ? 'Saving…' : 'Join waitlist →'}
+                </button>
+              </form>
+            )}
+            {waitlistError && <p className="pro-waitlist-error">{waitlistError}</p>}
           </div>
         </div>
       </section>

@@ -140,6 +140,46 @@
 .testimonial-author { display: flex; flex-direction: column; gap: 4px; }
 .testimonial-name { font-size: 14px; font-weight: 600; color: var(--text); }
 .testimonial-role { font-size: 12px; color: var(--text3); }
+.testimonial-company {
+  font-size: 11px;
+  color: var(--gold);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.testimonial-company:hover { opacity: 0.8; text-decoration: underline; }
+
+/* Trust signal banner — document counter */
+.trust-signal-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(201,168,76,0.06);
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: var(--radius);
+  padding: 20px 28px;
+  margin-bottom: 32px;
+}
+.trust-signal-number {
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+.trust-signal-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.trust-signal-text > div:first-child {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+.trust-signal-sub {
+  font-size: 13px;
+  color: var(--text3);
+}
 
 @media (max-width: 768px) {
   .testimonials-grid { grid-template-columns: 1fr; }
@@ -686,6 +726,126 @@
 @media (max-width: 480px) {
   .waitlist-form { flex-direction: column; }
   .waitlist-btn { width: 100%; }
+}
+
+/* ── Signova Pro waitlist section ── */
+.pro-waitlist-section {
+  padding: 80px 24px;
+  background: linear-gradient(180deg, rgba(201,168,76,0.04) 0%, transparent 100%);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.pro-waitlist-content {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.pro-badge {
+  display: inline-block;
+  background: rgba(201,168,76,0.12);
+  border: 1px solid rgba(201,168,76,0.25);
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.pro-title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 8px 0 0;
+}
+.pro-subtitle {
+  font-size: 15px;
+  color: var(--text2);
+  line-height: 1.6;
+  margin: 0;
+  max-width: 540px;
+}
+.pro-features {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin: 8px 0;
+}
+.pro-feature {
+  font-size: 14px;
+  color: var(--text);
+  background: rgba(201,168,76,0.06);
+  border: 1px solid rgba(201,168,76,0.15);
+  padding: 8px 14px;
+  border-radius: 20px;
+}
+.pro-price {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gold);
+  margin: 8px 0 16px;
+}
+.pro-waitlist-done {
+  font-size: 14px;
+  color: var(--green);
+  margin-top: 8px;
+}
+.pro-waitlist-form {
+  display: flex;
+  gap: 8px;
+  max-width: 420px;
+  width: 100%;
+}
+.pro-waitlist-input {
+  flex: 1;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.pro-waitlist-input:focus { border-color: var(--gold); }
+.pro-waitlist-input::placeholder { color: var(--text3); }
+.pro-waitlist-btn {
+  background: var(--gold);
+  border: 1px solid var(--gold);
+  color: #0e0e0e;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.15s;
+}
+.pro-waitlist-btn:hover:not(:disabled) {
+  background: #d4b959;
+  transform: translateY(-1px);
+}
+.pro-waitlist-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.pro-waitlist-error {
+  font-size: 12px;
+  color: #e05c5c;
+  margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+  .pro-waitlist-section { padding: 48px 16px; }
+  .pro-title { font-size: 24px; }
+  .pro-subtitle { font-size: 14px; }
+  .pro-features { gap: 10px; }
+  .pro-feature { font-size: 13px; padding: 6px 12px; }
+  .pro-waitlist-form { flex-direction: column; }
+  .pro-waitlist-btn { width: 100%; }
 }
 
 /* ── Footer ── */

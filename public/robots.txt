@@ -4,6 +4,9 @@ Allow: /
 # Disallow API routes from indexing
 Disallow: /api/
 
-# Sitemaps — both consumer product and API platform
+# Sitemaps
+# getsignova.com — Consumer document generation tool
 Sitemap: https://www.getsignova.com/sitemap.xml
-Sitemap: https://www.ebenova.dev/sitemap.xml
+
+# ebenova.dev — Developer API platform
+Sitemap: https://www.ebenova.dev/sitemap-ebenova.xml

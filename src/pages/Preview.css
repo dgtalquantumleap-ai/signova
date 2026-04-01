@@ -794,3 +794,73 @@
   margin: 0;
   text-align: center;
 }
+
+/* ── Sidebar email capture (prominent, before payment) ── */
+.sidebar-email-capture {
+  margin: 8px 0 12px;
+  padding: 16px;
+  background: rgba(201,168,76,0.06);
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: var(--radius);
+}
+.email-capture-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 6px;
+}
+.email-capture-sub {
+  font-size: 12px;
+  color: var(--text3);
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+.email-capture-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.email-capture-input {
+  flex: 1;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg2);
+  outline: none;
+  transition: border-color 0.2s;
+  min-width: 0;
+}
+.email-capture-input:focus { border-color: var(--gold); }
+.email-capture-input::placeholder { color: var(--text3); }
+.email-capture-btn {
+  padding: 9px 14px;
+  border: 1px solid var(--gold);
+  border-radius: 7px;
+  background: var(--gold);
+  color: #0e0e0e;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, transform 0.15s;
+  flex-shrink: 0;
+}
+.email-capture-btn:hover:not(:disabled) {
+  background: #d4b959;
+  transform: translateY(-1px);
+}
+.email-capture-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.email-capture-done {
+  font-size: 13px;
+  color: var(--green);
+  text-align: center;
+  padding: 8px 0;
+}
+.email-capture-privacy {
+  font-size: 11px;
+  color: var(--text3);
+  margin: 0;
+  text-align: center;
+}
