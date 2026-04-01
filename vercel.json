@@ -11,9 +11,24 @@
       "has": [{ "type": "host", "value": "ebenova.dev" }],
       "destination": "https://www.ebenova.dev/$1",
       "permanent": true
+    },
+    {
+      "source": "/favicon.ico",
+      "destination": "/favicon.svg",
+      "permanent": false
     }
   ],
   "rewrites": [
+    {
+      "source": "/insights/dashboard",
+      "has": [{ "type": "host", "value": "www.ebenova.dev" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/insights",
+      "has": [{ "type": "host", "value": "www.ebenova.dev" }],
+      "destination": "/index.html"
+    },
     {
       "source": "/mcp",
       "destination": "/api/mcp"
@@ -79,6 +94,11 @@
     {
       "source": "/(.*)",
       "has": [{ "type": "host", "value": "insights.ebenova.dev" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
       "destination": "/index.html"
     },
     {
