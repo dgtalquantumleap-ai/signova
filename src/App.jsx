@@ -21,7 +21,8 @@ const Docs      = lazy(() => import('./pages/Docs'))
 const Dashboard   = lazy(() => import('./pages/Dashboard'))
 const GetStarted  = lazy(() => import('./pages/GetStarted'))
 const ScopeGuard  = lazy(() => import('./pages/ScopeGuard'))
-const Insights    = lazy(() => import('./pages/Insights'))
+const Insights          = lazy(() => import('./pages/Insights'))
+const InsightsDashboard = lazy(() => import('./pages/InsightsDashboard'))
 
 const PageShell = () => (
   <div style={{ minHeight: '100vh', background: '#0e0e0e' }} />
@@ -73,6 +74,7 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/scope-guard" element={<ScopeGuard />} />
         <Route path="/insights" element={<InsightsPage />} />
+        <Route path="/insights/dashboard" element={<InsightsDashboard />} />
         <Route path="/:slug" element={<DocLanding />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
