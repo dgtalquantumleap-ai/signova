@@ -21,6 +21,7 @@ const Docs      = lazy(() => import('./pages/Docs'))
 const Dashboard   = lazy(() => import('./pages/Dashboard'))
 const GetStarted  = lazy(() => import('./pages/GetStarted'))
 const ScopeGuard  = lazy(() => import('./pages/ScopeGuard'))
+const Vigil             = lazy(() => import('./pages/VigilLanding'))
 const Insights          = lazy(() => import('./pages/Insights'))
 const InsightsDashboard = lazy(() => import('./pages/InsightsDashboard'))
 
@@ -79,6 +80,7 @@ export default function App() {
         <Route path="/docs" element={<Docs />} />
         <Route path="/get-started" element={<GetStarted />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/vigil" element={<Vigil />} />
         <Route path="/scope-guard" element={<ScopeGuard />} />
         <Route path="/insights" element={<InsightsPage />} />
         <Route path="/insights/dashboard" element={<InsightsDashboardPage />} />
