@@ -547,57 +547,86 @@ export default function Landing() {
       </nav>
 
       <section className="hero">
-        <div className="hero-glow" />
-        <div className="hero-inner">
-          {/* LCP FIX: fetchpriority="high" tells browser this is the LCP element */}
-          <h1 className="hero-title" fetchpriority="high">
-            Got burned on a handshake deal? Get a signed-ready contract in 3 minutes.
-          </h1>
-          <p className="hero-sub">
-            Paste your WhatsApp negotiation — we extract the terms and generate a proper legal document instantly. 27 document types, jurisdiction-aware for Nigeria, UK, US and 180+ countries. Free preview, $4.99 to download. No lawyer. No account.
-          </p>
-
-          {/* Jurisdiction badges — above the fold for trust */}
-          <div className="hero-jurisdictions">
-            <span>🇳🇬 Nigeria</span>
-            <span className="jurisdiction-divider">·</span>
-            <span>🇨🇦 Canada</span>
-            <span className="jurisdiction-divider">·</span>
-            <span>🇺🇸 US</span>
-            <span className="jurisdiction-divider">·</span>
-            <span>🇬🇧 UK</span>
-            <span className="jurisdiction-divider">·</span>
-            <span className="jurisdiction-more">180+ countries</span>
-          </div>
-
-          {/* Primary CTA — unmissable single action above the fold */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
-            <button
-              className="btn-primary btn-large"
-              onClick={() => { trackHeroCtaClick(); trackDocSelected(quickPicks[0]?.id || 'nda', 'hero_cta'); navigate(`/generate/${quickPicks[0]?.id || 'nda'}`) }}
-              aria-label="Generate your legal document for free"
-            >
-              Generate my document free <span className="btn-arrow">→</span>
-            </button>
-            <p style={{ fontSize: '13px', color: 'var(--text3)', margin: 0 }}>Free preview · No account · $4.99 to download</p>
-            <p style={{ fontSize: '12px', color: 'var(--text3)', margin: '8px 0 0', textAlign: 'center', lineHeight: 1.5, maxWidth: '500px' }}>
-              ✓ Legally enforceable in 180+ countries · For high-stakes matters, we recommend attorney review
+        {/* Subtle document grid pattern instead of generic glow */}
+        <div className="hero-doc-pattern" aria-hidden="true">
+          {['NDA','LEASE','CONTRACT','MOU','NDA','INVOICE','CONTRACT','DEED','NDA','LEASE'].map((t,i) => (
+            <span key={i} className="hero-pattern-word">{t}</span>
+          ))}
+        </div>
+        <div className="hero-two-col">
+          {/* ── LEFT: headline + CTA ── */}
+          <div className="hero-left">
+            <div className="hero-eyebrow">💬 WhatsApp → Legal Contract</div>
+            <h1 className="hero-title" fetchpriority="high">
+              Paste your chat.<br />
+              <span className="hero-title-gold">Get a signed contract</span><br />
+              in 2 minutes.
+            </h1>
+            <p className="hero-sub">
+              Paste any WhatsApp, email, or message negotiation — Signova extracts the agreed terms and generates a lawyer-quality legal document. 27 document types. Nigeria, UK, US, Canada and 180+ countries.
             </p>
+
+            <div className="hero-jurisdictions">
+              <span>🇳🇬 Nigeria</span>
+              <span className="jurisdiction-divider">·</span>
+              <span>🇨🇦 Canada</span>
+              <span className="jurisdiction-divider">·</span>
+              <span>🇺🇸 US</span>
+              <span className="jurisdiction-divider">·</span>
+              <span>🇬🇧 UK</span>
+              <span className="jurisdiction-divider">·</span>
+              <span className="jurisdiction-more">180+ countries</span>
+            </div>
+
+            <div className="hero-cta-row">
+              <button
+                className="btn-primary btn-large"
+                onClick={() => { trackHeroCtaClick(); navigate('/whatsapp') }}
+                aria-label="Paste your conversation to generate a document"
+              >
+                Paste my conversation <span className="btn-arrow">→</span>
+              </button>
+              <button
+                className="hero-browse-btn"
+                onClick={() => { trackHeroCtaClick(); trackDocSelected(quickPicks[0]?.id || 'nda', 'hero_cta'); navigate(`/generate/${quickPicks[0]?.id || 'nda'}`) }}
+              >
+                Or browse 27 documents ↓
+              </button>
+            </div>
+            <p className="hero-trust-line">Free preview · No account · $4.99 to download · Enforceable in 180+ countries</p>
           </div>
 
-          {/* Mobile-only WhatsApp shortcut — above the fold for mobile users */}
-          <button
-            className="mobile-wa-hero"
-            onClick={() => navigate('/whatsapp')}
-            aria-label="Paste WhatsApp conversation to generate document"
-          >
-            <span style={{ fontSize: '16px' }}>💬</span>
-            <span>Got agreed terms in a chat? <strong>Paste any conversation →</strong></span>
-          </button>
+          {/* ── RIGHT: live WhatsApp demo ── */}
+          <div className="hero-right" onClick={() => navigate('/whatsapp')} role="button" tabIndex={0} aria-label="Try WhatsApp extraction" onKeyDown={e => e.key === 'Enter' && navigate('/whatsapp')}>
+            <div className="hero-demo-label">Live demo — tap to try with your own chat</div>
+            <div className="hero-demo-phone">
+              <div className="hero-demo-bar">
+                <span className="hero-demo-dot" /><span className="hero-demo-dot" /><span className="hero-demo-dot" />
+                <span className="hero-demo-app">💬 WhatsApp</span>
+              </div>
+              <div className="hero-demo-chat">
+                <div className="hero-chat-them">Rent is ₦1.2m/year. 12 months. No pets.</div>
+                <div className="hero-chat-me">Agreed. I'm Amaka Nwosu. April 1st move-in?</div>
+                <div className="hero-chat-them">Yes. 6 months caution — ₦600k upfront.</div>
+                <div className="hero-chat-me">Fine. Let's sign before I transfer.</div>
+              </div>
+            </div>
+            <div className="hero-demo-arrow">↓ Signova extracts 9 terms</div>
+            <div className="hero-demo-result">
+              <span className="hero-result-icon">✓</span>
+              <div>
+                <div className="hero-result-title">Tenancy Agreement ready</div>
+                <div className="hero-result-sub">Landlord · Tenant · Rent · Duration · Deposit · Restrictions…</div>
+              </div>
+            </div>
+            <div className="hero-demo-cta">Try free → getsignova.com/whatsapp</div>
+          </div>
+        </div>
 
-          {/* Top 3 geo-detected documents — or scroll to browse all 27 */}
-          <p style={{ fontSize: '12px', color: 'var(--text3)', textAlign: 'center', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Or choose your document type</p>
-          <div className="hero-top3" id="documents">
+        {/* Document quick picks — below the two-col hero */}
+        <div className="hero-picks-row" id="documents">
+          <p className="hero-picks-label">Or choose a document type directly:</p>
+          <div className="hero-top3">
             {quickPicks.slice(0, 3).map(d => (
               <button
                 key={d.id}
@@ -611,7 +640,6 @@ export default function Landing() {
               </button>
             ))}
           </div>
-
           <button
             className="more-docs-link"
             onClick={() => startTransition(() => setShowAllDocs(v => !v))}
@@ -619,7 +647,6 @@ export default function Landing() {
           >
             {showAllDocs ? 'Show fewer ↑' : 'More documents ↓'}
           </button>
-
           {showAllDocs && (
             <div className="all-docs-grid">
               {DOCS.filter(d => !quickPicks.slice(0, 3).some(qp => qp.id === d.id)).map(doc => (
