@@ -260,6 +260,8 @@ export default async function handler(req, res) {
         // Grace period — don't immediately disable, just log
         // After 3 failed attempts Stripe will fire subscription.deleted
         console.log(`Payment failed for customer ${invoice.customer} — invoice ${invoice.id}`)
+        // Alert via email so we can follow up proactively before key is disabled
+        await sendPaymentFailedAlert(invoice, redis).catch(e => console.error('payment_failed alert error:', e.message))
         break
       }
     }
@@ -268,6 +270,70 @@ export default async function handler(req, res) {
   } catch (err) {
     console.error('Webhook handler error:', err)
     return res.status(500).json({ error: 'Handler failed' })
+  }
+}
+
+async function sendPaymentFailedAlert(invoice, redis) {
+  const resendKey = process.env.RESEND_API_KEY
+  if (!resendKey) return
+
+  // Resolve customer email from Redis (already stored at provisioning time)
+  const email = await redis.get(`customer:${invoice.customer}:email`).catch(() => null)
+
+  const attemptCount = invoice.attempt_count || 1
+  const amountDue = invoice.amount_due ? `${(invoice.amount_due / 100).toFixed(2)}` : 'unknown'
+  const invoiceUrl = invoice.hosted_invoice_url || 'https://billing.stripe.com'
+
+  // Alert us internally
+  try {
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${resendKey}` },
+      body: JSON.stringify({
+        from: 'Ebenova Billing <billing@ebenova.dev>',
+        to: 'akin@ebenova.dev',
+        subject: `⚠️ Payment failed — ${email || invoice.customer} (attempt ${attemptCount}/3)`,
+        html: `<div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;">
+          <h2 style="color:#c0392b;margin-bottom:8px">⚠️ Payment failed</h2>
+          <p style="color:#555;margin-bottom:20px">Stripe could not collect payment. Key is still active (grace period).</p>
+          <table style="width:100%;border-collapse:collapse;font-size:14px;">
+            <tr><td style="padding:6px 0;color:#888">Customer</td><td style="padding:6px 0">${email || invoice.customer}</td></tr>
+            <tr><td style="padding:6px 0;color:#888">Amount due</td><td style="padding:6px 0">${amountDue}</td></tr>
+            <tr><td style="padding:6px 0;color:#888">Attempt</td><td style="padding:6px 0">${attemptCount} of 3</td></tr>
+            <tr><td style="padding:6px 0;color:#888">Invoice ID</td><td style="padding:6px 0;font-family:monospace;font-size:12px">${invoice.id}</td></tr>
+          </table>
+          <div style="margin-top:24px">
+            <a href="${invoiceUrl}" style="display:inline-block;background:#c0392b;color:#fff;padding:12px 22px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">View invoice in Stripe →</a>
+          </div>
+          <p style="color:#aaa;font-size:12px;margin-top:20px">Key will auto-disable after 3 failed attempts (Stripe default). Reach out to customer proactively.</p>
+        </div>`,
+      }),
+    })
+  } catch (err) {
+    console.error('sendPaymentFailedAlert internal email error:', err.message)
+  }
+
+  // Also email the customer with the payment link
+  if (email) {
+    try {
+      await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${resendKey}` },
+        body: JSON.stringify({
+          from: 'Ebenova Billing <billing@ebenova.dev>',
+          to: email,
+          subject: 'Action needed: payment failed for your Ebenova subscription',
+          html: `<div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:40px 24px;">
+            <h2 style="color:#1a1a1a;margin-bottom:8px">We couldn\'t process your payment</h2>
+            <p style="color:#555;margin-bottom:20px">Your Ebenova subscription payment of <strong>${amountDue}</strong> failed. Your API key is still active while we retry, but please update your payment method to avoid interruption.</p>
+            <a href="${invoiceUrl}" style="display:inline-block;background:#c9a84c;color:#0e0e0e;padding:14px 28px;border-radius:8px;font-weight:600;text-decoration:none;font-size:15px;">Pay now →</a>
+            <p style="color:#aaa;font-size:13px;margin-top:24px">Questions? Reply to this email or contact <a href="mailto:billing@ebenova.dev" style="color:#c9a84c">billing@ebenova.dev</a></p>
+          </div>`,
+        }),
+      })
+    } catch (err) {
+      console.error('sendPaymentFailedAlert customer email error:', err.message)
+    }
   }
 }
 

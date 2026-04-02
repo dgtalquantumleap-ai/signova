@@ -1,31 +1,38 @@
 // api/scope-guard-analyze.js
 // POST /api/scope-guard-analyze
 // Consumer-facing Scope Guard — no auth required
-// Uses Groq for free tier (3 analyses per IP per day)
+// Uses Groq for free tier (3 analyses per IP per 24h)
+// Rate limiting is Redis-backed (fixes per-serverless-instance memory leak)
 // Separate from /api/v1/scope/analyze which requires API key auth
 
-const WINDOW_MS = 24 * 60 * 60 * 1000 // 24 hours
+import { getRedis } from '../lib/redis.js'
+
 const MAX_PER_WINDOW = 3
+const WINDOW_SECS = 24 * 60 * 60  // 24 hours
 
-const ipStore = new Map()
-
-function isRateLimited(ip) {
-  const now = Date.now()
-  const entry = ipStore.get(ip)
-  if (!entry || now > entry.resetAt) {
-    ipStore.set(ip, { count: 1, resetAt: now + WINDOW_MS })
-    return false
+async function getIpUsage(ip) {
+  try {
+    const redis = getRedis()
+    const key = `sg:free:${ip}`
+    const raw = await redis.get(key)
+    return raw ? parseInt(raw, 10) : 0
+  } catch {
+    // Redis unavailable — fail open (allow request) rather than break UX
+    return 0
   }
-  if (entry.count >= MAX_PER_WINDOW) return true
-  entry.count++
-  return false
 }
 
-function getRemainingUses(ip) {
-  const now = Date.now()
-  const entry = ipStore.get(ip)
-  if (!entry || now > entry.resetAt) return MAX_PER_WINDOW
-  return Math.max(0, MAX_PER_WINDOW - entry.count)
+async function incrementIpUsage(ip) {
+  try {
+    const redis = getRedis()
+    const key = `sg:free:${ip}`
+    const count = await redis.incr(key)
+    // Set TTL on first write only
+    if (count === 1) await redis.expire(key, WINDOW_SECS)
+    return count
+  } catch {
+    return 1
+  }
 }
 
 async function parseBody(req) {
@@ -108,9 +115,9 @@ export default async function handler(req, res) {
     req.headers['x-real-ip'] ||
     'unknown'
 
-  // Check rate limit BEFORE processing
-  const remaining = getRemainingUses(ip)
-  if (remaining <= 0) {
+  // Redis-backed rate limit check (survives multiple serverless instances)
+  const currentUsage = await getIpUsage(ip)
+  if (currentUsage >= MAX_PER_WINDOW) {
     return res.status(429).json({
       success: false,
       error: {
@@ -144,7 +151,6 @@ export default async function handler(req, res) {
     })
   }
 
-  // Use Groq for free tier (fast + cheap)
   const groqKey = process.env.GROQ_API_KEY
   if (!groqKey) {
     return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: 'AI service not configured' } })
@@ -182,11 +188,9 @@ export default async function handler(req, res) {
       throw new Error('Failed to parse AI response')
     }
 
-    // Count usage AFTER successful analysis
-    if (isRateLimited(ip)) {
-      // Edge case: was not limited before but became limited during processing
-      // Still return the result since we already computed it
-    }
+    // Increment usage counter AFTER successful analysis
+    const newCount = await incrementIpUsage(ip)
+    const remaining = Math.max(0, MAX_PER_WINDOW - newCount)
 
     return res.status(200).json({
       success: true,
@@ -195,7 +199,7 @@ export default async function handler(req, res) {
       response_options: result.response_options || [],
       suggested_change_order: result.suggested_change_order || null,
       summary: result.summary || '',
-      remaining_uses: Math.max(0, getRemainingUses(ip) - 1),
+      remaining_uses: remaining,
       meta: {
         contract_length: contract_text.length,
         message_length: client_message.length,
