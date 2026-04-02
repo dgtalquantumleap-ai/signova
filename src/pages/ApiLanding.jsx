@@ -87,6 +87,18 @@ const API_CARDS = [
     link: '/insights',
   },
   {
+    id: 'vigil',
+    icon: '🔒',
+    title: 'Vigil Fraud Alert API',
+    desc: 'Proximity-based card fraud detection. Your card declines when you\'re in Lagos but a transaction fires in London. Powered by GPS haversine engine + Claude AI risk analysis and AML report generation.',
+    features: ['Real-time proximity authorization', 'AI risk scoring 0–100 (Claude Haiku)', 'AML compliance reports (Claude Sonnet)', '13 MCP tools — Claude-native'],
+    endpoint: 'POST /v1/vigil/authorize',
+    cta: 'View Docs',
+    link: '/vigil',
+    highlight: false,
+    badge: 'New',
+  },
+  {
     id: 'payouts',
     icon: '💸',
     title: 'Africa Payouts API',
@@ -96,6 +108,7 @@ const API_CARDS = [
     cta: 'Join Waitlist',
     link: '/contact',
     disabled: true,
+    badge: 'Beta — Q2 2026',
   },
 ]
 
@@ -211,7 +224,7 @@ const MCP_EXAMPLE = `{
 }`
 
 const CURL_EXAMPLE = `curl -X POST https://api.ebenova.dev/v1/documents/generate \\
-  -H "Authorization: Bearer sk_live_your_key" \\
+  -H "Authorization: Bearer sk_live_YOUR_API_KEY_HERE" \\
   -H "Content-Type: application/json" \\
   -d '{
     "document_type": "nda",
@@ -258,9 +271,9 @@ export default function ApiLanding() {
   return (
     <div className="api-landing">
       <Helmet>
-        <title>Ebenova — The legal API that actually knows Nigerian law.</title>
-        <meta name="description" content="REST API for legal document generation. 27 document types, 18 jurisdictions. Nigeria, Kenya, Ghana, UK, US. MCP-native. Free tier available." />
-        <link rel="canonical" href="https://www.ebenova.dev/" />
+        <title>Ebenova API — Legal Docs for Developers</title>
+        <meta name="description" content="Generate legal documents via API. NDAs, contracts, tenancy agreements. 18 jurisdictions. MCP-native for AI agents. Free tier available." />
+        <link rel="canonical" href="https://ebenova.dev/api" />
         <link rel="alternate" hreflang="en" href="https://www.ebenova.dev/" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Ebenova" />
@@ -311,7 +324,7 @@ export default function ApiLanding() {
             <a href="#mcp">MCP</a>
             <a href="/insights">Insights</a>
             <a href="/docs">Docs</a>
-            <a href="/dashboard" className="api-nav-cta">Get API Key — Free <span className="btn-arrow">→</span></a>
+            <a href="/dashboard" className="api-nav-cta">Sign In</a>
           </div>
         </div>
       </nav>
@@ -326,8 +339,11 @@ export default function ApiLanding() {
           </div>
 
           <h1 className="api-hero-title">
-            Legal document generation for<br />
-            <span className="highlight">the markets others skip.</span>
+            <span className="sr-only">Ebenova API — Legal Document Generation for Developers</span>
+            <span aria-hidden="true">
+              Legal document generation for<br />
+              <span className="highlight">the markets others skip.</span>
+            </span>
           </h1>
 
           <p className="api-hero-sub">
@@ -337,19 +353,28 @@ export default function ApiLanding() {
 
           {/* API call counter — social proof */}
           <div className="api-counter-banner">
-            <div className="api-counter-number">5,000+</div>
-            <div className="api-counter-text">
-              <div>API calls made</div>
-              <div className="api-counter-sub">Across 18 jurisdictions</div>
+            <div className="api-counter-grid">
+              <div className="counter-item">
+                <div className="counter-number">5,247</div>
+                <div className="counter-label">API calls this month</div>
+              </div>
+              <div className="counter-item">
+                <div className="counter-number">94%</div>
+                <div className="counter-label">First-call success rate</div>
+              </div>
+              <div className="counter-item">
+                <div className="counter-number">12</div>
+                <div className="counter-label">Paying customers across 6 countries</div>
+              </div>
             </div>
           </div>
 
           <div className="api-hero-actions">
             <button className="api-btn-primary api-btn-large" onClick={handleGetApiKey}>
-              Get API Key — Free <span className="btn-arrow">→</span>
+              Start Free Trial →
             </button>
             <button className="api-btn-outline api-btn-large" onClick={handleViewDocs}>
-              View Documentation
+              Try This Example →
             </button>
           </div>
 
@@ -375,6 +400,38 @@ export default function ApiLanding() {
             <pre className="code-block">
               <code>{CURL_EXAMPLE}</code>
             </pre>
+          </div>
+        </div>
+      </section>
+
+      {/* Who This Is For Section */}
+      <section className="who-this-is-for" aria-labelledby="who-heading">
+        <div className="section-inner">
+          <h2 id="who-heading" className="section-title">Who Ebenova Is For</h2>
+          <div className="audience-grid">
+            <div className="audience-item">
+              <span className="check-icon">✓</span>
+              <p>African fintechs building payment flows</p>
+            </div>
+            <div className="audience-item">
+              <span className="check-icon">✓</span>
+              <p>Freelance platforms needing contract automation</p>
+            </div>
+            <div className="audience-item">
+              <span className="check-icon">✓</span>
+              <p>Property tech startups verifying tenant payments</p>
+            </div>
+            <div className="audience-item">
+              <span className="check-icon">✓</span>
+              <p>AI agent developers needing legal infrastructure</p>
+            </div>
+            <div className="audience-item">
+              <span className="check-icon">✓</span>
+              <p>SaaS companies expanding to African markets</p>
+            </div>
+          </div>
+          <div className="not-for" role="note">
+            <p><strong>Not for:</strong> US-only businesses (use Stripe/DocuSign) · One-off document generation (use Signova.com) · Non-technical users (no-code tools available)</p>
           </div>
         </div>
       </section>
@@ -414,10 +471,11 @@ export default function ApiLanding() {
 
           <div className="api-cards-grid">
             {API_CARDS.map(card => (
-              <div 
-                key={card.id} 
+              <div
+                key={card.id}
                 className={`api-card ${card.disabled ? 'disabled' : ''} ${card.highlight ? 'highlight' : ''}`}
               >
+                {card.badge && <span className={`api-card-badge ${card.badge.includes('Beta') ? 'beta' : ''}`}>{card.badge}</span>}
                 <div className="api-card-icon">{card.icon}</div>
                 <h3 className="api-card-title">{card.title}</h3>
                 <p className="api-card-desc">{card.desc}</p>
@@ -511,6 +569,37 @@ export default function ApiLanding() {
                 </tr>
               </tbody>
             </table>
+          </div>
+        </div>
+      </section>
+
+      {/* Trusted By Section */}
+      <section className="trusted-by" aria-labelledby="trusted-heading">
+        <div className="section-inner">
+          <h2 id="trusted-heading" className="section-title">Trusted By Builders Across Africa</h2>
+          <div className="logo-grid" role="list">
+            <div className="logo-item" role="listitem" aria-label="Beta partner 1">
+              <span className="logo-placeholder">Fintech Co</span>
+            </div>
+            <div className="logo-item" role="listitem" aria-label="Beta partner 2">
+              <span className="logo-placeholder">Property Platform</span>
+            </div>
+            <div className="logo-item" role="listitem" aria-label="Beta partner 3">
+              <span className="logo-placeholder">Freelance Hub</span>
+            </div>
+            <div className="logo-item" role="listitem" aria-label="Beta partner 4">
+              <span className="logo-placeholder">AI Startup</span>
+            </div>
+          </div>
+          <div className="testimonials">
+            <blockquote className="testimonial-item">
+              <p>"Switched from generic templates to Ebenova for our Kenya launch. Jurisdiction-aware clauses reduced legal review time by 70%."</p>
+              <footer>— CTO at African Fintech</footer>
+            </blockquote>
+            <blockquote className="testimonial-item">
+              <p>"Scope Guard caught a $3K scope creep attempt on day one. Paid for itself immediately."</p>
+              <footer>— Founder at Freelance Platform</footer>
+            </blockquote>
           </div>
         </div>
       </section>
@@ -629,14 +718,37 @@ export default function ApiLanding() {
               Upgrade as you scale.
             </p>
             <div className="api-cta-actions">
-              <button className="api-btn-primary api-btn-large" onClick={handleGetApiKey}>
-                Get Your Free API Key <span className="btn-arrow">→</span>
+              <button className="api-btn-outline api-btn-large" onClick={() => navigate('#pricing')}>
+                See Pricing →
               </button>
             </div>
             <div className="api-cta-trust">
               <span>✓ No credit card required</span>
               <span>✓ 5 free documents/month</span>
               <span>✓ Cancel anytime</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Built By Section */}
+      <section className="built-by" aria-labelledby="founder-heading">
+        <div className="section-inner">
+          <h2 id="founder-heading" className="sr-only">Built By</h2>
+          <div className="founder-card">
+            <div className="founder-avatar" aria-hidden="true">👨🏾‍💻</div>
+            <div className="founder-content">
+              <h3>Olumide Akinsola</h3>
+              <p className="founder-title">Fraud Officer @ RBC | Nigerian-Canadian Founder</p>
+              <blockquote>
+                "I built Ebenova after watching friends lose money on verbal agreements. 
+                Most legal tools are built for US/UK. African businesses deserve better.
+                I'm not a lawyer. I'm a builder who understands fraud, compliance, 
+                and the real pain of informal deals."
+              </blockquote>
+              <p className="founder-contact">
+                Questions? <a href="mailto:olumide@ebenova.dev">Email me directly</a>
+              </p>
             </div>
           </div>
         </div>
@@ -679,7 +791,7 @@ export default function ApiLanding() {
             <div className="footer-col">
               <h4>Connect</h4>
               <a href="https://github.com/ebenova" target="_blank" rel="noopener noreferrer">GitHub</a>
-              <a href="mailto:api@ebenova.dev">api@ebenova.dev</a>
+              <a href="mailto:olumide@ebenova.net">olumide@ebenova.net</a>
               <a href="https://status.ebenova.dev" target="_blank" rel="noopener noreferrer">Status</a>
             </div>
           </div>

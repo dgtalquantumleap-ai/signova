@@ -35,7 +35,9 @@ export default function PrivacyPage() {
         <p>Signova is not directed at children under the age of 13 and we do not knowingly collect information from minors.</p>
 
         <h2>Contact</h2>
-        <p>For any privacy-related questions or requests, email us at <a href="mailto:info@ebenova.net">info@ebenova.net</a>.</p>
+        <p>For any privacy-related questions or requests, email us at <a href={`mailto:${'info'}@${'ebenova.net'}`}>
+          <span className="email-obfuscated" data-user="info" data-domain="ebenova.net"></span>
+        </a>.</p>
       </div>
     </div>
   )

@@ -426,11 +426,23 @@ const DOCS = [
   },
 ]
 
-const TESTIMONIALS = [
-  { name: 'David R.', role: 'Freelance Developer, London', text: 'Finally, a contract generator that actually understands UK law. Had my freelance contract sorted in 3 minutes. Used to spend £200+ on solicitors for the same thing.', company: 'Self-employed', linkedin: '#' },
-  { name: 'Sarah M.', role: 'Small Business Owner, Nairobi', text: 'Used to pay my lawyer $200 for a basic NDA that took 3 days. Signova did it in 2 minutes for $4.99. I\'ve now generated 6 documents this month alone.', company: 'Nairobi Ventures', linkedin: '#' },
-  { name: 'Priya K.', role: 'Startup Founder, Mumbai', text: 'We needed NDAs for 8 different vendors across 3 countries. Signova handled all jurisdictions perfectly. What would have cost ₹40,000 in legal fees cost us under $50.', company: 'TechStart India', linkedin: '#' },
-]
+// Real signal — no fabricated quotes
+const SOCIAL_PROOF = {
+  advisor: {
+    name: 'Riley-Ghiles',
+    handle: '@Riley_Ikni',
+    role: 'Startup Advisor · 10k+ weekly readers',
+    text: 'Freelancers, tired of wasting hours drafting contracts — or scared of making a costly mistake? Fear no more.',
+    url: 'https://x.com/Riley_Ikni',
+    date: 'April 2026',
+  },
+  stats: [
+    { n: '83', label: 'visitors/week', sub: 'organic, no ads' },
+    { n: '$4.99', label: 'price point', sub: 'cheaper than losing one invoice' },
+    { n: '180+', label: 'countries', sub: 'jurisdiction-aware' },
+    { n: 'Mar \'26', label: 'first paying customer', sub: 'week 3 after launch' },
+  ],
+}
 
 const FAQS = [
   {
@@ -556,15 +568,17 @@ export default function Landing() {
         <div className="hero-two-col">
           {/* ── LEFT: headline + CTA ── */}
           <div className="hero-left">
-            <div className="hero-eyebrow">💬 WhatsApp → Legal Contract</div>
+            <div className="hero-eyebrow">🤝 Deal agreed? Get it in writing before they change their mind.</div>
+            <p className="hero-consequence">Every month, freelancers lose thousands because they had no contract.</p>
             <h1 className="hero-title" fetchpriority="high">
               Paste your chat.<br />
               <span className="hero-title-gold">Get a signed contract</span><br />
               in 2 minutes.
             </h1>
             <p className="hero-sub">
-              Paste any WhatsApp, email, or message negotiation — Signova extracts the agreed terms and generates a lawyer-quality legal document. 27 document types. Nigeria, UK, US, Canada and 180+ countries.
+              Paste your WhatsApp, email, or iMessage negotiation — Signova extracts the agreed terms and builds a lawyer-quality document before the moment passes. 27 document types. Works at midnight. Works anywhere.
             </p>
+            <p className="hero-value-line">Cheaper than losing one invoice. Built by a founder who learned the hard way.</p>
 
             <div className="hero-jurisdictions">
               <span>🇳🇬 Nigeria</span>
@@ -593,7 +607,7 @@ export default function Landing() {
                 Or browse 27 documents ↓
               </button>
             </div>
-            <p className="hero-trust-line">Free preview · No account · $4.99 to download · Enforceable in 180+ countries</p>
+            <p className="hero-trust-line">Enforceable in 180+ countries · Free preview · No account · $4.99 to download</p>
           </div>
 
           {/* ── RIGHT: live WhatsApp demo ── */}
@@ -701,8 +715,8 @@ export default function Landing() {
           <div className="steps">
             {[
               { n: '01', title: 'Choose your document', body: 'Pick from 27 document types built for global use — Tenancy Agreement, NDA, Freelance Contract, Deed of Assignment, Loan Agreement, Business Proposal, and more. Works in 180+ countries.' },
-              { n: '02', title: 'Answer a few questions', body: 'Tell us your names, jurisdiction, and deal terms. Takes 2 minutes. No legal knowledge required — the questions are plain language.' },
-              { n: '03', title: 'Preview free, download when ready', body: 'See your complete, properly structured document instantly. When you\'re happy, download the clean PDF for the price of a phone call — not a lawyer.' },
+              { n: '02', title: 'Answer a few questions', body: 'Tell us your names, jurisdiction, and deal terms. Takes 2 minutes. No legal knowledge required — the questions are plain language. An old template won\'t know this client\'s name, this amount, or these terms. Signova does.' },
+              { n: '03', title: 'Preview free, download when ready', body: 'See your complete, properly structured document instantly — built on real legal frameworks used by attorneys, not generic AI output. When you\'re happy, download the clean PDF for the price of a phone call — not a lawyer.' },
             ].map(s => (
               <div key={s.n} className="step">
                 <span className="step-num">{s.n}</span>
@@ -721,34 +735,44 @@ export default function Landing() {
       <section className="testimonials-section">
         <div className="section-inner">
           <div className="section-header">
-            <p className="section-label">What people say</p>
-            <h2 className="section-title">Trusted by freelancers & businesses</h2>
+            <p className="section-label">Early traction</p>
+            <h2 className="section-title">Real signal, no fake numbers</h2>
           </div>
-          
-          {/* Trust signal — document counter */}
-          <div className="trust-signal-banner">
-            <div className="trust-signal-number">12,000+</div>
-            <div className="trust-signal-text">
-              <div>Documents generated</div>
-              <div className="trust-signal-sub">Across 180+ countries</div>
-            </div>
-          </div>
-          
-          <div className="testimonials-grid">
-            {TESTIMONIALS.map((t, i) => (
-              <div key={i} className="testimonial-card">
-                <p className="testimonial-text">{`"${t.text}"`}</p>
-                <div className="testimonial-author">
-                  <span className="testimonial-name">{t.name}</span>
-                  <span className="testimonial-role">{t.role}</span>
-                  {t.company && (
-                    <a href={t.linkedin} target="_blank" rel="noopener noreferrer" className="testimonial-company">
-                      {t.company} ↗
-                    </a>
-                  )}
-                </div>
+
+          {/* Stat row */}
+          <div className="traction-stats">
+            {SOCIAL_PROOF.stats.map(s => (
+              <div key={s.label} className="traction-stat">
+                <div className="traction-n">{s.n}</div>
+                <div className="traction-label">{s.label}</div>
+                <div className="traction-sub">{s.sub}</div>
               </div>
             ))}
+          </div>
+
+          {/* Riley quote */}
+          <div className="advisor-quote-card">
+            <div className="advisor-quote-mark">"</div>
+            <p className="advisor-quote-text">{SOCIAL_PROOF.advisor.text}</p>
+            <div className="advisor-quote-footer">
+              <div className="advisor-info">
+                <span className="advisor-name">{SOCIAL_PROOF.advisor.name}</span>
+                <span className="advisor-handle">{SOCIAL_PROOF.advisor.handle}</span>
+                <span className="advisor-role">{SOCIAL_PROOF.advisor.role}</span>
+              </div>
+              <a
+                href={SOCIAL_PROOF.advisor.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="advisor-link"
+                aria-label="View original post on X"
+              >
+                View on X ↗
+              </a>
+            </div>
+            <div className="advisor-context">
+              Riley roasted 100+ startups in one thread. This is what he drafted for Signova — unprompted.
+            </div>
           </div>
         </div>
       </section>
@@ -846,34 +870,19 @@ export default function Landing() {
             <h2 className="cta-title">Stop paying {LAWYER_FEE_MAP[countryCode] || DEFAULT_LAWYER_FEE} for a document you can generate in 3 minutes.</h2>
             <p className="cta-sub">Preview completely free — no account, no credit card. Pay only{' '}
               {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} when you're ready to download. Works in Nigeria, Ghana, Kenya, the UK, Canada, and 180+ countries.</p>
+            <div className="cta-trust-strip">
+              <span>⚖️ Built on real legal frameworks</span>
+              <span className="cta-trust-dot">·</span>
+              <span>🔍 Preview the full document before paying</span>
+              <span className="cta-trust-dot">·</span>
+              <span>↩️ 30-day refund, no questions</span>
+            </div>
             <button
               className="btn-primary btn-large"
               onClick={() => navigate('/generate/nda')}
             >
               Preview my document free <span className="btn-arrow">→</span>
             </button>
-            <div className="waitlist-box">
-              <p className="waitlist-label">Building a business? Join the waitlist for Signova Pro — unlimited docs, contract monitoring &amp; scope alerts. $9.99/month at launch.</p>
-              {waitlistSubmitted ? (
-                <p className="waitlist-done">✓ You're on the list — we'll email you at launch</p>
-              ) : (
-                <form className="waitlist-form" onSubmit={handleWaitlist}>
-                  <input
-                    className="waitlist-input"
-                    type="email"
-                    placeholder="your@email.com"
-                    aria-label="Email address for Signova Pro waitlist"
-                    value={waitlistEmail}
-                    onChange={e => setWaitlistEmail(e.target.value)}
-                    required
-                  />
-                  <button className="waitlist-btn" type="submit" disabled={waitlistLoading}>
-                    {waitlistLoading ? 'Saving…' : 'Join waitlist →'}
-                  </button>
-                </form>
-              )}
-              {waitlistError && <p className="waitlist-error">{waitlistError}</p>}
-            </div>
           </div>
         </div>
       </section>

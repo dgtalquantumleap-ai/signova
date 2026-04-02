@@ -38,6 +38,40 @@ export default function Dashboard() {
   const [revenueMetrics, setRevenueMetrics] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
 
+  // ── Fetch functions (defined before useEffect to avoid TDZ errors) ─────────
+  const fetchUsage = useCallback(async (key) => {
+    if (!key) return
+    try {
+      const res = await fetch(`${API}/api/v1/keys/usage`, {
+        headers: { Authorization: `Bearer ${key}` },
+      })
+      const data = await res.json()
+      if (data.success) setUsage(data)
+    } catch {}
+  }, [])
+
+  const fetchScopeGuardStats = useCallback(async (key) => {
+    if (!key) return
+    try {
+      const res = await fetch(`${API}/api/v1/scope/stats`, {
+        headers: { Authorization: `Bearer ${key}` },
+      })
+      const data = await res.json()
+      if (data.success) setScopeGuardStats(data)
+    } catch {}
+  }, [])
+
+  const fetchRevenueMetrics = useCallback(async (adminToken) => {
+    if (!adminToken) return
+    try {
+      const res = await fetch(`${API}/api/v1/admin/revenue`, {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+      const data = await res.json()
+      if (data.success) setRevenueMetrics(data)
+    } catch {}
+  }, [])
+
   // ── Boot: check for session or magic token ──────────────────────────────────
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -92,39 +126,6 @@ export default function Dashboard() {
       }
     } catch { setError('Verification failed. Try again.'); setView('login') }
   }
-
-  const fetchUsage = useCallback(async (key) => {
-    if (!key) return
-    try {
-      const res = await fetch(`${API}/api/v1/keys/usage`, {
-        headers: { Authorization: `Bearer ${key}` },
-      })
-      const data = await res.json()
-      if (data.success) setUsage(data)
-    } catch {}
-  }, [])
-
-  const fetchScopeGuardStats = useCallback(async (key) => {
-    if (!key) return
-    try {
-      const res = await fetch(`${API}/api/v1/scope/stats`, {
-        headers: { Authorization: `Bearer ${key}` },
-      })
-      const data = await res.json()
-      if (data.success) setScopeGuardStats(data)
-    } catch {}
-  }, [])
-
-  const fetchRevenueMetrics = useCallback(async (adminToken) => {
-    if (!adminToken) return
-    try {
-      const res = await fetch(`${API}/api/v1/admin/revenue`, {
-        headers: { Authorization: `Bearer ${adminToken}` },
-      })
-      const data = await res.json()
-      if (data.success) setRevenueMetrics(data)
-    } catch {}
-  }, [])
 
   async function sendMagicLink() {
     if (!email || !email.includes('@')) return setError('Enter a valid email')

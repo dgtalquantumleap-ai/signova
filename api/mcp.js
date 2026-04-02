@@ -132,6 +132,61 @@ const TOOLS = [
       },
     },
   },
+  // ── Vigil Fraud Alert tools ───────────────────────────────────────────────
+  {
+    name: 'vigil_authorize',
+    description: 'Run a card transaction through the Vigil proximity fraud engine. Returns approve/decline with distance from home, risk score, and fraud alert if triggered. Requires card_id + merchant location + amount.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        card_id: { type: 'string', description: 'Card identifier (e.g. card_01)' },
+        merchant_name: { type: 'string', description: 'Merchant name' },
+        merchant_city: { type: 'string', description: 'City where transaction is occurring' },
+        merchant_country: { type: 'string', description: '2-letter ISO country code, e.g. CA, US, GB' },
+        merchant_lat: { type: 'number', description: 'Merchant latitude' },
+        merchant_lng: { type: 'number', description: 'Merchant longitude' },
+        amount_cents: { type: 'number', description: 'Transaction amount in cents' },
+        currency: { type: 'string', description: 'ISO currency code, e.g. cad, usd' },
+        merchant_mcc: { type: 'string', description: 'Merchant category code (optional)' },
+      },
+      required: ['card_id', 'merchant_name', 'merchant_country', 'amount_cents', 'currency'],
+    },
+  },
+  {
+    name: 'vigil_analyze_transaction',
+    description: 'AI-powered fraud analysis for a transaction. Returns risk score 0–100, reasoning, contributing factors, recommended action, and pre-written SMS alert copy. Uses Claude Haiku.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        transaction_id: { type: 'string', description: 'Transaction ID from vigil_authorize result' },
+      },
+      required: ['transaction_id'],
+    },
+  },
+  {
+    name: 'vigil_get_risk_score',
+    description: 'Get the live risk profile (score 0–100) for a card with explanation of contributing factors.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        card_id: { type: 'string', description: 'Card identifier' },
+      },
+      required: ['card_id'],
+    },
+  },
+  {
+    name: 'vigil_generate_aml_report',
+    description: 'Generate a full AML (Anti-Money Laundering) compliance report for a card over a date range. Uses Claude Sonnet. Requires Scale plan or above.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        card_id: { type: 'string', description: 'Card identifier' },
+        period_start: { type: 'string', description: 'Start date ISO string e.g. 2026-03-01' },
+        period_end: { type: 'string', description: 'End date ISO string e.g. 2026-03-31' },
+      },
+      required: ['card_id'],
+    },
+  },
 ]
 
 const API_BASE = 'https://www.getsignova.com'
@@ -302,6 +357,37 @@ async function callTool(name, args, apiKey) {
     if (!data.success) return text(`Error: ${data.error?.message || 'Not found'}`)
     const l = data.link
     return text(`Contract: ${l.contract_id}\nPayment Ref: ${l.payment_ref}\nStatus: ${l.payment_status}\nAmount: ${l.payment_currency} ${l.payment_amount || 'N/A'}\nLinked: ${l.linked_at}\nParties: ${(l.parties || []).join(', ') || 'N/A'}`)
+  }
+
+  // ── Vigil Fraud Alert tools ───────────────────────────────────────────────
+  if (name === 'vigil_authorize') {
+    const data = await callApi('/v1/vigil/authorize', args, apiKey)
+    if (!data.success) return text(`Error: ${data.error?.message || 'Authorization failed'}`)
+    const d = data.decision || data
+    return text(`Decision: ${d.approved ? '✅ APPROVED' : '❌ DECLINED'}\nCard: ${args.card_id} | Amount: ${args.currency?.toUpperCase()} ${(args.amount_cents/100).toFixed(2)}\nMerchant: ${args.merchant_name}, ${args.merchant_country}\nRisk score: ${d.risk_score ?? 'N/A'}/100 | Distance: ${d.distance_km != null ? d.distance_km + ' km from home' : 'N/A'}\n${d.alert_id ? `⚠️ Alert created: ${d.alert_id}` : ''}`)
+  }
+
+  if (name === 'vigil_analyze_transaction') {
+    const data = await callApi('/v1/vigil/analyze', args, apiKey)
+    if (!data.success) return text(`Error: ${data.error?.message}`)
+    const a = data.analysis || data
+    const lines = [`AI Fraud Analysis — txn ${args.transaction_id}`, `Risk: ${a.risk_score ?? '?'}/100 — ${a.recommendation ?? ''}`, '']
+    if (a.risk_factors?.length) { lines.push('Risk factors:'); a.risk_factors.forEach(f => lines.push(`  • ${f}`)) }
+    if (a.sms_copy) lines.push(`\nSMS alert: "${a.sms_copy}"`)
+    return text(lines.join('\n'))
+  }
+
+  if (name === 'vigil_get_risk_score') {
+    const data = await getApi(`/v1/vigil/score?card_id=${encodeURIComponent(args.card_id)}`, apiKey)
+    if (!data.success) return text(`Error: ${data.error?.message}`)
+    const r = data.risk_profile || data
+    return text(`Risk Profile — ${args.card_id}\nScore: ${r.score ?? '?'}/100 (${r.level ?? 'unknown'})\n${r.explanation ?? ''}`)
+  }
+
+  if (name === 'vigil_generate_aml_report') {
+    const data = await callApi('/v1/vigil/report', args, apiKey)
+    if (!data.success) return text(`Error: ${data.error?.message}`)
+    return text(data.report || JSON.stringify(data, null, 2))
   }
 
   return { content: [{ type: 'text', text: `Unknown tool: ${name}` }], isError: true }

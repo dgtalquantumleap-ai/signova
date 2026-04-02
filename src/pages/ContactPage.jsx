@@ -135,7 +135,9 @@ export default function ContactPage() {
             </button>
 
             <p style={{ fontSize: '12px', color: 'var(--text3)', textAlign: 'center' }}>
-              Or email directly: <a href="mailto:info@ebenova.net" style={{ color: 'var(--text2)' }}>info@ebenova.net</a>
+              Or email directly: <a href={`mailto:${'info'}@${'ebenova.net'}`} style={{ color: 'var(--text2)' }}>
+                <span className="email-obfuscated" data-user="info" data-domain="ebenova.net"></span>
+              </a>
             </p>
           </div>
         )}

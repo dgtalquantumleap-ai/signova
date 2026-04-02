@@ -173,8 +173,8 @@ export default function AboutPage() {
         </p>
         <p style={{ fontSize: '16px', color: 'var(--text2)', lineHeight: 1.75, marginBottom: '16px' }}>
           Questions, feedback, or a document type you need that we don't have yet — email us at{' '}
-          <a href="mailto:info@ebenova.net" style={{ color: 'var(--gold)', textDecoration: 'none' }}>
-            info@ebenova.net
+          <a href={`mailto:${'info'}@${'ebenova.net'}`} style={{ color: 'var(--gold)', textDecoration: 'none' }}>
+            <span className="email-obfuscated" data-user="info" data-domain="ebenova.net"></span>
           </a>
           . We read every message.
         </p>

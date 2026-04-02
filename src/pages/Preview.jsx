@@ -607,12 +607,10 @@ export default function Preview() {
           <div className="sidebar-card">
             <h3 className="sidebar-title">Your {doc.docName} is ready</h3>
 
-            {/* Social proof — right at the top before payment */}
+            {/* First paying customer — honest signal */}
             <div className="sidebar-social-proof">
-              <div className="proof-avatars">
-                <span>👤</span><span>👤</span><span>👤</span>
-              </div>
-              <p className="proof-text">200+ documents generated this month</p>
+              <span className="proof-badge">🎯</span>
+              <p className="proof-text">First paying customer — March 2026. Early access open.</p>
             </div>
 
             {/* Email capture — prominent, before payment CTA */}
