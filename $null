@@ -1,0 +1,1 @@
+[31mError:[39m Invalid number of arguments. Usage: [90m`[39m[36mvercel env rm <name> <production | preview | development> <gitbranch>[39m[90m`[39m

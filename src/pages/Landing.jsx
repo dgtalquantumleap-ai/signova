@@ -544,7 +544,7 @@ export default function Landing() {
             <a href="/scope-guard" onClick={closeNav} aria-label="Protect against scope creep">Scope Guard</a>
             <a href="#faq" onClick={closeNav} aria-label="Frequently asked questions">FAQ</a>
             <a href="/blog" onClick={closeNav} aria-label="Read our blog">Blog</a>
-            <a href="#documents" onClick={closeNav} className="nav-cta-link" aria-label="Start generating your document">Start free →</a>
+            <a href="#documents" onClick={closeNav} className="nav-cta-link" aria-label="Preview a document for free">Preview Free →</a>
           </div>
           <button
             className="hamburger"
@@ -595,16 +595,16 @@ export default function Landing() {
             <div className="hero-cta-row">
               <button
                 className="btn-primary btn-large"
-                onClick={() => { trackHeroCtaClick(); navigate('/whatsapp') }}
-                aria-label="Paste your conversation to generate a document"
+                onClick={() => { trackHeroCtaClick(); trackDocSelected(quickPicks[0]?.id || 'nda', 'hero_cta'); navigate(`/generate/${quickPicks[0]?.id || 'nda'}`) }}
+                aria-label="Preview a free legal document"
               >
-                Paste my conversation <span className="btn-arrow">→</span>
+                Preview Free <span className="btn-arrow">→</span>
               </button>
               <button
                 className="hero-browse-btn"
-                onClick={() => { trackHeroCtaClick(); trackDocSelected(quickPicks[0]?.id || 'nda', 'hero_cta'); navigate(`/generate/${quickPicks[0]?.id || 'nda'}`) }}
+                onClick={() => { trackHeroCtaClick(); navigate('/whatsapp') }}
               >
-                Or browse 27 documents ↓
+                Or paste your chat ↓
               </button>
             </div>
             <p className="hero-trust-line">Enforceable in 180+ countries · Free preview · No account · $4.99 to download</p>
@@ -612,7 +612,7 @@ export default function Landing() {
 
           {/* ── RIGHT: live WhatsApp demo ── */}
           <div className="hero-right" onClick={() => navigate('/whatsapp')} role="button" tabIndex={0} aria-label="Try WhatsApp extraction" onKeyDown={e => e.key === 'Enter' && navigate('/whatsapp')}>
-            <div className="hero-demo-label">Live demo — tap to try with your own chat</div>
+            <div className="hero-demo-label">Free demo — tap to try with your own chat</div>
             <div className="hero-demo-phone">
               <div className="hero-demo-bar">
                 <span className="hero-demo-dot" /><span className="hero-demo-dot" /><span className="hero-demo-dot" />
@@ -650,7 +650,7 @@ export default function Landing() {
               >
                 <span className="top3-icon">{d.icon}</span>
                 <span className="top3-name">{d.name}</span>
-                <span className="top3-go">Generate Free →</span>
+                <span className="top3-go">Preview Free →</span>
               </button>
             ))}
           </div>
@@ -881,7 +881,7 @@ export default function Landing() {
               className="btn-primary btn-large"
               onClick={() => navigate('/generate/nda')}
             >
-              Preview my document free <span className="btn-arrow">→</span>
+              Preview Free <span className="btn-arrow">→</span>
             </button>
           </div>
         </div>

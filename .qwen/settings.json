@@ -55,7 +55,12 @@
       "Bash(git add *)",
       "WebFetch(ebenova.dev)",
       "Bash(npm run *)",
-      "Bash(powershell *)"
+      "Bash(powershell *)",
+      "Bash(rmdir *)",
+      "Bash(findstr *)",
+      "Bash(npm install *)",
+      "Bash(type *)",
+      "Bash(timeout *)"
     ]
   }
 }
