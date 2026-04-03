@@ -778,7 +778,6 @@ export default function ApiLanding() {
               <h4>Connect</h4>
               <a href="https://github.com/ebenova" target="_blank" rel="noopener noreferrer">GitHub</a>
               <a href="mailto:olumide@ebenova.net">olumide@ebenova.net</a>
-              <a href="https://status.ebenova.dev" target="_blank" rel="noopener noreferrer">Status</a>
             </div>
           </div>
         </div>
