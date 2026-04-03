@@ -133,7 +133,7 @@
 
 .dash-key-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
 .dash-key-label { font-weight: 600; font-size: 14px; color: #1a1a1a; }
-.dash-key-tier { font-size: 11px; color: #6b7280; background: #e5e7eb; padding: 2px 8px; border-radius: 12px; }
+.dash-key-tier { font-size: 11px; color: #374151; background: #e5e7eb; padding: 2px 8px; border-radius: 12px; }
 
 .dash-key-value-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .dash-key-code { font-family: monospace; font-size: 14px; color: #1a1a1a; background: #fff; padding: 6px 10px; border: 1px solid #e5e7eb; border-radius: 6px; flex: 1; }

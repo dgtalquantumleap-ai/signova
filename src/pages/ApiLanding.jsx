@@ -330,7 +330,7 @@ export default function ApiLanding() {
       </nav>
 
       {/* Hero Section */}
-      <section className="api-hero">
+      <section className="api-hero" id="main-content">
         <div className="api-hero-glow" />
         <div className="api-hero-inner">
           <div className="api-hero-badge">

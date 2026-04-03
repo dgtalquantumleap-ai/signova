@@ -3,14 +3,11 @@
   <head>
     <meta charset="UTF-8" />
 
-    <!-- Google Analytics GA4 -->
-    <script defer src="https://www.googletagmanager.com/gtag/js?id=G-BT3L97QKS5"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-BT3L97QKS5');
-    </script>
+    <!-- Preconnect to critical origins (max 4 to avoid Lighthouse warning) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.google-analytics.com">
+    <link rel="preconnect" href="https://ipapi.co">
 
     <!-- Google Search Console verification -->
     <!-- Verified via Google Analytics (G-BT3L97QKS5) — no meta tag needed -->
@@ -29,12 +26,10 @@
     <meta name="author" content="Signova — Ebenova Solutions" />
     <!-- canonical set per-page by react-helmet -->
 
-    <!-- DNS prefetch and preconnect for third-party origins -->
-    <link rel="preconnect" href="https://ipapi.co">
-    <link rel="preconnect" href="https://cdn.loom.com">
-    <link rel="dns-prefetch" href="https://ipapi.co">
+    <!-- DNS prefetch for third-party origins -->
     <link rel="dns-prefetch" href="https://cdn.loom.com">
     <link rel="dns-prefetch" href="https://www.clarity.ms">
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 
     <!-- Open Graph — Signova defaults (overridden by react-helmet per-page/per-domain) -->
     <meta property="og:type" content="website" />
@@ -121,27 +116,8 @@
     }
     </script>
 
-    <!-- Microsoft Clarity Heatmaps — deferred to not block LCP -->
-    <script type="text/javascript">
-      // Defer Clarity until after LCP
-      if (typeof requestIdleCallback !== 'undefined') {
-        requestIdleCallback(function() {
-          (function(c,l,a,r,i,t,y){
-            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-          })(window, document, "clarity", "script", "vuim6xvhs5");
-        }, { timeout: 3000 });
-      } else {
-        setTimeout(function() {
-          (function(c,l,a,r,i,t,y){
-            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-          })(window, document, "clarity", "script", "vuim6xvhs5");
-        }, 2000);
-      }
-    </script>
+    <!-- Microsoft Clarity REMOVED — was setting third-party cookies and adding ~400ms TBT -->
+    <!-- Heatmap analytics is non-essential; GA4 + Vercel Analytics provide sufficient data -->
 
     <!-- ══════════════════════════════════════════════════════════════════════
          CRITICAL CSS — Inlined for instant LCP (targets <2.5s)
@@ -227,6 +203,7 @@
         /* LCP FIX: Prevent font swap flash */
         font-display: optional;
       }
+      .hero-title-gold { color: var(--gold); }
       
       .hero-sub {
         font-size: 18px;
@@ -311,30 +288,20 @@
     <!-- Load full font stylesheet non-blocking -->
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap"></noscript>
-    <!-- LCP FIX: Inline font-face for critical font to prevent layout shift -->
-    <style>
-      @font-face {
-        font-family: 'Playfair Display';
-        font-style: normal;
-        font-weight: 700;
-        font-display: optional;
-        src: url(https://fonts.gstatic.com/s/playfairdisplay/v37/nuFiD-vYSZviVYUb_rj3ij__anPXDTzYhA.woff2) format('woff2');
-        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-      }
-    </style>
   </head>
   <body>
     <!-- Critical inline shell — renders instantly before JS loads, eliminates blank LCP -->
+    <!-- Static HTML hero — renders instantly, React hydrates over it -->
     <div id="root">
       <div style="min-height:100vh;background:#0e0e0e;display:flex;align-items:center;justify-content:center;">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="32" height="32" rx="8" fill="#c9a84c"/>
-          <text x="16" y="22" text-anchor="middle" font-family="serif" font-size="18" font-weight="700" fill="#0e0e0e">E</text>
+          <text x="16" y="22" text-anchor="middle" font-family="serif" font-size="18" font-weight="700" fill="#0e0e0e">S</text>
         </svg>
       </div>
     </div>
     <script type="module" src="/src/main.jsx"></script>
-    
+
     <!-- Email obfuscation script -- populates email spans from data attributes -->
     <script>
       document.addEventListener('DOMContentLoaded', function() {
@@ -345,6 +312,30 @@
             el.textContent = user + '@' + domain;
           }
         });
+      });
+    </script>
+
+    <!-- Google Analytics GA4 — deferred until idle to not block interactivity -->
+    <script>
+      function loadGA4() {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-BT3L97QKS5');
+
+        var gaScript = document.createElement('script');
+        gaScript.async = true;
+        gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-BT3L97QKS5';
+        document.head.appendChild(gaScript);
+      }
+
+      // Wait for load event, then wait for idle
+      window.addEventListener('load', function() {
+        if (typeof requestIdleCallback !== 'undefined') {
+          requestIdleCallback(loadGA4, { timeout: 10000 });
+        } else {
+          setTimeout(loadGA4, 5000);
+        }
       });
     </script>
   </body>

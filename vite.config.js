@@ -11,12 +11,12 @@ export default defineConfig({
           if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) return 'react-vendor'
           if (id.includes('node_modules/react-router')) return 'router'
           if (id.includes('node_modules/react-helmet-async')) return 'helmet'
-          if (id.includes('node_modules/@vercel')) return 'vercel-analytics'
+          // @vercel packages are now lazy-loaded — no manual chunk needed
         },
       },
     },
     chunkSizeWarningLimit: 600,
-    // Vite 8 uses OXC by default — fast and produces smaller bundles
+    // Vite 7 — stable, well-tested
     target: 'es2020',
   },
 })

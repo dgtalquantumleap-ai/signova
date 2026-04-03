@@ -1,23 +1,37 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { DOC_LANDING_DATA } from '../data/docLandingData'
 import './Landing.css'
 import './NDALanding.css'
 
 export default function DocLanding() {
   const navigate = useNavigate()
   const { slug } = useParams()
+  const [config, setConfig] = useState(null)
 
-  // Find config by slug
-  const config = Object.values(DOC_LANDING_DATA).find(d => d.slug === slug)
-
-  // Navigate in effect, not during render — React anti-pattern fix
+  // Load doc landing data asynchronously — not in initial bundle
   useEffect(() => {
+    let cancelled = false
+    import('../data/docLandingData').then(({ DOC_LANDING_DATA }) => {
+      if (!cancelled) {
+        const found = Object.values(DOC_LANDING_DATA).find(d => d.slug === slug)
+        setConfig(found || null)
+      }
+    })
+    return () => { cancelled = true }
+  }, [slug])
+
+  // Navigate if slug not found
+  useEffect(() => {
+    if (config === null) return // still loading
     if (!config) navigate('/')
   }, [config, navigate])
 
-  if (!config) return null
+  if (!config) return (
+    <div style={{ minHeight: '100vh', background: '#0e0e0e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div>Loading...</div>
+    </div>
+  )
 
   const {
     docId, icon, name, headline, subheadline,

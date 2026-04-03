@@ -558,7 +558,7 @@ export default function Landing() {
         </div>
       </nav>
 
-      <section className="hero">
+      <section className="hero" id="main-content">
         {/* Subtle document grid pattern instead of generic glow */}
         <div className="hero-doc-pattern" aria-hidden="true">
           {['NDA','LEASE','CONTRACT','MOU','NDA','INVOICE','CONTRACT','DEED','NDA','LEASE'].map((t,i) => (
@@ -687,14 +687,14 @@ export default function Landing() {
             </button>
           </div>
           <div className="wa-banner-right">
-            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px', textAlign: 'right' }}>Example conversation</div>
+            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px', textAlign: 'right' }}>Example conversation</div>
             <div className="wa-banner-chat" style={{ cursor: 'pointer' }} onClick={() => navigate('/whatsapp')}>
               <div className="wa-msg wa-msg-them">Rent is ₦1.2m per year. 1 year tenancy.</div>
               <div className="wa-msg wa-msg-me">Agreed. I'm Amaka Nwosu. When do I move in?</div>
               <div className="wa-msg wa-msg-them">1st April. 6 months caution deposit — 600k.</div>
               <div className="wa-msg wa-msg-me">Fine. No pets right?</div>
               <div className="wa-msg wa-msg-them">No pets, no subletting. We sign before you move in.</div>
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>Tap to try with your own conversation →</div>
+              <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', textAlign: 'center', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.15)' }}>Tap to try with your own conversation →</div>
             </div>
             <div className="wa-banner-arrow">↓</div>
             <div className="wa-banner-result">

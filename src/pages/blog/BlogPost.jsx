@@ -1,16 +1,43 @@
 import { useParams, Link, Navigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
-import { getPostBySlug, BLOG_POSTS } from '../../data/blogPosts'
+import { useState, useEffect } from 'react'
 import './Blog.css'
 
 export default function BlogPost() {
   const { slug } = useParams()
-  const post = getPostBySlug(slug)
+  const [postData, setPostData] = useState(null)
+  const [allPosts, setAllPosts] = useState(null)
 
-  if (!post) return <Navigate to="/blog" replace />
+  useEffect(() => {
+    let cancelled = false
+    import('../../data/blogPosts').then(({ getPostBySlug, BLOG_POSTS }) => {
+      if (!cancelled) {
+        const post = getPostBySlug(slug)
+        if (post) {
+          setPostData(post)
+          setAllPosts(BLOG_POSTS.filter(p => p.slug !== slug).slice(0, 2))
+        } else {
+          setPostData('not-found')
+        }
+      }
+    })
+    return () => { cancelled = true }
+  }, [slug])
 
-  // Other posts for "related" section
-  const related = BLOG_POSTS.filter(p => p.slug !== slug).slice(0, 2)
+  if (!postData) {
+    // Show minimal loading, but if slug is invalid we'll redirect after data loads
+    return (
+      <div className="blog-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <div>Loading...</div>
+      </div>
+    )
+  }
+
+  // If data loaded and post not found, redirect
+  if (postData === 'not-found') return <Navigate to="/blog" replace />
+
+  const post = postData
+  const related = allPosts || []
 
   return (
     <>
