@@ -5,18 +5,9 @@ import { HelmetProvider } from 'react-helmet-async'
 import './index.css'
 import App from './App.jsx'
 
-// Defer Vercel Analytics and SpeedInsights — load after page is interactive
-function DeferredAnalytics() {
-  const Analytics = lazy(() => import('@vercel/analytics/react').then(m => ({ default: m.Analytics })))
-  const SpeedInsights = lazy(() => import('@vercel/speed-insights/react').then(m => ({ default: m.SpeedInsights })))
-
-  return (
-    <Suspense fallback={null}>
-      <Analytics />
-      <SpeedInsights />
-    </Suspense>
-  )
-}
+// Lazy imports at module level — required by React
+const VercelAnalytics = lazy(() => import('@vercel/analytics/react').then(m => ({ default: m.Analytics })))
+const VercelSpeedInsights = lazy(() => import('@vercel/speed-insights/react').then(m => ({ default: m.SpeedInsights })))
 
 // Only load analytics after 3s delay
 function AnalyticsWrapper() {
@@ -28,7 +19,12 @@ function AnalyticsWrapper() {
   }, [])
 
   if (!shouldLoad) return null
-  return <DeferredAnalytics />
+  return (
+    <Suspense fallback={null}>
+      <VercelAnalytics />
+      <VercelSpeedInsights />
+    </Suspense>
+  )
 }
 
 createRoot(document.getElementById('root')).render(

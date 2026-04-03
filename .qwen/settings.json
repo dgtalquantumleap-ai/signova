@@ -60,7 +60,10 @@
       "Bash(findstr *)",
       "Bash(npm install *)",
       "Bash(type *)",
-      "Bash(timeout *)"
+      "Bash(timeout *)",
+      "Bash(move *)",
+      "Bash(dir *)",
+      "Bash(del *)"
     ]
   }
 }
