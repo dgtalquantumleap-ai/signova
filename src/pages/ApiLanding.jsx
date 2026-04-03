@@ -6,17 +6,6 @@ import './ApiLanding.css'
 
 const API_CARDS = [
   {
-    id: 'scope-guard',
-    icon: '🛡️',
-    title: 'Scope Guard™ API',
-    desc: 'Your client just asked for something not in the contract. Paste the contract + their message. Get back: what they\'re violating, 3 professional response drafts, and a change order price. One API call.',
-    features: ['Detects 6 violation types', '3 professional response drafts', 'Auto-calculated change order pricing', 'Zero API competitors — industry first'],
-    endpoint: 'POST /v1/scope/analyze',
-    cta: 'View API Docs',
-    link: '/docs#scope-guard',
-    highlight: true,
-  },
-  {
     id: 'documents',
     icon: '📄',
     title: 'Legal Documents API',
@@ -37,6 +26,27 @@ const API_CARDS = [
     link: '/docs#invoices',
   },
   {
+    id: 'scope-guard',
+    icon: '🛡️',
+    title: 'Scope Guard™ API',
+    desc: 'Your client just asked for something not in the contract. Paste the contract + their message. Get back: what they\'re violating, 3 professional response drafts, and a change order price. One API call.',
+    features: ['Detects 6 violation types', '3 professional response drafts', 'Auto-calculated change order pricing', 'Zero API competitors — industry first'],
+    endpoint: 'POST /v1/scope/analyze',
+    cta: 'View API Docs',
+    link: '/docs#scope-guard',
+    highlight: true,
+  },
+  {
+    id: 'vigil',
+    icon: '🔒',
+    title: 'Vigil Fraud Alert API',
+    desc: 'Proximity-based card fraud detection. Your card declines when you\'re in Lagos but a transaction fires in London. Powered by GPS haversine engine + Claude AI risk analysis and AML report generation.',
+    features: ['Real-time proximity authorization', 'AI risk scoring 0–100 (Claude Haiku)', 'AML compliance reports (Claude Sonnet)', '13 MCP tools — Claude-native'],
+    endpoint: 'POST /v1/vigil/authorize',
+    cta: 'View Docs',
+    link: '/vigil',
+  },
+  {
     id: 'extraction',
     icon: '💬',
     title: 'WhatsApp Extraction API',
@@ -45,26 +55,6 @@ const API_CARDS = [
     endpoint: 'POST /v1/extract/conversation',
     cta: 'Extract Fields',
     link: '/docs#extract',
-  },
-  {
-    id: 'templates',
-    icon: '📋',
-    title: 'Document Templates API',
-    desc: 'Get field schemas for all 27 document types. Build dynamic forms, validate input, or understand requirements before generating.',
-    features: ['27 document schemas', 'Field types & validation', 'Zero AI cost'],
-    endpoint: 'GET /v1/documents/templates',
-    cta: 'View Templates',
-    link: '/docs#templates',
-  },
-  {
-    id: 'batch',
-    icon: '📦',
-    title: 'Batch Generation API',
-    desc: 'Generate up to 10 legal documents in a single API call. Perfect for onboarding multiple clients or vendors at once.',
-    features: ['Up to 10 docs per call', 'Independent processing', 'Detailed results'],
-    endpoint: 'POST /v1/documents/batch',
-    cta: 'View Docs',
-    link: '/docs#batch',
   },
   {
     id: 'contract-link',
@@ -77,6 +67,26 @@ const API_CARDS = [
     link: '/docs#contract-link',
   },
   {
+    id: 'batch',
+    icon: '📦',
+    title: 'Batch Generation API',
+    desc: 'Generate up to 10 legal documents in a single API call. Perfect for onboarding multiple clients or vendors at once.',
+    features: ['Up to 10 docs per call', 'Independent processing', 'Detailed results'],
+    endpoint: 'POST /v1/documents/batch',
+    cta: 'View Docs',
+    link: '/docs#batch',
+  },
+  {
+    id: 'templates',
+    icon: '📋',
+    title: 'Document Templates API',
+    desc: 'Get field schemas for all 27 document types. Build dynamic forms, validate input, or understand requirements before generating.',
+    features: ['27 document schemas', 'Field types & validation', 'Zero AI cost'],
+    endpoint: 'GET /v1/documents/templates',
+    cta: 'View Templates',
+    link: '/docs#templates',
+  },
+  {
     id: 'insights',
     icon: '📡',
     title: 'Insights — Reddit Monitor API',
@@ -86,29 +96,18 @@ const API_CARDS = [
     cta: 'Learn More',
     link: '/insights',
   },
-  {
-    id: 'vigil',
-    icon: '🔒',
-    title: 'Vigil Fraud Alert API',
-    desc: 'Proximity-based card fraud detection. Your card declines when you\'re in Lagos but a transaction fires in London. Powered by GPS haversine engine + Claude AI risk analysis and AML report generation.',
-    features: ['Real-time proximity authorization', 'AI risk scoring 0–100 (Claude Haiku)', 'AML compliance reports (Claude Sonnet)', '13 MCP tools — Claude-native'],
-    endpoint: 'POST /v1/vigil/authorize',
-    cta: 'View Docs',
-    link: '/vigil',
-    highlight: false,
-    badge: 'New',
-  },
+]
+
+const COMING_SOON_APIS = [
   {
     id: 'payouts',
     icon: '💸',
     title: 'Africa Payouts API',
     desc: 'Send payments to bank accounts and mobile money across 10+ African countries.',
-    features: ['Join waitlist for early access', 'Mobile money + bank', 'Real-time settlement'],
+    features: ['Mobile money + bank', 'Real-time settlement', 'Join waitlist for early access'],
     endpoint: 'POST /v1/payouts/send',
     cta: 'Join Waitlist',
     link: '/contact',
-    disabled: true,
-    badge: 'Beta — Q2 2026',
   },
 ]
 
@@ -271,22 +270,22 @@ export default function ApiLanding() {
   return (
     <div className="api-landing">
       <Helmet>
-        <title>Ebenova API — Legal Docs for Developers</title>
-        <meta name="description" content="Generate legal documents via API. NDAs, contracts, tenancy agreements. 18 jurisdictions. MCP-native for AI agents. Free tier available." />
-        <link rel="canonical" href="https://ebenova.dev/api" />
+        <title>Ebenova — The API Layer for Business Agreements</title>
+        <meta name="description" content="Generate contracts, verify payments, detect fraud, enforce scope — 27 document types, 18 jurisdictions. MCP-native. Built for Africa, open to the world. Free tier available." />
+        <link rel="canonical" href="https://www.ebenova.dev/" />
         <link rel="alternate" hreflang="en" href="https://www.ebenova.dev/" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Ebenova" />
         <meta property="og:url" content="https://www.ebenova.dev/" />
-        <meta property="og:title" content="Ebenova — Legal Document APIs for African & Global Markets" />
-        <meta property="og:description" content="REST API for legal document generation. 27 document types, 18 jurisdictions. Nigeria, Kenya, Ghana, UK, US. MCP-native for AI agents. Free tier." />
+        <meta property="og:title" content="Ebenova — The API Layer for Business Agreements" />
+        <meta property="og:description" content="Generate contracts, verify payments, detect fraud, enforce scope — 27 document types, 18 jurisdictions. MCP-native. Built for Africa, open to the world." />
         <meta property="og:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@quantimleap100" />
-        <meta name="twitter:title" content="Ebenova — Legal Document APIs for African & Global Markets" />
-        <meta name="twitter:description" content="REST API for legal docs. 27 types, 18 jurisdictions. MCP-native. Free tier." />
+        <meta name="twitter:title" content="Ebenova — The API Layer for Business Agreements" />
+        <meta name="twitter:description" content="Contracts, invoices, fraud detection, scope enforcement. 27 document types, 18 jurisdictions. MCP-native. Free tier." />
         <meta name="twitter:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
@@ -339,42 +338,40 @@ export default function ApiLanding() {
           </div>
 
           <h1 className="api-hero-title">
-            <span className="sr-only">Ebenova API — Legal Document Generation for Developers</span>
+            <span className="sr-only">Ebenova — The API Layer for Business Agreements</span>
             <span aria-hidden="true">
-              Legal document generation for<br />
-              <span className="highlight">the markets others skip.</span>
+              The API layer for<br />
+              <span className="highlight">business agreements.</span>
             </span>
           </h1>
 
           <p className="api-hero-sub">
-            27 document types. Native coverage for Nigeria, Kenya, Ghana, and 180+ countries.
-            Contracts, invoices, scope enforcement — one API. MCP-native for AI agents.
+            Generate contracts, verify payments, detect fraud, enforce scope —
+            27 document types, 18 jurisdictions. MCP-native. Built for Africa,
+            open to the world.
           </p>
 
-          {/* API call counter — social proof */}
+          {/* API stat cards — social proof */}
           <div className="api-counter-banner">
             <div className="api-counter-grid">
               <div className="counter-item">
-                <div className="counter-number">5,247</div>
-                <div className="counter-label">API calls this month</div>
+                <div className="counter-number">27</div>
+                <div className="counter-label">document types</div>
               </div>
               <div className="counter-item">
-                <div className="counter-number">94%</div>
-                <div className="counter-label">First-call success rate</div>
+                <div className="counter-number">18</div>
+                <div className="counter-label">jurisdictions</div>
               </div>
               <div className="counter-item">
-                <div className="counter-number">12</div>
-                <div className="counter-label">Paying customers across 6 countries</div>
+                <div className="counter-number">MCP</div>
+                <div className="counter-label">native for AI agents</div>
               </div>
             </div>
           </div>
 
           <div className="api-hero-actions">
             <button className="api-btn-primary api-btn-large" onClick={handleGetApiKey}>
-              Start Free Trial →
-            </button>
-            <button className="api-btn-outline api-btn-large" onClick={handleViewDocs}>
-              Try This Example →
+              Get Free API Key
             </button>
           </div>
 
@@ -441,19 +438,16 @@ export default function ApiLanding() {
         <div className="section-inner">
           <div className="section-header">
             <p className="section-label">Use Cases</p>
-            <h2 className="section-title">Built for African Business Workflows</h2>
+            <h2 className="section-title">Built for these workflows</h2>
           </div>
 
           <div className="api-use-cases-grid">
-            {USE_CASES.map((useCase, i) => (
+            {USE_CASES.slice(0, 3).map((useCase, i) => (
               <div key={i} className="api-use-case-card">
                 <div className="api-use-case-icon">{useCase.icon}</div>
                 <h3 className="api-use-case-title">{useCase.title}</h3>
-                <p className="api-use-case-problem">
-                  <strong>Pain:</strong> {useCase.problem}
-                </p>
                 <p className="api-use-case-solution">
-                  <strong>Solution:</strong> {useCase.solution}
+                  {useCase.solution}
                 </p>
               </div>
             ))}
@@ -473,18 +467,15 @@ export default function ApiLanding() {
             {API_CARDS.map(card => (
               <div
                 key={card.id}
-                className={`api-card ${card.disabled ? 'disabled' : ''} ${card.highlight ? 'highlight' : ''}`}
+                className={`api-card ${card.highlight ? 'highlight' : ''}`}
               >
-                {card.badge && <span className={`api-card-badge ${card.badge.includes('Beta') ? 'beta' : ''}`}>{card.badge}</span>}
                 <div className="api-card-icon">{card.icon}</div>
                 <h3 className="api-card-title">{card.title}</h3>
                 <p className="api-card-desc">{card.desc}</p>
-                
+
                 <ul className="api-card-features">
                   {card.features.map((feature, i) => (
-                    <li key={i} className={feature.includes('Coming') ? 'coming-soon' : ''}>
-                      {feature.includes('Coming') ? '⏳' : '✓'} {feature}
-                    </li>
+                    <li key={i}>✓ {feature}</li>
                   ))}
                 </ul>
 
@@ -492,22 +483,49 @@ export default function ApiLanding() {
                   <code>{card.endpoint}</code>
                 </div>
 
-                {!card.disabled && (
-                  <button 
-                    className="api-card-cta"
-                    onClick={() => navigate(card.link)}
-                  >
-                    {card.cta} <span className="btn-arrow">→</span>
-                  </button>
-                )}
-                {card.disabled && (
-                  <button 
-                    className="api-card-cta api-card-cta-disabled"
-                    onClick={() => navigate(card.link)}
-                  >
-                    {card.cta} <span className="btn-arrow">→</span>
-                  </button>
-                )}
+                <button
+                  className="api-card-cta"
+                  onClick={() => navigate(card.link)}
+                >
+                  {card.cta} <span className="btn-arrow">→</span>
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Coming Soon APIs */}
+      <section className="api-cards-section" id="coming-soon">
+        <div className="section-inner">
+          <div className="section-header">
+            <p className="section-label">Coming Soon</p>
+            <h2 className="section-title">In development</h2>
+          </div>
+
+          <div className="api-cards-grid">
+            {COMING_SOON_APIS.map(card => (
+              <div key={card.id} className="api-card">
+                <div className="api-card-icon">{card.icon}</div>
+                <h3 className="api-card-title">{card.title}</h3>
+                <p className="api-card-desc">{card.desc}</p>
+
+                <ul className="api-card-features">
+                  {card.features.map((feature, i) => (
+                    <li key={i}>✓ {feature}</li>
+                  ))}
+                </ul>
+
+                <div className="api-card-endpoint">
+                  <code>{card.endpoint}</code>
+                </div>
+
+                <button
+                  className="api-card-cta"
+                  onClick={() => navigate(card.link)}
+                >
+                  {card.cta} <span className="btn-arrow">→</span>
+                </button>
               </div>
             ))}
           </div>
@@ -560,7 +578,7 @@ export default function ApiLanding() {
                 <tr>
                   <td className="feature">Pricing</td>
                   <td className="competitors">$40–417+/month</td>
-                  <td className="ebenova">$29–199/month (50 verifications free)</td>
+                  <td className="ebenova">Free tier · $29 starter</td>
                 </tr>
                 <tr>
                   <td className="feature">Documentation</td>
@@ -569,37 +587,6 @@ export default function ApiLanding() {
                 </tr>
               </tbody>
             </table>
-          </div>
-        </div>
-      </section>
-
-      {/* Trusted By Section */}
-      <section className="trusted-by" aria-labelledby="trusted-heading">
-        <div className="section-inner">
-          <h2 id="trusted-heading" className="section-title">Trusted By Builders Across Africa</h2>
-          <div className="logo-grid" role="list">
-            <div className="logo-item" role="listitem" aria-label="Beta partner 1">
-              <span className="logo-placeholder">Fintech Co</span>
-            </div>
-            <div className="logo-item" role="listitem" aria-label="Beta partner 2">
-              <span className="logo-placeholder">Property Platform</span>
-            </div>
-            <div className="logo-item" role="listitem" aria-label="Beta partner 3">
-              <span className="logo-placeholder">Freelance Hub</span>
-            </div>
-            <div className="logo-item" role="listitem" aria-label="Beta partner 4">
-              <span className="logo-placeholder">AI Startup</span>
-            </div>
-          </div>
-          <div className="testimonials">
-            <blockquote className="testimonial-item">
-              <p>"Switched from generic templates to Ebenova for our Kenya launch. Jurisdiction-aware clauses reduced legal review time by 70%."</p>
-              <footer>— CTO at African Fintech</footer>
-            </blockquote>
-            <blockquote className="testimonial-item">
-              <p>"Scope Guard caught a $3K scope creep attempt on day one. Paid for itself immediately."</p>
-              <footer>— Founder at Freelance Platform</footer>
-            </blockquote>
           </div>
         </div>
       </section>
@@ -714,17 +701,16 @@ export default function ApiLanding() {
               Start building with African business APIs today
             </h2>
             <p className="api-cta-sub">
-              Free tier includes 5 documents/month. No credit card required.
-              Upgrade as you scale.
+              Free tier includes 50 verifications and 5 documents/month. No credit card required.
             </p>
             <div className="api-cta-actions">
-              <button className="api-btn-outline api-btn-large" onClick={() => navigate('#pricing')}>
-                See Pricing →
+              <button className="api-btn-primary api-btn-large" onClick={handleGetApiKey}>
+                Get Free API Key
               </button>
             </div>
             <div className="api-cta-trust">
               <span>✓ No credit card required</span>
-              <span>✓ 5 free documents/month</span>
+              <span>✓ Free tier forever</span>
               <span>✓ Cancel anytime</span>
             </div>
           </div>
@@ -797,7 +783,7 @@ export default function ApiLanding() {
           </div>
         </div>
         <div className="api-footer-copy">
-          © 2026 Ebenova Solutions · Africa-first · Built in Canada
+          © 2026 Ebenova Solutions · Africa-first · Built in Canada · API v1 · Updated April 2026
         </div>
       </footer>
     </div>
