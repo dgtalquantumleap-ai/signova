@@ -1,0 +1,45 @@
+{
+  "name": "ebenova-legal-docs",
+  "version": "1.0.0",
+  "description": "Generate professional legal documents via AI — NDAs, freelance contracts, tenancy agreements, and 24 more document types across 18 jurisdictions including Nigeria, Kenya, UK, Canada, and globally.",
+  "vendor": "Ebenova Solutions",
+  "homepage": "https://ebenova.dev",
+  "license": "MIT",
+  "tools": [
+    {
+      "name": "generate_legal_document",
+      "description": "Generate any of 27 legal document types in 18 jurisdictions",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "document_type": { "type": "string", "description": "Document type e.g. nda, freelance-contract, tenancy-agreement" },
+          "fields": { "type": "object", "description": "Document fields like party names, jurisdiction, terms" },
+          "jurisdiction": { "type": "string", "description": "Country/jurisdiction e.g. Nigeria, UK, Canada" }
+        },
+        "required": ["document_type", "fields"]
+      }
+    },
+    {
+      "name": "extract_from_conversation",
+      "description": "Extract structured contract fields from a WhatsApp or email conversation",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "conversation": { "type": "string", "description": "The conversation text to extract fields from" },
+          "document_type": { "type": "string", "description": "Target document type" }
+        },
+        "required": ["conversation"]
+      }
+    },
+    {
+      "name": "list_document_types",
+      "description": "List all 27 supported legal document types",
+      "inputSchema": { "type": "object", "properties": {} }
+    },
+    {
+      "name": "check_usage",
+      "description": "Check your monthly API quota usage",
+      "inputSchema": { "type": "object", "properties": {} }
+    }
+  ]
+}
