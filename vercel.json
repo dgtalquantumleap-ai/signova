@@ -24,6 +24,14 @@
       "destination": "/api/mcp"
     },
     {
+      "source": "/v1/insights/monitors",
+      "destination": "/api/v1/insights/monitors/router"
+    },
+    {
+      "source": "/v1/insights/matches",
+      "destination": "/api/v1/insights/matches/list"
+    },
+    {
       "source": "/v1/(.*)",
       "destination": "/api/v1/$1"
     },

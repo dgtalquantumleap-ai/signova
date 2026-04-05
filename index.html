@@ -307,8 +307,8 @@
     </div>
     <script type="module" src="/src/main.jsx"></script>
 
-    <!-- Email obfuscation script -- populates email spans from data attributes -->
-    <script>
+    <!-- Email obfuscation script -- populates email spans from data attributes (deferred) -->
+    <script defer>
       document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.email-obfuscated').forEach(function(el) {
           var user = el.getAttribute('data-user');
@@ -321,7 +321,7 @@
     </script>
 
     <!-- Google Analytics GA4 — deferred until idle to not block interactivity -->
-    <script>
+    <script defer>
       function loadGA4() {
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}

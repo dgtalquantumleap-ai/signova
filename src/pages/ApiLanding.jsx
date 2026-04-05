@@ -100,6 +100,23 @@ const API_CARDS = [
 
 const COMING_SOON_APIS = [
   {
+    id: 'fieldops',
+    icon: '🤖',
+    title: 'FieldOps Agent API',
+    desc: 'WhatsApp-native booking, revenue recovery, and staff coordination for service businesses. AI agent that books jobs, chases unpaid invoices, and briefs staff — all via WhatsApp. No app required.',
+    features: [
+      'POST /v1/bookings — book + confirm via WhatsApp',
+      'POST /v1/invoices/recover — 3-step dunning sequence',
+      'POST /v1/staff/briefing — job briefing to staff',
+      '5-tool MCP server for AI agents',
+      'OxaPay (USDT) + Polar (card) payments',
+    ],
+    endpoint: 'POST /v1/bookings',
+    cta: 'Join Waitlist',
+    link: '/contact',
+    status: 'In Development',
+  },
+  {
     id: 'payouts',
     icon: '💸',
     title: 'Africa Payouts API',
@@ -505,7 +522,10 @@ export default function ApiLanding() {
 
           <div className="api-cards-grid">
             {COMING_SOON_APIS.map(card => (
-              <div key={card.id} className="api-card">
+              <div key={card.id} className={`api-card ${card.status === 'In Development' ? 'highlight' : ''}`}>
+                {card.status && (
+                  <div className="price-badge" style={{ background: '#f59e0b' }}>{card.status}</div>
+                )}
                 <div className="api-card-icon">{card.icon}</div>
                 <h3 className="api-card-title">{card.title}</h3>
                 <p className="api-card-desc">{card.desc}</p>

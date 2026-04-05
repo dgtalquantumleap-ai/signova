@@ -206,7 +206,23 @@ export default function createServerFromConfig(config = {}) {
 export { createServer }
 
 async function main() {
+  // Apify detection: Actor runs timeout because stdio server waits forever for stdin.
+  // When on Apify, just verify the server starts and exit cleanly.
+  const isApify = !!(process.env.APIFY_IS_AT_HOME ||
+                     process.env.ACTOR_IS_AT_HOME ||
+                     process.env.APIFY_ACTOR_RUN_ID ||
+                     process.env.ACTOR_RUN_ID ||
+                     process.env.APIFY_CONTAINER_URL)
+
   const server = createServer()
+
+  if (isApify) {
+    process.stderr.write('[ebenova-insights-mcp] Server initialized successfully\n')
+    process.stderr.write('[ebenova-insights-mcp] Tools registered: list_monitors, create_monitor, delete_monitor, get_matches, regenerate_draft, rate_draft\n')
+    process.exit(0)
+    return
+  }
+
   const transport = new StdioServerTransport()
   await server.connect(transport)
   // Server stays alive — do NOT exit here, MCP runs on stdio

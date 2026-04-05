@@ -568,7 +568,7 @@ export default function Landing() {
         <div className="hero-two-col">
           {/* ── LEFT: headline + CTA ── */}
           <div className="hero-left">
-            <div className="hero-eyebrow">🤝 Deal agreed? Get it in writing before they change their mind.</div>
+            <div className="hero-eyebrow">🤝 Never lose money to a <span className="highlight">WhatsApp handshake deal</span> again</div>
             <p className="hero-consequence">Every month, freelancers lose thousands because they had no contract.</p>
             <h1 className="hero-title" fetchpriority="high">
               Paste your chat.<br />
@@ -576,7 +576,7 @@ export default function Landing() {
               in 2 minutes.
             </h1>
             <p className="hero-sub">
-              Paste your WhatsApp, email, or iMessage negotiation — Signova extracts the agreed terms and builds a lawyer-quality document before the moment passes. 27 document types. Works at midnight. Works anywhere.
+              Get a signed contract in 2 minutes — just paste your WhatsApp, email, or iMessage negotiation — Signova extracts the agreed terms and builds a lawyer-quality document before the moment passes. 27 document types. Works at midnight. Works anywhere.
             </p>
             <p className="hero-value-line">Cheaper than losing one invoice. Built by a founder who learned the hard way.</p>
 
@@ -611,7 +611,7 @@ export default function Landing() {
           </div>
 
           {/* ── RIGHT: live WhatsApp demo ── */}
-          <div className="hero-right" onClick={() => navigate('/whatsapp')} role="button" tabIndex={0} aria-label="Try WhatsApp extraction" onKeyDown={e => e.key === 'Enter' && navigate('/whatsapp')}>
+          <div className="hero-right" data-lazy-load onClick={() => navigate('/whatsapp')} role="button" tabIndex={0} aria-label="Try WhatsApp extraction" onKeyDown={e => e.key === 'Enter' && navigate('/whatsapp')}>
             <div className="hero-demo-label">Free demo — tap to try with your own chat</div>
             <div className="hero-demo-phone">
               <div className="hero-demo-bar">

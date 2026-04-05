@@ -38,6 +38,8 @@ function createServer(config = {}) {
     return res.json()
   }
 
+  // BUG FIX: Always create a fresh McpServer instance to prevent duplicate tool registration
+  // when the module is loaded multiple times (e.g., Smithery scanner + main() execution)
   const server = new McpServer({ name: 'ebenova-legal-docs', version: '1.0.0' })
 
   // ─── Tool: generate_legal_document ─────────────────────────────────────────
@@ -408,15 +410,23 @@ export function createSandboxServer() {
 
 async function main() {
   // Check if running in build/test mode (no stdin available)
-  const isBuildMode = process.env.NODE_ENV === 'build' || 
+  const isBuildMode = process.env.NODE_ENV === 'build' ||
                       process.env.EBENOVA_API_KEY === 'sk_test_sandbox' ||
                       !process.stdin.isTTY
 
+  // Apify detection: Actor runs timeout because stdio server waits forever for stdin.
+  // When on Apify, just verify the server starts and exit cleanly.
+  const isApify = !!(process.env.APIFY_IS_AT_HOME ||
+                     process.env.ACTOR_IS_AT_HOME ||
+                     process.env.APIFY_ACTOR_RUN_ID ||
+                     process.env.ACTOR_RUN_ID ||
+                     process.env.APIFY_CONTAINER_URL)
+
   const server = createServer()
-  
-  // Build mode: just verify server starts, then exit
-  if (isBuildMode) {
-    process.stderr.write('[ebenova-legal-docs-mcp] Build mode: Server initialized successfully\n')
+
+  // Build mode or Apify: just verify server starts, then exit
+  if (isBuildMode || isApify) {
+    process.stderr.write('[ebenova-legal-docs-mcp] Server initialized successfully\n')
     process.stderr.write('[ebenova-legal-docs-mcp] Tools registered: generate_legal_document, extract_from_conversation, list_document_types, generate_invoice, analyze_scope_creep, generate_change_order, check_usage\n')
     process.exit(0)
     return
