@@ -11,8 +11,12 @@ async function parseBody(req) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
-  const { docType, docName } = await parseBody(req)
+  const { docType, docName, amount = 4.99, currency = 'USD', description, lifetime = 30 } = await parseBody(req)
   const origin = req.headers.origin || 'https://getsignova.com'
+
+  if (typeof amount !== 'number' || amount <= 0) {
+    return res.status(400).json({ error: 'amount must be a positive number' })
+  }
 
   try {
     const response = await fetch('https://api.oxapay.com/merchants/request', {
@@ -20,14 +24,14 @@ export default async function handler(req, res) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         merchant: process.env.OXAPAY_MERCHANT_KEY,
-        amount: 4.99,
-        currency: 'USD',
-        lifeTime: 30, // 30 minutes to complete payment
-        feePaidByPayer: 1, // customer covers the network fee
+        amount,
+        currency,
+        lifeTime: lifetime,
+        feePaidByPayer: 1,
         callbackUrl: `${origin}/api/oxapay-webhook`,
         returnUrl: `${origin}/preview?payment=oxapay_success`,
-        description: `Signova — ${docName}`,
-        orderId: `${docType}_${Date.now()}`,
+        description: description || `Signova — ${docName || 'Document'}`,
+        orderId: `${docType || 'payment'}_${Date.now()}`,
       }),
     })
 

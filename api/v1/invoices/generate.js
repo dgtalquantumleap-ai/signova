@@ -6,6 +6,7 @@
 // Requires: Authorization: Bearer sk_live_...
 
 import { authenticate, recordUsage, buildUsageBlock } from '../../../lib/api-auth.js'
+import { sendReceipt } from '../../../lib/send-receipt.js'
 
 async function parseBody(req) {
   if (req.body && typeof req.body === 'object') return req.body
@@ -19,13 +20,13 @@ async function parseBody(req) {
 
 // ─── Validation ──────────────────────────────────────────────────────────────
 
-const SUPPORTED_CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'NGN', 'KES', 'GHS', 'ZAR', 'INR', 'AED', 'SGD']
+const SUPPORTED_CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'NGN', 'KES', 'GHS', 'ZAR', 'INR', 'AED', 'SGD', 'USDT']
 const SUPPORTED_TYPES = ['invoice', 'receipt', 'proforma', 'credit-note']
 
 const CURRENCY_SYMBOLS = {
   USD: '$', EUR: '€', GBP: '£', CAD: 'CA$', AUD: 'A$',
   NGN: '₦', KES: 'KSh', GHS: 'GH₵', ZAR: 'R', INR: '₹',
-  AED: 'AED ', SGD: 'S$',
+  AED: 'AED ', SGD: 'S$', USDT: '₮',
 }
 
 function formatMoney(amount, currency) {
@@ -240,6 +241,18 @@ export default async function handler(req, res) {
   // ── Record usage ──────────────────────────────────────────────────────────
   await recordUsage(auth)
 
+  // ── Send email receipt if recipient provided ─────────────────────────────
+  let emailResult = null
+  const receiptEmail = to?.email || from?.email || body.receipt_email
+  if (receiptEmail && invoice_number) {
+    emailResult = await sendReceipt({
+      to: receiptEmail,
+      subject: `${type === 'receipt' ? 'Receipt' : type === 'proforma' ? 'Proforma Invoice' : 'Invoice'} ${invoice_number} from ${from.name}`,
+      html,
+      invoice_id: invoiceId,
+    }).catch(err => ({ success: false, error: err.message }))
+  }
+
   // ── Response ──────────────────────────────────────────────────────────────
   return res.status(200).json({
     success: true,
@@ -252,8 +265,7 @@ export default async function handler(req, res) {
     tax_amount: taxAmt,
     total,
     html,
-    // pdf_url: null — PDF generation requires Puppeteer (add via separate service or Vercel Edge)
-    // To get a PDF: render the html field client-side with window.print() or send to a PDF microservice
+    email_sent: emailResult?.success || false,
     usage: buildUsageBlock(auth),
     generated_at: new Date().toISOString(),
   })
