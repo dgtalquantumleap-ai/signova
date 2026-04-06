@@ -87,6 +87,17 @@ const API_CARDS = [
     link: '/docs#templates',
   },
   {
+    id: 'fieldops',
+    icon: '🤖',
+    title: 'FieldOps Agent API',
+    desc: 'WhatsApp-native booking, revenue recovery, and staff coordination for service businesses. AI agent that books jobs, chases unpaid invoices, and briefs staff — all via WhatsApp.',
+    features: ['WhatsApp booking + confirmation', '3-step invoice recovery', 'Staff job briefings', '5-tool MCP server', 'OxaPay + Polar payments'],
+    endpoint: 'POST /v1/bookings',
+    cta: 'View Docs',
+    link: '/docs#fieldops',
+    highlight: true,
+  },
+  {
     id: 'insights',
     icon: '📡',
     title: 'Insights — Reddit Monitor API',
@@ -99,23 +110,6 @@ const API_CARDS = [
 ]
 
 const COMING_SOON_APIS = [
-  {
-    id: 'fieldops',
-    icon: '🤖',
-    title: 'FieldOps Agent API',
-    desc: 'WhatsApp-native booking, revenue recovery, and staff coordination for service businesses. AI agent that books jobs, chases unpaid invoices, and briefs staff — all via WhatsApp. No app required.',
-    features: [
-      'POST /v1/bookings — book + confirm via WhatsApp',
-      'POST /v1/invoices/recover — 3-step dunning sequence',
-      'POST /v1/staff/briefing — job briefing to staff',
-      '5-tool MCP server for AI agents',
-      'OxaPay (USDT) + Polar (card) payments',
-    ],
-    endpoint: 'POST /v1/bookings',
-    cta: 'Join Waitlist',
-    link: '/contact',
-    status: 'In Development',
-  },
   {
     id: 'payouts',
     icon: '💸',
@@ -231,10 +225,18 @@ const MCP_EXAMPLE = `{
   "mcpServers": {
     "ebenova-legal": {
       "command": "npx",
-      "args": ["-y", "@ebenova/legal-docs-mcp"],
-      "env": {
-        "EBENOVA_API_KEY": "sk_live_xxx"
-      }
+      "args": ["-y", "ebenova-legal-docs-mcp"],
+      "env": { "EBENOVA_API_KEY": "sk_live_xxx" }
+    },
+    "reddit-monitor": {
+      "command": "npx",
+      "args": ["-y", "@ebenova/reddit-monitor-mcp"],
+      "env": { "GROQ_API_KEY": "gsk_xxx" }
+    },
+    "fieldops": {
+      "command": "npx",
+      "args": ["-y", "@ebenova/fieldops-mcp"],
+      "env": { "DATABASE_URL": "postgresql://..." }
     }
   }
 }`
@@ -380,8 +382,8 @@ export default function ApiLanding() {
                 <div className="counter-label">jurisdictions</div>
               </div>
               <div className="counter-item">
-                <div className="counter-number">MCP</div>
-                <div className="counter-label">native for AI agents</div>
+                <div className="counter-number">3</div>
+                <div className="counter-label">MCP servers on NPM</div>
               </div>
             </div>
           </div>
@@ -593,7 +595,7 @@ export default function ApiLanding() {
                 <tr>
                   <td className="feature">AI Agent Ready</td>
                   <td className="competitors">No MCP servers</td>
-                  <td className="ebenova">MCP-native (Claude, Cursor)</td>
+                  <td className="ebenova">3 MCP servers on NPM (Claude, Cursor, VS Code)</td>
                 </tr>
                 <tr>
                   <td className="feature">Pricing</td>
@@ -666,19 +668,21 @@ export default function ApiLanding() {
             <div className="api-mcp-text">
               <h3>Use Ebenova in Claude Desktop, Cursor, or VS Code</h3>
               <p>
-                Our MCP (Model Context Protocol) servers let AI agents generate legal documents,
-                extract fields from conversations, and manage invoices — all through natural language.
+                Our 3 MCP servers let AI agents generate legal documents,
+                monitor Reddit for brand mentions, and manage field service bookings — all through natural language.
               </p>
-              
+
               <div className="mcp-install-steps">
                 <div className="mcp-step">
                   <span className="step-num">1</span>
-                  <p>Install the MCP server via npm</p>
-                  <code>npm install -g @ebenova/legal-docs-mcp</code>
+                  <p>Install any MCP server via npx</p>
+                  <code>npx -y ebenova-legal-docs-mcp</code>
+                  <code>npx -y @ebenova/reddit-monitor-mcp</code>
+                  <code>npx -y @ebenova/fieldops-mcp</code>
                 </div>
                 <div className="mcp-step">
                   <span className="step-num">2</span>
-                  <p>Add to your Claude Desktop config</p>
+                  <p>Add to your Claude Desktop config (see example →)</p>
                 </div>
                 <div className="mcp-step">
                   <span className="step-num">3</span>
@@ -796,7 +800,7 @@ export default function ApiLanding() {
             </div>
             <div className="footer-col">
               <h4>Connect</h4>
-              <a href="https://github.com/ebenova" target="_blank" rel="noopener noreferrer">GitHub</a>
+              <a href="https://github.com/dgtalquantumleap-ai" target="_blank" rel="noopener noreferrer">GitHub</a>
               <a href="mailto:olumide@ebenova.net">olumide@ebenova.net</a>
             </div>
           </div>
