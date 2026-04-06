@@ -1,95 +1,26 @@
-# Smithery MCP Server Configuration
+# Smithery configuration for ebenova-legal-docs-mcp
 # https://smithery.ai/docs/build/publish
 
-name: legal-docs-mcp
-version: 1.2.2
-description: Generate professional legal documents via API. 27 document types across 18 jurisdictions.
-
-# Server metadata
-author: Ebenova Solutions <api@ebenova.dev>
-license: MIT
-homepage: https://ebenova.dev
-repository: https://github.com/ebenova/legal-docs-mcp
-
-# Keywords for discovery
-keywords:
-  - legal
-  - documents
-  - contracts
-  - nda
-  - tenancy-agreement
-  - freelance-contract
-  - nigeria
-  - africa
-  - api
-  - invoice
-  - receipt
-
-# Configuration schema (required for API keys)
-configSchema:
-  type: object
-  properties:
-    EBENOVA_API_KEY:
-      type: string
-      description: "Your Ebenova API key. Get one free at https://ebenova.dev/dashboard"
-      default: "sk_test_sandbox"
-      required: false
-    EBENOVA_API_BASE:
-      type: string
-      description: "API base URL (optional, defaults to https://api.ebenova.dev)"
-      default: "https://api.ebenova.dev"
-      required: false
-
-# Installation methods
-installation:
-  npm: "npx -y ebenova-legal-docs-mcp"
-  docker: "docker run -e EBENOVA_API_KEY=your_key ebenova/legal-docs-mcp"
-  claude_desktop:
-    command: npx
-    args: ["-y", "ebenova-legal-docs-mcp"]
-    env:
-      EBENOVA_API_KEY: "sk_live_your_key"
-
-# Runtime configuration (for Docker deployment)
-startCommand: "node src/index.js"
-entryPoint: "src/index.js"
-runtime: nodejs
-buildCommand: ""
-
-# Tool capabilities
-capabilities:
-  tools:
-    - name: generate_legal_document
-      description: "Generate a legal document (NDA, contract, tenancy agreement, etc.)"
-    - name: generate_invoice
-      description: "Generate invoices, receipts, proforma invoices, and credit notes"
-    - name: extract_from_conversation
-      description: "Extract structured fields from WhatsApp/email conversations"
-    - name: list_document_types
-      description: "List all 27 supported document types"
-    - name: check_usage
-      description: "Check API usage and quota"
-
-# Example prompts for users
-examples:
-  - name: "Generate an NDA"
-    prompt: "Create an NDA between Acme Inc. and John Smith for a partnership discussion, 2 years, mutual, under Nigerian law"
-  - name: "Extract from WhatsApp chat"
-    prompt: "Extract the key terms from this WhatsApp conversation and create a tenancy agreement: [paste conversation]"
-  - name: "Generate an invoice"
-    prompt: "Create an invoice for $2,500 website design services for John Smith"
-  - name: "List available documents"
-    prompt: "What types of legal documents can you generate?"
-
-# Pricing information
-pricing:
-  free_tier: "5 documents/month free"
-  starter: "$29/month for 100 documents"
-  growth: "$79/month for 500 documents"
-  scale: "$199/month for 2,000 documents"
-
-# Support contacts
-support:
-  email: api@ebenova.dev
-  documentation: https://ebenova.dev/docs
-  status: https://status.ebenova.dev
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      EBENOVA_API_KEY:
+        type: string
+        description: "Your Ebenova API key. Get one free at https://ebenova.dev/dashboard. Leave blank for sandbox mode (5 docs/month)."
+        default: "sk_test_sandbox"
+      EBENOVA_API_BASE:
+        type: string
+        description: "API base URL (optional, defaults to https://api.ebenova.dev)"
+        default: "https://api.ebenova.dev"
+    required: []
+  commandFunction: |
+    (config) => ({
+      command: 'npx',
+      args: ['-y', 'ebenova-legal-docs-mcp'],
+      env: {
+        EBENOVA_API_KEY: config.EBENOVA_API_KEY || 'sk_test_sandbox',
+        EBENOVA_API_BASE: config.EBENOVA_API_BASE || 'https://api.ebenova.dev'
+      }
+    })
