@@ -64,7 +64,9 @@
       "Bash(move *)",
       "Bash(dir *)",
       "Bash(del *)",
-      "Bash(ping *)"
+      "Bash(ping *)",
+      "Bash(npm test)",
+      "Bash(rm *)"
     ]
   }
 }

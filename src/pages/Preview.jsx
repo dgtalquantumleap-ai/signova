@@ -1,4 +1,5 @@
 // Preview page — v2 PDF renderer with blurred locked section
+import DOMPurify from 'dompurify'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState, useRef } from 'react'
 import {
@@ -526,10 +527,10 @@ export default function Preview() {
               {/* Visible portion */}
               {visibleLines.map((line, i) => {
                 if (!line.trim()) return <br key={i} />
-                const formatted = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                if (line.startsWith('# ')) return <h1 key={i} dangerouslySetInnerHTML={{ __html: formatted.slice(2) }} />
-                if (line.startsWith('## ')) return <h2 key={i} dangerouslySetInnerHTML={{ __html: formatted.slice(3) }} />
-                if (line.startsWith('### ')) return <h3 key={i} dangerouslySetInnerHTML={{ __html: formatted.slice(4) }} />
+                const formatted = DOMPurify.sanitize(line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'), { ALLOWED_TAGS: ['strong', 'em', 'br'], ALLOWED_ATTR: [] })
+                if (line.startsWith('# ')) return <h1 key={i} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatted.slice(2)) }} />
+                if (line.startsWith('## ')) return <h2 key={i} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatted.slice(3)) }} />
+                if (line.startsWith('### ')) return <h3 key={i} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatted.slice(4)) }} />
                 return <p key={i} dangerouslySetInnerHTML={{ __html: formatted }} />
               })}
               
@@ -539,9 +540,9 @@ export default function Preview() {
                   <div className="locked-blur">
                     {hiddenLines.slice(0, 15).map((line, i) => {
                       if (!line.trim()) return <br key={`blur-${i}`} />
-                      const formatted = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                      if (line.startsWith('## ')) return <h2 key={`blur-${i}`} dangerouslySetInnerHTML={{ __html: formatted.slice(3) }} />
-                      if (line.startsWith('### ')) return <h3 key={`blur-${i}`} dangerouslySetInnerHTML={{ __html: formatted.slice(4) }} />
+                      const formatted = DOMPurify.sanitize(line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'), { ALLOWED_TAGS: ['strong', 'em', 'br'], ALLOWED_ATTR: [] })
+                      if (line.startsWith('## ')) return <h2 key={`blur-${i}`} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatted.slice(3)) }} />
+                      if (line.startsWith('### ')) return <h3 key={`blur-${i}`} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatted.slice(4)) }} />
                       return <p key={`blur-${i}`} dangerouslySetInnerHTML={{ __html: formatted }} />
                     })}
                   </div>

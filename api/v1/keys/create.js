@@ -12,6 +12,8 @@
 // }
 
 import { getRedis, apiKeyRedisKey } from '../../../lib/redis.js'
+import { parseBody } from '../../../lib/parse-body.js'
+import { applyCorsHeaders, handleOptions } from '../../../lib/cors-middleware.js'
 import { randomBytes } from 'crypto'
 
 const TIER_LIMITS = {
@@ -22,27 +24,14 @@ const TIER_LIMITS = {
   enterprise: 99999,
 }
 
-async function parseBody(req) {
-  if (req.body && typeof req.body === 'object') return req.body
-  return new Promise((resolve, reject) => {
-    let data = ''
-    req.on('data', chunk => { data += chunk })
-    req.on('end', () => { try { resolve(data ? JSON.parse(data) : {}) } catch { resolve({}) } })
-    req.on('error', reject)
-  })
-}
-
 function generateKey(env = 'live') {
   const random = randomBytes(24).toString('hex') // 48 hex chars
   return `sk_${env}_${random}`
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-
-  if (req.method === 'OPTIONS') return res.status(200).end()
+  applyCorsHeaders(req, res)
+  if (handleOptions(req, res)) return
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, error: { code: 'METHOD_NOT_ALLOWED', message: 'Use POST' } })
   }

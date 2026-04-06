@@ -2,7 +2,9 @@
 // Test script for Ebenova Invoice API endpoint
 // Run: node test-invoice-api.js
 
-const API_KEY = 'sk_live_d52c258505baba684b9a1e16693c99e2b97a60efbd7820ce';
+// IMPORTANT: Never hardcode live API keys. Set EBENOVA_API_KEY in your environment.
+// Example: $env:EBENOVA_API_KEY="sk_live_..." ; node test-invoice-api.js
+const API_KEY = process.env.EBENOVA_API_KEY || 'sk_test_local_dev';
 const BASE_URL = 'https://api.ebenova.dev';
 
 const tests = [

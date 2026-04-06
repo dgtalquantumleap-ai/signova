@@ -3,6 +3,8 @@
 // Rate limiting: simple token bucket per IP, resets on cold start
 // At current scale this is sufficient — add Redis when abuse is detected
 
+import { parseBody } from '../lib/parse-body.js'
+
 const WINDOW_MS = 60 * 60 * 1000 // 1 hour
 const MAX_PER_WINDOW = 3
 
@@ -18,16 +20,6 @@ function isRateLimited(ip) {
   if (entry.count >= MAX_PER_WINDOW) return true
   entry.count++
   return false
-}
-
-async function parseBody(req) {
-  if (req.body && typeof req.body === 'object') return req.body
-  return new Promise((resolve, reject) => {
-    let data = ''
-    req.on('data', chunk => { data += chunk })
-    req.on('end', () => { try { resolve(data ? JSON.parse(data) : {}) } catch { resolve({}) } })
-    req.on('error', reject)
-  })
 }
 
 export default async function handler(req, res) {
