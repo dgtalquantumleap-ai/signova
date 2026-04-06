@@ -25,7 +25,7 @@ export default async function handler(req, res) {
   const body = await parseBody(req)
   const { email } = body
 
-  if (!email || !email.includes('@')) {
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return res.status(400).json({ success: false, error: { code: 'INVALID_EMAIL', message: 'Valid email required' } })
   }
 

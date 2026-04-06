@@ -4,6 +4,38 @@
 
 MCP server for the [Ebenova API](https://ebenova.dev). Generate legal documents (NDAs, contracts, tenancy agreements), invoices, and receipts — directly from Claude Desktop, Cursor, or any MCP-compatible AI assistant.
 
+## What it looks like
+
+**You say to Claude:**
+> "Create a mutual NDA between Acme Inc. and John Smith, 2 years, governed by Nigerian law"
+
+**Claude calls the tool and returns:**
+```
+NON-DISCLOSURE AGREEMENT
+
+This Non-Disclosure Agreement ("Agreement") is entered into as of [DATE] by and between:
+
+ACME INC., a company duly incorporated under the laws of Nigeria ("Disclosing Party")
+and
+JOHN SMITH, an individual ("Receiving Party")
+
+WHEREAS, the parties wish to explore a potential business relationship and may disclose
+certain confidential information to each other...
+
+[Full 800-word document continues — jurisdiction-aware Nigerian law clauses included]
+```
+
+**Or paste a WhatsApp chat:**
+> "Here's a WhatsApp conversation about a rent deal — generate the tenancy agreement"
+```
+Landlord: The 2-bed flat at 14 Park Lane is available. Rent is ₦1.2M/year.
+Tenant: I'm James Okafor. Agreed. 1 year, 1 month deposit?
+Landlord: Yes. Move in 1st of next month. No pets.
+```
+**Claude extracts:** landlord name, tenant name, address, rent, duration, deposit, restrictions — and generates the full tenancy agreement.
+
+---
+
 ## Tools
 
 | Tool | Description |
@@ -11,6 +43,7 @@ MCP server for the [Ebenova API](https://ebenova.dev). Generate legal documents 
 | `generate_legal_document` | Generate any of 27 legal document types in 18 jurisdictions |
 | `generate_invoice` | Generate invoices, receipts, proforma invoices, or credit notes (12 currencies) |
 | `extract_from_conversation` | Extract structured fields from a WhatsApp or email conversation |
+| `analyze_scope_creep` | Detect scope violations in client messages, get 3 response drafts + change order pricing |
 | `list_document_types` | List all supported document types |
 | `check_usage` | Check your monthly quota usage |
 

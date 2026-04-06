@@ -37,55 +37,65 @@ export default async function handler(req, res) {
     })
   }
 
-  const redis = getRedis()
+  let redis
+  try {
+    redis = getRedis()
+  } catch (err) {
+    return res.status(500).json({ success: false, error: { code: 'STORAGE_UNAVAILABLE', message: 'Redis unavailable' } })
+  }
+
   const owner = auth.keyData.owner
 
-  const raw = await redis.get(`insights:monitor:${monitorId}`)
-  if (!raw) {
-    return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Monitor not found' } })
-  }
+  try {
+    const raw = await redis.get(`insights:monitor:${monitorId}`)
+    if (!raw) {
+      return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Monitor not found' } })
+    }
 
-  const monitor = typeof raw === 'string' ? JSON.parse(raw) : raw
-  if (monitor.owner !== owner) {
-    return res.status(403).json({ success: false, error: { code: 'FORBIDDEN', message: 'Not your monitor' } })
-  }
+    const monitor = typeof raw === 'string' ? JSON.parse(raw) : raw
+    if (monitor.owner !== owner) {
+      return res.status(403).json({ success: false, error: { code: 'FORBIDDEN', message: 'Not your monitor' } })
+    }
 
-  // Matches stored as Redis LIST by the monitor worker (lpush), newest entries at head
-  const total = await redis.llen(`insights:matches:${monitorId}`) || 0
-  const matchIds = await redis.lrange(
-    `insights:matches:${monitorId}`,
-    offset,
-    offset + limit - 1
-  ) || []
+    // Matches stored as Redis LIST by the monitor worker (lpush), newest entries at head
+    const total = await redis.llen(`insights:matches:${monitorId}`) || 0
+    const matchIds = await redis.lrange(
+      `insights:matches:${monitorId}`,
+      offset,
+      offset + limit - 1
+    ) || []
 
-  const matches = []
-  for (const matchId of matchIds) {
-    // Keys stored as insights:match:{monitorId}:{postId} by monitor-v2.js
-    const matchRaw = await redis.get(`insights:match:${monitorId}:${matchId}`)
-    if (!matchRaw) continue
-    const m = typeof matchRaw === 'string' ? JSON.parse(matchRaw) : matchRaw
-    matches.push({
-      match_id: m.id,
-      keyword: m.keyword,
-      title: m.title,
-      url: m.url,
-      subreddit: m.subreddit,
-      author: m.author,
-      upvotes: m.score,
-      comments: m.comments,
-      body_preview: (m.body || '').slice(0, 300),
-      has_draft: !!m.draft,
-      draft: m.draft || null,
-      feedback: m.feedback || null,
-      approved_subreddit: m.approved ?? true,
-      found_at: m.createdAt,
+    const matches = []
+    for (const matchId of matchIds) {
+      const matchRaw = await redis.get(`insights:match:${monitorId}:${matchId}`)
+      if (!matchRaw) continue
+      const m = typeof matchRaw === 'string' ? JSON.parse(matchRaw) : matchRaw
+      matches.push({
+        match_id: m.id,
+        keyword: m.keyword,
+        title: m.title,
+        url: m.url,
+        subreddit: m.subreddit,
+        author: m.author,
+        upvotes: m.score,
+        comments: m.comments,
+        body_preview: (m.body || '').slice(0, 300),
+        has_draft: !!m.draft,
+        draft: m.draft || null,
+        feedback: m.feedback || null,
+        approved_subreddit: m.approved ?? true,
+        found_at: m.createdAt,
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      monitor_id: monitorId,
+      matches,
+      pagination: { total, limit, offset, has_more: offset + limit < total },
     })
+  } catch (err) {
+    console.error('[insights/matches/list] Redis error:', err.message)
+    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: 'Failed to list matches' } })
   }
-
-  return res.status(200).json({
-    success: true,
-    monitor_id: monitorId,
-    matches,
-    pagination: { total, limit, offset, has_more: offset + limit < total },
-  })
 }

@@ -3,7 +3,7 @@
 import { authenticate, trackRequest } from '../../../lib/api-auth.js'
 import { logError } from '../../../lib/logger.js'
 
-const VIGIL_URL = process.env.VIGIL_API_URL || 'http://localhost:3000'
+const VIGIL_URL = process.env.VIGIL_API_URL
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -15,6 +15,10 @@ export default async function handler(req, res) {
   const auth = await authenticate(req)
   if (!auth.ok) return res.status(auth.status).json({ success: false, error: auth.error })
   await trackRequest(auth, req)
+
+  if (!VIGIL_URL) {
+    return res.status(503).json({ success: false, error: { code: 'VIGIL_UNAVAILABLE', message: 'Vigil service not configured. Set VIGIL_API_URL.' } })
+  }
 
   const cardId = req.query?.card_id
   if (!cardId) return res.status(400).json({ success: false, error: { code: 'MISSING_FIELD', message: 'Required query param: card_id' } })

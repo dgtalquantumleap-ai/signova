@@ -3,7 +3,8 @@
 import { authenticate, recordUsage, buildUsageBlock, trackRequest } from '../../../lib/api-auth.js'
 import { logError } from '../../../lib/logger.js'
 
-const VIGIL_URL = process.env.VIGIL_API_URL || 'http://localhost:3000'
+const VIGIL_URL = process.env.VIGIL_API_URL
+if (!VIGIL_URL) console.warn('[vigil] VIGIL_API_URL not set — all Vigil endpoints will return 503')
 
 async function parseBody(req) {
   if (req.body && typeof req.body === 'object' && req.body !== null) return req.body
@@ -30,6 +31,10 @@ export default async function handler(req, res) {
   const required = ['card_id', 'merchant_name', 'merchant_country', 'amount_cents', 'currency']
   for (const f of required) {
     if (!body[f]) return res.status(400).json({ success: false, error: { code: 'MISSING_FIELD', message: `Required: ${f}` } })
+  }
+
+  if (!VIGIL_URL) {
+    return res.status(503).json({ success: false, error: { code: 'VIGIL_UNAVAILABLE', message: 'Vigil service not configured. Set VIGIL_API_URL.' } })
   }
 
   try {

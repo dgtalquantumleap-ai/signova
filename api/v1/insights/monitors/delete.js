@@ -38,30 +38,41 @@ export default async function handler(req, res) {
     })
   }
 
-  const redis = getRedis()
+  let redis
+  try {
+    redis = getRedis()
+  } catch (err) {
+    return res.status(500).json({ success: false, error: { code: 'STORAGE_UNAVAILABLE', message: 'Redis unavailable' } })
+  }
+
   const owner = auth.keyData.owner
 
-  const raw = await redis.get(`insights:monitor:${monitorId}`)
-  if (!raw) {
-    return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Monitor not found' } })
+  try {
+    const raw = await redis.get(`insights:monitor:${monitorId}`)
+    if (!raw) {
+      return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Monitor not found' } })
+    }
+
+    const monitor = typeof raw === 'string' ? JSON.parse(raw) : raw
+    if (monitor.owner !== owner) {
+      return res.status(403).json({ success: false, error: { code: 'FORBIDDEN', message: 'Not your monitor' } })
+    }
+
+    // Soft delete
+    monitor.active = false
+    monitor.deletedAt = new Date().toISOString()
+    await redis.set(`insights:monitor:${monitorId}`, JSON.stringify(monitor))
+    await redis.srem('insights:active_monitors', monitorId)
+    await redis.srem(`insights:monitors:${owner}`, monitorId)
+
+    return res.status(200).json({
+      success: true,
+      monitor_id: monitorId,
+      deleted: true,
+      message: 'Monitor deactivated and removed from polling queue.',
+    })
+  } catch (err) {
+    console.error('[insights/monitors/delete] Redis error:', err.message)
+    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: 'Failed to delete monitor' } })
   }
-
-  const monitor = typeof raw === 'string' ? JSON.parse(raw) : raw
-  if (monitor.owner !== owner) {
-    return res.status(403).json({ success: false, error: { code: 'FORBIDDEN', message: 'Not your monitor' } })
-  }
-
-  // Soft delete
-  monitor.active = false
-  monitor.deletedAt = new Date().toISOString()
-  await redis.set(`insights:monitor:${monitorId}`, JSON.stringify(monitor))
-  await redis.srem('insights:active_monitors', monitorId)
-  await redis.srem(`insights:monitors:${owner}`, monitorId)
-
-  return res.status(200).json({
-    success: true,
-    monitor_id: monitorId,
-    deleted: true,
-    message: 'Monitor deactivated and removed from polling queue.',
-  })
 }

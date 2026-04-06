@@ -24,7 +24,8 @@ export default async function handler(req, res) {
   }
   
   const authHeader = req.headers.authorization || ''
-  if (!authHeader.includes(adminToken)) {
+  const providedToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : ''
+  if (providedToken !== adminToken) {
     return res.status(403).json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Invalid admin token' } })
   }
 

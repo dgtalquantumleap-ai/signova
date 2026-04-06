@@ -66,7 +66,7 @@ async function provisionInsightsKey(redis, email, insightsPlan, stripeCustomerId
   const keyData = {
     owner: email,
     tier: 'free',
-    monthlyLimit: TIER_LIMITS.free || 5,
+    monthlyLimit: 5,
     label: `Insights ${insightsPlan.charAt(0).toUpperCase() + insightsPlan.slice(1)}`,
     createdAt: new Date().toISOString(),
     disabled: false,

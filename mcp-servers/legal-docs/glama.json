@@ -2,7 +2,7 @@
   "$schema": "https://glama.ai/mcp/glama-schema.json",
   "name": "Ebenova Legal Docs MCP",
   "description": "Generate professionally drafted legal documents via AI — NDAs, freelance contracts, tenancy agreements, privacy policies, and 23 more document types across 18 jurisdictions including Nigeria, Kenya, Ghana, UK, US, and Canada. Also extracts document fields from WhatsApp and email conversations.",
-  "version": "1.0.2",
+  "version": "1.2.5",
   "license": "MIT",
   "homepage": "https://ebenova.dev",
   "repository": "https://github.com/dgtalquantumleap-ai/legal-docs-mcp",
@@ -21,11 +21,23 @@
   "tools": [
     {
       "name": "generate_legal_document",
-      "description": "Generate a professionally drafted legal document. 27 types across 18 jurisdictions."
+      "description": "Generate a professionally drafted legal document. 27 types across 18 jurisdictions including Nigeria, Kenya, UK, US, Canada."
+    },
+    {
+      "name": "generate_invoice",
+      "description": "Generate professional invoices, receipts, proforma invoices, and credit notes. 12 currencies supported."
     },
     {
       "name": "extract_from_conversation",
-      "description": "Extract structured legal document fields from a WhatsApp, email, or chat conversation."
+      "description": "Extract structured legal document fields from a WhatsApp, email, or chat conversation. Optionally auto-generate the document."
+    },
+    {
+      "name": "analyze_scope_creep",
+      "description": "Detect scope violations in a client message against an original contract. Returns violation types, severity, and 3 professional response drafts."
+    },
+    {
+      "name": "generate_change_order",
+      "description": "Generate a formal change order document when client requests additional work beyond original contract scope."
     },
     {
       "name": "list_document_types",

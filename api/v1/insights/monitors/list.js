@@ -25,38 +25,50 @@ export default async function handler(req, res) {
     })
   }
 
-  const redis = getRedis()
+  let redis
+  try {
+    redis = getRedis()
+  } catch (err) {
+    return res.status(500).json({ success: false, error: { code: 'STORAGE_UNAVAILABLE', message: 'Redis unavailable' } })
+  }
+
   const owner = auth.keyData.owner
-  const monitorIds = await redis.smembers(`insights:monitors:${owner}`) || []
 
-  if (monitorIds.length === 0) {
-    return res.status(200).json({ success: true, monitors: [], total: 0 })
-  }
+  try {
+    const monitorIds = await redis.smembers(`insights:monitors:${owner}`) || []
 
-  const monitors = []
-  for (const id of monitorIds) {
-    const raw = await redis.get(`insights:monitor:${id}`)
-    if (!raw) continue
-    const m = typeof raw === 'string' ? JSON.parse(raw) : raw
-    const matchCount = await redis.zcard(`insights:matches:${id}`) || 0
+    if (monitorIds.length === 0) {
+      return res.status(200).json({ success: true, monitors: [], total: 0 })
+    }
 
-    monitors.push({
-      monitor_id: m.id,
-      name: m.name,
-      keyword_count: m.keywords?.length || 0,
-      keywords: m.keywords?.map(k => k.keyword) || [],
-      active: m.active,
-      total_matches: matchCount,
-      last_poll_at: m.lastPollAt,
-      created_at: m.createdAt,
+    const monitors = []
+    for (const id of monitorIds) {
+      const raw = await redis.get(`insights:monitor:${id}`)
+      if (!raw) continue
+      const m = typeof raw === 'string' ? JSON.parse(raw) : raw
+      const matchCount = await redis.zcard(`insights:matches:${id}`) || 0
+
+      monitors.push({
+        monitor_id: m.id,
+        name: m.name,
+        keyword_count: m.keywords?.length || 0,
+        keywords: m.keywords?.map(k => k.keyword) || [],
+        active: m.active,
+        total_matches: matchCount,
+        last_poll_at: m.lastPollAt,
+        created_at: m.createdAt,
+      })
+    }
+
+    monitors.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+
+    return res.status(200).json({
+      success: true,
+      monitors,
+      total: monitors.length,
     })
+  } catch (err) {
+    console.error('[insights/monitors/list] Redis error:', err.message)
+    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: 'Failed to list monitors' } })
   }
-
-  monitors.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-
-  return res.status(200).json({
-    success: true,
-    monitors,
-    total: monitors.length,
-  })
 }

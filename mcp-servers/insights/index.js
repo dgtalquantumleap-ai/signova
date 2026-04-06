@@ -188,18 +188,94 @@ When to use: "Thumbs up on match 1abc23", "That reply was off — thumbs down"`,
   return server
 }
 
-// ── Smithery exports ──────────────────────────────────────────────────────────
+// ── Smithery config schema — prompts users for API key ────────────────────────
+export const configSchema = {
+  type: 'object',
+  properties: {
+    EBENOVA_API_KEY: {
+      type: 'string',
+      title: 'Ebenova API Key',
+      description: 'Your Insights API key. Get one at https://ebenova.dev/insights',
+    },
+    INSIGHTS_API_BASE: {
+      type: 'string',
+      title: 'API Base URL',
+      description: 'Custom API base URL (optional, defaults to https://api.ebenova.dev)',
+      default: 'https://api.ebenova.dev',
+    },
+  },
+  required: ['EBENOVA_API_KEY'],
+}
+
+// ── Sandbox server for Smithery scanning (mock data, no real API calls) ───────
+function createSandboxServer() {
+  const server = new McpServer({ name: 'ebenova-insights', version: '1.0.3' })
+
+  server.tool('list_monitors', {
+    description: 'List all your Ebenova Insights monitors.',
+    inputSchema: z.object({}),
+  }, async () => ({
+    content: [{ type: 'text', text: '**Sandbox mode.** Connect with your real EBENOVA_API_KEY to see your monitors.' }],
+  }))
+
+  server.tool('create_monitor', {
+    description: 'Create a new keyword monitor.',
+    inputSchema: z.object({
+      name: z.string(),
+      keywords: z.array(z.object({
+        keyword: z.string(),
+        subreddits: z.array(z.string()).optional(),
+        productContext: z.string().optional(),
+      })).min(1),
+      productContext: z.string().optional(),
+      alertEmail: z.string().optional(),
+    }),
+  }, async () => ({
+    content: [{ type: 'text', text: '**Sandbox mode.** Connect with your real EBENOVA_API_KEY to create monitors.' }],
+  }))
+
+  server.tool('delete_monitor', {
+    description: 'Deactivate an Insights monitor.',
+    inputSchema: z.object({ monitor_id: z.string() }),
+  }, async () => ({
+    content: [{ type: 'text', text: '**Sandbox mode.** Connect with your real EBENOVA_API_KEY to delete monitors.' }],
+  }))
+
+  server.tool('get_matches', {
+    description: 'Fetch recent Reddit/Nairaland matches for a monitor.',
+    inputSchema: z.object({
+      monitor_id: z.string(),
+      limit: z.number().int().min(1).max(100).optional().default(10),
+      offset: z.number().int().min(0).optional().default(0),
+    }),
+  }, async () => ({
+    content: [{ type: 'text', text: '**Sandbox mode.** Connect with your real EBENOVA_API_KEY to see matches.' }],
+  }))
+
+  server.tool('regenerate_draft', {
+    description: 'Re-generate the AI reply draft for a specific match.',
+    inputSchema: z.object({ monitor_id: z.string(), match_id: z.string() }),
+  }, async () => ({
+    content: [{ type: 'text', text: '**Sandbox mode.** Connect with your real EBENOVA_API_KEY to regenerate drafts.' }],
+  }))
+
+  server.tool('rate_draft', {
+    description: 'Rate a draft thumbs up or down.',
+    inputSchema: z.object({ monitor_id: z.string(), match_id: z.string(), feedback: z.enum(['up', 'down']) }),
+  }, async () => ({
+    content: [{ type: 'text', text: '**Sandbox mode.** Connect with your real EBENOVA_API_KEY to rate drafts.' }],
+  }))
+
+  return server
+}
 
 // Smithery calls createSandboxServer() during scanning (no real credentials needed).
-export function createSandboxServer() {
-  return createServer({
-    EBENOVA_API_KEY: 'sandbox-scan-key',
-    INSIGHTS_API_BASE: 'https://api.ebenova.dev',
-  })
-}
+export { createSandboxServer }
 
 // Smithery also tries the default export as a factory — support both patterns.
 export default function createServerFromConfig(config = {}) {
+  const isSandbox = config.EBENOVA_API_KEY === 'sandbox-scan-key' || !config.EBENOVA_API_KEY
+  if (isSandbox) return createSandboxServer()
   return createServer(config)
 }
 

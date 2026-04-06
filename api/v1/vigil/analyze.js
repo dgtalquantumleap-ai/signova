@@ -3,7 +3,7 @@
 import { authenticate, recordUsage, buildUsageBlock, trackRequest } from '../../../lib/api-auth.js'
 import { logError } from '../../../lib/logger.js'
 
-const VIGIL_URL = process.env.VIGIL_API_URL || 'http://localhost:3000'
+const VIGIL_URL = process.env.VIGIL_API_URL
 
 async function parseBody(req) {
   if (req.body && typeof req.body === 'object' && req.body !== null) return req.body
@@ -29,6 +29,10 @@ export default async function handler(req, res) {
   const AI_TIERS = ['growth', 'scale', 'enterprise']
   if (!AI_TIERS.includes(auth.keyData?.tier)) {
     return res.status(403).json({ success: false, error: { code: 'TIER_REQUIRED', message: 'AI fraud analysis requires Growth plan or above', hint: 'Upgrade at ebenova.dev/pricing' } })
+  }
+
+  if (!VIGIL_URL) {
+    return res.status(503).json({ success: false, error: { code: 'VIGIL_UNAVAILABLE', message: 'Vigil service not configured. Set VIGIL_API_URL.' } })
   }
 
   await trackRequest(auth, req)
