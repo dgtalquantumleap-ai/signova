@@ -73,7 +73,6 @@
     }
   ],
   "functions": {
-    "api/health.js": { "maxDuration": 10 },
     "api/v1/vigil/authorize.js": { "maxDuration": 30 },
     "api/v1/vigil/analyze.js": { "maxDuration": 60 },
     "api/v1/vigil/score.js": { "maxDuration": 30 },
