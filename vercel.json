@@ -118,10 +118,7 @@
     "api/scope-guard-waitlist.js": { "maxDuration": 15 },
     "api/stripe-checkout.js": { "maxDuration": 30 },
     "api/stripe-verify.js": { "maxDuration": 30 },
-    "api/v1/admin/revenue.js": { "maxDuration": 60 },
-    "api/v1/scope/stats.js": { "maxDuration": 30 },
-    "api/verify-payment.js": { "maxDuration": 30 },
-    "api/waitlist.js": { "maxDuration": 15 }
+    "api/v1/admin/revenue.js": { "maxDuration": 60 }
   },
   "headers": [
     {
