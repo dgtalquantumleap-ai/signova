@@ -217,7 +217,29 @@ ${conversation}
 
   // ── Step 2 (optional): Generate the document ───────────────────────────────
   if (!auto_generate) {
-    // Extraction only — no usage charge
+    // Extraction only — doesn't count against monthly doc quota,
+    // but we cap daily extractions to prevent AI API cost abuse.
+    try {
+      const { getRedis } = await import('../../../lib/redis.js')
+      const redis = getRedis()
+      const today = new Date().toISOString().slice(0, 10)
+      const extractKey = `extract:daily:${auth.key}:${today}`
+      const EXTRACT_LIMITS = { free: 20, starter: 100, growth: 300, scale: 1000, enterprise: 5000 }
+      const dailyCap = EXTRACT_LIMITS[auth.keyData.tier] || EXTRACT_LIMITS.free
+      const count = await redis.incr(extractKey)
+      if (count === 1) await redis.expire(extractKey, 86400)
+      if (count > dailyCap) {
+        return res.status(429).json({
+          success: false,
+          error: {
+            code: 'EXTRACTION_LIMIT_REACHED',
+            message: `Daily extraction limit reached (${dailyCap}/day for ${auth.keyData.tier} tier)`,
+            hint: 'Upgrade your plan or wait until tomorrow',
+          },
+        })
+      }
+    } catch { /* non-fatal — don't block on metering failure */ }
+
     return res.status(200).json({
       success: true,
       suggested_document: suggestedDocument,

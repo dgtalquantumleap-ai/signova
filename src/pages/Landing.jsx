@@ -589,7 +589,7 @@ export default function Landing() {
               <span className="jurisdiction-divider">·</span>
               <span>🇬🇧 UK</span>
               <span className="jurisdiction-divider">·</span>
-              <span className="jurisdiction-more">180+ countries</span>
+              <span className="jurisdiction-more">any jurisdiction worldwide</span>
             </div>
 
             <div className="hero-cta-row">
@@ -607,7 +607,7 @@ export default function Landing() {
                 Or paste your chat ↓
               </button>
             </div>
-            <p className="hero-trust-line">Enforceable in 180+ countries · Free preview · No account · $4.99 to download</p>
+            <p className="hero-trust-line">Works in any jurisdiction worldwide · Free preview · No account · $4.99 to download</p>
           </div>
 
           {/* ── RIGHT: live WhatsApp demo ── */}
@@ -714,7 +714,7 @@ export default function Landing() {
           </div>
           <div className="steps">
             {[
-              { n: '01', title: 'Choose your document', body: 'Pick from 27 document types built for global use — Tenancy Agreement, NDA, Freelance Contract, Deed of Assignment, Loan Agreement, Business Proposal, and more. Works in 180+ countries.' },
+              { n: '01', title: 'Choose your document', body: 'Pick from 27 document types built for global use — Tenancy Agreement, NDA, Freelance Contract, Deed of Assignment, Loan Agreement, Business Proposal, and more. Works in any jurisdiction.' },
               { n: '02', title: 'Answer a few questions', body: 'Tell us your names, jurisdiction, and deal terms. Takes 2 minutes. No legal knowledge required — the questions are plain language. An old template won\'t know this client\'s name, this amount, or these terms. Signova does.' },
               { n: '03', title: 'Preview free, download when ready', body: 'See your complete, properly structured document instantly — built on real legal frameworks used by attorneys, not generic AI output. When you\'re happy, download the clean PDF for the price of a phone call — not a lawyer.' },
             ].map(s => (
@@ -851,7 +851,7 @@ export default function Landing() {
             {[
               { icon: '⚡', title: 'Ready in 3 minutes', body: 'From question to signed-ready PDF faster than a WhatsApp voice note.' },
               { icon: '🔑', title: 'Your data stays yours', body: 'Nothing is saved to a database. Close the tab and it\'s gone.' },
-              { icon: '🌍', title: 'Works globally — 180+ countries', body: 'Jurisdiction-aware documents for Nigeria, UK, US, India, and more. Not generic templates — tailored to your country.' },
+              { icon: '🌍', title: 'Works in any jurisdiction', body: 'Jurisdiction-aware documents for Nigeria, UK, US, India, and more. Not generic templates — tailored to your country\'s laws.' },
               { icon: '💳', title: 'Pay with card or crypto', body: 'Accepts all major cards and USDT. No restrictions — pay the way you already pay.' },
             ].map(t => (
               <div key={t.title} className="trust-item">
@@ -869,7 +869,7 @@ export default function Landing() {
           <div className="cta-box">
             <h2 className="cta-title">Stop paying {LAWYER_FEE_MAP[countryCode] || DEFAULT_LAWYER_FEE} for a document you can generate in 3 minutes.</h2>
             <p className="cta-sub">Preview completely free — no account, no credit card. Pay only{' '}
-              {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} when you're ready to download. Works in Nigeria, Ghana, Kenya, the UK, Canada, and 180+ countries.</p>
+              {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} when you're ready to download. Works in Nigeria, Ghana, Kenya, the UK, Canada, and any jurisdiction worldwide.</p>
             <div className="cta-trust-strip">
               <span>⚖️ Built on real legal frameworks</span>
               <span className="cta-trust-dot">·</span>

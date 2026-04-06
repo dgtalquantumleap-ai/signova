@@ -118,6 +118,25 @@ export default async function handler(req, res) {
   const redis = getRedis()
   const owner = auth.keyData.owner
 
+  // ── Daily regeneration cap to prevent AI API cost abuse ──────────────────
+  const today = new Date().toISOString().slice(0, 10)
+  const regenKey = `insights:regen:${auth.key}:${today}`
+  const REGEN_LIMITS = { insights_starter: 10, insights_growth: 50, insights_scale: 200 }
+  const plan = auth.keyData.insightsPlan || 'starter'
+  const dailyCap = REGEN_LIMITS[`insights_${plan}`] || REGEN_LIMITS.insights_starter
+  const regenCount = await redis.incr(regenKey)
+  if (regenCount === 1) await redis.expire(regenKey, 86400)
+  if (regenCount > dailyCap) {
+    return res.status(429).json({
+      success: false,
+      error: {
+        code: 'REGEN_LIMIT_REACHED',
+        message: `Daily draft regeneration limit reached (${dailyCap}/day for ${plan} plan)`,
+        hint: 'Upgrade your Insights plan or wait until tomorrow',
+      },
+    })
+  }
+
   const monitorRaw = await redis.get(`insights:monitor:${monitorId}`)
   if (!monitorRaw) {
     return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Monitor not found' } })

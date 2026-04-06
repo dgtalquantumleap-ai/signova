@@ -83,6 +83,20 @@ export default async function handler(req, res) {
     })
   }
 
+  // ── Pre-check: enough quota for the entire batch ──────────────────────
+  const remaining = auth.monthlyLimit - auth.usedThisMonth
+  if (documents.length > remaining) {
+    return res.status(429).json({
+      success: false,
+      error: {
+        code: 'INSUFFICIENT_QUOTA',
+        message: `Batch requires ${documents.length} documents but only ${remaining} remaining this month`,
+        hint: 'Reduce batch size or upgrade at ebenova.dev/pricing',
+        documents_remaining: remaining,
+      },
+    })
+  }
+
   // Validate each document has required fields
   for (let i = 0; i < documents.length; i++) {
     const doc = documents[i]

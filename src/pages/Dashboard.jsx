@@ -388,8 +388,8 @@ export default function Dashboard() {
                     📚 API Docs
                   </a>
                 </div>
-                <code className="dash-code-block" style={{ marginTop: '12px' }}>GET https://insights.ebenova.dev/v1/monitors</code>
-                <code className="dash-code-block">POST https://insights.ebenova.dev/v1/monitors</code>
+                <code className="dash-code-block" style={{ marginTop: '12px' }}>GET https://api.ebenova.dev/v1/insights/monitors</code>
+                <code className="dash-code-block">POST https://api.ebenova.dev/v1/insights/monitors</code>
               </div>
             ) : (
               <div className="dash-scope-locked">

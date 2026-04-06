@@ -1,6 +1,6 @@
 // api/v1/vigil/score.js — GET /v1/vigil/score?card_id=
 // Live risk score 0–100 for a card. Proxied to Vigil.
-import { authenticate, trackRequest } from '../../../lib/api-auth.js'
+import { authenticate, trackRequest, recordUsage } from '../../../lib/api-auth.js'
 import { logError } from '../../../lib/logger.js'
 
 const VIGIL_URL = process.env.VIGIL_API_URL
@@ -29,6 +29,7 @@ export default async function handler(req, res) {
     })
     const data = await up.json()
     if (!up.ok) return res.status(up.status).json({ success: false, error: data })
+    await recordUsage(auth)
     return res.status(200).json({ success: true, ...data })
   } catch (err) {
     logError('vigil/score', err)

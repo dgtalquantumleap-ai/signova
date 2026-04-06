@@ -169,7 +169,7 @@ const FAQS = [
   },
   {
     q: 'Are the documents legally valid in my country?',
-    a: 'Signova generates documents applicable across 180+ countries. Documents are tailored to the governing law you specify. For high-value transactions, we recommend having a local solicitor review the final document.',
+    a: 'Signova generates documents for any jurisdiction worldwide. Documents are tailored to the governing law you specify. For high-value transactions, we recommend having a local solicitor review the final document.',
   },
   {
     q: 'What if the extraction misses something?',
@@ -536,7 +536,7 @@ export default function WhatsApp() {
         <button className="wa-bottom-btn" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           Paste your conversation →
         </button>
-        <p className="wa-bottom-note">Free preview · $4.99 to download · No account needed · 180+ countries</p>
+        <p className="wa-bottom-note">Free preview · $4.99 to download · No account needed · Any jurisdiction</p>
       </section>
 
       {/* Footer */}

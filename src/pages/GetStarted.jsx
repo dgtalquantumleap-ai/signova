@@ -192,8 +192,8 @@ export default function GetStarted() {
             <div className="gs-step">
               <div className="gs-step-num">3</div>
               <h3>Build Your App</h3>
-              <p>Integrate into your backend, SaaS, or AI agent. Our SDKs are available for Node.js, Python, and Go.</p>
-              <a href="/docs#sdks" className="gs-link">Download SDK →</a>
+              <p>Integrate into your backend, SaaS, or AI agent. Use our REST API from any language, or connect via MCP for AI tools like Claude and Cursor.</p>
+              <a href="/docs#sdk" className="gs-link">View SDKs &amp; MCP →</a>
             </div>
 
             <div className="gs-step">

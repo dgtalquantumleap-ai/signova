@@ -36,6 +36,8 @@ export default function Docs() {
             <li><a href="#document-types">Document Type Reference</a></li>
             <li><a href="#sdk">SDKs &amp; MCP</a></li>
             <li><a href="#billing">Billing API</a></li>
+            <li><a href="#insights">Insights API</a></li>
+            <li><a href="#vigil">Vigil API</a></li>
             <li><a href="#pricing">Pricing</a></li>
             <li><a href="#errors">Error Codes</a></li>
           </ul>
@@ -664,11 +666,59 @@ console.log(result.document)`}</pre>
             </table>
           </section>
 
+          {/* ── Insights API ── */}
+          <section id="insights">
+            <h2>Insights API</h2>
+            <p>
+              Monitor Reddit and Nairaland 24/7 for mentions relevant to your product.
+              Get email alerts with AI-drafted replies. Requires an Insights subscription.
+            </p>
+            <p>Base URL: <code>https://api.ebenova.dev/v1/insights</code></p>
+
+            <h3>Endpoints</h3>
+            <table className="docs-table">
+              <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td>GET</td><td><code>/v1/insights/monitors</code></td><td>List all your monitors</td></tr>
+                <tr><td>POST</td><td><code>/v1/insights/monitors</code></td><td>Create a new monitor</td></tr>
+                <tr><td>DELETE</td><td><code>/v1/insights/monitors/:id</code></td><td>Delete a monitor</td></tr>
+                <tr><td>GET</td><td><code>/v1/insights/matches</code></td><td>List matches for a monitor</td></tr>
+                <tr><td>POST</td><td><code>/v1/insights/matches/draft</code></td><td>Regenerate AI reply draft for a match</td></tr>
+                <tr><td>POST</td><td><code>/v1/insights/matches/feedback</code></td><td>Submit feedback on a match</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Plans</h3>
+            <table className="docs-table">
+              <thead><tr><th>Plan</th><th>Monitors</th><th>Keywords</th><th>AI Model</th><th>Price</th></tr></thead>
+              <tbody>
+                <tr><td>Starter</td><td>3</td><td>20 each</td><td>Groq (Llama 3.3 70B)</td><td>$49/mo</td></tr>
+                <tr><td>Growth</td><td>20</td><td>100 each</td><td>Claude Haiku</td><td>$99/mo</td></tr>
+                <tr><td>Scale</td><td>100</td><td>500 each</td><td>Claude Haiku</td><td>$249/mo</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          {/* ── Vigil API ── */}
+          <section id="vigil">
+            <h2>Vigil API</h2>
+            <p>
+              Live fraud risk scoring for payment cards. Returns a 0–100 risk score.
+              Requires authentication.
+            </p>
+
+            <h3>Get Risk Score</h3>
+            <p><code>GET /v1/vigil/score?card_id=CARD_ID</code></p>
+            <pre className="code-block">{`curl "https://api.ebenova.dev/v1/vigil/score?card_id=card_abc123" \\
+  -H "Authorization: Bearer sk_live_your_api_key"`}</pre>
+            <p>Requires <code>VIGIL_API_URL</code> to be configured on the server. Returns the upstream Vigil service response.</p>
+          </section>
+
           <section id="support">
             <h2>Support</h2>
             <p>
               Questions? Email <a href="mailto:api@ebenova.dev">api@ebenova.dev</a> or
-              open an issue on <a href="https://github.com/ebenova/legal-docs-mcp" target="_blank" rel="noopener noreferrer">GitHub</a>.
+              open an issue on <a href="https://github.com/dgtalquantumleap-ai/signova" target="_blank" rel="noopener noreferrer">GitHub</a>.
             </p>
           </section>
         </main>

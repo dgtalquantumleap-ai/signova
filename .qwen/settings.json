@@ -63,7 +63,8 @@
       "Bash(timeout *)",
       "Bash(move *)",
       "Bash(dir *)",
-      "Bash(del *)"
+      "Bash(del *)",
+      "Bash(ping *)"
     ]
   }
 }

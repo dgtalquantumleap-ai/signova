@@ -26,6 +26,24 @@ export default async function handler(req, res) {
       return res.status(500).json({ success: false, error: { code: 'SERVICE_ERROR', message: 'Redis not available' } })
     }
 
+    // ── IP-based rate limiting: max 2 keys per IP per day ──────────────────
+    const ip = (req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.socket?.remoteAddress || 'unknown').split(',')[0].trim()
+    const today = new Date().toISOString().slice(0, 10) // YYYY-MM-DD
+    const ipKey = `quickkey:ip:${ip}:${today}`
+    const ipCount = await redis.incr(ipKey)
+    if (ipCount === 1) await redis.expire(ipKey, 86400) // 24h TTL
+    if (ipCount > 2) {
+      console.warn(`[auth/quick-key] IP rate limit hit: ${ip} (${ipCount} attempts today)`)
+      return res.status(429).json({
+        success: false,
+        error: {
+          code: 'RATE_LIMITED',
+          message: 'Maximum 2 free API keys per day. Upgrade for higher limits.',
+          hint: 'Visit ebenova.dev/pricing to upgrade.',
+        },
+      })
+    }
+
     // Generate new key
     const key = generateKey()
     const now = new Date()

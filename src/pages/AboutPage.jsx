@@ -93,7 +93,7 @@ export default function AboutPage() {
             `I'm Olumide — a Nigerian software developer based in Calgary, Canada. I've watched friends, family, and colleagues across Nigeria, Ghana, and Kenya lose money, deals, and sometimes relationships because they had no written agreement. A cousin lent ₦500,000 to a business partner on a handshake. A freelancer built a full website and got ghosted. A landlord couldn't evict a non-paying tenant because the tenancy was verbal.`,
             `The frustrating part isn't that people didn't know they needed a contract. They did. The problem is that getting a lawyer to draft one costs ₦50,000–₦200,000 in Nigeria for what is often a standard document. In Canada and the UK, it's $300–$500/hour. Most people — especially freelancers and small landlords — just skip it and hope for the best.`,
             `Signova changes that. You answer a few questions about your specific situation. We generate a professional, jurisdiction-aware legal document in under 3 minutes. You preview it for free, and pay $4.99 — less than a lunch — to download the clean PDF.`,
-            `We now support 27 document types across 180+ countries. Nigerian landlords, Kenyan freelancers, Canadian contractors, Indian consultants, UAE business owners — anyone who needs a proper document without paying lawyer rates.`,
+            `We now support 27 document types for any jurisdiction worldwide. Nigerian landlords, Kenyan freelancers, Canadian contractors, Indian consultants, UAE business owners — anyone who needs a proper document without paying lawyer rates.`,
           ].map((para, i) => (
             <p key={i} style={{ fontSize: '16px', color: 'var(--text2)', lineHeight: 1.8, margin: 0 }}>
               {para}
