@@ -370,6 +370,15 @@
   color: var(--text);
 }
 
+.section-sub {
+  font-size: 15px;
+  color: var(--text2);
+  line-height: 1.7;
+  max-width: 720px;
+  margin: 12px auto 0;
+}
+}
+
 .api-cards-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

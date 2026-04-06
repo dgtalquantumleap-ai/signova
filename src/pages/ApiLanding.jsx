@@ -365,9 +365,9 @@ export default function ApiLanding() {
           </h1>
 
           <p className="api-hero-sub">
-            Generate contracts, verify payments, detect fraud, enforce scope —
-            27 document types, 18 jurisdictions. MCP-native. Built for Africa,
-            open to the world.
+            One API for contracts, invoices, fraud detection, and scope enforcement —
+            27 document types, 18 jurisdictions, MCP-native. Works wherever your
+            business operates. Goes deeper where others don't.
           </p>
 
           {/* API stat cards — social proof */}
@@ -427,27 +427,31 @@ export default function ApiLanding() {
           <div className="audience-grid">
             <div className="audience-item">
               <span className="check-icon">✓</span>
-              <p>African fintechs building payment flows</p>
+              <p>Freelance platforms automating contracts and scope enforcement</p>
             </div>
             <div className="audience-item">
               <span className="check-icon">✓</span>
-              <p>Freelance platforms needing contract automation</p>
+              <p>AI agent developers who need legal and payment infrastructure</p>
             </div>
             <div className="audience-item">
               <span className="check-icon">✓</span>
-              <p>Property tech startups verifying tenant payments</p>
+              <p>SaaS builders adding document generation to existing products</p>
             </div>
             <div className="audience-item">
               <span className="check-icon">✓</span>
-              <p>AI agent developers needing legal infrastructure</p>
+              <p>Property tech startups linking tenancy agreements to payments</p>
             </div>
             <div className="audience-item">
               <span className="check-icon">✓</span>
-              <p>SaaS companies expanding to African markets</p>
+              <p>Fintechs and lenders in markets underserved by Stripe and DocuSign</p>
+            </div>
+            <div className="audience-item">
+              <span className="check-icon">✓</span>
+              <p>Any developer who needs contracts, invoices, or scope guard — without a legal team</p>
             </div>
           </div>
           <div className="not-for" role="note">
-            <p><strong>Not for:</strong> US-only businesses (use Stripe/DocuSign) · One-off document generation (use Signova.com) · Non-technical users (no-code tools available)</p>
+            <p><strong>Not the right fit if:</strong> You only need one-off documents as a non-developer (try <a href="https://getsignova.com" target="_blank" rel="noopener noreferrer">Signova.com</a>) · You need a full e-signature platform (DocuSign is better) · You need US-only card payment processing (Stripe is better)</p>
           </div>
         </div>
       </section>
@@ -559,7 +563,8 @@ export default function ApiLanding() {
         <div className="section-inner">
           <div className="section-header">
             <p className="section-label">Why Ebenova</p>
-            <h2 className="section-title">Built for African Business, Not Copied from Silicon Valley</h2>
+            <h2 className="section-title">The infrastructure gap nobody else filled</h2>
+            <p className="section-sub">Stripe handles card payments. DocuSign handles e-signatures. Neither handles informal payment rails, bank transfer verification, jurisdiction-aware contracts, or scope enforcement. Ebenova does all four — with an MCP layer so your AI agents can too.</p>
           </div>
 
           <div className="comparison-table-wrapper">
@@ -573,29 +578,29 @@ export default function ApiLanding() {
               </thead>
               <tbody>
                 <tr>
-                  <td className="feature">Banking Laws</td>
-                  <td className="competitors">US/EU focused</td>
-                  <td className="ebenova">Nigerian, Kenyan, Ghanaian banking act compliance</td>
+                  <td className="feature">Jurisdiction depth</td>
+                  <td className="competitors">US/EU generic templates</td>
+                  <td className="ebenova">18 jurisdictions — Nigeria, Kenya, Ghana, UK, US, Canada and more</td>
                 </tr>
                 <tr>
-                  <td className="feature">Payment Verify</td>
+                  <td className="feature">Payment rails</td>
                   <td className="competitors">Card payments only</td>
-                  <td className="ebenova">Bank transfer + Mobile money (M-Pesa, MoMo, OPay)</td>
+                  <td className="ebenova">Bank transfer + Mobile money (M-Pesa, MoMo, OPay) + card</td>
                 </tr>
                 <tr>
-                  <td className="feature">Jurisdiction</td>
-                  <td className="competitors">Generic templates</td>
-                  <td className="ebenova">18 jurisdictions with local clause variants</td>
+                  <td className="feature">Contract-Payment link</td>
+                  <td className="competitors">Two separate systems</td>
+                  <td className="ebenova">Native linking API — one call, bidirectional lookup</td>
                 </tr>
                 <tr>
-                  <td className="feature">Contract-Payment</td>
-                  <td className="competitors">Separate systems</td>
-                  <td className="ebenova">Native linking API (one call, bidirectional)</td>
+                  <td className="feature">Scope enforcement</td>
+                  <td className="competitors">Not available</td>
+                  <td className="ebenova">Scope Guard API — detect violations, draft responses, price change orders</td>
                 </tr>
                 <tr>
-                  <td className="feature">AI Agent Ready</td>
+                  <td className="feature">AI Agent ready</td>
                   <td className="competitors">No MCP servers</td>
-                  <td className="ebenova">3 MCP servers on NPM (Claude, Cursor, VS Code)</td>
+                  <td className="ebenova">3 MCP servers on NPM — Claude, Cursor, VS Code native</td>
                 </tr>
                 <tr>
                   <td className="feature">Pricing</td>
@@ -603,9 +608,9 @@ export default function ApiLanding() {
                   <td className="ebenova">Free tier · $29 starter</td>
                 </tr>
                 <tr>
-                  <td className="feature">Documentation</td>
-                  <td className="competitors">Comprehensive, US-focused examples</td>
-                  <td className="ebenova">Full REST docs + MCP guide + Nigeria/Kenya/Ghana code examples</td>
+                  <td className="feature">Code examples</td>
+                  <td className="competitors">US-focused</td>
+                  <td className="ebenova">Nigeria, Kenya, Ghana, UK, US, Canada — all with real curl snippets</td>
                 </tr>
               </tbody>
             </table>
@@ -722,10 +727,10 @@ export default function ApiLanding() {
         <div className="section-inner">
           <div className="api-cta-box">
             <h2 className="api-cta-title">
-              Start building with African business APIs today
+              The legal and payment layer your product is missing
             </h2>
             <p className="api-cta-sub">
-              Free tier includes 50 verifications and 5 documents/month. No credit card required.
+              Free tier — 50 verifications and 5 documents/month. No credit card. Works in 18 jurisdictions from day one.
             </p>
             <div className="api-cta-actions">
               <button className="api-btn-primary api-btn-large" onClick={handleGetApiKey}>
@@ -751,10 +756,11 @@ export default function ApiLanding() {
               <h3>Olumide Akinsola</h3>
               <p className="founder-title">Fraud Officer @ RBC | Nigerian-Canadian Founder</p>
               <blockquote>
-                "I built Ebenova after watching friends lose money on verbal agreements. 
-                Most legal tools are built for US/UK. African businesses deserve better.
-                I'm not a lawyer. I'm a builder who understands fraud, compliance, 
-                and the real pain of informal deals."
+                "I built Ebenova because the standard API stack — Stripe, DocuSign, Twilio — 
+                assumes card payments, US courts, and English-language contracts.
+                A lot of the world doesn't work that way. I work in fraud at a major bank
+                and I've seen what happens when informal deals go wrong with no infrastructure to back them up.
+                Ebenova is that infrastructure."
               </blockquote>
               <p className="founder-contact">
                 Questions? <a href="mailto:olumide@ebenova.dev">Email me directly</a>
