@@ -4,6 +4,7 @@
 // At current scale this is sufficient — add Redis when abuse is detected
 
 import { parseBody } from '../lib/parse-body.js'
+import { logError, logInfo } from '../lib/logger.js'
 
 const WINDOW_MS = 60 * 60 * 1000 // 1 hour
 const MAX_PER_WINDOW = 3
@@ -72,16 +73,18 @@ export default async function handler(req, res) {
       } catch {
         try { errMsg = await response.text() } catch {}
       }
-      console.error('Groq error:', response.status, errMsg)
+      logError('/generate-preview', { status: response.status, message: errMsg })
       return res.status(500).json({ error: 'Preview generation failed. Please try again.' })
     }
 
     const data = await response.json()
     const text = data.choices?.[0]?.message?.content || ''
     if (!text) return res.status(500).json({ error: 'Preview generation failed. Please try again.' })
+    
+    logInfo('/generate-preview', { success: true, text_length: text.length })
     return res.status(200).json({ text, isPreview: true })
   } catch (err) {
-    console.error('Preview generate error:', err)
+    logError('/generate-preview', { message: err.message, stack: err.stack })
     return res.status(500).json({ error: 'Preview generation failed. Please try again.' })
   }
 }

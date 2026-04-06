@@ -1,4 +1,7 @@
 // api/capture-buyer.js — email capture (pre-purchase preview leads + post-purchase buyers)
+import { parseBody } from '../lib/parse-body.js'
+import { logWarn, logError, logInfo } from '../lib/logger.js'
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
@@ -10,7 +13,7 @@ export default async function handler(req, res) {
 
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) {
-    console.warn('RESEND_API_KEY not set — buyer email not sent for:', email)
+    logWarn('/capture-buyer', { message: 'RESEND_API_KEY not set', email })
     return res.status(200).json({ ok: true })
   }
 
@@ -202,7 +205,7 @@ export default async function handler(req, res) {
 
     res.status(200).json({ ok: true })
   } catch (err) {
-    console.error('Buyer capture error:', err)
+    logError('/capture-buyer', { message: err.message, stack: err.stack })
     res.status(200).json({ ok: true })
   }
 }

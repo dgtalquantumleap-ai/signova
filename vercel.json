@@ -20,6 +20,10 @@
   ],
   "rewrites": [
     {
+      "source": "/health",
+      "destination": "/api/health"
+    },
+    {
       "source": "/mcp",
       "destination": "/api/mcp"
     },
@@ -69,6 +73,7 @@
     }
   ],
   "functions": {
+    "api/health.js": { "maxDuration": 10 },
     "api/v1/vigil/authorize.js": { "maxDuration": 30 },
     "api/v1/vigil/analyze.js": { "maxDuration": 60 },
     "api/v1/vigil/score.js": { "maxDuration": 30 },
@@ -154,6 +159,14 @@
         { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization, X-Requested-With" },
         { "key": "Access-Control-Expose-Headers", "value": "Content-Length, X-Request-Id" },
         { "key": "Access-Control-Max-Age", "value": "86400" }
+      ]
+    },
+    {
+      "source": "/health",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, OPTIONS" },
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
       ]
     },
     {

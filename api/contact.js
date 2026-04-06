@@ -1,6 +1,7 @@
 // api/contact.js — contact form submissions, routed to info@ebenova.net via Resend
 import { escapeHtml, escapeHtmlTrunc } from '../lib/sanitize.js'
 import { parseBody } from '../lib/parse-body.js'
+import { logWarn, logError } from '../lib/logger.js'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
@@ -19,7 +20,7 @@ export default async function handler(req, res) {
 
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) {
-    console.warn('RESEND_API_KEY not set — contact form not sent')
+    logWarn('/contact', { message: 'RESEND_API_KEY not set — contact form not sent' })
     return res.status(200).json({ ok: true })
   }
 
@@ -53,7 +54,7 @@ export default async function handler(req, res) {
     })
     res.status(200).json({ ok: true })
   } catch (err) {
-    console.error('Contact form error:', err)
+    logError('/contact', { message: err.message, stack: err.stack })
     res.status(200).json({ ok: true })
   }
 }

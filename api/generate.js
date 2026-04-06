@@ -3,16 +3,8 @@
 // Verifies Stripe payment server-side before generating
 
 import Stripe from 'stripe'
-
-async function parseBody(req) {
-  if (req.body && typeof req.body === 'object') return req.body
-  return new Promise((resolve, reject) => {
-    let data = ''
-    req.on('data', chunk => { data += chunk })
-    req.on('end', () => { try { resolve(data ? JSON.parse(data) : {}) } catch { resolve({}) } })
-    req.on('error', reject)
-  })
-}
+import { parseBody } from '../lib/parse-body.js'
+import { logError, logWarn, logInfo } from '../lib/logger.js'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
@@ -38,13 +30,13 @@ export default async function handler(req, res) {
       const stripe = new Stripe(stripeKey)
       const session = await stripe.checkout.sessions.retrieve(sessionId)
       if (session.payment_status !== 'paid') {
-        console.warn(`Session ${sessionId} payment_status: ${session.payment_status}`)
+        logWarn('/generate', { message: `Session ${sessionId} payment_status: ${session.payment_status}` })
         return res.status(403).json({
           error: `Payment not completed (status: ${session.payment_status}). Please complete payment first.`,
         })
       }
     } catch (verifyErr) {
-      console.error('Stripe payment verification failed:', verifyErr)
+      logError('/generate', { message: 'Stripe payment verification failed', error: verifyErr.message })
       return res.status(500).json({ error: 'Payment verification failed. Please try again.' })
     }
   }
@@ -82,13 +74,14 @@ export default async function handler(req, res) {
 
     const data = await response.json()
     const text = data.content[0]?.text || ''
+    logInfo('/generate', { success: true, text_length: text.length })
     res.status(200).json({ text, isPremium: true })
   } catch (err) {
     if (err.name === 'AbortError') {
-      console.error('Generate timeout:', err)
+      logError('/generate', { message: 'Generate timeout' })
       return res.status(504).json({ error: 'Generation timed out. Please try again.' })
     }
-    console.error('Generate error:', err)
+    logError('/generate', { message: err.message, stack: err.stack })
     res.status(500).json({ error: 'Generation failed. Please try again.' })
   }
 }

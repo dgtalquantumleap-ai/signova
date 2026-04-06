@@ -4,6 +4,7 @@
 
 import Stripe from 'stripe'
 import { parseBody } from '../lib/parse-body.js'
+import { logError, logInfo } from '../lib/logger.js'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
@@ -45,7 +46,7 @@ export default async function handler(req, res) {
 
     res.status(200).json({ url: session.url })
   } catch (err) {
-    console.error('Stripe checkout error:', err)
+    logError('/stripe-checkout', { message: err.message, stack: err.stack })
     res.status(500).json({ error: err.message })
   }
 }
