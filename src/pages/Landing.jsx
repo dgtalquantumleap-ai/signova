@@ -592,19 +592,28 @@ export default function Landing() {
               <span className="jurisdiction-more">any jurisdiction worldwide</span>
             </div>
 
+            <div className="hero-top3" id="documents">
+              {quickPicks.slice(0, 3).map(d => (
+                <button
+                  key={d.id}
+                  className="top3-card"
+                  onClick={() => { trackDocSelected(d.id, 'top3'); navigate(`/generate/${d.id}`) }}
+                  aria-label={`Generate ${d.name} for free`}
+                >
+                  <span className="top3-icon">{d.icon}</span>
+                  <span className="top3-name">{d.name}</span>
+                  <span className="top3-go">Preview Free →</span>
+                </button>
+              ))}
+            </div>
+
             <div className="hero-cta-row">
               <button
                 className="btn-primary btn-large"
-                onClick={() => { trackHeroCtaClick(); trackDocSelected(quickPicks[0]?.id || 'nda', 'hero_cta'); navigate(`/generate/${quickPicks[0]?.id || 'nda'}`) }}
-                aria-label="Preview a free legal document"
-              >
-                Preview Free <span className="btn-arrow">→</span>
-              </button>
-              <button
-                className="hero-browse-btn"
                 onClick={() => { trackHeroCtaClick(); navigate('/whatsapp') }}
+                aria-label="Turn your chat into a contract"
               >
-                Or paste your chat ↓
+                Turn this chat into a contract <span className="btn-arrow">→</span>
               </button>
             </div>
             <p className="hero-trust-line">Works in any jurisdiction worldwide · Free preview · No account · $4.99 to download</p>
@@ -637,29 +646,14 @@ export default function Landing() {
           </div>
         </div>
 
-        {/* Document quick picks — below the two-col hero */}
-        <div className="hero-picks-row" id="documents">
-          <p className="hero-picks-label">Or choose a document type directly:</p>
-          <div className="hero-top3">
-            {quickPicks.slice(0, 3).map(d => (
-              <button
-                key={d.id}
-                className="top3-card"
-                onClick={() => { trackDocSelected(d.id, 'top3'); navigate(`/generate/${d.id}`) }}
-                aria-label={`Generate ${d.name} for free`}
-              >
-                <span className="top3-icon">{d.icon}</span>
-                <span className="top3-name">{d.name}</span>
-                <span className="top3-go">Preview Free →</span>
-              </button>
-            ))}
-          </div>
+        {/* More documents expand — full width below hero */}
+        <div className="hero-picks-row">
           <button
             className="more-docs-link"
             onClick={() => startTransition(() => setShowAllDocs(v => !v))}
             aria-label={showAllDocs ? 'Show fewer document types' : 'Show more document types'}
           >
-            {showAllDocs ? 'Show fewer ↑' : 'More documents ↓'}
+            {showAllDocs ? 'Show fewer ↑' : 'See all 27 documents ↓'}
           </button>
           {showAllDocs && (
             <div className="all-docs-grid">
