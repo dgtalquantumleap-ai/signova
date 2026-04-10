@@ -10,7 +10,13 @@ import { z } from 'zod'
 // Smithery requires a createSandboxServer export for tool scanning.
 // The same factory is used for real connections too.
 
+// Module-level singleton to prevent double-initialization when MCP clients
+// import createSandboxServer AND run main() in the same process.
+let _serverInstance = null
+
 function createServer(config = {}) {
+  if (_serverInstance && !config.EBENOVA_API_KEY) return _serverInstance
+
   const API_BASE = config.EBENOVA_API_BASE || process.env.EBENOVA_API_BASE || 'https://api.ebenova.dev'
   const API_KEY  = config.EBENOVA_API_KEY  || process.env.EBENOVA_API_KEY  || ''
 
@@ -397,6 +403,7 @@ When to use:
     }
   )
 
+  if (!config.EBENOVA_API_KEY) _serverInstance = server
   return server
 }
 

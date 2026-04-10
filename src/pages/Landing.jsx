@@ -1,8 +1,11 @@
 import { useNavigate } from 'react-router-dom'
-import { useState, useEffect, useMemo, useRef, startTransition } from 'react'
+import { useState, useEffect, startTransition } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { trackDocSelected, trackHeroCtaClick } from '../lib/analytics'
 import './Landing.css'
+
+// Update this number periodically — shown in hero as social proof
+const DOCS_GENERATED = 500
 
 // ── Geo-currency detection ──────────────────────────────────────────────────
 // Maps country code → { symbol, amount, code, local }
@@ -480,22 +483,13 @@ export default function Landing() {
   const { currency, countryCode } = useGeo()
   const quickPicks = getQuickPicks(countryCode)
   const [navOpen, setNavOpen] = useState(false)
-  const [openFaq, setOpenFaq] = useState(null)
+  const [openFaq, setOpenFaq] = useState(0)
+  const [videoPlaying, setVideoPlaying] = useState(false)
   const [waitlistEmail, setWaitlistEmail] = useState('')
   const [waitlistSubmitted, setWaitlistSubmitted] = useState(false)
   const [waitlistLoading, setWaitlistLoading] = useState(false)
   const [waitlistError, setWaitlistError] = useState('')
-  const [showAllDocs, setShowAllDocs] = useState(false)
 
-  // Memoised docs — only recomputes when geo or showAll changes, not on every ticker tick
-  const docsToShow = useMemo(() => {
-    if (showAllDocs) return DOCS
-    const qpIds = quickPicks.map(q => q.id)
-    const inQp = DOCS.filter(d => qpIds.includes(d.id))
-      .sort((a, b) => qpIds.indexOf(a.id) - qpIds.indexOf(b.id))
-    const notInQp = DOCS.filter(d => !qpIds.includes(d.id) && d.popular)
-    return [...inQp, ...notInQp].slice(0, 9)
-  }, [quickPicks, showAllDocs])
 
   const closeNav = () => setNavOpen(false)
 
@@ -541,7 +535,7 @@ export default function Landing() {
           <div className={`nav-links ${navOpen ? 'open' : ''}`}>
             <a href="#documents" onClick={closeNav} aria-label="Browse documents">Documents</a>
             <a href="#how" onClick={closeNav} aria-label="How Signova works">How it works</a>
-            <a href="/scope-guard" onClick={closeNav} aria-label="Protect against scope creep">Scope Guard</a>
+            <a href="/scope-guard" onClick={closeNav} aria-label="Protect against scope creep" title="Paste a client message + your contract — Scope Guard flags violations and drafts your pushback">Scope Guard</a>
             <a href="#faq" onClick={closeNav} aria-label="Frequently asked questions">FAQ</a>
             <a href="/blog" onClick={closeNav} aria-label="Read our blog">Blog</a>
             <a href="#documents" onClick={closeNav} className="nav-cta-link" aria-label="Preview a document for free">Preview Free →</a>
@@ -578,7 +572,7 @@ export default function Landing() {
             <p className="hero-sub">
               Get a signed contract in 2 minutes — just paste your WhatsApp, email, or iMessage negotiation — Signova extracts the agreed terms and builds a lawyer-quality document before the moment passes. 27 document types. Works at midnight. Works anywhere.
             </p>
-            <p className="hero-value-line">Cheaper than losing one invoice. Built by a founder who learned the hard way.</p>
+            <p className="hero-value-line">Cheaper than losing one invoice. Built by a founder who lost a ₦400k deal to a handshake — and built this so you don't have to.</p>
 
             <div className="hero-jurisdictions">
               <span>🇳🇬 Nigeria</span>
@@ -589,7 +583,11 @@ export default function Landing() {
               <span className="jurisdiction-divider">·</span>
               <span>🇬🇧 UK</span>
               <span className="jurisdiction-divider">·</span>
-              <span className="jurisdiction-more">any jurisdiction worldwide</span>
+              <span className="jurisdiction-more">180+ countries worldwide</span>
+            </div>
+
+            <div className="hero-proof-badge">
+              📄 {DOCS_GENERATED.toLocaleString()}+ documents generated
             </div>
 
             <div className="hero-top3" id="documents">
@@ -616,7 +614,7 @@ export default function Landing() {
                 Turn this chat into a contract <span className="btn-arrow">→</span>
               </button>
             </div>
-            <p className="hero-trust-line">Works in any jurisdiction worldwide · Free preview · No account · $4.99 to download</p>
+            <p className="hero-trust-line">Works in any jurisdiction worldwide · Free preview · No account · {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} to download · ↩️ 30-day refund</p>
           </div>
 
           {/* ── RIGHT: live WhatsApp demo ── */}
@@ -646,24 +644,60 @@ export default function Landing() {
           </div>
         </div>
 
-        {/* More documents expand — full width below hero */}
+        {/* All 27 documents — always visible chip grid */}
         <div className="hero-picks-row">
-          <button
-            className="more-docs-link"
-            onClick={() => startTransition(() => setShowAllDocs(v => !v))}
-            aria-label={showAllDocs ? 'Show fewer document types' : 'Show more document types'}
-          >
-            {showAllDocs ? 'Show fewer ↑' : 'See all 27 documents ↓'}
-          </button>
-          {showAllDocs && (
-            <div className="all-docs-grid">
-              {DOCS.filter(d => !quickPicks.slice(0, 3).some(qp => qp.id === d.id)).map(doc => (
-                <button key={doc.id} className="all-doc-btn" onClick={() => { trackDocSelected(doc.id, 'all_docs'); navigate(`/generate/${doc.id}`) }} aria-label={`Generate ${doc.name}`}>
-                  <span>{doc.icon}</span> {doc.name}
-                </button>
-              ))}
-            </div>
-          )}
+          <p className="all-docs-label">All 27 document types</p>
+          <div className="all-docs-grid">
+            {DOCS.map(doc => (
+              <button
+                key={doc.id}
+                className="all-doc-btn"
+                onClick={() => { trackDocSelected(doc.id, 'all_docs'); navigate(`/generate/${doc.id}`) }}
+                aria-label={`Generate ${doc.name}`}
+              >
+                <span>{doc.icon}</span> {doc.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Video walkthrough */}
+      <section className="video-section">
+        <div className="section-inner">
+          <div className="section-header">
+            <p className="section-label">See it in action</p>
+            <h2 className="section-title">From chat to signed contract — watch it happen</h2>
+          </div>
+          <div className="video-wrapper">
+            {videoPlaying ? (
+              <iframe
+                src="https://www.loom.com/embed/9a41b8a6f1654deab554c80a7d1ba891?autoplay=1&hide_owner=true&hide_share=true&hide_title=true&hideEmbedTopBar=true"
+                style={{ border: 'none' }}
+                allowFullScreen
+                allow="autoplay; fullscreen"
+                className="video-iframe"
+                title="Signova walkthrough"
+              />
+            ) : (
+              <button
+                className="video-poster"
+                onClick={() => setVideoPlaying(true)}
+                aria-label="Play Signova walkthrough"
+              >
+                <img
+                  src={`https://cdn.loom.com/sessions/thumbnails/9a41b8a6f1654deab554c80a7d1ba891-with-play.gif`}
+                  alt="Signova walkthrough preview"
+                  className="video-thumbnail"
+                  loading="lazy"
+                />
+                <div className="video-play-overlay" aria-hidden="true">
+                  <span className="video-play-btn">▶</span>
+                </div>
+                <div className="video-caption">▶ Watch the 60-second walkthrough — no sign-up required</div>
+              </button>
+            )}
+          </div>
         </div>
       </section>
 
@@ -677,7 +711,7 @@ export default function Landing() {
               We extract the agreed terms — names, amounts, dates, restrictions — and auto-fill your document in seconds. Works for tenancy agreements, loan agreements, freelance contracts and 24 more document types.
             </p>
             <button className="wa-banner-btn" onClick={() => navigate('/whatsapp')}>
-              Try it free → getsignova.com/whatsapp
+              Turn your chat into a contract →
             </button>
           </div>
           <div className="wa-banner-right">
@@ -726,22 +760,32 @@ export default function Landing() {
 
 
 
+      {/* Scope Guard teaser */}
+      <section className="scope-teaser-section">
+        <div className="section-inner">
+          <div className="scope-teaser-card">
+            <div className="scope-teaser-left">
+              <div className="scope-teaser-badge">🛡️ Scope Guard — Free Tool</div>
+              <h2 className="scope-teaser-title">Client adding extras after you signed?</h2>
+              <p className="scope-teaser-body">
+                Paste their message + your contract. Scope Guard detects scope creep, deadline compression, and unpaid extras — then drafts a professional pushback in seconds.
+              </p>
+              <a href="/scope-guard" className="scope-teaser-btn">Try Scope Guard free →</a>
+            </div>
+            <div className="scope-teaser-right" aria-hidden="true">
+              <div className="scope-example-msg">"Can you also add a blog section? Should be quick."</div>
+              <div className="scope-example-arrow">↓ Scope Guard detects: scope creep</div>
+              <div className="scope-example-response">Auto-drafts a change order with estimated hours and cost.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="testimonials-section">
         <div className="section-inner">
           <div className="section-header">
-            <p className="section-label">Early traction</p>
-            <h2 className="section-title">Real signal, no fake numbers</h2>
-          </div>
-
-          {/* Stat row */}
-          <div className="traction-stats">
-            {SOCIAL_PROOF.stats.map(s => (
-              <div key={s.label} className="traction-stat">
-                <div className="traction-n">{s.n}</div>
-                <div className="traction-label">{s.label}</div>
-                <div className="traction-sub">{s.sub}</div>
-              </div>
-            ))}
+            <p className="section-label">What people are saying</p>
+            <h2 className="section-title">Built for the people lawyers ignore</h2>
           </div>
 
           {/* Riley quote */}
@@ -749,6 +793,7 @@ export default function Landing() {
             <div className="advisor-quote-mark">"</div>
             <p className="advisor-quote-text">{SOCIAL_PROOF.advisor.text}</p>
             <div className="advisor-quote-footer">
+              <div className="advisor-avatar" aria-hidden="true">R</div>
               <div className="advisor-info">
                 <span className="advisor-name">{SOCIAL_PROOF.advisor.name}</span>
                 <span className="advisor-handle">{SOCIAL_PROOF.advisor.handle}</span>
@@ -767,6 +812,13 @@ export default function Landing() {
             <div className="advisor-context">
               Riley roasted 100+ startups in one thread. This is what he drafted for Signova — unprompted.
             </div>
+          </div>
+
+          <div className="seen-on-strip">
+            <span className="seen-on-label">As seen on</span>
+            <a href="https://x.com/Riley_Ikni" target="_blank" rel="noopener noreferrer" className="seen-on-link">𝕏 / Twitter</a>
+            <span className="seen-on-divider">·</span>
+            <a href="/blog" className="seen-on-link">Signova Blog</a>
           </div>
         </div>
       </section>
@@ -877,6 +929,12 @@ export default function Landing() {
             >
               Preview Free <span className="btn-arrow">→</span>
             </button>
+            <div className="cta-payment-badges">
+              <span className="cta-payment-badge">Visa</span>
+              <span className="cta-payment-badge">Mastercard</span>
+              <span className="cta-payment-badge">USDT</span>
+              <span className="cta-payment-badge">🔒 Secure checkout</span>
+            </div>
           </div>
         </div>
       </section>

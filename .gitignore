@@ -16,6 +16,9 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+.env.vercel
+.env.vercel.tmp
+.env.production
 
 # API Keys (never commit)
 BETA_KEYS.md
@@ -34,16 +37,7 @@ api-keys.md
 *.sw?
 
 .vercel
-.env*.local
-.env.production
-.env.vercel
 
 find-token.js
 temp_token.txt
 temp_url.txt
-
-find-token.js
-temp_token.txt
-temp_url.txt
-.env*.local
-.vercel
