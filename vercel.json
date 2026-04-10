@@ -115,7 +115,6 @@
     "api/v1/insights/matches/list.js": { "maxDuration": 30 },
     "api/v1/insights/matches/feedback.js": { "maxDuration": 30 },
     "api/v1/insights/poll.js": { "maxDuration": 300 },
-    "api/insights/request-access.js": { "maxDuration": 30 },
     "api/capture-buyer.js": { "maxDuration": 30 },
     "api/checkout.js": { "maxDuration": 30 },
     "api/contact.js": { "maxDuration": 30 },
