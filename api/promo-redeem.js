@@ -67,6 +67,11 @@ const VALID_CODES = {
     maxUses: 1200,
     description: 'Taryl African Founders Community — 1 free document per member',
   },
+  KREDO: {
+    expiresAt: new Date('2026-12-31T23:59:59Z'),
+    maxUses: 20,
+    description: 'Kredo partnership — 1 free document for Kredo early users',
+  },
 }
 
 export default async function handler(req, res) {
