@@ -140,6 +140,36 @@ const SEO_META = {
     description: 'Generate a purchase agreement for buying or selling goods, assets or property. Covers price, delivery, warranty and condition. Global coverage.',
     keywords: 'purchase agreement template, sale of goods contract, purchase and sale agreement, asset purchase agreement, goods sale contract Nigeria, bill of sale template',
   },
+  'founders-agreement': {
+    title: "Founders' Agreement Template | Co-Founder Contract Generator — Signova",
+    description: "Generate a founders' agreement covering equity split, vesting, roles, IP assignment and exit terms. The #1 document every co-founder startup needs before day one.",
+    keywords: "founders agreement template, co-founder agreement, founders agreement Nigeria, startup founders agreement, equity vesting agreement, co-founder contract",
+  },
+  'ip-assignment-agreement': {
+    title: 'IP Assignment Agreement | Intellectual Property Transfer Contract — Signova',
+    description: 'Generate an IP assignment agreement transferring intellectual property rights from a freelancer, employee or agency to your company. For startups and businesses globally.',
+    keywords: 'IP assignment agreement, intellectual property assignment, IP transfer agreement, work for hire agreement, IP assignment Nigeria, startup IP agreement',
+  },
+  'advisory-board-agreement': {
+    title: 'Advisory Board Agreement Template | Startup Advisor Contract — Signova',
+    description: 'Generate an advisory board agreement covering equity compensation, vesting, time commitment, confidentiality and IP. For startups onboarding advisors and mentors.',
+    keywords: 'advisory board agreement, startup advisor agreement, advisor equity agreement, advisor contract template, advisory agreement Nigeria, startup advisor vesting',
+  },
+  'vesting-agreement': {
+    title: 'Vesting Agreement Template | Founder & Employee Equity Vesting — Signova',
+    description: 'Generate a vesting agreement for founder or employee equity. Covers vesting schedule, cliff, acceleration triggers and buyback rights. Nigeria, UK, Canada, US.',
+    keywords: 'vesting agreement template, equity vesting agreement, founder vesting Nigeria, employee equity vesting, share vesting agreement, vesting schedule startup',
+  },
+  'term-sheet': {
+    title: 'Term Sheet Template | Startup Investment Term Sheet Generator — Signova',
+    description: 'Generate a startup investment term sheet covering valuation, equity percentage, investor rights, board seats and key conditions. For angel and seed-stage fundraising.',
+    keywords: 'term sheet template, startup term sheet, investment term sheet Nigeria, angel investment term sheet, seed funding term sheet, term sheet generator',
+  },
+  'safe-agreement': {
+    title: 'SAFE Agreement Template | Simple Agreement for Future Equity — Signova',
+    description: 'Generate a SAFE (Simple Agreement for Future Equity) for early-stage startup fundraising. Covers valuation cap, discount rate and pro-rata rights. Africa, UK, US.',
+    keywords: 'SAFE agreement template, simple agreement for future equity, SAFE note Nigeria, startup SAFE agreement, convertible note alternative, Y Combinator SAFE Africa',
+  },
 }
 
 const DOC_CONFIG = {
@@ -519,6 +549,115 @@ const DOC_CONFIG = {
       { id: 'condition', label: 'Condition of goods', type: 'radio', options: ['Brand new', 'Used — as described', 'Refurbished'] },
       { id: 'warranty', label: 'Warranty / guarantee', type: 'radio', options: ['No warranty — sold as-is', '30-day warranty', '90-day warranty', '1-year warranty'] },
       { id: 'country', label: 'Governing law', type: 'select', options: ['United States — California', 'United States — New York', 'Canada — Ontario', 'United Kingdom', 'Australia', 'Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Egypt', 'Brazil', 'Colombia', 'Mexico', 'Argentina', 'India', 'Singapore', 'UAE', 'Other'] },
+    ],
+  },
+
+  // ── STARTUP DOCUMENTS (6 new) ────────────────────────────────────────────
+
+  'founders-agreement': {
+    name: "Founders' Agreement",
+    icon: '🤝',
+    fields: [
+      { id: 'companyName', label: 'Company / startup name', type: 'text', placeholder: 'e.g. Nexus Fintech Limited' },
+      { id: 'founder1', label: 'Founder 1 full name', type: 'text', placeholder: 'e.g. Chidi Okafor' },
+      { id: 'founder2', label: 'Founder 2 full name', type: 'text', placeholder: 'e.g. Priya Sharma' },
+      { id: 'additionalFounders', label: 'Additional founders (if any)', type: 'text', placeholder: 'e.g. James Lee — or leave blank if only 2 founders' },
+      { id: 'businessDescription', label: 'What does the startup do?', type: 'textarea', placeholder: 'e.g. A B2B SaaS platform providing AI-powered legal document generation for African SMBs and freelancers.' },
+      { id: 'equitySplit', label: 'Equity split between founders', type: 'radio', options: ['Equal split (50/50 or divided equally)', 'Unequal — based on roles and contributions', 'Unequal — based on capital contributed', 'To be determined after 3-month trial period'] },
+      { id: 'vestingSchedule', label: 'Vesting schedule for founder equity', type: 'radio', options: ['4-year vesting with 1-year cliff (standard)', '3-year vesting with 6-month cliff', '2-year vesting, no cliff', 'No vesting — shares issued immediately'] },
+      { id: 'roles', label: 'Founder roles', type: 'textarea', placeholder: 'e.g. Founder 1 (Chidi): CEO — product, fundraising, strategy. Founder 2 (Priya): CTO — engineering, architecture, tech hiring.' },
+      { id: 'ipAssignment', label: 'Do founders assign all IP to the company?', type: 'radio', options: ['Yes — all IP created for the company belongs to the company', 'No — founders retain personal IP outside company scope'] },
+      { id: 'salaries', label: 'Founder salaries during early stage', type: 'radio', options: ['No salaries until first funding round', 'Equal modest salaries from day one', 'Salaries based on role and market rate', 'Deferred — founders receive equity in lieu'] },
+      { id: 'decisionMaking', label: 'Major decisions require', type: 'radio', options: ['Unanimous agreement of all founders', 'Simple majority vote', 'Supermajority (2/3 vote)'] },
+      { id: 'founderExit', label: 'If a founder leaves, what happens to their shares?', type: 'radio', options: ['Unvested shares return to company (standard)', 'Company has right to buy back at par value', 'Company has right to buy back at fair market value', 'Shares retained by departing founder'] },
+      { id: 'country', label: 'Governing law', type: 'select', options: ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Canada — Ontario', 'United Kingdom', 'United States — Delaware', 'United States — California', 'Singapore', 'Cayman Islands', 'Other'] },
+    ],
+  },
+
+  'ip-assignment-agreement': {
+    name: 'IP Assignment Agreement',
+    icon: '💡',
+    fields: [
+      { id: 'assignee', label: 'Assignee — company receiving the IP', type: 'text', placeholder: 'e.g. Nexus Fintech Limited' },
+      { id: 'assignor', label: 'Assignor — person transferring the IP', type: 'text', placeholder: 'e.g. John Smith (freelance developer) or Jane Osei (co-founder)' },
+      { id: 'relationship', label: 'Relationship between parties', type: 'radio', options: ['Freelancer / independent contractor', 'Employee', 'Co-founder', 'Development agency', 'Consultant'] },
+      { id: 'ipDescription', label: 'Description of IP being assigned', type: 'textarea', placeholder: 'e.g. All source code, software, algorithms, designs, databases, documentation, and inventions created by the Assignor in connection with the development of the Nexus mobile application and backend API, including all prior work.' },
+      { id: 'consideration', label: 'Consideration (what the assignor receives)', type: 'text', placeholder: 'e.g. $5,000 payment / included in employment salary / 2% equity stake' },
+      { id: 'scope', label: 'Scope of assignment', type: 'radio', options: ['All IP created for this company — past, present and future', 'Only IP created during the contract period', 'Specific deliverables listed above only'] },
+      { id: 'moralRights', label: 'Does assignor waive moral rights?', type: 'radio', options: ['Yes — assignor waives all moral rights', 'No — assignor retains moral rights (attribution)'] },
+      { id: 'warranties', label: 'Does assignor warrant they own the IP free of third-party claims?', type: 'radio', options: ['Yes — full warranty of ownership', 'No warranty provided'] },
+      { id: 'country', label: 'Governing law', type: 'select', options: ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'India', 'Canada — Ontario', 'United Kingdom', 'United States — California', 'United States — Delaware', 'Singapore', 'UAE', 'Other'] },
+    ],
+  },
+
+  'advisory-board-agreement': {
+    name: 'Advisory Board Agreement',
+    icon: '🎓',
+    fields: [
+      { id: 'companyName', label: 'Company / startup name', type: 'text', placeholder: 'e.g. Nexus Fintech Limited' },
+      { id: 'advisorName', label: 'Advisor full name', type: 'text', placeholder: 'e.g. Dr. Ngozi Adichie-Obi' },
+      { id: 'advisorBackground', label: "Advisor's expertise / background", type: 'text', placeholder: 'e.g. Former VP of Product at Interswitch, 15 years fintech experience' },
+      { id: 'advisorRole', label: 'What will the advisor do?', type: 'checkbox', options: ['Strategic business advice', 'Investor introductions', 'Customer introductions', 'Product feedback and guidance', 'Recruiting and talent advice', 'PR and media connections', 'Industry expertise on demand'] },
+      { id: 'timeCommitment', label: 'Expected time commitment', type: 'radio', options: ['2 hours per month', '4 hours per month', '1 day per month', 'Ad hoc — as needed', 'Quarterly advisory board meetings'] },
+      { id: 'equityCompensation', label: 'Equity compensation for advisor', type: 'radio', options: ['0.1% of company equity', '0.25% of company equity', '0.5% of company equity', '1% of company equity', 'Cash retainer only — no equity', 'Both cash and equity'] },
+      { id: 'cashRetainer', label: 'Cash retainer (if any)', type: 'text', placeholder: 'e.g. $500/month, ₦50,000/month, or none' },
+      { id: 'vestingSchedule', label: 'Equity vesting schedule', type: 'radio', options: ['2-year vesting with 6-month cliff', '3-year vesting with 1-year cliff', '4-year vesting with 1-year cliff', 'Monthly vesting — no cliff', 'No vesting — granted immediately'] },
+      { id: 'term', label: 'Advisory agreement term', type: 'select', options: ['6 months', '1 year', '2 years', 'Ongoing — 30 days notice to terminate'] },
+      { id: 'confidentiality', label: 'Include confidentiality / NDA clause?', type: 'radio', options: ['Yes — advisor keeps all company information confidential', 'No — not required'] },
+      { id: 'country', label: 'Governing law', type: 'select', options: ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Canada — Ontario', 'United Kingdom', 'United States — Delaware', 'United States — California', 'Singapore', 'UAE', 'Other'] },
+    ],
+  },
+
+  'vesting-agreement': {
+    name: 'Vesting Agreement',
+    icon: '📈',
+    fields: [
+      { id: 'companyName', label: 'Company name', type: 'text', placeholder: 'e.g. Nexus Fintech Limited' },
+      { id: 'recipientName', label: 'Recipient name (founder or employee)', type: 'text', placeholder: 'e.g. Chidi Okafor' },
+      { id: 'recipientRole', label: 'Recipient role', type: 'text', placeholder: 'e.g. Co-Founder & CEO' },
+      { id: 'totalShares', label: 'Total shares / equity subject to vesting', type: 'text', placeholder: 'e.g. 2,000,000 shares (20% of company) or 500,000 options' },
+      { id: 'vestingType', label: 'Type of vesting', type: 'radio', options: ['Time-based vesting only', 'Milestone-based vesting only', 'Hybrid — time + milestone based'] },
+      { id: 'vestingSchedule', label: 'Vesting schedule', type: 'radio', options: ['4 years with 1-year cliff (standard)', '3 years with 6-month cliff', '2 years with 6-month cliff', '4 years — no cliff, monthly from day one', 'Custom — describe in notes'] },
+      { id: 'cliffDetails', label: 'Cliff details', type: 'text', placeholder: 'e.g. 25% vests after 12 months, then remaining 75% vests monthly over 36 months' },
+      { id: 'acceleration', label: 'Acceleration on exit / change of control', type: 'radio', options: ['Single trigger — all unvested shares accelerate on acquisition', 'Double trigger — acceleration only if acquired AND terminated', 'No acceleration clause'] },
+      { id: 'goodLeaverBadLeaver', label: 'If recipient leaves voluntarily (good leaver vs bad leaver)', type: 'radio', options: ['Good leaver — keeps all vested shares', 'Bad leaver — company can buy back at par value', 'All leavers — company has right of first refusal at fair market value'] },
+      { id: 'country', label: 'Governing law', type: 'select', options: ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Canada — Ontario', 'United Kingdom', 'United States — Delaware', 'United States — California', 'Singapore', 'Cayman Islands', 'Other'] },
+    ],
+  },
+
+  'term-sheet': {
+    name: 'Investment Term Sheet',
+    icon: '📋',
+    fields: [
+      { id: 'companyName', label: 'Company / startup name', type: 'text', placeholder: 'e.g. Nexus Fintech Limited' },
+      { id: 'investorName', label: 'Investor name / fund', type: 'text', placeholder: 'e.g. Lagos Angel Network / Ventures Platform / Mr. Emeka Eze' },
+      { id: 'investmentAmount', label: 'Investment amount', type: 'text', placeholder: 'e.g. $100,000 or ₦50,000,000' },
+      { id: 'preMoneyValuation', label: 'Pre-money valuation', type: 'text', placeholder: 'e.g. $500,000 (pre-money) — resulting in $600,000 post-money' },
+      { id: 'instrumentType', label: 'Investment instrument', type: 'radio', options: ['Equity — direct share purchase', 'SAFE (Simple Agreement for Future Equity)', 'Convertible Note', 'Priced equity round (Series A / Seed)'] },
+      { id: 'equityPercentage', label: 'Equity percentage to investor', type: 'text', placeholder: 'e.g. 16.7% post-money (based on valuation above)' },
+      { id: 'shareClass', label: 'Share class issued to investor', type: 'radio', options: ['Ordinary / common shares', 'Preferred shares (with rights)', 'Convertible instrument — share class determined on conversion'] },
+      { id: 'investorRights', label: 'Investor rights included', type: 'checkbox', options: ['Board seat or observer rights', 'Pro-rata rights (follow-on investment)', 'Information rights (quarterly financials)', 'Anti-dilution protection', 'Drag-along rights', 'Tag-along rights', 'Liquidation preference'] },
+      { id: 'useOfFunds', label: 'Use of funds', type: 'textarea', placeholder: 'e.g. 60% product development, 25% sales and marketing, 15% working capital.' },
+      { id: 'exclusivity', label: 'Exclusivity period (no other investors)', type: 'select', options: ['No exclusivity', '30 days', '45 days', '60 days', '90 days'] },
+      { id: 'closingConditions', label: 'Key closing conditions', type: 'checkbox', options: ['Satisfactory due diligence', 'Execution of formal investment agreement', 'Board and shareholder approval', 'Regulatory approvals where required'] },
+      { id: 'country', label: 'Governing law', type: 'select', options: ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Canada — Ontario', 'United Kingdom', 'United States — Delaware', 'United States — New York', 'Singapore', 'Cayman Islands', 'Other'] },
+    ],
+  },
+
+  'safe-agreement': {
+    name: 'SAFE Agreement',
+    icon: '🔐',
+    fields: [
+      { id: 'companyName', label: 'Company / startup name', type: 'text', placeholder: 'e.g. Nexus Fintech Limited' },
+      { id: 'investorName', label: 'Investor name / fund', type: 'text', placeholder: 'e.g. Ventures Platform / Mr. Emeka Eze' },
+      { id: 'investmentAmount', label: 'Investment amount (Purchase Amount)', type: 'text', placeholder: 'e.g. $50,000 or ₦25,000,000' },
+      { id: 'valuationCap', label: 'Valuation cap', type: 'text', placeholder: 'e.g. $2,000,000 — the maximum valuation at which the SAFE converts to equity' },
+      { id: 'discountRate', label: 'Discount rate (on next priced round)', type: 'radio', options: ['No discount', '10% discount', '15% discount', '20% discount', '25% discount'] },
+      { id: 'mostFavoredNation', label: 'Most Favoured Nation (MFN) clause', type: 'radio', options: ['Yes — investor gets same terms as any future SAFE with better terms', 'No — no MFN clause'] },
+      { id: 'proRataRights', label: 'Pro-rata rights in next equity round', type: 'radio', options: ['Yes — investor can maintain their ownership % in next round', 'No — no pro-rata rights'] },
+      { id: 'conversionTrigger', label: 'Conversion trigger events', type: 'checkbox', options: ['Equity financing round (priced round)', 'Liquidity event (acquisition, IPO)', 'Dissolution — investor gets money back first'] },
+      { id: 'safeType', label: 'SAFE type', type: 'radio', options: ['Post-money SAFE (Y Combinator standard)', 'Pre-money SAFE (older standard)', 'Custom SAFE'] },
+      { id: 'country', label: 'Governing law', type: 'select', options: ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Canada — Ontario', 'United Kingdom', 'United States — Delaware', 'United States — California', 'Singapore', 'Cayman Islands', 'Other'] },
     ],
   },
 }
