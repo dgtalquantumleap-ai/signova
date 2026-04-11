@@ -10,13 +10,17 @@ export const config = {
   runtime: 'edge',
 }
 
-// Cache in memory (Vercel Edge runtime supports this)
+// Cache per country in memory (Vercel Edge runtime supports this)
 const cache = new Map()
 const CACHE_TTL = 60 * 60 * 1000 // 1 hour
 
 export default async function geoHandler(req) {
-  // Check cache first
-  const cached = cache.get('geo')
+  // Determine country from Vercel geo headers (only available on Vercel)
+  const vercelGeo = req.headers.get('x-vercel-ip-country')
+  const countryKey = vercelGeo || 'unknown'
+
+  // Check cache for this specific country
+  const cached = cache.get(countryKey)
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
     return new Response(JSON.stringify(cached.data), {
       headers: {
@@ -27,8 +31,6 @@ export default async function geoHandler(req) {
   }
 
   try {
-    // Try Vercel geo headers first (only available on Vercel)
-    const vercelGeo = req.headers.get('x-vercel-ip-country')
     if (vercelGeo) {
       const data = {
         country_code: vercelGeo,
@@ -36,9 +38,9 @@ export default async function geoHandler(req) {
         city: req.headers.get('x-vercel-ip-city') || '',
         region: req.headers.get('x-vercel-ip-region') || '',
       }
-      
-      cache.set('geo', { data, timestamp: Date.now() })
-      
+
+      cache.set(countryKey, { data, timestamp: Date.now() })
+
       return new Response(JSON.stringify(data), {
         headers: {
           'Content-Type': 'application/json',
@@ -58,8 +60,9 @@ export default async function geoHandler(req) {
       
       if (res.ok) {
         const data = await res.json()
-        cache.set('geo', { data, timestamp: Date.now() })
-        
+        const fallbackKey = data.country_code || countryKey
+        cache.set(fallbackKey, { data, timestamp: Date.now() })
+
         return new Response(JSON.stringify(data), {
           headers: {
             'Content-Type': 'application/json',
