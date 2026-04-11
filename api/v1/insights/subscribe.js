@@ -5,16 +5,6 @@
 
 import { getRedis } from '../../../lib/redis.js'
 
-async function parseBody(req) {
-  if (req.body && typeof req.body === 'object') return req.body
-  return new Promise((resolve, reject) => {
-    let data = ''
-    req.on('data', chunk => { data += chunk })
-    req.on('end', () => { try { resolve(data ? JSON.parse(data) : {}) } catch { resolve({}) } })
-    req.on('error', reject)
-  })
-}
-
 async function sendResendEmail({ from, to, subject, html }) {
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) return { success: false, error: 'RESEND_API_KEY not set' }
@@ -43,10 +33,12 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: { code: 'METHOD_NOT_ALLOWED', message: 'Use POST' } })
   }
 
-  const body = await parseBody(req)
-  const { email, plan = 'starter' } = body
+  // Vercel pre-parses JSON body into req.body
+  const body = (req.body && typeof req.body === 'object') ? req.body : {}
+  const email = body.email
+  const plan = body.plan || 'starter'
 
-  if (!email || !email.includes('@')) {
+  if (!email || typeof email !== 'string' || !email.includes('@')) {
     return res.status(400).json({
       success: false,
       error: { code: 'MISSING_EMAIL', message: 'A valid email is required' },
@@ -79,7 +71,6 @@ export default async function handler(req, res) {
   }
 
   if (process.env.RESEND_API_KEY) {
-    // Confirmation to user
     await sendResendEmail({
       from: 'Akin at Ebenova <akin@ebenova.dev>',
       to: normalizedEmail,
@@ -87,11 +78,10 @@ export default async function handler(req, res) {
       html: buildConfirmationEmail(normalizedEmail, plan),
     }).catch(err => console.error('[insights/subscribe] Resend confirmation error:', err.message))
 
-    // Alert to admin
     await sendResendEmail({
       from: 'Insights Waitlist <insights@ebenova.dev>',
       to: process.env.ALERT_EMAIL || 'info@ebenova.net',
-      subject: `🎯 New Insights waitlist: ${normalizedEmail} (${plan})`,
+      subject: `New Insights waitlist: ${normalizedEmail} (${plan})`,
       html: `<p><strong>${normalizedEmail}</strong> joined the Insights waitlist.<br>Plan interest: <strong>${plan}</strong><br>Time: ${new Date().toUTCString()}</p><p>Reply directly to close them.</p>`,
     }).catch(err => console.error('[insights/subscribe] Resend alert error:', err.message))
   }
@@ -109,30 +99,30 @@ function buildConfirmationEmail(_email, _plan) {
 <html>
 <body style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;background:#f5f5f5;">
   <div style="background:#0e0e0e;padding:24px;border-radius:8px;margin-bottom:20px;">
-    <div style="font-size:18px;font-weight:700;color:#f0ece4;">📡 Ebenova Insights</div>
+    <div style="font-size:18px;font-weight:700;color:#f0ece4;">Ebenova Insights</div>
     <div style="font-size:13px;color:#9a9690;margin-top:4px;">Reddit monitoring for growing products</div>
   </div>
   <div style="background:#fff;padding:24px;border-radius:8px;border:1px solid #eee;">
-    <h2 style="margin:0 0 12px;font-size:20px;color:#1a1a1a;">You're on the waitlist ✓</h2>
+    <h2 style="margin:0 0 12px;font-size:20px;color:#1a1a1a;">You are on the waitlist</h2>
     <p style="color:#555;line-height:1.6;margin:0 0 16px;">
-      We're opening to beta customers soon. You'll get access at the founding member rate of
-      <strong>$49/month</strong> — locked for life as long as you stay subscribed.
+      We are opening to beta customers soon. You will get access at the founding member rate of
+      <strong>$49/month</strong> locked for life as long as you stay subscribed.
     </p>
     <p style="color:#555;line-height:1.6;margin:0 0 20px;">
       While you wait: reply to this email with the keywords and products you want to monitor.
-      I'll have your setup ready the moment we open beta.
+      I will have your setup ready the moment we open beta.
     </p>
     <div style="padding:16px;background:#f9f9f9;border-left:4px solid #c9a84c;border-radius:4px;margin-bottom:20px;">
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a08c00;margin-bottom:8px;">What you're getting</div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a08c00;margin-bottom:8px;">What you are getting</div>
       <ul style="margin:0;padding-left:18px;color:#444;font-size:14px;line-height:2;">
-        <li>Real-time Reddit + Nairaland keyword alerts</li>
-        <li>AI reply drafts (sound human, not promotional)</li>
+        <li>Real-time Reddit and Nairaland keyword alerts</li>
+        <li>AI reply drafts that sound human, not promotional</li>
         <li>Founding member rate locked for life</li>
-        <li>Free upgrade to semantic search (V2)</li>
+        <li>Free upgrade to semantic search V2</li>
       </ul>
     </div>
     <p style="color:#888;font-size:13px;margin:0;">
-      — Akin, Ebenova<br>
+      Akin, Ebenova<br>
       <a href="mailto:akin@ebenova.dev" style="color:#c9a84c;">akin@ebenova.dev</a>
     </p>
   </div>
