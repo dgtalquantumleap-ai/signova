@@ -449,6 +449,15 @@
   .hero-left { text-align: center; }
   .hero-cta-row { align-items: center; }
   .hero-right { max-width: 480px; margin: 0 auto; }
+  .hero-consequence { text-align: center; }
+  .hero-value-line { text-align: center; }
+  .hero-trust-line { text-align: center; }
+  .hero-sub { margin: 0 auto 24px; }
+}
+@media (max-width: 640px) {
+  .hero { padding: 100px 20px 60px; }
+  .cta-box { padding: 32px 20px; }
+  .all-docs-grid { grid-template-columns: 1fr; }
 }
 .hero-badge {
   display: inline-flex; align-items: center; gap: 8px;
@@ -567,9 +576,15 @@
   .quickpick-btn { padding: 12px 6px; }
   .qp-icon { font-size: 20px; }
   .qp-name { font-size: 11px; }
+  /* hero-top3: 3 → 2 columns on mobile */
+  .hero-top3 { grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 24px 0 16px; }
+  .top3-icon { font-size: 32px; }
+  .top3-name { font-size: 15px; }
+  .top3-card { padding: 20px 12px; }
 }
 @media (max-width: 380px) {
   .quickpick-grid { grid-template-columns: repeat(3, 1fr); }
+  .hero-top3 { grid-template-columns: 1fr; }
 }
 
 .hero-stats {
