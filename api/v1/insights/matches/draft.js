@@ -153,8 +153,8 @@ export default async function handler(req, res) {
   const match = typeof matchRaw === 'string' ? JSON.parse(matchRaw) : matchRaw
 
   // Groq for starter, Claude Haiku for growth/scale
-  const plan = auth.keyData.insightsPlan || 'starter'
-  const useClaude = plan === 'growth' || plan === 'scale'
+  const insightsPlan = auth.keyData.insightsPlan || 'starter'
+  const useClaude = insightsPlan === 'growth' || insightsPlan === 'scale'
 
   const draft = useClaude
     ? await generateWithClaude(match, monitor.productContext)

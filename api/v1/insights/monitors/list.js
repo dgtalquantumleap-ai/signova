@@ -28,7 +28,7 @@ export default async function handler(req, res) {
   let redis
   try {
     redis = getRedis()
-  } catch (err) {
+  } catch (_err) {
     return res.status(500).json({ success: false, error: { code: 'STORAGE_UNAVAILABLE', message: 'Redis unavailable' } })
   }
 

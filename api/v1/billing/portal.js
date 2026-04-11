@@ -5,7 +5,6 @@
 
 import Stripe from 'stripe'
 import { authenticate } from '../../../lib/api-auth.js'
-import { getRedis } from '../../../lib/redis.js'
 
 async function parseBody(req) {
   if (req.body && typeof req.body === 'object') return req.body

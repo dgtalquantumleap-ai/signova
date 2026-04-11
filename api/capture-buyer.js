@@ -1,6 +1,6 @@
 // api/capture-buyer.js — email capture (pre-purchase preview leads + post-purchase buyers)
 import { parseBody } from '../lib/parse-body.js'
-import { logWarn, logError, logInfo } from '../lib/logger.js'
+import { logWarn, logError } from '../lib/logger.js'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()

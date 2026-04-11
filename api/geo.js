@@ -74,7 +74,7 @@ export default async function geoHandler(req) {
       status: 404,
       headers: { 'Content-Type': 'application/json' },
     })
-  } catch (error) {
+  } catch (_error) {
     return new Response(JSON.stringify({ error: 'Geo lookup failed' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },

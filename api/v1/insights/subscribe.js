@@ -81,7 +81,7 @@ export default async function handler(req, res) {
         subject: `🎯 New Insights waitlist: ${normalizedEmail} (${plan})`,
         html: `<p><strong>${normalizedEmail}</strong> joined the Insights waitlist.<br>Plan interest: <strong>${plan}</strong><br>Time: ${new Date().toUTCString()}</p><p>Reply directly to close them.</p>`,
       })
-    } catch (_) {}
+    } catch (_e) { /* non-critical alert */ }
   }
 
   return res.status(200).json({

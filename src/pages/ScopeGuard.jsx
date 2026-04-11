@@ -25,7 +25,7 @@ export default function ScopeGuard() {
   const [toolError, setToolError] = useState('')
   const [selectedResponse, setSelectedResponse] = useState(0)
   const [copied, setCopied] = useState(false)
-  const [freeUsed, setFreeUsed] = useState(0)
+  const [_freeUsed, setFreeUsed] = useState(0)
   const [remainingUses, setRemainingUses] = useState(FREE_LIMIT)
 
   // Upgrade / waitlist state

@@ -4,7 +4,7 @@
 
 import Stripe from 'stripe'
 import { parseBody } from '../lib/parse-body.js'
-import { logError, logInfo } from '../lib/logger.js'
+import { logError } from '../lib/logger.js'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
