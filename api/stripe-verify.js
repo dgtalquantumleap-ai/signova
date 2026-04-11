@@ -4,8 +4,8 @@
 
 import Stripe from 'stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
-
+// Stripe client initialised lazily inside handler to avoid crashing on boot
+// when STRIPE_SECRET_KEY is not yet set (e.g. local dev without .env)
 async function parseBody(req) {
   if (req.body && typeof req.body === 'object') return req.body
   return new Promise((resolve, reject) => {
@@ -28,6 +28,8 @@ export default async function handler(req, res) {
     console.error('STRIPE_SECRET_KEY not set')
     return res.status(500).json({ verified: false, error: 'Server misconfigured' })
   }
+
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionId)

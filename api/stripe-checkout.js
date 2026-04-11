@@ -6,13 +6,17 @@ import Stripe from 'stripe'
 import { parseBody } from '../lib/parse-body.js'
 import { logError } from '../lib/logger.js'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
-
+// Stripe client initialised lazily inside handler — avoids boot crash when env var missing
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
   const { docType, docName } = await parseBody(req)
   const origin = req.headers.origin || 'https://getsignova.com'
+
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return res.status(500).json({ error: 'Server misconfigured — missing Stripe key' })
+  }
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
   try {
     const session = await stripe.checkout.sessions.create({
