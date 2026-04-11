@@ -34,7 +34,7 @@ export default function DocLanding() {
   )
 
   const {
-    docId, icon, name, headline, subheadline,
+    docId, icon: _icon, name, headline, subheadline,
     titleTag, metaDesc, badge, whatIs, whenYouNeedIt,
     useCases, faqs,
   } = config

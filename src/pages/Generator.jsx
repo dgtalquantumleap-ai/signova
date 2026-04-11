@@ -530,9 +530,9 @@ export default function Generator() {
   const [answers, setAnswers] = useState({})
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [showEmailGate, setShowEmailGate] = useState(false)
-  const [leadEmail, setLeadEmail] = useState('')
-  const [emailError, setEmailError] = useState('')
+  const [_showEmailGate, _setShowEmailGate] = useState(false)
+  const [_leadEmail, _setLeadEmail] = useState('')
+  const [_emailError, _setEmailError] = useState('')
   const [currentStep, setCurrentStep] = useState(0)
   const [showExtract, setShowExtract] = useState(false)
   const [conversation, setConversation] = useState('')
@@ -555,9 +555,23 @@ export default function Generator() {
         setAnswers(prefill.fields)
         setExtractMsg(`${Object.keys(prefill.fields).length} fields auto-filled from your conversation — review and adjust before generating`)
       }
-    } catch {}
+    } catch {
+      // Ignore parse errors
+    }
     sessionStorage.removeItem('signova_prefill')
   }, [docType])
+
+  // Read URL params on mount — lets developers pre-fill via ?company=Acme&website=acme.com etc.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.toString()) {
+      const prefilled = {}
+      for (const [key, val] of params.entries()) {
+        prefilled[key] = val
+      }
+      setAnswers(prev => ({ ...prev, ...prefilled }))
+    }
+  }, [])
 
   if (!config) return null
 
@@ -617,7 +631,7 @@ export default function Generator() {
 
   const requiredFields = config.fields.filter(f => f.type === 'text' || f.type === 'textarea' || f.type === 'select')
   const filledCount = requiredFields.filter(f => answers[f.id] && answers[f.id].trim && answers[f.id].trim() !== '').length
-  const progressPct = requiredFields.length > 0 ? Math.round((filledCount / requiredFields.length) * 100) : 0
+  const _progressPct = requiredFields.length > 0 ? Math.round((filledCount / requiredFields.length) * 100) : 0
 
   const totalSteps = config.fields.length
   const currentField = config.fields[currentStep]
@@ -647,18 +661,6 @@ export default function Generator() {
     }
   }
 
-  // Read URL params on mount — lets developers pre-fill via ?company=Acme&website=acme.com etc.
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    if (params.toString()) {
-      const prefilled = {}
-      for (const [key, val] of params.entries()) {
-        prefilled[key] = val
-      }
-      setAnswers(prev => ({ ...prev, ...prefilled }))
-    }
-  }, [])
-
   const handleGenerateClick = () => {
     if (!isValid()) { setError('Please fill in all required fields.'); return }
     setError('')
@@ -666,24 +668,24 @@ export default function Generator() {
     handleGenerate('')
   }
 
-  const handleEmailGateSubmit = async () => {
-    if (!leadEmail || !leadEmail.includes('@')) {
-      setEmailError('Please enter a valid email address.')
+  const _handleEmailGateSubmit = async () => {
+    if (!_leadEmail || !_leadEmail.includes('@')) {
+      _setEmailError('Please enter a valid email address.')
       return
     }
-    setEmailError('')
-    sessionStorage.setItem('signova_lead_email', leadEmail)
+    _setEmailError('')
+    sessionStorage.setItem('signova_lead_email', _leadEmail)
     // Fire and forget — capture lead async, don't block generation
     fetch('/api/capture-buyer', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: leadEmail, docName: config?.name, source: 'pre-generate' }),
+      body: JSON.stringify({ email: _leadEmail, docName: config?.name, source: 'pre-generate' }),
     }).catch(() => {})
-    setShowEmailGate(false)
-    handleGenerate(leadEmail)
+    _setShowEmailGate(false)
+    handleGenerate(_leadEmail)
   }
 
-  const handleGenerate = async (email) => {
+  const handleGenerate = async (_email) => {
     if (!isValid()) { setError('Please fill in all required fields.'); return }
     setError('')
     setLoading(true)

@@ -324,7 +324,7 @@ async function sendPaymentFailedAlert(invoice, redis) {
           to: email,
           subject: 'Action needed: payment failed for your Ebenova subscription',
           html: `<div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:40px 24px;">
-            <h2 style="color:#1a1a1a;margin-bottom:8px">We couldn\'t process your payment</h2>
+            <h2 style="color:#1a1a1a;margin-bottom:8px">We couldn't process your payment</h2>
             <p style="color:#555;margin-bottom:20px">Your Ebenova subscription payment of <strong>${amountDue}</strong> failed. Your API key is still active while we retry, but please update your payment method to avoid interruption.</p>
             <a href="${invoiceUrl}" style="display:inline-block;background:#c9a84c;color:#0e0e0e;padding:14px 28px;border-radius:8px;font-weight:600;text-decoration:none;font-size:15px;">Pay now →</a>
             <p style="color:#aaa;font-size:13px;margin-top:24px">Questions? Reply to this email or contact <a href="mailto:billing@ebenova.dev" style="color:#c9a84c">billing@ebenova.dev</a></p>

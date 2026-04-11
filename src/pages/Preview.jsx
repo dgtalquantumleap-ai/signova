@@ -98,7 +98,9 @@ export default function Preview() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: preEmail, docName: doc?.docName, source: 'preview' }),
       })
-    } catch {}
+    } catch {
+      // Ignore capture errors
+    }
     setPreEmailSubmitted(true)
     setPreEmailLoading(false)
   }
@@ -112,7 +114,9 @@ export default function Preview() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: lockedEmail, docName: doc?.docName, source: 'locked_overlay' }),
       })
-    } catch {}
+    } catch {
+      // Ignore capture errors
+    }
     setLockedEmailSubmitted(true)
     setLockedEmailLoading(false)
   }
@@ -236,7 +240,9 @@ export default function Preview() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: buyerEmail, docName: doc?.docName }),
       })
-    } catch {}
+    } catch {
+      // Ignore capture errors
+    }
     setEmailSubmitted(true)
     setEmailLoading(false)
   }
@@ -316,7 +322,9 @@ export default function Preview() {
           promoCode: promoCode,
         }),
       })
-    } catch {}
+    } catch {
+      // Ignore capture errors
+    }
     setPromoEmailSubmitted(true)
     setPromoEmailLoading(false)
     setPendingPromoUnlock(false)

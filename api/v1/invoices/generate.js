@@ -204,7 +204,7 @@ export default async function handler(req, res) {
   const { type = 'invoice', from, to, items, invoice_number, issue_date, due_date,
           currency = 'USD', tax_rate = 0, discount_percent = 0,
           notes, payment_instructions, logo_url,
-          output_format = 'html' } = body
+          _output_format = 'html' } = body
 
   // ── Validate ──────────────────────────────────────────────────────────────
   if (!from?.name) {

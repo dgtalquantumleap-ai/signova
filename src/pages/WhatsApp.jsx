@@ -207,7 +207,7 @@ export default function WhatsApp() {
   const [showAll, setShowAll] = useState(false)
   const [openFaq, setOpenFaq] = useState(null)
   const [countryCode, setCountryCode] = useState('DEFAULT')
-  const [geoLoaded, setGeoLoaded] = useState(false)
+  const [_geoLoaded, setGeoLoaded] = useState(false)
 
   // Geo detection — reuse session cache from Landing.jsx (key: sig_geo)
   useEffect(() => {
@@ -224,7 +224,9 @@ export default function WhatsApp() {
           const priority = GEO_DOC_PRIORITY[cc] || GEO_DOC_PRIORITY.DEFAULT
           setDocType(priority[0])
         }
-      } catch {}
+      } catch {
+        // Ignore geo parse errors
+      }
       setGeoLoaded(true)
       return () => { mounted = false }
     }

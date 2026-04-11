@@ -134,7 +134,9 @@ export default async function handler(req, res) {
         html: `<p>Code <strong>${upperCode}</strong> redeemed for <strong>${docName}</strong></p>`,
       }),
     })
-  } catch (_) {}
+  } catch {
+    // Ignore notification errors
+  }
 
   return res.status(200).json({
     valid: true,

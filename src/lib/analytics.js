@@ -11,7 +11,7 @@ export function track(eventName, params = {}) {
         app: 'signova',
       })
     }
-  } catch (_e) {
+  } catch {
     // Silent fail — never break the UI for analytics
   }
 }

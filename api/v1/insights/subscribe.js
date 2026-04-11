@@ -81,7 +81,9 @@ export default async function handler(req, res) {
         subject: `🎯 New Insights waitlist: ${normalizedEmail} (${plan})`,
         html: `<p><strong>${normalizedEmail}</strong> joined the Insights waitlist.<br>Plan interest: <strong>${plan}</strong><br>Time: ${new Date().toUTCString()}</p><p>Reply directly to close them.</p>`,
       })
-    } catch (_e) { /* non-critical alert */ }
+    } catch {
+      // non-critical alert failure
+    }
   }
 
   return res.status(200).json({
@@ -92,7 +94,7 @@ export default async function handler(req, res) {
   })
 }
 
-function buildConfirmationEmail(email, plan) {
+function buildConfirmationEmail(_email, _plan) {
   return `<!DOCTYPE html>
 <html>
 <body style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;background:#f5f5f5;">

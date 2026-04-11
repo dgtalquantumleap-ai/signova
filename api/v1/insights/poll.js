@@ -35,14 +35,14 @@ export default async function handler(req, res) {
   let redis
   try {
     redis = getRedis()
-  } catch (_err) {
+  } catch {
     return res.status(500).json({ success: false, error: { code: 'STORAGE_UNAVAILABLE', message: 'Redis unavailable' } })
   }
 
   try {
     const result = await pollInsights(redis)
     return res.status(200).json(result)
-  } catch (_err) {
+  } catch (err) {
     console.error('[insights/poll] Fatal error:', err.message)
     return res.status(500).json({
       success: false,

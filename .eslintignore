@@ -1,5 +1,0 @@
-# Generated build artifacts — never lint these
-mcp-servers/**/.smithery/
-mcp-servers/**/node_modules/
-dist/
-node_modules/
