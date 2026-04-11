@@ -17,47 +17,39 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-      
+        uses: actions/checkout@v5
+
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Lint code
         run: npm run lint
-      
-      - name: Run tests
-        run: npm test -- --coverage
-      
+
+      - name: Run tests with coverage
+        run: npx vitest run --coverage
+
       - name: Build project
         run: npm run build
         env:
           # Mock env vars for build (not needed for static build)
           NODE_ENV: production
-      
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v4
-        if: success()
-        continue-on-error: true
-        with:
-          file: ./coverage/coverage-final.json
-          fail_ci_if_error: false
 
   security-audit:
     name: Security Audit
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-      
+        uses: actions/checkout@v5
+
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22.x
           cache: 'npm'
@@ -80,13 +72,13 @@ jobs:
   build-check:
     name: Production Build
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-      
+        uses: actions/checkout@v5
+
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22.x
           cache: 'npm'
