@@ -258,6 +258,21 @@
 .nav-links { display: flex; gap: 32px; }
 .nav-links a { font-size: 14px; color: var(--text2); transition: color 0.2s; }
 .nav-links a:hover { color: var(--text); }
+.nav-cta-link { color: var(--gold) !important; font-weight: 600; }
+
+/* Hide nav links on mobile — hamburger takes over */
+@media (max-width: 768px) {
+  .nav-links:not(.open) { display: none; }
+  .nav-links.open {
+    display: flex; flex-direction: column;
+    position: absolute; top: 64px; left: 0; right: 0;
+    background: rgba(14,14,14,0.98);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px 20px;
+    gap: 16px; z-index: 99;
+  }
+  .nav-links.open a { font-size: 16px; padding: 6px 0; }
+}
 
 /* ── Hero ── */
 .hero {
@@ -782,6 +797,8 @@
 .competitor-good-list li::before { content: none; }
 @media (max-width: 700px) {
   .competitor-callout { grid-template-columns: 1fr; }
+  /* Prevent horizontal scroll on wide tables */
+  .comparison-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 }
 .section-label { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
 .section-title { font-family: var(--font-display); font-size: clamp(28px, 4vw, 42px); font-weight: 700; color: var(--text); }
