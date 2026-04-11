@@ -4,7 +4,6 @@
 // Body: { email, plan? }
 
 import { getRedis } from '../../../lib/redis.js'
-import { Resend } from 'resend'
 
 async function parseBody(req) {
   if (req.body && typeof req.body === 'object') return req.body
@@ -14,6 +13,24 @@ async function parseBody(req) {
     req.on('end', () => { try { resolve(data ? JSON.parse(data) : {}) } catch { resolve({}) } })
     req.on('error', reject)
   })
+}
+
+async function sendResendEmail({ from, to, subject, html }) {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) return { success: false, error: 'RESEND_API_KEY not set' }
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ from, to, subject, html }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    return { success: false, error: err.message || 'Resend API error' }
+  }
+  return { success: true }
 }
 
 export default async function handler(req, res) {
@@ -62,28 +79,21 @@ export default async function handler(req, res) {
   }
 
   if (process.env.RESEND_API_KEY) {
-    const resend = new Resend(process.env.RESEND_API_KEY)
-    try {
-      await resend.emails.send({
-        from: 'Akin at Ebenova <akin@ebenova.dev>',
-        to: normalizedEmail,
-        subject: "You're on the Insights waitlist",
-        html: buildConfirmationEmail(normalizedEmail, plan),
-      })
-    } catch (err) {
-      console.error('[insights/subscribe] Resend error:', err.message)
-    }
+    // Confirmation to user
+    await sendResendEmail({
+      from: 'Akin at Ebenova <akin@ebenova.dev>',
+      to: normalizedEmail,
+      subject: "You're on the Insights waitlist",
+      html: buildConfirmationEmail(normalizedEmail, plan),
+    }).catch(err => console.error('[insights/subscribe] Resend confirmation error:', err.message))
 
-    try {
-      await resend.emails.send({
-        from: 'Insights Waitlist <insights@ebenova.dev>',
-        to: process.env.ALERT_EMAIL || 'info@ebenova.net',
-        subject: `🎯 New Insights waitlist: ${normalizedEmail} (${plan})`,
-        html: `<p><strong>${normalizedEmail}</strong> joined the Insights waitlist.<br>Plan interest: <strong>${plan}</strong><br>Time: ${new Date().toUTCString()}</p><p>Reply directly to close them.</p>`,
-      })
-    } catch {
-      // non-critical alert failure
-    }
+    // Alert to admin
+    await sendResendEmail({
+      from: 'Insights Waitlist <insights@ebenova.dev>',
+      to: process.env.ALERT_EMAIL || 'info@ebenova.net',
+      subject: `🎯 New Insights waitlist: ${normalizedEmail} (${plan})`,
+      html: `<p><strong>${normalizedEmail}</strong> joined the Insights waitlist.<br>Plan interest: <strong>${plan}</strong><br>Time: ${new Date().toUTCString()}</p><p>Reply directly to close them.</p>`,
+    }).catch(err => console.error('[insights/subscribe] Resend alert error:', err.message))
   }
 
   return res.status(200).json({

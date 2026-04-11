@@ -189,7 +189,7 @@ const TOOLS = [
   },
 ]
 
-const API_BASE = 'https://www.getsignova.com'
+const API_BASE = 'https://api.ebenova.dev'
 
 // ── Body parsing — same pattern as working API routes ──────────────────────
 // Vercel pre-parses req.body for application/json requests.
