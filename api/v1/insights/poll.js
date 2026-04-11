@@ -10,8 +10,8 @@
 // Vercel cron config (add to vercel.json):
 //   "crons": [{ "path": "/v1/insights/poll", "schedule": "*/15 * * * *" }]
 
-import { getRedis } from '../../../../lib/redis.js'
-import { pollInsights } from '../../../../lib/insights-poller.js'
+import { getRedis } from '../../../lib/redis.js'
+import { pollInsights } from '../../../lib/insights-poller.js'
 
 const POLL_SECRET = process.env.POLL_CRON_SECRET || ''
 
