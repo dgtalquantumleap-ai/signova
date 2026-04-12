@@ -535,33 +535,8 @@ export default function Landing() {
   const [navOpen, setNavOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState(0)
   const [videoPlaying, setVideoPlaying] = useState(false)
-  const [waitlistEmail, setWaitlistEmail] = useState('')
-  const [waitlistSubmitted, setWaitlistSubmitted] = useState(false)
-  const [waitlistLoading, setWaitlistLoading] = useState(false)
-  const [waitlistError, setWaitlistError] = useState('')
-
 
   const closeNav = () => setNavOpen(false)
-
-  const handleWaitlist = async (e) => {
-    e.preventDefault()
-    if (!waitlistEmail.trim()) return
-    setWaitlistLoading(true)
-    setWaitlistError('')
-    try {
-      const res = await fetch('/api/waitlist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: waitlistEmail }),
-      })
-      if (!res.ok) throw new Error('Signup failed')
-      setWaitlistSubmitted(true)
-    } catch {
-      setWaitlistError('Something went wrong. Please try again.')
-    } finally {
-      setWaitlistLoading(false)
-    }
-  }
 
   return (
     <div className="landing">
@@ -612,7 +587,7 @@ export default function Landing() {
         <div className="hero-two-col">
           {/* ── LEFT: headline + CTA ── */}
           <div className="hero-left">
-            <div className="hero-eyebrow">🤝 Never lose money to a <span className="highlight">WhatsApp handshake deal</span> again</div>
+            <div className="hero-eyebrow">💬 Paste chat → Get a contract</div>
             <p className="hero-consequence">Every month, freelancers lose thousands because they had no contract.</p>
             <h1 className="hero-title" fetchpriority="high">
               Paste your chat.<br />
@@ -664,7 +639,7 @@ export default function Landing() {
                 Turn this chat into a contract <span className="btn-arrow">→</span>
               </button>
             </div>
-            <p className="hero-trust-line">Works in any jurisdiction worldwide · Free preview · No account · {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} to download · ↩️ 30-day refund</p>
+            <p className="hero-trust-line">Free preview · No account required · $4.99 {currency.local ? `(${currency.local})` : ''} to download · Enforceable in 180+ countries · 30-day refund</p>
           </div>
 
           {/* ── RIGHT: live WhatsApp demo ── */}
@@ -873,45 +848,54 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Signova Pro waitlist section */}
-      <section className="pro-waitlist-section">
+      {/* Pricing section — 2 clear tiers */}
+      <section className="pricing-section" id="pricing">
         <div className="section-inner">
-          <div className="pro-waitlist-content">
-            <div className="pro-badge">Coming Soon</div>
-            <h2 className="pro-title">Signova Pro — Unlimited Documents</h2>
-            <p className="pro-subtitle">
-              For agencies, freelancers, and businesses generating multiple documents. 
-              Get unlimited document generation, contract monitoring, and scope creep alerts.
-            </p>
-            <div className="pro-features">
-              <div className="pro-feature">✓ Unlimited documents</div>
-              <div className="pro-feature">✓ Contract monitoring</div>
-              <div className="pro-feature">✓ Scope creep alerts</div>
-              <div className="pro-feature">✓ Priority support</div>
+          <div className="section-header">
+            <p className="section-label">Pricing</p>
+            <h2 className="section-title">Simple, honest pricing</h2>
+            <p className="section-subtitle">Start free. Pay only when you download.</p>
+          </div>
+          <div className="pricing-grid">
+
+            {/* Free */}
+            <div className="price-card">
+              <div className="price-tier">Free Preview</div>
+              <div className="price-amount">$0</div>
+              <p className="price-desc">See your full document before paying anything. No account, no card required.</p>
+              <ul className="price-list">
+                <li className="price-yes">✓ Preview any document in full</li>
+                <li className="price-yes">✓ 27 document types</li>
+                <li className="price-yes">✓ WhatsApp extraction</li>
+                <li className="price-yes">✓ 180+ jurisdictions</li>
+                <li className="price-no">✗ Download PDF</li>
+                <li className="price-no">✗ Watermark-free version</li>
+              </ul>
+              <button className="btn-outline" onClick={() => navigate('/generate/freelance-contract')}>
+                Try free →
+              </button>
             </div>
-            <div className="pro-price">$9.99/month at launch</div>
-            
-            {waitlistSubmitted ? (
-              <div className="pro-waitlist-done">
-                ✓ You're on the list — we'll email you at launch
-              </div>
-            ) : (
-              <form className="pro-waitlist-form" onSubmit={handleWaitlist}>
-                <input
-                  className="pro-waitlist-input"
-                  type="email"
-                  placeholder="your@email.com"
-                  aria-label="Email address for Signova Pro waitlist"
-                  value={waitlistEmail}
-                  onChange={e => setWaitlistEmail(e.target.value)}
-                  required
-                />
-                <button className="pro-waitlist-btn" type="submit" disabled={waitlistLoading}>
-                  {waitlistLoading ? 'Saving…' : 'Join waitlist →'}
-                </button>
-              </form>
-            )}
-            {waitlistError && <p className="pro-waitlist-error">{waitlistError}</p>}
+
+            {/* Per document */}
+            <div className="price-card price-featured">
+              <div className="price-top-badge">Most Popular</div>
+              <div className="price-tier">Pay Per Document</div>
+              <div className="price-amount">$4.99 <span className="price-per">/ doc</span></div>
+              <p className="price-desc">Pay once per document. No subscription. Yours to keep forever.</p>
+              <ul className="price-list">
+                <li className="price-yes">✓ Clean PDF — no watermark</li>
+                <li className="price-yes">✓ Instant download</li>
+                <li className="price-yes">✓ 27 document types</li>
+                <li className="price-yes">✓ Jurisdiction-aware content</li>
+                <li className="price-yes">✓ Pay by card or USDT crypto</li>
+                <li className="price-yes">✓ 30-day money-back guarantee</li>
+              </ul>
+              <button className="btn-primary" onClick={() => navigate('/whatsapp')}>
+                Generate now →
+              </button>
+              <p className="price-guarantee">✓ 30-day refund if not satisfied</p>
+            </div>
+
           </div>
         </div>
       </section>
