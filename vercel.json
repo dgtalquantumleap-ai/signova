@@ -83,11 +83,11 @@
     }
   ],
   "functions": {
+    "api/v1/bookings.js": { "maxDuration": 30 },
     "api/v1/vigil/authorize.js": { "maxDuration": 30 },
     "api/v1/vigil/analyze.js": { "maxDuration": 60 },
     "api/v1/vigil/score.js": { "maxDuration": 30 },
     "api/v1/vigil/report.js": { "maxDuration": 120 },
-    "api/warmup.js": { "maxDuration": 30 },
     "api/scope-guard-analyze.js": { "maxDuration": 60 },
     "api/v1/documents/batch.js": { "maxDuration": 120 },
     "api/v1/documents/templates.js": { "maxDuration": 10 },
