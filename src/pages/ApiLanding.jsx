@@ -40,11 +40,12 @@ const API_CARDS = [
     id: 'vigil',
     icon: '🔒',
     title: 'Vigil Fraud Alert API',
-    desc: 'Proximity-based card fraud detection. Your card declines when you\'re in Lagos but a transaction fires in London. Powered by GPS haversine engine + Claude AI risk analysis and AML report generation.',
-    features: ['Real-time proximity authorization', 'AI risk scoring 0–100 (Claude Haiku)', 'AML compliance reports (Claude Sonnet)', '13 MCP tools — Claude-native'],
+    desc: 'Proximity-based card fraud detection — GPS haversine engine decides approve/decline in under 150ms. AI risk scoring and AML reports require a separately deployed Vigil server with ANTHROPIC_API_KEY set. Contact api@ebenova.dev to get access.',
+    features: ['Real-time proximity authorization', 'AI risk scoring 0–100 (Claude Haiku · requires Vigil server)', 'AML compliance reports (Claude Sonnet · Scale+ tier)', '13 MCP tools — Claude-native'],
     endpoint: 'POST /v1/vigil/authorize',
     cta: 'View Docs',
     link: '/vigil',
+    badge: 'Requires VIGIL_API_URL',
   },
   {
     id: 'extraction',
@@ -90,12 +91,13 @@ const API_CARDS = [
     id: 'fieldops',
     icon: '🤖',
     title: 'FieldOps Agent API',
-    desc: 'WhatsApp-native booking, revenue recovery, and staff coordination for service businesses. AI agent that books jobs, chases unpaid invoices, and briefs staff — all via WhatsApp.',
+    desc: 'WhatsApp-native booking, revenue recovery, and staff coordination for service businesses. Proxied through the Ebenova API — requires a FieldOps server deployment. Contact api@ebenova.dev to get started.',
     features: ['WhatsApp booking + confirmation', '3-step invoice recovery', 'Staff job briefings', '5-tool MCP server', 'OxaPay + Polar payments'],
     endpoint: 'POST /v1/bookings',
     cta: 'View Docs',
     link: '/docs#fieldops',
     highlight: true,
+    badge: 'Separate Service',
   },
   {
     id: 'insights',
@@ -492,6 +494,9 @@ export default function ApiLanding() {
                 key={card.id}
                 className={`api-card ${card.highlight ? 'highlight' : ''}`}
               >
+                {card.badge && (
+                  <span className="api-card-badge">{card.badge}</span>
+                )}
                 <div className="api-card-icon">{card.icon}</div>
                 <h3 className="api-card-title">{card.title}</h3>
                 <p className="api-card-desc">{card.desc}</p>

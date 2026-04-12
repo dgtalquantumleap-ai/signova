@@ -46,6 +46,10 @@
       "destination": "/api/v1/insights/poll"
     },
     {
+      "source": "/v1/monitors",
+      "destination": "/api/v1/insights/monitors/router"
+    },
+    {
       "source": "/v1/(.*)",
       "destination": "/api/v1/$1"
     },

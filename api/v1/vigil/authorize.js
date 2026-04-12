@@ -34,7 +34,15 @@ export default async function handler(req, res) {
   }
 
   if (!VIGIL_URL) {
-    return res.status(503).json({ success: false, error: { code: 'VIGIL_UNAVAILABLE', message: 'Vigil service not configured. Set VIGIL_API_URL.' } })
+    return res.status(503).json({
+      success: false,
+      error: {
+        code: 'VIGIL_UNAVAILABLE',
+        message: 'Vigil fraud detection service is not configured.',
+        hint: 'Set VIGIL_API_URL in Vercel environment variables to enable proximity-based fraud detection.',
+        docs: 'https://ebenova.dev/docs/vigil-setup',
+      },
+    })
   }
 
   try {
