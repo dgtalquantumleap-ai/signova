@@ -72,6 +72,32 @@ const VALID_CODES = {
     maxUses: 20,
     description: 'Kredo partnership — 1 free document for Kredo early users',
   },
+  // ── Accelerator cohort codes ──────────────────────────────────────────────
+  MEST2026: {
+    expiresAt: new Date('2026-12-31T23:59:59Z'),
+    maxUses: 100,
+    description: 'MEST cohort — 1 free document per founder',
+  },
+  CCHUBNIG: {
+    expiresAt: new Date('2026-12-31T23:59:59Z'),
+    maxUses: 200,
+    description: 'CcHUB Nigeria — 1 free document per member',
+  },
+  BAOBAB26: {
+    expiresAt: new Date('2026-12-31T23:59:59Z'),
+    maxUses: 80,
+    description: 'Baobab Network cohort — 1 free document per founder',
+  },
+  ACCLAFRICA: {
+    expiresAt: new Date('2026-12-31T23:59:59Z'),
+    maxUses: 50,
+    description: 'Accelerate Africa cohort — 1 free document per founder',
+  },
+  TEF2026: {
+    expiresAt: new Date('2026-12-31T23:59:59Z'),
+    maxUses: 1000,
+    description: 'Tony Elumelu Foundation — 1 free document per entrepreneur',
+  },
 }
 
 export default async function handler(req, res) {
