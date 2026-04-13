@@ -1,7 +1,46 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useNavigate } from 'react-router-dom'
 import './ScopeGuard.css'
+
+// ── Geo-currency for ScopeGuard subscription pricing ────────────────────────
+// $9.99/mo Pro and $79/mo API — monthly equivalents per country
+const SG_CURRENCY_MAP = {
+  NG: { symbol: '₦', proAmount: 13800, apiAmount: 110000, code: 'NGN' },
+  GH: { symbol: 'GH₵', proAmount: 150, apiAmount: 1200, code: 'GHS' },
+  KE: { symbol: 'KSh', proAmount: 1300, apiAmount: 10500, code: 'KES' },
+  ZA: { symbol: 'R', proAmount: 185, apiAmount: 1480, code: 'ZAR' },
+  IN: { symbol: '₹', proAmount: 835, apiAmount: 6640, code: 'INR' },
+  GB: { symbol: '£', proAmount: 7.90, apiAmount: 63, code: 'GBP' },
+  DE: { symbol: '€', proAmount: 9.20, apiAmount: 73, code: 'EUR' },
+  FR: { symbol: '€', proAmount: 9.20, apiAmount: 73, code: 'EUR' },
+  DEFAULT: { symbol: '$', proAmount: 9.99, apiAmount: 79, code: 'USD' },
+}
+
+function useGeoCurrency() {
+  const [currency, setCurrency] = useState(SG_CURRENCY_MAP.DEFAULT)
+  useEffect(() => {
+    const cached = sessionStorage.getItem('sig_geo')
+    if (cached) {
+      try {
+        const d = JSON.parse(cached)
+        const cur = SG_CURRENCY_MAP[d.countryCode] || SG_CURRENCY_MAP.DEFAULT
+        setCurrency(cur)
+      } catch { /* ignore */ }
+      return
+    }
+    fetch('/api/geo')
+      .then(r => r.json())
+      .then(d => {
+        if (d.country_code) {
+          const cur = SG_CURRENCY_MAP[d.country_code] || SG_CURRENCY_MAP.DEFAULT
+          setCurrency(cur)
+        }
+      })
+      .catch(() => {})
+  }, [])
+  return currency
+}
 
 const VIOLATIONS_DEMO = [
   { icon: '📦', title: 'Scope creep', example: '"Can you also add a blog section? Should be quick."', response: 'Auto-drafts a change order with estimated hours and cost.' },
@@ -15,6 +54,7 @@ const FREE_LIMIT = 3
 
 export default function ScopeGuard() {
   const navigate = useNavigate()
+  const currency = useGeoCurrency()
 
   // Tool state
   const [contractText, setContractText] = useState('')
@@ -258,7 +298,7 @@ export default function ScopeGuard() {
             <div className="sg-upgrade-overlay">
               <div className="sg-upgrade-box">
                 <h3>You've used your 3 free analyses</h3>
-                <p>Join the waitlist for unlimited Scope Guard access at $9.99/month (50% off launch price).</p>
+                <p>Join the waitlist for unlimited Scope Guard access at {currency.symbol}{currency.proAmount.toLocaleString()}/month (50% off launch price of {currency.symbol}{(currency.proAmount * 2).toLocaleString()}).</p>
                 {!upgradeSubmitted ? (
                   <form className="sg-form" onSubmit={handleUpgradeSubmit}>
                     <input className="sg-input" type="email" placeholder="your@email.com" value={upgradeEmail} onChange={e => setUpgradeEmail(e.target.value)} />
@@ -315,8 +355,8 @@ export default function ScopeGuard() {
             <div className="sg-price-card sg-price-pro">
               <div className="sg-price-popular">Most Popular</div>
               <div className="sg-price-tier">Pro</div>
-              <div className="sg-price-amount">$9.99<span>/mo</span></div>
-              <div className="sg-price-early">Early access price · $19.99 after launch</div>
+              <div className="sg-price-amount">{currency.symbol}{currency.proAmount.toLocaleString()}<span>/mo</span></div>
+              <div className="sg-price-early">Early access price · {currency.symbol}{(currency.proAmount * 2).toLocaleString()} after launch</div>
               <ul className="sg-price-features">
                 <li>✓ Unlimited Scope Guard</li>
                 <li>✓ 500 documents/month</li>
@@ -330,7 +370,7 @@ export default function ScopeGuard() {
             </div>
             <div className="sg-price-card sg-price-scale">
               <div className="sg-price-tier">Developer API</div>
-              <div className="sg-price-amount">$79<span>/mo</span></div>
+              <div className="sg-price-amount">{currency.symbol}{currency.apiAmount.toLocaleString()}<span>/mo</span></div>
               <ul className="sg-price-features">
                 <li>✓ Scope Guard API access</li>
                 <li>✓ 500 API calls/month</li>
