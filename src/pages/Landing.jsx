@@ -649,7 +649,7 @@ export default function Landing() {
             <p className="hero-sub">
               Get a signed contract in 2 minutes — just paste your WhatsApp, email, or iMessage negotiation — Signova extracts the agreed terms and builds a lawyer-quality document before the moment passes. 27 document types. Works at midnight. Works anywhere.
             </p>
-            <p className="hero-value-line">Cheaper than losing one invoice. Built by a founder who lost a ₦400k deal to a handshake — and built this so you don't have to.</p>
+            <p className="hero-value-line">Cheaper than losing one invoice. Built by a founder who lost a major deal to a handshake — and built this so you don't have to.</p>
 
             <div className="hero-jurisdictions">
               <span>🇳🇬 Nigeria</span>
