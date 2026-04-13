@@ -1,67 +1,75 @@
 import { useNavigate } from 'react-router-dom'
-import { useState, useEffect, startTransition } from 'react'
+import { useState, useEffect, useRef, useCallback, startTransition } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { trackDocSelected, trackHeroCtaClick } from '../lib/analytics'
 import './Landing.css'
 
 // Update this number periodically — shown in hero as social proof
-// Verify actual count: Supabase → documents table → SELECT COUNT(*) FROM documents
 const DOCS_GENERATED = 1200
 
+// ── Custom hook: IntersectionObserver-based lazy loading ────────────────────
+function useLazyLoad(options = {}) {
+  const ref = useRef(null)
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setIsVisible(true)
+        observer.disconnect()
+      }
+    }, { threshold: options.threshold ?? 0.1, rootMargin: options.rootMargin ?? '50px' })
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [options.threshold, options.rootMargin])
+
+  return [ref, isVisible]
+}
+
 // ── Geo-currency detection ──────────────────────────────────────────────────
-// Maps country code → { symbol, amount, code, local }
-// 'amount' is the $4.99 USD equivalent in local currency (rounded for readability)
-// 'local' is a human-friendly display string shown below the USD price
 const CURRENCY_MAP = {
-  // West Africa
   NG: { symbol: '₦', amount: 6900,   code: 'NGN', local: '≈ ₦6,900'       },
   GH: { symbol: 'GH₵', amount: 75,   code: 'GHS', local: '≈ GH₵75'        },
   SN: { symbol: 'CFA', amount: 3100, code: 'XOF', local: '≈ CFA 3,100'    },
   CI: { symbol: 'CFA', amount: 3100, code: 'XOF', local: '≈ CFA 3,100'    },
   CM: { symbol: 'CFA', amount: 3100, code: 'XAF', local: '≈ CFA 3,100'    },
-  // East Africa
   KE: { symbol: 'KSh', amount: 650,  code: 'KES', local: '≈ KSh 650'      },
   TZ: { symbol: 'TSh', amount: 13200,code: 'TZS', local: '≈ TSh 13,200'   },
   UG: { symbol: 'USh', amount: 18500,code: 'UGX', local: '≈ USh 18,500'   },
   ET: { symbol: 'Br',  amount: 290,  code: 'ETB', local: '≈ Br 290'       },
-  // Southern Africa
   ZA: { symbol: 'R',   amount: 93,   code: 'ZAR', local: '≈ R93'          },
   ZW: { symbol: 'USD', amount: 4.99, code: 'USD', local: null              },
-  // North Africa / Middle East
   EG: { symbol: 'E£',  amount: 248,  code: 'EGP', local: '≈ E£248'        },
   AE: { symbol: 'د.إ', amount: 18,   code: 'AED', local: '≈ AED 18'       },
   SA: { symbol: '﷼',   amount: 19,   code: 'SAR', local: '≈ SAR 19'       },
-  // South Asia
   IN: { symbol: '₹',   amount: 418,  code: 'INR', local: '≈ ₹418'         },
   PK: { symbol: '₨',   amount: 1390, code: 'PKR', local: '≈ Rs 1,390'     },
   BD: { symbol: '৳',   amount: 550,  code: 'BDT', local: '≈ ৳550'         },
-  // Southeast Asia
   PH: { symbol: '₱',   amount: 288,  code: 'PHP', local: '≈ ₱288'         },
   ID: { symbol: 'Rp',  amount: 80000,code: 'IDR', local: '≈ Rp 80,000'    },
   MY: { symbol: 'RM',  amount: 23,   code: 'MYR', local: '≈ RM 23'        },
   SG: { symbol: 'S$',  amount: 6.70, code: 'SGD', local: '≈ S$6.70'       },
-  // Latin America
   BR: { symbol: 'R$',  amount: 29,   code: 'BRL', local: '≈ R$29'         },
   MX: { symbol: '$',   amount: 103,  code: 'MXN', local: '≈ MX$103'       },
   CO: { symbol: '$',   amount: 20000,code: 'COP', local: '≈ COP 20,000'   },
   AR: { symbol: '$',   amount: 5000, code: 'ARS', local: '≈ AR$5,000'     },
-  // Europe
   GB: { symbol: '£',   amount: 3.95, code: 'GBP', local: '≈ £3.95'        },
-  // EU countries — same EUR entry
   DE: { symbol: '€',   amount: 4.60, code: 'EUR', local: '≈ €4.60'        },
   FR: { symbol: '€',   amount: 4.60, code: 'EUR', local: '≈ €4.60'        },
   IT: { symbol: '€',   amount: 4.60, code: 'EUR', local: '≈ €4.60'        },
   ES: { symbol: '€',   amount: 4.60, code: 'EUR', local: '≈ €4.60'        },
   NL: { symbol: '€',   amount: 4.60, code: 'EUR', local: '≈ €4.60'        },
   PT: { symbol: '€',   amount: 4.60, code: 'EUR', local: '≈ €4.60'        },
-  // North America
   CA: { symbol: 'CA$', amount: 6.85, code: 'CAD', local: '≈ CA$6.85'      },
   AU: { symbol: 'A$',  amount: 7.80, code: 'AUD', local: '≈ A$7.80'       },
   NZ: { symbol: 'NZ$', amount: 8.50, code: 'NZD', local: '≈ NZ$8.50'      },
 }
 const DEFAULT_CURRENCY = { symbol: '$', amount: 4.99, code: 'USD', local: null }
 
-// Geo-aware lawyer fee comparison — shown in CTA section
 const LAWYER_FEE_MAP = {
   NG: '₦50,000–₦150,000', GH: 'GH₵500–GH₵2,000', KE: 'KSh 5,000–KSh 20,000',
   ZA: 'R800–R3,000', ET: 'ETB 2,000–ETB 8,000', TZ: 'TSh 50,000–TSh 200,000',
@@ -82,7 +90,6 @@ function useGeo() {
   const [countryCode, setCountryCode] = useState(null)
 
   useEffect(() => {
-    // Check cache first — synchronous, no network, safe to run immediately
     const cached = sessionStorage.getItem('sig_geo')
     if (cached) {
       try {
@@ -93,11 +100,7 @@ function useGeo() {
       return
     }
 
-    // LCP FIX: Defer geo-detection until AFTER LCP fires (idle + 2s delay)
-    // This ensures the fetch never competes with LCP element rendering
     const doFetch = () => {
-      // Use our own API endpoint which leverages Vercel geo headers (free, unlimited)
-      // Falls back to ipapi.co if not on Vercel
       fetch('/api/geo')
         .then(r => r.json())
         .then(data => {
@@ -105,7 +108,6 @@ function useGeo() {
             const c = CURRENCY_MAP[data.country_code] || DEFAULT_CURRENCY
             const cc = data.country_code || null
             sessionStorage.setItem('sig_geo', JSON.stringify({ currency: c, countryCode: cc }))
-            // Use startTransition to mark this as low-priority update
             startTransition(() => {
               setCurrency(c)
               setCountryCode(cc)
@@ -115,15 +117,13 @@ function useGeo() {
         .catch(() => {})
     }
 
-    // LCP FIX: Wait for idle + 2 seconds after page load
-    // This ensures LCP element paints before any geo-related updates
     const timeoutId = setTimeout(() => {
       if (typeof requestIdleCallback !== 'undefined') {
         requestIdleCallback(doFetch, { timeout: 5000 })
       } else {
         doFetch()
       }
-    }, 2000) // Increased from 1000ms to 2000ms for better LCP
+    }, 2000)
 
     return () => clearTimeout(timeoutId)
   }, [])
@@ -209,278 +209,66 @@ function getQuickPicks(cc) {
   return p || QUICKPICK_DEFAULT
 }
 
-
-
-const DOCS = [
+// ── Document categories for mobile accordion ────────────────────────────────
+const DOC_CATEGORIES = [
   {
-    id: 'privacy-policy',
-    icon: '🔒',
-    name: 'Privacy Policy',
-    desc: 'Required for any app, website or service that collects user data.',
-    time: '2 min',
-    popular: true,
+    name: 'Business & Commercial',
+    docs: ['privacy-policy', 'terms-of-service', 'nda', 'business-proposal', 'mou', 'letter-of-intent', 'business-partnership', 'joint-venture', 'distribution-agreement', 'supply-agreement', 'consulting-agreement', 'service-agreement', 'independent-contractor', 'payment-terms-agreement', 'purchase-agreement', 'non-compete-agreement'],
   },
   {
-    id: 'terms-of-service',
-    icon: '📋',
-    name: 'Terms of Service',
-    desc: 'Define the rules users must agree to when using your product.',
-    time: '2 min',
-    popular: true,
+    name: 'Employment & Contracts',
+    docs: ['freelance-contract', 'employment-offer-letter', 'founders-agreement', 'advisory-board-agreement', 'vesting-agreement', 'term-sheet', 'safe-agreement', 'ip-assignment-agreement'],
   },
   {
-    id: 'nda',
-    icon: '🤝',
-    name: 'Non-Disclosure Agreement',
-    desc: 'Protect confidential information shared with employees or partners.',
-    time: '3 min',
-    popular: false,
+    name: 'Property & Real Estate',
+    docs: ['tenancy-agreement', 'quit-notice', 'deed-of-assignment', 'power-of-attorney', 'landlord-agent-agreement', 'facility-manager-agreement'],
   },
   {
-    id: 'freelance-contract',
-    icon: '✍️',
-    name: 'Freelance Contract',
-    desc: 'Set expectations, deliverables, and payment terms for client work.',
-    time: '3 min',
-    popular: false,
-  },
-  {
-    id: 'independent-contractor',
-    icon: '🤝',
-    name: 'Independent Contractor Agreement',
-    desc: 'Formally define the relationship between your business and contractors.',
-    time: '3 min',
-    popular: false,
-  },
-  {
-    id: 'hire-purchase',
-    icon: '🚗',
-    name: 'Hire Purchase Agreement',
-    desc: 'Finance any asset — vehicle, equipment, machinery — with structured instalment payments.',
-    time: '3 min',
-    popular: true,
-  },
-  {
-    id: 'purchase-agreement',
-    icon: '🛒',
-    name: 'Basic Purchase Agreement',
-    desc: 'Document the one-time sale of goods, assets, or property between a buyer and seller.',
-    time: '2 min',
-    popular: false,
-  },
-  {
-    id: 'service-agreement',
-    icon: '📝',
-    name: 'Service Agreement',
-    desc: 'Define scope, fees, and terms between a service provider and client — for any industry.',
-    time: '3 min',
-    popular: true,
-  },
-  {
-    id: 'consulting-agreement',
-    icon: '💰',
-    name: 'Consulting Agreement',
-    desc: 'Formalise advisory or consulting engagements with clear deliverables, rates and IP terms.',
-    time: '3 min',
-    popular: false,
-  },
-  {
-    id: 'employment-offer-letter',
-    icon: '👔',
-    name: 'Employment Offer Letter',
-    desc: 'Professionally extend a job offer with salary, benefits, start date and terms clearly documented.',
-    time: '3 min',
-    popular: true,
-  },
-  {
-    id: 'non-compete-agreement',
-    icon: '🚚',
-    name: 'Non-Compete Agreement',
-    desc: 'Protect your business by restricting employees or contractors from working with competitors.',
-    time: '2 min',
-    popular: false,
-  },
-  {
-    id: 'payment-terms-agreement',
-    icon: '💰',
-    name: 'Payment Terms Agreement',
-    desc: 'Document agreed repayment schedules, due dates, and late penalty terms between buyer and seller.',
-    time: '2 min',
-    popular: false,
-  },
-  {
-    id: 'business-partnership',
-    icon: '🤝',
-    name: 'Business Partnership Agreement',
-    desc: 'Formally structure a business partnership — capital, profit sharing, roles and exit terms.',
-    time: '4 min',
-    popular: true,
-  },
-  {
-    id: 'joint-venture',
-    icon: '🗺️',
-    name: 'Joint Venture Agreement',
-    desc: 'Two companies joining forces for a specific project — ownership, management, and profit sharing.',
-    time: '4 min',
-    popular: false,
-  },
-  {
-    id: 'loan-agreement',
-    icon: '💰',
-    name: 'Loan Agreement',
-    desc: 'Document personal or business loans — amount, interest, repayment schedule, and collateral.',
-    time: '3 min',
-    popular: true,
-  },
-  {
-    id: 'shareholder-agreement',
-    icon: '📊',
-    name: 'Shareholder Agreement',
-    desc: 'Define rights between company shareholders — voting, dividends, transfers, and protections.',
-    time: '4 min',
-    popular: false,
-  },
-  {
-    id: 'mou',
-    icon: '🗒️',
-    name: 'Memorandum of Understanding (MOU)',
-    desc: 'Document a formal understanding between two organisations before a full contract is signed.',
-    time: '3 min',
-    popular: true,
-  },
-  {
-    id: 'letter-of-intent',
-    icon: '🤝',
-    name: 'Letter of Intent (LOI)',
-    desc: 'Signal serious intent to acquire, invest, partner, or lease — before formal negotiations begin.',
-    time: '3 min',
-    popular: false,
-  },
-  {
-    id: 'distribution-agreement',
-    icon: '📝',
-    name: 'Distribution / Reseller Agreement',
-    desc: 'Appoint distributors or resellers for your products — territory, exclusivity, margin and terms.',
-    time: '3 min',
-    popular: false,
-  },
-  {
-    id: 'supply-agreement',
-    icon: '🤝',
-    name: 'Supply Agreement',
-    desc: 'Contract between supplier and buyer for regular goods — pricing, delivery, quality and volume.',
-    time: '3 min',
-    popular: false,
-  },
-  {
-    id: 'business-proposal',
-    icon: '🚀',
-    name: 'Business Proposal',
-    desc: 'Win clients with a professional proposal — problem, solution, deliverables, timeline and pricing.',
-    time: '5 min',
-    popular: true,
-  },
-  {
-    id: 'tenancy-agreement',
-    icon: '🤝',
-    name: 'Tenancy Agreement',
-    desc: 'Legally binding rental contract between landlord and tenant for any residential or commercial property.',
-    time: '3 min',
-    popular: true,
-  },
-  {
-    id: 'quit-notice',
-    icon: '💰',
-    name: 'Quit Notice',
-    desc: 'Formal notice to vacate a property — for expired tenancy, non-payment, or breach of terms.',
-    time: '2 min',
-    popular: false,
-  },
-  {
-    id: 'deed-of-assignment',
-    icon: '📜',
-    name: 'Deed of Assignment',
-    desc: 'Transfer property ownership from seller to buyer with full legal documentation.',
-    time: '3 min',
-    popular: true,
-  },
-  {
-    id: 'power-of-attorney',
-    icon: '⚖️',
-    name: 'Power of Attorney',
-    desc: 'Legally authorise another person to act on your behalf for property, financial, or business matters.',
-    time: '3 min',
-    popular: false,
-  },
-  {
-    id: 'landlord-agent-agreement',
-    icon: '🤝',
-    name: 'Landlord & Agent Agreement',
-    desc: 'Define terms between a property owner and their estate agent — commissions, duties, and authority.',
-    time: '3 min',
-    popular: false,
-  },
-  {
-    id: 'facility-manager-agreement',
-    icon: '🗺️',
-    name: 'Facility Manager Agreement',
-    desc: 'Formal contract between property owner and facility management company covering all services and fees.',
-    time: '3 min',
-    popular: false,
-  },
-
-  // ── Startup Documents ─────────────────────────────────────────────────────
-  {
-    id: 'founders-agreement',
-    icon: '🤝',
-    name: "Founders' Agreement",
-    desc: 'Define equity, roles, vesting, IP ownership and exit terms between co-founders before conflict arises.',
-    time: '5 min',
-    popular: true,
-  },
-  {
-    id: 'ip-assignment-agreement',
-    icon: '💡',
-    name: 'IP Assignment Agreement',
-    desc: 'Transfer intellectual property rights from a freelancer, employee or agency to your company.',
-    time: '3 min',
-    popular: false,
-  },
-  {
-    id: 'advisory-board-agreement',
-    icon: '🎓',
-    name: 'Advisory Board Agreement',
-    desc: 'Onboard advisors and mentors with equity, vesting schedule, time commitment and confidentiality terms.',
-    time: '4 min',
-    popular: false,
-  },
-  {
-    id: 'vesting-agreement',
-    icon: '📈',
-    name: 'Vesting Agreement',
-    desc: 'Document equity vesting schedules for founders and employees with cliff, acceleration and leaver terms.',
-    time: '4 min',
-    popular: false,
-  },
-  {
-    id: 'term-sheet',
-    icon: '📋',
-    name: 'Investment Term Sheet',
-    desc: 'Non-binding term sheet covering valuation, equity %, investor rights and conditions for angel/seed funding.',
-    time: '5 min',
-    popular: false,
-  },
-  {
-    id: 'safe-agreement',
-    icon: '🔐',
-    name: 'SAFE Agreement',
-    desc: 'Simple Agreement for Future Equity — the standard early-stage fundraising instrument. Valuation cap, discount, pro-rata.',
-    time: '4 min',
-    popular: false,
+    name: 'Finance & Investment',
+    docs: ['loan-agreement', 'hire-purchase', 'shareholder-agreement'],
   },
 ]
 
-// Real signal — no fabricated quotes
+const DOCS = [
+  { id: 'privacy-policy', icon: '🔒', name: 'Privacy Policy', desc: 'Required for any app, website or service that collects user data.', time: '2 min', popular: true },
+  { id: 'terms-of-service', icon: '📋', name: 'Terms of Service', desc: 'Define the rules users must agree to when using your product.', time: '2 min', popular: true },
+  { id: 'nda', icon: '🤝', name: 'Non-Disclosure Agreement', desc: 'Protect confidential information shared with employees or partners.', time: '3 min', popular: false },
+  { id: 'freelance-contract', icon: '✍️', name: 'Freelance Contract', desc: 'Set expectations, deliverables, and payment terms for client work.', time: '3 min', popular: false },
+  { id: 'independent-contractor', icon: '🤝', name: 'Independent Contractor Agreement', desc: 'Formally define the relationship between your business and contractors.', time: '3 min', popular: false },
+  { id: 'hire-purchase', icon: '🚗', name: 'Hire Purchase Agreement', desc: 'Finance any asset — vehicle, equipment, machinery, with structured instalment payments.', time: '3 min', popular: true },
+  { id: 'purchase-agreement', icon: '🛒', name: 'Basic Purchase Agreement', desc: 'Document the one-time sale of goods, assets, or property between a buyer and seller.', time: '2 min', popular: false },
+  { id: 'service-agreement', icon: '📝', name: 'Service Agreement', desc: 'Define scope, fees, and terms between a service provider and client — for any industry.', time: '3 min', popular: true },
+  { id: 'consulting-agreement', icon: '💰', name: 'Consulting Agreement', desc: 'Formalise advisory or consulting engagements with clear deliverables, rates and IP terms.', time: '3 min', popular: false },
+  { id: 'employment-offer-letter', icon: '👔', name: 'Employment Offer Letter', desc: 'Professionally extend a job offer with salary, benefits, start date and terms clearly documented.', time: '3 min', popular: true },
+  { id: 'non-compete-agreement', icon: '🚚', name: 'Non-Compete Agreement', desc: 'Protect your business by restricting employees or contractors from working with competitors.', time: '2 min', popular: false },
+  { id: 'payment-terms-agreement', icon: '💰', name: 'Payment Terms Agreement', desc: 'Document agreed repayment schedules, due dates, and late penalty terms between buyer and seller.', time: '2 min', popular: false },
+  { id: 'business-partnership', icon: '🤝', name: 'Business Partnership Agreement', desc: 'Formally structure a business partnership — capital, profit sharing, roles and exit terms.', time: '4 min', popular: true },
+  { id: 'joint-venture', icon: '🗺️', name: 'Joint Venture Agreement', desc: 'Two companies joining forces for a specific project — ownership, management, and profit sharing.', time: '4 min', popular: false },
+  { id: 'loan-agreement', icon: '💰', name: 'Loan Agreement', desc: 'Document personal or business loans — amount, interest, repayment schedule, and collateral.', time: '3 min', popular: true },
+  { id: 'shareholder-agreement', icon: '📊', name: 'Shareholder Agreement', desc: 'Define rights between company shareholders — voting, dividends, transfers, and protections.', time: '4 min', popular: false },
+  { id: 'mou', icon: '🗒️', name: 'Memorandum of Understanding (MOU)', desc: 'Document a formal understanding between two organisations before a full contract is signed.', time: '3 min', popular: true },
+  { id: 'letter-of-intent', icon: '🤝', name: 'Letter of Intent (LOI)', desc: 'Signal serious intent to acquire, invest, partner, or lease — before formal negotiations begin.', time: '3 min', popular: false },
+  { id: 'distribution-agreement', icon: '📝', name: 'Distribution / Reseller Agreement', desc: 'Appoint distributors or resellers for your products — territory, exclusivity, margin and terms.', time: '3 min', popular: false },
+  { id: 'supply-agreement', icon: '🤝', name: 'Supply Agreement', desc: 'Contract between supplier and buyer for regular goods — pricing, delivery, quality and volume.', time: '3 min', popular: false },
+  { id: 'business-proposal', icon: '🚀', name: 'Business Proposal', desc: 'Win clients with a professional proposal — problem, solution, deliverables, timeline and pricing.', time: '5 min', popular: true },
+  { id: 'tenancy-agreement', icon: '🤝', name: 'Tenancy Agreement', desc: 'Legally binding rental contract between landlord and tenant for any residential or commercial property.', time: '3 min', popular: true },
+  { id: 'quit-notice', icon: '💰', name: 'Quit Notice', desc: 'Formal notice to vacate a property — for expired tenancy, non-payment, or breach of terms.', time: '2 min', popular: false },
+  { id: 'deed-of-assignment', icon: '📜', name: 'Deed of Assignment', desc: 'Transfer property ownership from seller to buyer with full legal documentation.', time: '3 min', popular: true },
+  { id: 'power-of-attorney', icon: '⚖️', name: 'Power of Attorney', desc: 'Legally authorise another person to act on your behalf for property, financial, or business matters.', time: '3 min', popular: false },
+  { id: 'landlord-agent-agreement', icon: '🤝', name: 'Landlord & Agent Agreement', desc: 'Define terms between a property owner and their estate agent — commissions, duties, and authority.', time: '3 min', popular: false },
+  { id: 'facility-manager-agreement', icon: '🗺️', name: 'Facility Manager Agreement', desc: 'Formal contract between property owner and facility management company covering all services and fees.', time: '3 min', popular: false },
+  { id: 'founders-agreement', icon: '🤝', name: "Founders' Agreement", desc: 'Define equity, roles, vesting, IP ownership and exit terms between co-founders before conflict arises.', time: '5 min', popular: true },
+  { id: 'ip-assignment-agreement', icon: '💡', name: 'IP Assignment Agreement', desc: 'Transfer intellectual property rights from a freelancer, employee or agency to your company.', time: '3 min', popular: false },
+  { id: 'advisory-board-agreement', icon: '🎓', name: 'Advisory Board Agreement', desc: 'Onboard advisors and mentors with equity, vesting schedule, time commitment and confidentiality terms.', time: '4 min', popular: false },
+  { id: 'vesting-agreement', icon: '📈', name: 'Vesting Agreement', desc: 'Document equity vesting schedules for founders and employees with cliff, acceleration and leaver terms.', time: '4 min', popular: false },
+  { id: 'term-sheet', icon: '📋', name: 'Investment Term Sheet', desc: 'Non-binding term sheet covering valuation, equity %, investor rights and conditions for angel/seed funding.', time: '5 min', popular: false },
+  { id: 'safe-agreement', icon: '🔐', name: 'SAFE Agreement', desc: 'Simple Agreement for Future Equity — the standard early-stage fundraising instrument. Valuation cap, discount, pro-rata.', time: '4 min', popular: false },
+]
+
+// Build a lookup map for docs
+const DOCS_MAP = {}
+DOCS.forEach(d => { DOCS_MAP[d.id] = d })
+
 const SOCIAL_PROOF = {
   advisor: {
     name: 'Riley-Ghiles',
@@ -533,18 +321,60 @@ export default function Landing() {
   const navigate = useNavigate()
   const { currency: geoCurrency, countryCode } = useGeo()
   const quickPicks = getQuickPicks(countryCode)
+
+  // Nav state
   const [navOpen, setNavOpen] = useState(false)
+  const closeNav = useCallback(() => setNavOpen(false), [])
+
+  // FAQ state — pre-open #0 ("Is this legally binding?")
   const [openFaq, setOpenFaq] = useState(0)
+
+  // Video lazy loading
+  const [videoRef, videoVisible] = useLazyLoad({ threshold: 0.15 })
   const [videoPlaying, setVideoPlaying] = useState(false)
-  const [currency, setCurrency] = useState(null) // null = use geo-detected
+
+  // Currency
+  const [currency, setCurrency] = useState(null)
   const [currencyOpen, setCurrencyOpen] = useState(false)
-
-  const closeNav = () => setNavOpen(false)
-
-  // Effective currency: user override > geo-detected
   const activeCurrency = currency || geoCurrency
 
-  // Build list of top currencies for the dropdown
+  // Document search & filter
+  const [docSearch, setDocSearch] = useState('')
+  const [openDocCategories, setOpenDocCategories] = useState([true, false, false, false]) // First category open by default on mobile
+
+  // Scope Guard mini-demo
+  const [scopeInput, setScopeInput] = useState('')
+
+  // Close nav on Escape
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === 'Escape') {
+        if (navOpen) setNavOpen(false)
+        if (currencyOpen) setCurrencyOpen(false)
+      }
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [navOpen, currencyOpen])
+
+  // Close currency dropdown on outside click
+  useEffect(() => {
+    if (!currencyOpen) return
+    const handleClick = () => setCurrencyOpen(false)
+    const timer = setTimeout(() => document.addEventListener('click', handleClick), 0)
+    return () => { clearTimeout(timer); document.removeEventListener('click', handleClick) }
+  }, [currencyOpen])
+
+  // Filter docs based on search
+  const filteredDocs = docSearch.trim()
+    ? DOCS.filter(d =>
+        d.name.toLowerCase().includes(docSearch.toLowerCase()) ||
+        d.desc.toLowerCase().includes(docSearch.toLowerCase()) ||
+        d.id.toLowerCase().includes(docSearch.toLowerCase())
+      )
+    : DOCS
+
+  // Currency options
   const CURRENCY_OPTIONS = [
     { code: 'USD', symbol: '$', label: 'USD — $4.99' },
     { code: 'NGN', symbol: '₦', amount: 6900, label: 'NGN — ₦6,900' },
@@ -560,41 +390,49 @@ export default function Landing() {
     <div className="landing">
       <Helmet>
         <title>Signova — Professional Legal Documents for Freelancers, Landlords & Businesses | Free Preview</title>
-        <meta name="description" content="Generate legal contracts in 3 minutes. NDAs, freelance contracts, tenancy agreements and 24 more. Free preview, $4.99 to download. No lawyer needed." />
+        <meta name="description" content="Generate legal contracts in 3 minutes. NDAs, freelance contracts, tenancy agreements and 27 more. Free preview, $4.99 to download. No lawyer needed." />
         <meta name="keywords" content="legal document generator Nigeria, tenancy agreement Nigeria, NDA template, freelance contract, deed of assignment Nigeria, loan agreement template, business proposal template, MOU template, hire purchase agreement Nigeria, power of attorney Nigeria, employment offer letter, shareholder agreement, joint venture agreement, service agreement, distribution agreement, quit notice Nigeria, privacy policy generator, terms of service generator" />
         <link rel="canonical" href="https://www.getsignova.com/" />
         <link rel="alternate" hreflang="en" href="https://www.getsignova.com/" />
         <link rel="alternate" hreflang="x-default" href="https://www.getsignova.com/" />
-        {/* LCP FIX: Preconnect to geo API */}
         <link rel="preconnect" href="https://ipapi.co" />
         <link rel="dns-prefetch" href="https://ipapi.co" />
       </Helmet>
-      <nav className="nav">
+
+      {/* Skip to content link */}
+      <a href="#main-content" className="skip-link">Skip to main content</a>
+
+      {/* ── Navigation ─────────────────────────────────────────────────── */}
+      <nav className="nav" role="navigation" aria-label="Main navigation">
         <div className="nav-inner">
-          <div className="logo">
-            <span className="logo-mark">S</span>
+          <a href="/" className="logo" aria-label="Signova home">
+            <span className="logo-mark" aria-hidden="true">S</span>
             <span className="logo-text">Signova</span>
-          </div>
+          </a>
 
           {/* Currency toggle */}
-          <div className="currency-toggle" style={{ position: 'relative' }}>
+          <div className="currency-toggle">
             <button
               className="currency-toggle-btn"
-              onClick={() => setCurrencyOpen(o => !o)}
+              onClick={(e) => { e.stopPropagation(); setCurrencyOpen(o => !o) }}
               aria-label="Change currency"
+              aria-expanded={currencyOpen}
+              aria-haspopup="listbox"
               title="Change currency"
             >
               {activeCurrency.symbol}{activeCurrency.code === 'USD' ? '4.99' : activeCurrency.amount?.toLocaleString()}
             </button>
             {currencyOpen && (
-              <div className="currency-dropdown">
+              <div className="currency-dropdown" role="listbox" aria-label="Select currency" onClick={e => e.stopPropagation()}>
                 {CURRENCY_OPTIONS.map(opt => (
                   <button
                     key={opt.code}
+                    role="option"
+                    aria-selected={activeCurrency.code === opt.code}
                     className={`currency-option ${activeCurrency.code === opt.code ? 'active' : ''}`}
                     onClick={() => {
                       if (opt.code === geoCurrency.code) {
-                        setCurrency(null) // revert to auto
+                        setCurrency(null)
                       } else {
                         setCurrency({ code: opt.code, symbol: opt.symbol, amount: opt.amount || 4.99 })
                       }
@@ -609,65 +447,72 @@ export default function Landing() {
             )}
           </div>
 
-          <div className={`nav-links ${navOpen ? 'open' : ''}`}>
-            <a href="#documents" onClick={closeNav} aria-label="Browse documents">Documents</a>
-            <a href="#how" onClick={closeNav} aria-label="How Signova works">How it works</a>
-            <a href="/scope-guard" onClick={closeNav} aria-label="Protect against scope creep" title="Paste a client message + your contract — Scope Guard flags violations and drafts your pushback">Scope Guard</a>
-            <a href="#faq" onClick={closeNav} aria-label="Frequently asked questions">FAQ</a>
-            <a href="/blog" onClick={closeNav} aria-label="Read our blog">Blog</a>
-            <a href="#documents" onClick={closeNav} className="nav-cta-link" aria-label="Preview a document for free">Preview Free →</a>
+          {/* Nav links — simplified */}
+          <div className={`nav-links ${navOpen ? 'open' : ''}`} role="menubar">
+            <a href="/" onClick={closeNav} role="menuitem" aria-label="Home">Home</a>
+            <a href="#how" onClick={closeNav} role="menuitem" aria-label="How Signova works">How it Works</a>
+            <a href="/scope-guard" onClick={closeNav} role="menuitem" aria-label="Scope Guard — detect scope creep">Scope Guard</a>
+            <a href="#pricing" onClick={closeNav} role="menuitem" aria-label="Pricing">Pricing</a>
+            <a href="#faq" onClick={closeNav} role="menuitem" aria-label="Frequently asked questions">FAQ</a>
+            <a href="/login" onClick={closeNav} role="menuitem" aria-label="Log in to your account">Login</a>
+            <a href="/whatsapp" onClick={closeNav} className="nav-cta-link" role="menuitem" aria-label="Preview a document for free">Preview Free →</a>
           </div>
+
           <button
             className="hamburger"
             onClick={() => setNavOpen(o => !o)}
-            aria-label="Toggle menu"
+            aria-label={navOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={navOpen}
           >
-            <span className={`ham-line ${navOpen ? 'open' : ''}`} />
-            <span className={`ham-line ${navOpen ? 'open' : ''}`} />
-            <span className={`ham-line ${navOpen ? 'open' : ''}`} />
+            <span className={`ham-line ${navOpen ? 'open' : ''}`} aria-hidden="true" />
+            <span className={`ham-line ${navOpen ? 'open' : ''}`} aria-hidden="true" />
+            <span className={`ham-line ${navOpen ? 'open' : ''}`} aria-hidden="true" />
           </button>
         </div>
       </nav>
 
+      {/* ── Hero Section ───────────────────────────────────────────────── */}
       <section className="hero" id="main-content">
-        {/* Subtle document grid pattern instead of generic glow */}
         <div className="hero-doc-pattern" aria-hidden="true">
           {['NDA','LEASE','CONTRACT','MOU','NDA','INVOICE','CONTRACT','DEED','NDA','LEASE'].map((t,i) => (
             <span key={i} className="hero-pattern-word">{t}</span>
           ))}
         </div>
+
         <div className="hero-two-col">
-          {/* ── LEFT: headline + CTA ── */}
+          {/* LEFT: headline + CTA */}
           <div className="hero-left">
-            <div className="hero-eyebrow">💬 Paste chat → Get a contract</div>
-            <p className="hero-consequence">Every month, freelancers lose thousands because they had no contract.</p>
             <h1 className="hero-title" fetchpriority="high">
-              Paste your chat.<br />
-              <span className="hero-title-gold">Get a signed contract</span><br />
-              in 2 minutes.
+              Turn WhatsApp Chats into<br />
+              <span className="hero-title-gold">Enforceable Contracts.</span>
             </h1>
             <p className="hero-sub">
-              Get a signed contract in 2 minutes — just paste your WhatsApp, email, or iMessage negotiation — Signova extracts the agreed terms and builds a lawyer-quality document before the moment passes. 27 document types. Works at midnight. Works anywhere.
+              Paste your negotiation. Get a lawyer-quality document in 2 minutes. Free preview.
             </p>
-            <p className="hero-value-line">Cheaper than losing one invoice. Built by a founder who lost a major deal to a handshake — and built this so you don't have to.</p>
 
-            <div className="hero-jurisdictions">
-              <span>🇳🇬 Nigeria</span>
-              <span className="jurisdiction-divider">·</span>
-              <span>🇨🇦 Canada</span>
-              <span className="jurisdiction-divider">·</span>
-              <span>🇺🇸 US</span>
-              <span className="jurisdiction-divider">·</span>
-              <span>🇬🇧 UK</span>
-              <span className="jurisdiction-divider">·</span>
-              <span className="jurisdiction-more">180+ countries worldwide</span>
+            <button
+              className="btn-primary btn-large"
+              onClick={() => { trackHeroCtaClick(); navigate('/whatsapp') }}
+              aria-label="Paste your chat to start generating a contract"
+            >
+              Paste Chat to Start <span className="btn-arrow" aria-hidden="true">→</span>
+            </button>
+
+            {/* Trust signals immediately below CTA */}
+            <div className="hero-trust-below-cta">
+              <div className="hero-proof-badge">
+                📄 {DOCS_GENERATED.toLocaleString()}+ documents generated
+              </div>
+              <div className="hero-jurisdictions">
+                <span aria-label="Nigeria">🇳🇬</span>
+                <span aria-label="Canada">🇨🇦</span>
+                <span aria-label="Singapore">🇸🇬</span>
+                <span className="jurisdiction-more">180+ countries</span>
+              </div>
             </div>
 
-            <div className="hero-proof-badge">
-              📄 {DOCS_GENERATED.toLocaleString()}+ documents generated
-            </div>
-
-            <div className="hero-top3" id="documents">
+            {/* Top 3 quick picks */}
+            <div className="hero-top3">
               {quickPicks.slice(0, 3).map(d => (
                 <button
                   key={d.id}
@@ -675,31 +520,32 @@ export default function Landing() {
                   onClick={() => { trackDocSelected(d.id, 'top3'); navigate(`/generate/${d.id}`) }}
                   aria-label={`Generate ${d.name} for free`}
                 >
-                  <span className="top3-icon">{d.icon}</span>
+                  <span className="top3-icon" aria-hidden="true">{d.icon}</span>
                   <span className="top3-name">{d.name}</span>
                   <span className="top3-go">Preview Free →</span>
                 </button>
               ))}
             </div>
 
-            <div className="hero-cta-row">
-              <button
-                className="btn-primary btn-large"
-                onClick={() => { trackHeroCtaClick(); navigate('/whatsapp') }}
-                aria-label="Turn your chat into a contract"
-              >
-                Turn this chat into a contract <span className="btn-arrow">→</span>
-              </button>
-            </div>
             <p className="hero-trust-line">Free preview · No account required · $4.99 {activeCurrency.local ? `(${activeCurrency.local})` : ''} to download · Enforceable in 180+ countries · 30-day refund</p>
           </div>
 
-          {/* ── RIGHT: live WhatsApp demo ── */}
-          <div className="hero-right" data-lazy-load onClick={() => navigate('/whatsapp')} role="button" tabIndex={0} aria-label="Try WhatsApp extraction" onKeyDown={e => e.key === 'Enter' && navigate('/whatsapp')}>
-            <div className="hero-demo-label">Free demo — tap to try with your own chat</div>
+          {/* RIGHT: live WhatsApp demo */}
+          <div
+            className="hero-right"
+            data-lazy-load
+            onClick={() => navigate('/whatsapp')}
+            role="button"
+            tabIndex={0}
+            aria-label="Try WhatsApp extraction demo — tap to open"
+            onKeyDown={e => e.key === 'Enter' && navigate('/whatsapp')}
+          >
+            <div className="hero-demo-label" aria-hidden="true">Free demo — tap to try with your own chat</div>
             <div className="hero-demo-phone">
               <div className="hero-demo-bar">
-                <span className="hero-demo-dot" /><span className="hero-demo-dot" /><span className="hero-demo-dot" />
+                <span className="hero-demo-dot" aria-hidden="true" />
+                <span className="hero-demo-dot" aria-hidden="true" />
+                <span className="hero-demo-dot" aria-hidden="true" />
                 <span className="hero-demo-app">💬 WhatsApp</span>
               </div>
               <div className="hero-demo-chat">
@@ -709,9 +555,9 @@ export default function Landing() {
                 <div className="hero-chat-me">50% upfront, rest on delivery?</div>
               </div>
             </div>
-            <div className="hero-demo-arrow">↓ Signova extracts 9 terms</div>
+            <div className="hero-demo-arrow" aria-hidden="true">↓ Signova extracts 9 terms</div>
             <div className="hero-demo-result">
-              <span className="hero-result-icon">✓</span>
+              <span className="hero-result-icon" aria-hidden="true">✓</span>
               <div>
                 <div className="hero-result-title">Freelance Contract ready</div>
                 <div className="hero-result-sub">Client · Scope · Deliverables · Timeline · Payment · Revisions…</div>
@@ -721,64 +567,139 @@ export default function Landing() {
           </div>
         </div>
 
-        {/* All 27 documents — always visible chip grid */}
-        <div className="hero-picks-row">
-          <p className="all-docs-label">All 27 document types</p>
+        {/* All documents — searchable grid */}
+        <div className="hero-picks-row" id="documents">
+          <p className="all-docs-label">All 33 document types</p>
+
+          {/* Search input */}
+          <div className="doc-search-wrapper">
+            <input
+              type="search"
+              className="doc-search-input"
+              placeholder="Search documents..."
+              value={docSearch}
+              onChange={e => setDocSearch(e.target.value)}
+              aria-label="Search documents"
+            />
+            {docSearch && (
+              <button
+                className="doc-search-clear"
+                onClick={() => setDocSearch('')}
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          {/* Desktop: flat grid */}
           <div className="all-docs-grid">
-            {DOCS.map(doc => (
+            {filteredDocs.map(doc => (
               <button
                 key={doc.id}
                 className="all-doc-btn"
                 onClick={() => { trackDocSelected(doc.id, 'all_docs'); navigate(`/generate/${doc.id}`) }}
                 aria-label={`Generate ${doc.name}`}
               >
-                <span>{doc.icon}</span> {doc.name}
+                <span aria-hidden="true">{doc.icon}</span> {doc.name}
               </button>
             ))}
+          </div>
+          {docSearch && filteredDocs.length === 0 && (
+            <p className="doc-search-empty">No documents match "{docSearch}"</p>
+          )}
+
+          {/* Mobile: category accordion */}
+          <div className="mobile-doc-accordion">
+            {DOC_CATEGORIES.map((cat, idx) => {
+              const catDocs = cat.docs
+                .map(id => DOCS.find(d => d.id === id))
+                .filter(Boolean)
+                .filter(d => !docSearch || d.name.toLowerCase().includes(docSearch.toLowerCase()) || d.desc.toLowerCase().includes(docSearch.toLowerCase()))
+              
+              if (catDocs.length === 0) return null
+
+              return (
+                <div key={cat.name} className={`doc-category-accordion ${openDocCategories[idx] ? 'open' : ''}`}>
+                  <button
+                    className="doc-category-header"
+                    onClick={() => {
+                      const newState = [...openDocCategories]
+                      newState[idx] = !newState[idx]
+                      setOpenDocCategories(newState)
+                    }}
+                    aria-expanded={openDocCategories[idx]}
+                  >
+                    <span>{cat.name} ({catDocs.length})</span>
+                    <span className="doc-category-chevron">{openDocCategories[idx] ? '▾' : '▸'}</span>
+                  </button>
+                  <div className="doc-category-body">
+                    {catDocs.map(doc => (
+                      <button
+                        key={doc.id}
+                        className="mobile-doc-btn"
+                        onClick={() => { trackDocSelected(doc.id, 'mobile_cat'); navigate(`/generate/${doc.id}`) }}
+                      >
+                        <span aria-hidden="true">{doc.icon}</span>
+                        <span className="mobile-doc-name">{doc.name}</span>
+                        {doc.popular && <span className="mobile-doc-badge">Popular</span>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>
 
-      {/* Video walkthrough */}
-      <section className="video-section">
+      {/* ── Video walkthrough (lazy loaded) ────────────────────────────── */}
+      <section className="video-section" ref={videoRef}>
         <div className="section-inner">
           <div className="section-header">
             <p className="section-label">See it in action</p>
             <h2 className="section-title">From chat to signed contract — watch it happen</h2>
           </div>
           <div className="video-wrapper">
-            {videoPlaying ? (
-              <iframe
-                src="https://www.loom.com/embed/9a41b8a6f1654deab554c80a7d1ba891?autoplay=1&hide_owner=true&hide_share=true&hide_title=true&hideEmbedTopBar=true"
-                style={{ border: 'none' }}
-                allowFullScreen
-                allow="autoplay; fullscreen"
-                className="video-iframe"
-                title="Signova walkthrough"
-              />
-            ) : (
-              <button
-                className="video-poster"
-                onClick={() => setVideoPlaying(true)}
-                aria-label="Play Signova walkthrough"
-              >
-                <img
-                  src={`https://cdn.loom.com/sessions/thumbnails/9a41b8a6f1654deab554c80a7d1ba891-with-play.gif`}
-                  alt="Signova walkthrough preview"
-                  className="video-thumbnail"
+            {videoVisible ? (
+              videoPlaying ? (
+                <iframe
+                  src="https://www.loom.com/embed/9a41b8a6f1654deab554c80a7d1ba891?autoplay=1&hide_owner=true&hide_share=true&hide_title=true&hideEmbedTopBar=true"
+                  style={{ border: 'none' }}
+                  allowFullScreen
+                  allow="autoplay; fullscreen"
+                  className="video-iframe"
+                  title="Signova walkthrough video"
                   loading="lazy"
                 />
-                <div className="video-play-overlay" aria-hidden="true">
-                  <span className="video-play-btn">▶</span>
-                </div>
-                <div className="video-caption">▶ Watch the 60-second walkthrough — no sign-up required</div>
-              </button>
+              ) : (
+                <button
+                  className="video-poster"
+                  onClick={() => setVideoPlaying(true)}
+                  aria-label="Play Signova walkthrough video"
+                >
+                  <img
+                    src="https://cdn.loom.com/sessions/thumbnails/9a41b8a6f1654deab554c80a7d1ba891-with-play.gif"
+                    alt="Signova walkthrough video thumbnail"
+                    className="video-thumbnail"
+                    loading="lazy"
+                  />
+                  <div className="video-play-overlay" aria-hidden="true">
+                    <span className="video-play-btn">▶</span>
+                  </div>
+                  <div className="video-caption">Watch the 60-second walkthrough — no sign-up required</div>
+                </button>
+              )
+            ) : (
+              <div className="video-placeholder-loading" aria-label="Video loading">
+                <div className="video-skeleton" aria-hidden="true" />
+              </div>
             )}
           </div>
         </div>
       </section>
 
-      {/* WhatsApp feature banner */}
+      {/* ── WhatsApp feature banner ────────────────────────────────────── */}
       <section className="wa-banner-section">
         <div className="wa-banner-inner">
           <div className="wa-banner-left">
@@ -792,26 +713,24 @@ export default function Landing() {
             </button>
           </div>
           <div className="wa-banner-right">
-            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px', textAlign: 'right' }}>Example conversation</div>
-            <div className="wa-banner-chat" style={{ cursor: 'pointer' }} onClick={() => navigate('/whatsapp')}>
+            <div className="wa-banner-chat" onClick={() => navigate('/whatsapp')} role="button" tabIndex={0} aria-label="Try WhatsApp extraction with this example" onKeyDown={e => e.key === 'Enter' && navigate('/whatsapp')}>
               <div className="wa-msg wa-msg-them">We need a full website — 5 pages, blog, contact form. Budget is $2,500.</div>
               <div className="wa-msg wa-msg-me">Got it. Timeline and revisions?</div>
               <div className="wa-msg wa-msg-them">3 weeks. 2 rounds included, extra revisions billed.</div>
               <div className="wa-msg wa-msg-me">50% upfront, rest on delivery?</div>
               <div className="wa-msg wa-msg-them">Agreed. I'll send the details now.</div>
               <div className="wa-msg wa-msg-me">Perfect — I'll send over the agreement before we start.</div>
-              <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', textAlign: 'center', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.15)' }}>Tap to try with your own conversation →</div>
             </div>
-            <div className="wa-banner-arrow">↓</div>
+            <div className="wa-banner-arrow" aria-hidden="true">↓</div>
             <div className="wa-banner-result">
-              <span className="wa-result-check">✓</span>
+              <span className="wa-result-check" aria-hidden="true">✓</span>
               <span className="wa-result-text">9 fields auto-filled — Freelance Contract ready</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* How it works section */}
+      {/* ── How it works ───────────────────────────────────────────────── */}
       <section className="how-section" id="how">
         <div className="section-inner">
           <div className="section-header">
@@ -825,7 +744,7 @@ export default function Landing() {
               { n: '03', title: 'Preview free, download when ready', body: 'See your complete, properly structured document instantly — built on real legal frameworks used by attorneys, not generic AI output. When you\'re happy, download the clean PDF for the price of a phone call — not a lawyer.' },
             ].map(s => (
               <div key={s.n} className="step">
-                <span className="step-num">{s.n}</span>
+                <span className="step-num" aria-hidden="true">{s.n}</span>
                 <div>
                   <h3 className="step-title">{s.title}</h3>
                   <p className="step-body">{s.body}</p>
@@ -836,29 +755,40 @@ export default function Landing() {
         </div>
       </section>
 
-
-
-      {/* Scope Guard teaser */}
-      <section className="scope-teaser-section">
+      {/* ── Scope Guard Section ────────────────────────────────────────── */}
+      <section className="scope-guard-section" id="scope-guard">
         <div className="section-inner">
-          <div className="scope-teaser-card">
-            <div className="scope-teaser-left">
-              <div className="scope-teaser-badge">🛡️ Scope Guard — Free Tool</div>
-              <h2 className="scope-teaser-title">Client adding extras after you signed?</h2>
-              <p className="scope-teaser-body">
-                Paste their message + your contract. Scope Guard detects scope creep, deadline compression, and unpaid extras — then drafts a professional pushback in seconds.
+          <div className="scope-guard-card">
+            <div className="scope-guard-left">
+              <div className="scope-guard-badge">🛡️ Scope Guard — Free Tool</div>
+              <h2 className="scope-guard-title">Client adding extras after you signed?</h2>
+              <p className="scope-guard-body">
+                Paste their message + your contract — detect scope creep instantly.
               </p>
-              <a href="/scope-guard" className="scope-teaser-btn">Try Scope Guard free →</a>
+              <a href="/scope-guard" className="scope-guard-btn">Try Scope Guard free →</a>
             </div>
-            <div className="scope-teaser-right" aria-hidden="true">
-              <div className="scope-example-msg">"Can you also add a blog section? Should be quick."</div>
-              <div className="scope-example-arrow">↓ Scope Guard detects: scope creep</div>
-              <div className="scope-example-response">Auto-drafts a change order with estimated hours and cost.</div>
+            <div className="scope-guard-right">
+              <label htmlFor="scope-guard-input" className="scope-guard-demo-label">Paste a client message to see Scope Guard in action</label>
+              <textarea
+                id="scope-guard-input"
+                className="scope-guard-demo-input"
+                placeholder={'"Can you also add a blog section? Should be quick."'}
+                value={scopeInput}
+                onChange={e => setScopeInput(e.target.value)}
+                rows={3}
+                aria-label="Paste a client message here"
+              />
+              <div className="scope-guard-demo-result">
+                <div className="scope-example-msg" aria-hidden="true">"Can you also add a blog section? Should be quick."</div>
+                <div className="scope-example-arrow" aria-hidden="true">↓ Scope Guard detects: <strong>scope creep</strong></div>
+                <div className="scope-example-response" aria-hidden="true">Auto-drafts a change order with estimated hours and cost.</div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* ── Testimonials ───────────────────────────────────────────────── */}
       <section className="testimonials-section">
         <div className="section-inner">
           <div className="section-header">
@@ -866,10 +796,9 @@ export default function Landing() {
             <h2 className="section-title">Built for the people lawyers ignore</h2>
           </div>
 
-          {/* Riley quote */}
           <div className="advisor-quote-card">
-            <div className="advisor-quote-mark">"</div>
-            <p className="advisor-quote-text">{SOCIAL_PROOF.advisor.text}</p>
+            <div className="advisor-quote-mark" aria-hidden="true">"</div>
+            <blockquote className="advisor-quote-text">{SOCIAL_PROOF.advisor.text}</blockquote>
             <div className="advisor-quote-footer">
               <div className="advisor-avatar" aria-hidden="true">R</div>
               <div className="advisor-info">
@@ -882,7 +811,7 @@ export default function Landing() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="advisor-link"
-                aria-label="View original post on X"
+                aria-label="View original post by Riley-Ghiles on X"
               >
                 View on X ↗
               </a>
@@ -894,14 +823,14 @@ export default function Landing() {
 
           <div className="seen-on-strip">
             <span className="seen-on-label">As seen on</span>
-            <a href="https://x.com/Riley_Ikni" target="_blank" rel="noopener noreferrer" className="seen-on-link">𝕏 / Twitter</a>
-            <span className="seen-on-divider">·</span>
+            <a href="https://x.com/Riley_Ikni" target="_blank" rel="noopener noreferrer" className="seen-on-link">X / Twitter</a>
+            <span className="seen-on-divider" aria-hidden="true">·</span>
             <a href="/blog" className="seen-on-link">Signova Blog</a>
           </div>
         </div>
       </section>
 
-      {/* Pricing section — 2 clear tiers */}
+      {/* ── Pricing ────────────────────────────────────────────────────── */}
       <section className="pricing-section" id="pricing">
         <div className="section-inner">
           <div className="section-header">
@@ -911,18 +840,18 @@ export default function Landing() {
           </div>
           <div className="pricing-grid">
 
-            {/* Free */}
+            {/* Free tier */}
             <div className="price-card">
               <div className="price-tier">Free Preview</div>
               <div className="price-amount">$0</div>
               <p className="price-desc">See your full document before paying anything. No account, no card required.</p>
               <ul className="price-list">
-                <li className="price-yes">✓ Preview any document in full</li>
-                <li className="price-yes">✓ 27 document types</li>
-                <li className="price-yes">✓ WhatsApp extraction</li>
-                <li className="price-yes">✓ 180+ jurisdictions</li>
-                <li className="price-no">✗ Download PDF</li>
-                <li className="price-no">✗ Watermark-free version</li>
+                <li className="price-yes">Preview any document in full</li>
+                <li className="price-yes">27 document types</li>
+                <li className="price-yes">WhatsApp extraction</li>
+                <li className="price-yes">180+ jurisdictions</li>
+                <li className="price-no">Download PDF</li>
+                <li className="price-no">Watermark-free version</li>
               </ul>
               <button className="btn-outline" onClick={() => navigate('/generate/freelance-contract')}>
                 Try free →
@@ -942,23 +871,24 @@ export default function Landing() {
               )}
               <p className="price-desc">Pay once per document. No subscription. Yours to keep forever.</p>
               <ul className="price-list">
-                <li className="price-yes">✓ Clean PDF — no watermark</li>
-                <li className="price-yes">✓ Instant download</li>
-                <li className="price-yes">✓ 27 document types</li>
-                <li className="price-yes">✓ Jurisdiction-aware content</li>
-                <li className="price-yes">✓ Pay by card or USDT crypto</li>
-                <li className="price-yes">✓ 30-day money-back guarantee</li>
+                <li className="price-yes">Clean PDF — no watermark</li>
+                <li className="price-yes">Instant download</li>
+                <li className="price-yes">27 document types</li>
+                <li className="price-yes">Jurisdiction-aware content</li>
+                <li className="price-yes">Pay by card or USDT crypto</li>
+                <li className="price-yes">30-day money-back guarantee</li>
               </ul>
               <button className="btn-primary" onClick={() => navigate('/whatsapp')}>
                 Generate now →
               </button>
-              <p className="price-guarantee">✓ 30-day refund if not satisfied</p>
+              <p className="price-guarantee">30-day refund if not satisfied</p>
             </div>
 
           </div>
         </div>
       </section>
 
+      {/* ── FAQ ────────────────────────────────────────────────────────── */}
       <section className="faq-section" id="faq">
         <div className="section-inner">
           <div className="section-header">
@@ -971,11 +901,18 @@ export default function Landing() {
                 <button
                   className="faq-question"
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  aria-expanded={openFaq === i}
+                  aria-controls={`faq-answer-${i}`}
                 >
                   <span>{item.q}</span>
-                  <span className="faq-icon">{openFaq === i ? '−' : '+'}</span>
+                  <span className="faq-icon" aria-hidden="true">{openFaq === i ? '−' : '+'}</span>
                 </button>
-                <div className="faq-answer">
+                <div
+                  className="faq-answer"
+                  id={`faq-answer-${i}`}
+                  role="region"
+                  hidden={openFaq !== i}
+                >
                   <p>{item.a}</p>
                 </div>
               </div>
@@ -984,17 +921,18 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ── Trust ──────────────────────────────────────────────────────── */}
       <section className="trust-section">
         <div className="section-inner">
           <div className="trust-grid">
             {[
               { icon: '⚡', title: 'Ready in 3 minutes', body: 'From question to signed-ready PDF faster than a WhatsApp voice note.' },
-              { icon: '🔑', title: 'Your data stays yours', body: 'Nothing is saved to a database. Close the tab and it\'s gone.' },
-              { icon: '🌍', title: 'Works in any jurisdiction', body: 'Jurisdiction-aware documents for Nigeria, UK, US, India, and more. Not generic templates — tailored to your country\'s laws.' },
+              { icon: '🔑', title: 'Your data stays yours', body: "Nothing is saved to a database. Close the tab and it's gone." },
+              { icon: '🌍', title: 'Works in any jurisdiction', body: "Jurisdiction-aware documents for Nigeria, UK, US, India, and more. Not generic templates — tailored to your country's laws." },
               { icon: '💳', title: 'Pay with card or crypto', body: 'Accepts all major cards and USDT. No restrictions — pay the way you already pay.' },
             ].map(t => (
               <div key={t.title} className="trust-item">
-                <span className="trust-icon">{t.icon}</span>
+                <span className="trust-icon" aria-hidden="true">{t.icon}</span>
                 <h3 className="trust-title">{t.title}</h3>
                 <p className="trust-body">{t.body}</p>
               </div>
@@ -1003,6 +941,7 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ── Final CTA ──────────────────────────────────────────────────── */}
       <section className="cta-section">
         <div className="section-inner">
           <div className="cta-box">
@@ -1010,46 +949,59 @@ export default function Landing() {
             <p className="cta-sub">Preview completely free — no account, no credit card. Pay only{' '}
               {activeCurrency.code === 'USD' ? '$4.99' : `${activeCurrency.symbol}${activeCurrency.amount.toLocaleString()}`} when you're ready to download. Works in Nigeria, Ghana, Kenya, the UK, Canada, and any jurisdiction worldwide.</p>
             <div className="cta-trust-strip">
-              <span>⚖️ Built on real legal frameworks</span>
-              <span className="cta-trust-dot">·</span>
-              <span>🔍 Preview the full document before paying</span>
-              <span className="cta-trust-dot">·</span>
-              <span>↩️ 30-day refund, no questions</span>
+              <span>Built on real legal frameworks</span>
+              <span className="cta-trust-dot" aria-hidden="true">·</span>
+              <span>Preview the full document before paying</span>
+              <span className="cta-trust-dot" aria-hidden="true">·</span>
+              <span>30-day refund, no questions</span>
             </div>
             <button
               className="btn-primary btn-large"
               onClick={() => navigate('/generate/nda')}
+              aria-label="Preview a document for free"
             >
-              Preview Free <span className="btn-arrow">→</span>
+              Preview Free <span className="btn-arrow" aria-hidden="true">→</span>
             </button>
             <div className="cta-payment-badges">
               <span className="cta-payment-badge">Visa</span>
               <span className="cta-payment-badge">Mastercard</span>
               <span className="cta-payment-badge">USDT</span>
-              <span className="cta-payment-badge">🔒 Secure checkout</span>
+              <span className="cta-payment-badge">Secure checkout</span>
             </div>
           </div>
         </div>
       </section>
 
-      <footer className="footer">
+      {/* ── Footer ─────────────────────────────────────────────────────── */}
+      <footer className="footer" role="contentinfo">
         <div className="footer-inner">
-          <div className="logo">
-            <span className="logo-mark">S</span>
+          <div className="logo" aria-label="Signova">
+            <span className="logo-mark" aria-hidden="true">S</span>
             <span className="logo-text">Signova</span>
           </div>
-          <div className="footer-links">
+          <nav className="footer-links" aria-label="Footer navigation">
             <a href="/privacy">Privacy Policy</a>
             <a href="/terms">Terms of Service</a>
             <a href="/scope-guard">Scope Guard</a>
             <a href="/contact">Contact</a>
-          </div>
+          </nav>
           <p className="footer-disc">
             Signova is a document generation tool, not a law firm. Documents are AI-generated starting points — not legal advice. No attorney-client relationship is created by using this service. For complex or high-stakes matters, consult a qualified attorney before signing or relying on any document.
           </p>
           <p className="footer-copy">© 2026 Signova · Ebenova Solutions</p>
         </div>
       </footer>
+
+      {/* ── Mobile sticky CTA ──────────────────────────────────────────── */}
+      <div className="mobile-sticky-cta" aria-label="Quick actions">
+        <button
+          className="btn-primary btn-sticky"
+          onClick={() => navigate('/whatsapp')}
+          aria-label="Paste chat to generate a contract"
+        >
+          Paste Chat to Start →
+        </button>
+      </div>
     </div>
   )
 }

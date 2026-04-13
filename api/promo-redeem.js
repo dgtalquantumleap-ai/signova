@@ -98,6 +98,11 @@ const VALID_CODES = {
     maxUses: 1000,
     description: 'Tony Elumelu Foundation — 1 free document per entrepreneur',
   },
+  ROSEMARY: {
+    expiresAt: new Date('2026-12-31T23:59:59Z'),
+    maxUses: 10,
+    description: 'Single-use promo — 1 free document',
+  },
 }
 
 export default async function handler(req, res) {

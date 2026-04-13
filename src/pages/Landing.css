@@ -1263,6 +1263,294 @@
   white-space: nowrap;
 }
 
+/* ── Skip to content link ─────────────────────────────────────────────── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gold);
+  color: #0e0e0e;
+  padding: 12px 24px;
+  border-radius: 0 0 8px 8px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 10000;
+  text-decoration: none;
+  transition: top 0.2s;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* ── Document search ──────────────────────────────────────────────────── */
+.doc-search-wrapper {
+  position: relative;
+  max-width: 400px;
+  margin: 0 auto 16px;
+}
+.doc-search-input {
+  width: 100%;
+  padding: 10px 40px 10px 14px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.doc-search-input:focus {
+  border-color: var(--gold);
+}
+.doc-search-input::placeholder {
+  color: var(--text3);
+}
+.doc-search-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text3);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+}
+.doc-search-clear:hover {
+  color: var(--text);
+}
+.doc-search-empty {
+  text-align: center;
+  color: var(--text3);
+  font-size: 14px;
+  padding: 24px 0;
+}
+
+/* ── Trust signals below CTA ──────────────────────────────────────────── */
+.hero-trust-below-cta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+/* ── Video placeholder (before IntersectionObserver fires) ────────────── */
+.video-placeholder-loading {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1a1a1a 0%, #0e0e0e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.video-skeleton {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(201, 168, 76, 0.1);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.95); }
+  50% { opacity: 0.6; transform: scale(1.05); }
+}
+
+/* ── Scope Guard section (refactored with high contrast) ──────────────── */
+.scope-guard-section {
+  padding: 80px 24px;
+  background: #0a0a0a;
+  border-top: 2px solid rgba(99, 102, 241, 0.3);
+  border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+}
+.scope-guard-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.scope-guard-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a5b4fc;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  border-radius: 20px;
+  padding: 6px 14px;
+  margin-bottom: 16px;
+}
+.scope-guard-title {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 12px;
+  line-height: 1.2;
+}
+.scope-guard-body {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  margin: 0 0 24px;
+}
+.scope-guard-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(99, 102, 241, 0.2);
+  border: 1px solid rgba(99, 102, 241, 0.45);
+  color: #a5b4fc;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 14px 24px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+.scope-guard-btn:hover {
+  background: rgba(99, 102, 241, 0.35);
+  border-color: rgba(99, 102, 241, 0.65);
+  transform: translateY(-1px);
+}
+.scope-guard-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.scope-guard-demo-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+.scope-guard-demo-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 14px;
+  color: var(--text);
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.scope-guard-demo-input:focus {
+  border-color: rgba(99, 102, 241, 0.5);
+}
+.scope-guard-demo-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+  font-style: italic;
+}
+.scope-guard-demo-result {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.scope-example-msg {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+.scope-example-arrow {
+  font-size: 13px;
+  font-weight: 700;
+  color: #f59e0b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding-left: 4px;
+}
+.scope-example-response {
+  background: rgba(76, 175, 125, 0.08);
+  border: 1px solid rgba(76, 175, 125, 0.2);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 14px;
+  color: var(--green);
+  font-weight: 500;
+}
+
+/* ── Mobile category accordion for docs ───────────────────────────────── */
+.doc-category-accordion {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.doc-category-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg2);
+  border: none;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s;
+  min-height: 44px;
+}
+.doc-category-header:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+.doc-category-chevron {
+  font-size: 18px;
+  color: var(--gold);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+.doc-category-accordion.open .doc-category-chevron {
+  transform: rotate(180deg);
+}
+.doc-category-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+.doc-category-accordion.open .doc-category-body {
+  max-height: 800px;
+}
+.doc-category-body .all-docs-grid {
+  padding: 8px;
+  grid-template-columns: 1fr;
+}
+.doc-category-body .all-doc-btn {
+  padding: 14px 16px;
+  min-height: 44px;
+}
+
+/* ── Mobile-first base styles ─────────────────────────────────────────── */
+/* Base: mobile-first, scalable */
+body {
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Touch-friendly: min 44x44px touch targets */
+button, a, input, select, textarea {
+  min-height: 44px;
+}
+
 /* ══════════════════════════════════════════════════════════════════════════
    MOBILE OPTIMIZATIONS — Document cards above fold, faster LCP
    ══════════════════════════════════════════════════════════════════════════ */
@@ -1270,163 +1558,135 @@
   /* ── Prevent horizontal scroll ── */
   .landing { padding-bottom: 72px; overflow-x: hidden; }
 
-  /* ── Mobile WhatsApp shortcut — visible above fold ── */
-  .mobile-wa-hero {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    padding: 10px 14px;
-    margin-bottom: 16px;
-    background: rgba(37,211,102,0.08);
-    border: 1px solid rgba(37,211,102,0.25);
-    border-radius: 10px;
-    font-size: 13px;
-    color: var(--text2);
-    text-align: left;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .mobile-wa-hero:hover {
-    background: rgba(37,211,102,0.12);
-  }
-  .mobile-wa-hero strong { color: #25D366; }
-
   /* ── Sticky CTA ── */
   .mobile-sticky-cta { display: flex; }
 
   /* ── Nav ── */
   .nav { position: fixed; }
-  .hamburger { display: flex; }
+  .hamburger { display: flex; min-width: 44px; min-height: 44px; }
   .nav-links {
     display: none;
     position: absolute; top: 64px; left: 0; right: 0;
     flex-direction: column; gap: 0;
-    background: rgba(14,14,14,0.97); border-bottom: 1px solid var(--border);
+    background: rgba(14,14,14,0.98);
+    border-bottom: 1px solid var(--border);
     backdrop-filter: blur(12px);
+    max-height: 80vh;
+    overflow-y: auto;
   }
   .nav-links.open { display: flex; }
   .nav-links a {
-    padding: 16px 24px; font-size: 16px; border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    font-size: 16px;
+    border-bottom: 1px solid var(--border);
+    min-height: 48px;
+    display: flex;
+    align-items: center;
   }
 
   /* ══════════════════════════════════════════════════════════════════════════
      HERO — AGGRESSIVE MOBILE OPTIMIZATION
-     Target: Document cards visible above the fold on iPhone SE (375x667)
+     Target: Headline visible without scrolling on iPhone SE (375x667)
      ══════════════════════════════════════════════════════════════════════════ */
   .hero {
-    /* Reduced from 160px to 80px — nav is 64px, so content starts at 144px */
-    padding: 80px 16px 24px;
+    padding: 100px 16px 40px;
   }
-  
-  /* Title: Smaller, tighter, faster to render */
+
+  /* Title: Scalable, mobile-first */
   .hero-title {
-    font-size: 24px !important;
+    font-size: 28px !important;
     line-height: 1.2 !important;
-    margin-bottom: 10px !important;
-  }
-  
-  /* Subtitle: Condensed for mobile */
-  .hero-sub {
-    font-size: 13px !important;
-    line-height: 1.5 !important;
     margin-bottom: 12px !important;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  }
+
+  /* Subtitle: Tighter on mobile */
+  .hero-sub {
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+    margin-bottom: 16px !important;
+  }
+
+  /* Trust below CTA — compact on mobile */
+  .hero-trust-below-cta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 12px;
+    margin-bottom: 12px;
   }
 
   /* Jurisdiction badges — compact on mobile */
   .hero-jurisdictions {
-    font-size: 11px !important;
-    margin-bottom: 16px !important;
-    gap: 6px !important;
+    font-size: 12px !important;
+    gap: 8px !important;
   }
-  .jurisdiction-divider { display: none; }
-  .hero-jurisdictions span { display: inline-flex; align-items: center; }
 
-  .hero-badge { display: none !important; }
-  .hero-actions .btn-outline { display: none; }
-  .hero-note { display: none; }
-  .hero-sub .mobile-hide { display: none; }
-  .hero-sub .mobile-show { display: inline; }
-  .hero-actions { flex-direction: column; width: 100%; gap: 12px; }
-  .hero-actions .btn-primary,
-  .hero-actions .btn-outline {
-    width: 100%; justify-content: center;
-    font-size: 15px; padding: 16px 20px;
-    min-height: 52px;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-  }
-  .hero-actions .btn-large { 
-    font-size: 15px !important; 
-    padding: 16px 20px !important; 
-    width: 100% !important;
-  }
-  .hero-stats { display: none !important; }
-  .hero-scroll-nudge { display: none !important; }
-
-  /* ══════════════════════════════════════════════════════════════════════════
-     TOP 3 CARDS — THE CONVERSION ZONE
-     These MUST be visible above the fold. Big, bold, tappable.
-     ══════════════════════════════════════════════════════════════════════════ */
+  /* Top 3 cards — single column, row layout */
   .hero-top3 {
     grid-template-columns: 1fr;
     gap: 10px;
     margin: 16px 0 12px;
   }
-  
   .top3-card {
     padding: 16px;
     flex-direction: row;
     gap: 14px;
     text-align: left;
     align-items: center;
-    /* Gold border to make them pop */
     border-color: rgba(201, 168, 76, 0.3);
     background: linear-gradient(135deg, rgba(201,168,76,0.04), var(--bg2));
+    min-height: 56px;
   }
-  
   .top3-icon { font-size: 28px; flex-shrink: 0; }
-  
-  .top3-name {
-    font-size: 15px;
-    flex: 1;
+  .top3-name { font-size: 15px; flex: 1; }
+  .top3-go { opacity: 1; font-size: 12px; flex-shrink: 0; }
+
+  /* Doc search — full width on mobile */
+  .doc-search-wrapper {
+    max-width: 100%;
+    margin-bottom: 12px;
   }
-  
-  .top3-go {
-    opacity: 1;
-    font-size: 12px;
-    flex-shrink: 0;
+  .doc-search-input {
+    font-size: 16px; /* Prevent iOS zoom on focus */
+    min-height: 44px;
   }
-  
-  .all-docs-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-  .all-doc-btn { font-size: 12px; padding: 10px 12px; }
+
+  /* All docs grid on mobile: show as flat list (accordion via CSS hidden on desktop) */
+  .all-docs-grid {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .all-doc-btn {
+    font-size: 14px;
+    padding: 14px 16px;
+    min-height: 48px;
+  }
 
   /* ── Section headings ── */
-  .section-title { font-size: 22px !important; }
+  .section-title { font-size: 24px !important; }
   .section-header { margin-bottom: 24px; }
   .section-inner { padding: 0 16px; }
 
-  /* ── Docs grid ── */
+  /* ── Docs section ── */
   .docs-section { padding: 48px 0; }
-  .docs-grid { grid-template-columns: 1fr !important; gap: 12px; }
-  .doc-card { padding: 20px; grid-column: span 1 !important; }
-  .doc-name { font-size: 17px !important; }
-  .doc-desc { font-size: 14px !important; }
 
   /* ── How it works ── */
   .how-section { padding: 48px 0; }
   .step { gap: 16px; padding: 20px 0; }
   .step-num { font-size: 32px; width: 40px; }
-  .step-title { font-size: 16px; }
-  .step-body { font-size: 13px; }
+  .step-title { font-size: 18px; }
+  .step-body { font-size: 15px; }
 
   /* ── Video ── */
   .video-section { padding: 48px 0; }
   .video-wrapper { border-radius: 10px; }
+
+  /* ── Scope Guard ── */
+  .scope-guard-section { padding: 48px 16px; }
+  .scope-guard-card { grid-template-columns: 1fr; gap: 28px; }
+  .scope-guard-title { font-size: 22px; }
+  .scope-guard-body { font-size: 15px; }
+  .scope-guard-btn { width: 100%; justify-content: center; min-height: 48px; }
 
   /* ── Pricing ── */
   .pricing-section { padding: 48px 0; }
@@ -1434,25 +1694,26 @@
 
   /* ── Trust ── */
   .trust-section { padding: 40px 0; }
-  .trust-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 20px; }
+  .trust-grid { grid-template-columns: 1fr !important; gap: 24px; }
 
   /* ── Testimonials ── */
   .testimonials-section { padding: 48px 0; }
 
   /* ── FAQ ── */
   .faq-section { padding: 48px 0; }
-  .faq-question { font-size: 14px; }
+  .faq-question { font-size: 16px; min-height: 48px; padding: 16px 0; }
+  .faq-answer p { font-size: 15px; }
 
   /* ── CTA box ── */
   .cta-section { padding: 48px 0; }
   .cta-box { padding: 32px 20px; border-radius: 14px; }
   .cta-title { font-size: 22px !important; }
-  .cta-sub { font-size: 14px; }
-  .cta-box .btn-primary { width: 100%; justify-content: center; }
+  .cta-sub { font-size: 15px; }
+  .cta-box .btn-primary { width: 100%; justify-content: center; min-height: 48px; }
 
   /* ── Footer ── */
   .footer-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
-  .footer-disc { font-size: 11px; padding: 0 8px; }
+  .footer-disc { font-size: 12px; padding: 0 8px; }
 
   /* ── Mobile nav CTA ── */
   .nav-cta-link {
@@ -1461,15 +1722,24 @@
     background: rgba(201,168,76,0.08);
     border-top: 1px solid rgba(201,168,76,0.2) !important;
   }
+
+  /* ── WhatsApp banner mobile ── */
+  .wa-banner-section { padding: 48px 16px; }
+  .wa-banner-btn { width: 100%; justify-content: center; min-height: 48px; }
 }
 
-/* ══════════════════════════════════════════════════════════════════════════
-   EXTRA SMALL SCREENS (iPhone SE, older Androids)
-   ══════════════════════════════════════════════════════════════════════════ */
+/* ── Scope Guard responsive ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .scope-guard-card { grid-template-columns: 1fr; gap: 28px; }
+  .scope-guard-title { font-size: 24px; }
+  .scope-guard-section { padding: 48px 16px; }
+}
+
+/* ── Extra small screens ──────────────────────────────────────────────── */
 @media (max-width: 380px) {
-  .hero { padding: 76px 12px 20px; }
-  .hero-title { font-size: 22px !important; }
-  .hero-sub { font-size: 12px !important; -webkit-line-clamp: 2; }
+  .hero { padding: 90px 12px 32px; }
+  .hero-title { font-size: 24px !important; }
+  .hero-sub { font-size: 14px !important; }
   .top3-card { padding: 14px; gap: 12px; }
   .top3-icon { font-size: 24px; }
   .top3-name { font-size: 14px; }
@@ -1693,7 +1963,7 @@
 .seen-on-link:hover { color: rgba(255,255,255,0.85); }
 .seen-on-divider { color: rgba(255,255,255,0.2); }
 
-/* ── Scope Guard teaser ─────────────────────────────────────────────────── */
+/* ── Old Scope Guard teaser (kept for backwards compat) ─────────────────── */
 .scope-teaser-section {
   padding: 64px 24px;
   background: linear-gradient(135deg, rgba(99,102,241,0.06) 0%, rgba(76,175,125,0.06) 100%);
