@@ -19,12 +19,17 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Invalid admin password.' })
   }
 
+  // Probe mode — just verify auth without generating a code
+  if (req.body?.probe) {
+    return res.status(200).json({ ok: true })
+  }
+
   // Generate a short, readable code: 3 random uppercase words
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // no ambiguous I,O,0,1
   const code = Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
 
   // Log for audit trail
-  console.log(`[admin] Bypass code generated: ${code} at ${new Date().toISOString()}`)
+  console.log(`[admin] Bypass code generated at ${new Date().toISOString()}`)
 
   return res.status(200).json({ code })
 }

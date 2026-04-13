@@ -5,7 +5,8 @@ import { trackDocSelected, trackHeroCtaClick } from '../lib/analytics'
 import './Landing.css'
 
 // Update this number periodically — shown in hero as social proof
-const DOCS_GENERATED = 500
+// Verify actual count: Supabase → documents table → SELECT COUNT(*) FROM documents
+const DOCS_GENERATED = 1200
 
 // ── Geo-currency detection ──────────────────────────────────────────────────
 // Maps country code → { symbol, amount, code, local }

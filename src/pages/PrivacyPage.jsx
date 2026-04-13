@@ -1,10 +1,16 @@
 import { useNavigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import './LegalPage.css'
 
 export default function PrivacyPage() {
   const navigate = useNavigate()
   return (
     <div className="legal-page">
+      <Helmet>
+        <title>Privacy Policy | Signova</title>
+        <meta name="description" content="Signova's privacy policy — we don't store your data, use tracking cookies, or share your information with third parties." />
+        <link rel="canonical" href="https://www.getsignova.com/privacy" />
+      </Helmet>
       <nav className="legal-nav">
         <button className="legal-back" onClick={() => navigate('/')}>← Back to Signova</button>
         <div className="logo">

@@ -1,10 +1,16 @@
 import { useNavigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 
 export default function NotFound() {
   const navigate = useNavigate()
   return (
-    <div style={{
-      minHeight: '100vh', background: 'var(--bg)',
+    <>
+      <Helmet>
+        <title>404 — Page Not Found | Signova</title>
+        <meta name="robots" content="noindex" />
+      </Helmet>
+      <div style={{
+        minHeight: '100vh', background: 'var(--bg)',
       display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
       padding: '24px', textAlign: 'center'
@@ -32,5 +38,6 @@ export default function NotFound() {
         Back to Signova →
       </button>
     </div>
+    </>
   )
 }

@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async'
 import { useNavigate } from 'react-router-dom'
 import './GetStarted.css'
 
-const API = 'https://www.getsignova.com'
+const API = import.meta.env.VITE_API_BASE || ''
 
 export default function GetStarted() {
   const navigate = useNavigate()

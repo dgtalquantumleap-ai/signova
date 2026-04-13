@@ -1,10 +1,16 @@
 import { useNavigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import './LegalPage.css'
 
 export default function TermsPage() {
   const navigate = useNavigate()
   return (
     <div className="legal-page">
+      <Helmet>
+        <title>Terms of Use | Signova</title>
+        <meta name="description" content="Signova terms of use — understand your rights when generating legal documents with our AI service." />
+        <link rel="canonical" href="https://www.getsignova.com/terms" />
+      </Helmet>
       <nav className="legal-nav">
         <button className="legal-back" onClick={() => navigate('/')}>← Back to Signova</button>
         <div className="logo">

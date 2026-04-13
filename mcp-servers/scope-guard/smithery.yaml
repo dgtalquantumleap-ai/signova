@@ -1,0 +1,62 @@
+# Smithery MCP Server Configuration
+# https://smithery.ai/docs/build/publish
+
+name: ebenova-scope-guard
+version: 1.0.0
+description: AI-powered scope creep detection and change order generator. Paste a client message and your contract — get violation analysis, professional response drafts, and formal change order documents instantly.
+
+author: Ebenova Solutions <api@ebenova.dev>
+license: MIT
+homepage: https://ebenova.dev
+repository: https://github.com/ebenova/scope-guard-mcp
+
+keywords:
+  - scope-guard
+  - scope-creep
+  - contract
+  - freelance
+  - change-order
+  - legal
+  - enforcement
+  - ebenova
+  - ai
+  - saas
+
+configSchema:
+  type: object
+  required:
+    - EBENOVA_API_KEY
+  properties:
+    EBENOVA_API_KEY:
+      type: string
+      description: "Your Ebenova API key. Get one free at https://ebenova.dev/docs"
+      required: true
+
+deployment:
+  type: stdio
+  command: node
+  args:
+    - index.js
+
+startCommand: "node index.js"
+entryPoint: "index.js"
+runtime: nodejs
+
+capabilities:
+  tools:
+    - name: analyze_scope_violation
+      description: "Detect scope creep in a client message against your contract. Returns violations, severity, and 3 professional response drafts."
+    - name: generate_change_order
+      description: "Generate a formal change order document for additional work outside the original contract scope."
+
+examples:
+  - name: "Detect scope creep"
+    prompt: "My client sent this: 'Can you also add a mobile app to the project?' — is this scope creep? (paste your contract)"
+  - name: "Generate change order"
+    prompt: "Generate a change order: 10 extra hours of design work, $800 additional cost, client is TechCorp"
+  - name: "Get response draft"
+    prompt: "My client is asking for extra revisions not in our agreement. Analyze this message and draft a professional response."
+
+support:
+  email: api@ebenova.dev
+  documentation: https://ebenova.dev/docs

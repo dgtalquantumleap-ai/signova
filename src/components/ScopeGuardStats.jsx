@@ -1,4 +1,4 @@
-export default function ScopeGuardStats({ stats, _isLoading, _error }) {
+export default function ScopeGuardStats({ stats }) {
   if (!stats) return null
 
   const current = stats.current_month || {}

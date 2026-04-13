@@ -2,6 +2,7 @@
 import DOMPurify from 'dompurify'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState, useRef } from 'react'
+import { Helmet } from 'react-helmet-async'
 import {
   trackPreviewLoaded,
   trackPaymentAttempted,
@@ -11,6 +12,8 @@ import {
   trackDownloadClicked,
 } from '../lib/analytics'
 import './Preview.css'
+
+const DEV = import.meta.env.DEV
 
 // Geo detect — same sessionStorage key used by Landing.jsx
 const CURRENCY_MAP_PREVIEW = {
@@ -447,7 +450,7 @@ export default function Preview() {
                 }
               }
             } catch (genErr) {
-              console.error('Premium regen error:', genErr)
+              DEV && console.error('Premium regen error:', genErr)
             }
           }
           sessionStorage.removeItem('paystack_reference')
@@ -455,7 +458,7 @@ export default function Preview() {
           setPaid(true)
           window.history.replaceState({}, '', '/preview')
         } catch (err) {
-          console.error('Paystack verify error:', err)
+          DEV && console.error('Paystack verify error:', err)
           setError('Something went wrong verifying your payment. Please contact info@ebenova.net.')
         } finally {
           setVerifying(false)
@@ -506,7 +509,7 @@ export default function Preview() {
               }
             }
           } catch (genErr) {
-            console.error('Premium regen error:', genErr)
+            DEV && console.error('Premium regen error:', genErr)
           }
         }
         sessionStorage.removeItem('oxapay_trackId')
@@ -514,7 +517,7 @@ export default function Preview() {
         setPaid(true)
         window.history.replaceState({}, '', '/preview')
       } catch (err) {
-        console.error('OxaPay verify error:', err)
+        DEV && console.error('OxaPay verify error:', err)
         setError('Something went wrong verifying your USDT payment. Please contact info@ebenova.net.')
       } finally {
         setVerifying(false)
@@ -528,7 +531,7 @@ export default function Preview() {
 
     const sessionId = params.get('session_id')
     if (!sessionId) {
-      console.error('No session_id in return URL')
+      DEV && console.error('No session_id in return URL')
       setError('Payment could not be verified — missing checkout reference. Please contact info@ebenova.net.')
       return
     }
@@ -551,7 +554,7 @@ export default function Preview() {
         const verifyData = await verifyRes.json()
 
         if (!verifyRes.ok || !verifyData.verified) {
-          console.error('Payment verification failed:', verifyData)
+          DEV && console.error('Payment verification failed:', verifyData)
           setError('Payment could not be verified. If you were charged, please contact info@ebenova.net with your checkout reference.')
           setVerifying(false)
           return
@@ -574,10 +577,10 @@ export default function Preview() {
                 setDoc(upgraded)
               }
             } else {
-              console.warn('Premium regeneration failed, using preview version')
+              DEV && console.warn('Premium regeneration failed, using preview version')
             }
           } catch (genErr) {
-            console.error('Premium regeneration error:', genErr)
+            DEV && console.error('Premium regeneration error:', genErr)
             // Still mark as paid — they paid, let them download the preview version
           }
         }
@@ -586,7 +589,7 @@ export default function Preview() {
         setPaid(true)
         window.history.replaceState({}, '', '/preview')
       } catch (err) {
-        console.error('Verification error:', err)
+        DEV && console.error('Verification error:', err)
         setError('Something went wrong verifying your payment. Please contact info@ebenova.net.')
       } finally {
         setVerifying(false)
@@ -620,6 +623,11 @@ export default function Preview() {
 
   return (
     <div className="preview-page">
+      <Helmet>
+        <title>Document Preview | Signova</title>
+        <meta name="description" content="Preview your AI-generated legal document before downloading." />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       {/* Nav */}
       <div className="preview-nav">
         <button className="gen-back" onClick={() => navigate('/')}>← Back to home</button>

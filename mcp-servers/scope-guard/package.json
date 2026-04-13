@@ -1,33 +1,53 @@
 {
   "name": "@ebenova/scope-guard-mcp",
   "version": "1.0.0",
-  "description": "MCP server for Scope Guard — AI-powered contract enforcement and scope violation detection",
+  "description": "MCP server for Scope Guard — AI-powered contract enforcement and scope violation detection. Detects scope creep in client messages and generates formal change orders.",
   "type": "module",
+  "main": "index.js",
   "bin": {
     "scope-guard-mcp": "./index.js"
   },
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"No tests yet\""
+    "start": "node index.js"
   },
   "keywords": [
     "mcp",
     "scope-guard",
+    "scope-creep",
     "contract",
     "legal",
+    "change-order",
+    "freelance",
     "ebenova",
-    "ai"
+    "ai",
+    "smithery"
   ],
-  "author": "Ebenova Solutions",
+  "author": "Ebenova Solutions <api@ebenova.dev>",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/ebenova/scope-guard-mcp"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0"
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.23.0"
   },
   "engines": {
     "node": ">=18"
+  },
+  "smithery": {
+    "name": "ebenova-scope-guard",
+    "entryPoint": "index.js",
+    "configSchema": {
+      "type": "object",
+      "required": ["EBENOVA_API_KEY"],
+      "properties": {
+        "EBENOVA_API_KEY": {
+          "type": "string",
+          "description": "Your Ebenova API key. Get one free at https://ebenova.dev/docs",
+          "required": true
+        }
+      }
+    }
   }
 }

@@ -1,0 +1,29 @@
+# MCPize Configuration
+# Docs: https://mcpize.com/docs/mcpize-yaml
+
+version: 1
+
+name: "Scope Guard — Contract Enforcer"
+slug: "ebenova-scope-guard"
+
+runtime: node
+
+build:
+  install: "npm install"
+  command: "echo 'No build step required'"
+
+start:
+  type: stdio
+  command: "node index.js"
+
+bridge:
+  mode: stdio
+
+configSchema:
+  type: object
+  required:
+    - EBENOVA_API_KEY
+  properties:
+    EBENOVA_API_KEY:
+      type: string
+      description: "Your Ebenova API key. Get one free at https://ebenova.dev/docs"

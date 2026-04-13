@@ -44,9 +44,9 @@ export default function VigilLanding() {
     setResult(null)
     setLoading(true)
     try {
-      const res = await fetch('/v1/vigil/authorize', {
+      const res = await fetch('/api/v1/vigil/authorize', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer sk_test_local_dev' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           card_id: selectedCard.id,
           merchant_name: selectedMerchant.name,
@@ -63,7 +63,7 @@ export default function VigilLanding() {
       if (!res.ok) { setError(data.error?.message || 'Request failed'); return }
       setResult(data)
     } catch {
-      setError('Could not connect. Make sure Vigil server is running at localhost:3000.')
+      setError('Demo unavailable — Vigil backend not deployed. Sign up for API access to test live.')
     } finally {
       setLoading(false)
     }
@@ -95,6 +95,15 @@ export default function VigilLanding() {
         <title>Vigil Fraud Alert API — Proximity-based card fraud detection | Ebenova</title>
         <meta name="description" content="Real-time card fraud detection using GPS proximity. Claude AI risk scoring 0–100. AML compliance reports. 13 MCP tools. Free tier available." />
         <link rel="canonical" href="https://www.ebenova.dev/vigil" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.ebenova.dev/vigil" />
+        <meta property="og:title" content="Vigil Fraud Alert API — GPS-powered card fraud detection" />
+        <meta property="og:description" content="Real-time fraud detection using GPS proximity. Risk scoring 0–100. AML reports. 13 MCP tools. Free tier available." />
+        <meta property="og:image" content="https://www.ebenova.dev/og-image.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Vigil Fraud Alert API — GPS-powered card fraud detection" />
+        <meta name="twitter:description" content="Detect card fraud in real time using GPS proximity. Claude AI risk scoring. 13 MCP tools. Free tier." />
+        <meta name="twitter:image" content="https://www.ebenova.dev/og-image.png" />
       </Helmet>
 
       {/* Nav */}

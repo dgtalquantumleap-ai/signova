@@ -5,7 +5,7 @@ import ScopeGuardStats from '../components/ScopeGuardStats'
 import RevenueMetrics from '../components/RevenueMetrics'
 import './Dashboard.css'
 
-const API = 'https://www.getsignova.com'
+const API = import.meta.env.VITE_API_BASE || ''
 
 const TIERS = {
   free:       { label: 'Free',       limit: 5,    price: 0,     color: '#6b7280' },

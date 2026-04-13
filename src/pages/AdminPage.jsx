@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Helmet } from 'react-helmet-async'
 
 export default function AdminPage() {
   const [secret, setSecret] = useState('')
@@ -8,9 +9,26 @@ export default function AdminPage() {
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
 
-  const handleUnlock = (e) => {
+  const [authError, setAuthError] = useState('')
+
+  const handleUnlock = async (e) => {
     e.preventDefault()
-    if (secret.trim()) setAuthed(true)
+    if (!secret.trim()) return
+    setAuthError('')
+    try {
+      const res = await fetch('/api/create-bypass', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret, probe: true }),
+      })
+      if (res.ok) {
+        setAuthed(true)
+      } else {
+        setAuthError('Invalid password.')
+      }
+    } catch {
+      setAuthError('Connection error. Please try again.')
+    }
   }
 
   const handleGenerate = async () => {
@@ -52,6 +70,10 @@ export default function AdminPage() {
 
   return (
     <div style={styles.page}>
+      <Helmet>
+        <title>Admin | Signova</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div style={styles.card}>
         <div style={styles.header}>
           <span style={styles.logoMark}>S</span>
@@ -70,6 +92,7 @@ export default function AdminPage() {
               autoFocus
             />
             <button style={styles.btn} type="submit">Unlock →</button>
+            {authError && <p style={{ color: '#ef4444', fontSize: '14px', marginTop: '8px' }}>{authError}</p>}
           </form>
         ) : (
           <div style={styles.body}>
