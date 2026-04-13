@@ -59,12 +59,24 @@ function useGeoCurrency() {
   return { isNG, currency }
 }
 
+// Simplified currency options for checkout dropdown
+const CHECKOUT_CURRENCY_OPTIONS = [
+  { code: 'USD', symbol: '$', amount: 4.99, label: 'USD — $4.99' },
+  { code: 'NGN', symbol: '₦', amount: 6900, label: 'NGN — ₦6,900' },
+  { code: 'GBP', symbol: '£', amount: 3.95, label: 'GBP — £3.95' },
+  { code: 'EUR', symbol: '€', amount: 4.60, label: 'EUR — €4.60' },
+  { code: 'GHS', symbol: 'GH₵', amount: 75, label: 'GHS — GH₵75' },
+]
+
 
 
 
 export default function Preview() {
   const navigate = useNavigate()
-  const { isNG: isNigeria, currency } = useGeoCurrency()
+  const { isNG: isNigeria, currency: geoCurrency } = useGeoCurrency()
+  const [activeCurrency, setActiveCurrency] = useState(null) // null = use geo
+  const [currencyOpen, setCurrencyOpen] = useState(false)
+  const effectiveCurrency = activeCurrency || geoCurrency
   const [doc, setDoc] = useState(null)
   const [paying, setPaying] = useState(false)
   const [paid, setPaid] = useState(false)
@@ -292,6 +304,36 @@ export default function Preview() {
     }
   }
 
+  const handlePaystackCheckout = async () => {
+    setPaying(true)
+    setError('')
+    trackPaymentAttempted(doc?.docType, 'paystack')
+    const paystackTimer = setTimeout(() => setPaying(false), 8000)
+    try {
+      const res = await fetch('/api/paystack-initialize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          docType: doc.docType,
+          docName: doc.docName,
+          email: buyerEmail || '',
+        }),
+      })
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}))
+        throw new Error(errData.error || 'Could not start Paystack payment. Please try again.')
+      }
+      const { url, reference } = await res.json()
+      sessionStorage.setItem('paystack_reference', reference)
+      clearTimeout(paystackTimer)
+      window.location.href = url
+    } catch (e) {
+      clearTimeout(paystackTimer)
+      setError(e.message)
+      setPaying(false)
+    }
+  }
+
   const handlePromoApply = async () => {
     if (!promoCode.trim()) return
     setPromoLoading(true)
@@ -363,6 +405,66 @@ export default function Preview() {
   // Verify the payment server-side, then regenerate with Anthropic
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
+
+    // Handle Paystack return
+    if (params.get('payment') === 'paystack_success') {
+      const reference = sessionStorage.getItem('paystack_reference')
+      if (!reference) {
+        setError('Payment reference missing. If you paid, please contact info@ebenova.net.')
+        return
+      }
+      const raw = sessionStorage.getItem('signova_doc')
+      if (!raw) return
+      const savedDoc = JSON.parse(raw)
+      setVerifying(true)
+      const verifyPaystack = async () => {
+        try {
+          const verifyRes = await fetch('/api/paystack-verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reference }),
+          })
+          const verifyData = await verifyRes.json()
+          if (!verifyRes.ok || !verifyData.verified) {
+            setError('Payment not confirmed. If you just paid, wait a moment and refresh. Need help? Email info@ebenova.net.')
+            setVerifying(false)
+            return
+          }
+          // Payment verified — regenerate with Anthropic
+          if (savedDoc.prompt) {
+            try {
+              const genRes = await fetch('/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: savedDoc.prompt }),
+              })
+              if (genRes.ok) {
+                const genData = await genRes.json()
+                if (genData.text) {
+                  const upgraded = { ...savedDoc, content: genData.text, isPremium: true }
+                  sessionStorage.setItem('signova_doc', JSON.stringify(upgraded))
+                  setDoc(upgraded)
+                }
+              }
+            } catch (genErr) {
+              console.error('Premium regen error:', genErr)
+            }
+          }
+          sessionStorage.removeItem('paystack_reference')
+          setTimeout(() => trackPaymentSuccess(savedDoc.docType, 'paystack'), 1500)
+          setPaid(true)
+          window.history.replaceState({}, '', '/preview')
+        } catch (err) {
+          console.error('Paystack verify error:', err)
+          setError('Something went wrong verifying your payment. Please contact info@ebenova.net.')
+        } finally {
+          setVerifying(false)
+        }
+      }
+      verifyPaystack()
+      return
+    }
+
     // Handle OxaPay (USDT) return
     if (params.get('payment') === 'oxapay_success') {
       const trackId = sessionStorage.getItem('oxapay_trackId')
@@ -532,7 +634,7 @@ export default function Preview() {
             </button>
           ) : (
             <button className="btn-pay" onClick={handleDownload} disabled={paying}>
-              {paying ? <><span className="spinner-sm" /> Processing…</> : <>Download PDF — {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`}</>}
+              {paying ? <><span className="spinner-sm" /> Processing…</> : <>Download PDF — {effectiveCurrency.code === 'USD' ? '$4.99' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()}`}</>}
             </button>
           )}
         </div>
@@ -595,7 +697,7 @@ export default function Preview() {
                       >
                         {paying
                           ? <><span className="spinner-sm" /> Processing…</>
-                          : <>Unlock Full Document — {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`}</>
+                          : <>Unlock Full Document — {effectiveCurrency.code === 'USD' ? '$4.99' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()}`}</>
                         }
                       </button>
                       <p className="locked-guarantee">30-day money-back guarantee · Instant download</p>
@@ -682,12 +784,47 @@ export default function Preview() {
               </div>
             )}
 
+            {/* Currency toggle */}
+            {!paid && (
+              <div className="sidebar-currency-toggle" style={{ position: 'relative', marginBottom: '12px' }}>
+                <button
+                  className="sidebar-currency-btn"
+                  onClick={() => setCurrencyOpen(o => !o)}
+                  aria-label="Change currency"
+                  title="Change currency"
+                >
+                  💱 {effectiveCurrency.code === 'USD' ? '$4.99 USD' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()} ${effectiveCurrency.code}`}
+                </button>
+                {currencyOpen && (
+                  <div className="sidebar-currency-dropdown">
+                    {CHECKOUT_CURRENCY_OPTIONS.map(opt => (
+                      <button
+                        key={opt.code}
+                        className={`sidebar-currency-option ${effectiveCurrency.code === opt.code ? 'active' : ''}`}
+                        onClick={() => {
+                          if (opt.code === geoCurrency.code) {
+                            setActiveCurrency(null)
+                          } else {
+                            setActiveCurrency({ code: opt.code, symbol: opt.symbol, amount: opt.amount })
+                          }
+                          setCurrencyOpen(false)
+                        }}
+                      >
+                        {opt.label}
+                        {opt.code === geoCurrency.code && !activeCurrency && <span className="currency-auto-badge">Auto</span>}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="sidebar-price">
               <span className="price-big">
-                {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`}
+                {effectiveCurrency.code === 'USD' ? '$4.99' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()}`}
               </span>
               <span className="price-label">
-                {currency.code === 'USD'
+                {effectiveCurrency.code === 'USD'
                   ? 'one-time · instant download'
                   : `≈ $4.99 · one-time · instant download`}
               </span>
@@ -806,11 +943,20 @@ export default function Preview() {
             ) : (
               <>
                 {isNigeria ? (
-                  // Nigeria: crypto first — card success rates are low
+                  // Nigeria: Paystack (local card) first, then crypto, then international card
                   <>
-                    <div className="nigeria-notice">
-                      🇳🇬 <strong>Nigeria tip:</strong> Crypto / USDT works best — Nigerian cards are sometimes declined on international platforms.
-                    </div>
+                    <button
+                      className="btn-pay-full btn-pay-secondary"
+                      onClick={handlePaystackCheckout}
+                      disabled={paying}
+                    >
+                      {paying
+                        ? <><span className="spinner-sm" /> Processing…</>
+                        : <>💳 Pay {effectiveCurrency.symbol}{effectiveCurrency.amount.toLocaleString()} with Nigerian Card →</>
+                      }
+                    </button>
+                    <p className="usdt-sub">GTBank · Access · FirstBank · UBA · Kuda · All Nigerian debit cards</p>
+                    <div className="usdt-divider"><span>or pay with crypto</span></div>
                     <button
                       className="btn-usdt btn-usdt-primary"
                       onClick={handleUsdtCheckout}
@@ -818,14 +964,14 @@ export default function Preview() {
                     >
                       {payingUsdt
                         ? <><span className="spinner-sm" /> Preparing invoice…</>
-                        : <>⬡ Pay {currency.symbol}{currency.amount.toLocaleString()} in USDT / Crypto →</>}
+                        : <>⬡ Pay {effectiveCurrency.symbol}{effectiveCurrency.amount.toLocaleString()} in USDT / Crypto →</>}
                     </button>
-                    <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Works with Myaza, Binance & all African crypto wallets</p>
-                    <div className="usdt-divider"><span>or try card payment</span></div>
+                    <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Works with Binance, Myaza & all African crypto wallets</p>
+                    <div className="usdt-divider"><span>or try international card</span></div>
                     <button className="btn-pay-full btn-pay-secondary" onClick={handleDownload} disabled={paying}>
                       {paying
                         ? <><span className="spinner-sm" /> Processing…</>
-                        : <>💳 Pay {currency.symbol}{currency.amount.toLocaleString()} by Card →</>
+                        : <>🌍 Pay $4.99 USD by Card →</>
                       }
                     </button>
                     <div className="trust-badge">🔒 SSL encrypted · Secure checkout · Instant delivery</div>
@@ -837,7 +983,7 @@ export default function Preview() {
                     <button className="btn-pay-full" onClick={handleDownload} disabled={paying}>
                       {paying
                         ? <><span className="spinner-sm" /> Processing…</>
-                        : <>Download full document — {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} →</>
+                        : <>Download full document — {effectiveCurrency.code === 'USD' ? '$4.99' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()}`} →</>
                       }
                     </button>
                     <p className="trust-line">🔒 SSL secure · No account · Instant PDF · 30-day refund</p>
@@ -850,7 +996,7 @@ export default function Preview() {
                       >
                         {payingUsdt
                           ? <><span className="spinner-sm" /> Preparing invoice…</>
-                          : <>⬡ Pay {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} in USDT / Crypto →</>}
+                          : <>⬡ Pay {effectiveCurrency.code === 'USD' ? '$4.99' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()}`} in USDT / Crypto →</>}
                       </button>
                       <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Works with Myaza, Binance & all African crypto wallets · Instant confirmation</p>
                     </div>

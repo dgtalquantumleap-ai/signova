@@ -530,13 +530,30 @@ const FAQS = [
 
 export default function Landing() {
   const navigate = useNavigate()
-  const { currency, countryCode } = useGeo()
+  const { currency: geoCurrency, countryCode } = useGeo()
   const quickPicks = getQuickPicks(countryCode)
   const [navOpen, setNavOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState(0)
   const [videoPlaying, setVideoPlaying] = useState(false)
+  const [currency, setCurrency] = useState(null) // null = use geo-detected
+  const [currencyOpen, setCurrencyOpen] = useState(false)
 
   const closeNav = () => setNavOpen(false)
+
+  // Effective currency: user override > geo-detected
+  const activeCurrency = currency || geoCurrency
+
+  // Build list of top currencies for the dropdown
+  const CURRENCY_OPTIONS = [
+    { code: 'USD', symbol: '$', label: 'USD — $4.99' },
+    { code: 'NGN', symbol: '₦', amount: 6900, label: 'NGN — ₦6,900' },
+    { code: 'GBP', symbol: '£', amount: 3.95, label: 'GBP — £3.95' },
+    { code: 'EUR', symbol: '€', amount: 4.60, label: 'EUR — €4.60' },
+    { code: 'GHS', symbol: 'GH₵', amount: 75, label: 'GHS — GH₵75' },
+    { code: 'KES', symbol: 'KSh', amount: 650, label: 'KES — KSh 650' },
+    { code: 'INR', symbol: '₹', amount: 418, label: 'INR — ₹418' },
+    { code: 'ZAR', symbol: 'R', amount: 93, label: 'ZAR — R93' },
+  ]
 
   return (
     <div className="landing">
@@ -557,6 +574,40 @@ export default function Landing() {
             <span className="logo-mark">S</span>
             <span className="logo-text">Signova</span>
           </div>
+
+          {/* Currency toggle */}
+          <div className="currency-toggle" style={{ position: 'relative' }}>
+            <button
+              className="currency-toggle-btn"
+              onClick={() => setCurrencyOpen(o => !o)}
+              aria-label="Change currency"
+              title="Change currency"
+            >
+              {activeCurrency.symbol}{activeCurrency.code === 'USD' ? '4.99' : activeCurrency.amount?.toLocaleString()}
+            </button>
+            {currencyOpen && (
+              <div className="currency-dropdown">
+                {CURRENCY_OPTIONS.map(opt => (
+                  <button
+                    key={opt.code}
+                    className={`currency-option ${activeCurrency.code === opt.code ? 'active' : ''}`}
+                    onClick={() => {
+                      if (opt.code === geoCurrency.code) {
+                        setCurrency(null) // revert to auto
+                      } else {
+                        setCurrency({ code: opt.code, symbol: opt.symbol, amount: opt.amount || 4.99 })
+                      }
+                      setCurrencyOpen(false)
+                    }}
+                  >
+                    {opt.label}
+                    {opt.code === geoCurrency.code && !currency && <span className="currency-auto-badge">Auto</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           <div className={`nav-links ${navOpen ? 'open' : ''}`}>
             <a href="#documents" onClick={closeNav} aria-label="Browse documents">Documents</a>
             <a href="#how" onClick={closeNav} aria-label="How Signova works">How it works</a>
@@ -639,7 +690,7 @@ export default function Landing() {
                 Turn this chat into a contract <span className="btn-arrow">→</span>
               </button>
             </div>
-            <p className="hero-trust-line">Free preview · No account required · $4.99 {currency.local ? `(${currency.local})` : ''} to download · Enforceable in 180+ countries · 30-day refund</p>
+            <p className="hero-trust-line">Free preview · No account required · $4.99 {activeCurrency.local ? `(${activeCurrency.local})` : ''} to download · Enforceable in 180+ countries · 30-day refund</p>
           </div>
 
           {/* ── RIGHT: live WhatsApp demo ── */}
@@ -881,10 +932,10 @@ export default function Landing() {
               <div className="price-top-badge">Most Popular</div>
               <div className="price-tier">Pay Per Document</div>
               <div className="price-amount">
-                {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`}
+                {activeCurrency.code === 'USD' ? '$4.99' : `${activeCurrency.symbol}${activeCurrency.amount.toLocaleString()}`}
                 <span className="price-per">/ doc</span>
               </div>
-              {currency.local && (
+              {activeCurrency.local && (
                 <p className="price-local-equiv">≈ $4.99 USD</p>
               )}
               <p className="price-desc">Pay once per document. No subscription. Yours to keep forever.</p>
@@ -955,7 +1006,7 @@ export default function Landing() {
           <div className="cta-box">
             <h2 className="cta-title">Stop paying {LAWYER_FEE_MAP[countryCode] || DEFAULT_LAWYER_FEE} for a document you can generate in 3 minutes.</h2>
             <p className="cta-sub">Preview completely free — no account, no credit card. Pay only{' '}
-              {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} when you're ready to download. Works in Nigeria, Ghana, Kenya, the UK, Canada, and any jurisdiction worldwide.</p>
+              {activeCurrency.code === 'USD' ? '$4.99' : `${activeCurrency.symbol}${activeCurrency.amount.toLocaleString()}`} when you're ready to download. Works in Nigeria, Ghana, Kenya, the UK, Canada, and any jurisdiction worldwide.</p>
             <div className="cta-trust-strip">
               <span>⚖️ Built on real legal frameworks</span>
               <span className="cta-trust-dot">·</span>

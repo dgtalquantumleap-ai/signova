@@ -97,6 +97,52 @@
 }
 .sidebar-title { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--text); }
 .sidebar-body { font-size: 14px; color: var(--text2); line-height: 1.6; }
+
+/* ── Sidebar Currency Toggle ── */
+.sidebar-currency-btn {
+  width: 100%;
+  background: rgba(201, 168, 76, 0.08);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.sidebar-currency-btn:hover { background: rgba(201, 168, 76, 0.15); }
+.sidebar-currency-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0; right: 0;
+  background: #1a1a1a;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px;
+  z-index: 1000;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sidebar-currency-option {
+  background: none;
+  border: none;
+  color: var(--text2);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sidebar-currency-option:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.sidebar-currency-option.active { background: rgba(201, 168, 76, 0.15); color: var(--gold); }
+
 .sidebar-price { display: flex; align-items: baseline; gap: 8px; }
 .price-big { font-family: var(--font-display); font-size: 36px; font-weight: 700; color: var(--gold); }
 .price-label { font-size: 13px; color: var(--text3); }
