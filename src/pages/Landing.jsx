@@ -13,7 +13,7 @@ const DOCS_GENERATED = 500
 // 'local' is a human-friendly display string shown below the USD price
 const CURRENCY_MAP = {
   // West Africa
-  NG: { symbol: '₦', amount: 7400,   code: 'NGN', local: '≈ ₦7,400'       },
+  NG: { symbol: '₦', amount: 6900,   code: 'NGN', local: '≈ ₦6,900'       },
   GH: { symbol: 'GH₵', amount: 75,   code: 'GHS', local: '≈ GH₵75'        },
   SN: { symbol: 'CFA', amount: 3100, code: 'XOF', local: '≈ CFA 3,100'    },
   CI: { symbol: 'CFA', amount: 3100, code: 'XOF', local: '≈ CFA 3,100'    },
@@ -880,7 +880,13 @@ export default function Landing() {
             <div className="price-card price-featured">
               <div className="price-top-badge">Most Popular</div>
               <div className="price-tier">Pay Per Document</div>
-              <div className="price-amount">$4.99 <span className="price-per">/ doc</span></div>
+              <div className="price-amount">
+                {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`}
+                <span className="price-per">/ doc</span>
+              </div>
+              {currency.local && (
+                <p className="price-local-equiv">≈ $4.99 USD</p>
+              )}
               <p className="price-desc">Pay once per document. No subscription. Yours to keep forever.</p>
               <ul className="price-list">
                 <li className="price-yes">✓ Clean PDF — no watermark</li>

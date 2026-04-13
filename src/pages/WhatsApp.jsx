@@ -4,6 +4,24 @@ import { Helmet } from 'react-helmet-async'
 import { trackWaExtraction, trackWaExtractionSuccess } from '../lib/analytics'
 import './WhatsApp.css'
 
+// Compact currency map — mirrors Landing.jsx CURRENCY_MAP
+const CURRENCY_MAP = {
+  NG: { symbol: '₦', amount: 6900, code: 'NGN' },
+  GH: { symbol: 'GH₵', amount: 75, code: 'GHS' },
+  KE: { symbol: 'KSh', amount: 650, code: 'KES' },
+  ZA: { symbol: 'R', amount: 93, code: 'ZAR' },
+  IN: { symbol: '₹', amount: 418, code: 'INR' },
+  GB: { symbol: '£', amount: 3.95, code: 'GBP' },
+  DE: { symbol: '€', amount: 4.60, code: 'EUR' },
+  FR: { symbol: '€', amount: 4.60, code: 'EUR' },
+  US: { symbol: '$', amount: 4.99, code: 'USD' },
+  DEFAULT: { symbol: '$', amount: 4.99, code: 'USD' },
+}
+function getCurrency(cc) { return CURRENCY_MAP[cc] || CURRENCY_MAP.DEFAULT }
+function formatPrice(cur) {
+  return cur.code === 'USD' ? '$4.99' : `${cur.symbol}${cur.amount.toLocaleString()}`
+}
+
 // Geo-aware doc ordering — most relevant first per region
 const GEO_DOC_PRIORITY = {
   // West Africa
@@ -177,7 +195,7 @@ const FAQS = [
   },
   {
     q: 'How much does it cost?',
-    a: 'Extracting terms and previewing your document is completely free. You pay $4.99 only when you want to download the clean, watermark-free PDF. One-time payment, no subscription.',
+    a: 'Extracting terms and previewing your document is completely free. You pay only when you want to download the clean, watermark-free PDF. One-time payment, no subscription — cheaper than losing one invoice.',
   },
 ]
 
@@ -207,6 +225,7 @@ export default function WhatsApp() {
   const [showAll, setShowAll] = useState(false)
   const [openFaq, setOpenFaq] = useState(null)
   const [countryCode, setCountryCode] = useState('DEFAULT')
+  const [currency, setCurrency] = useState(CURRENCY_MAP.DEFAULT)
   const [_geoLoaded, setGeoLoaded] = useState(false)
 
   // Geo detection — reuse session cache from Landing.jsx (key: sig_geo)
@@ -221,6 +240,7 @@ export default function WhatsApp() {
         const cc = d.countryCode || 'DEFAULT'
         if (cc !== 'DEFAULT') {
           setCountryCode(cc)
+          setCurrency(d.currency || getCurrency(cc))
           const priority = GEO_DOC_PRIORITY[cc] || GEO_DOC_PRIORITY.DEFAULT
           setDocType(priority[0])
         }
@@ -237,12 +257,14 @@ export default function WhatsApp() {
       .then(d => {
         if (!mounted || !d.country_code) return
         const cc = d.country_code || 'DEFAULT'
+        const cur = getCurrency(cc)
         setCountryCode(cc)
+        setCurrency(cur)
         const priority = GEO_DOC_PRIORITY[cc] || GEO_DOC_PRIORITY.DEFAULT
         setDocType(priority[0])
         sessionStorage.setItem('sig_geo', JSON.stringify({
           countryCode: cc,
-          currency: { code: d.currency || 'USD', symbol: '$', amount: 4.99 },
+          currency: cur,
         }))
       })
       .catch(() => {})
@@ -353,7 +375,7 @@ export default function WhatsApp() {
           <div className="wa-stat-div" />
           <div className="wa-stat"><span className="wa-stat-num">180+</span><span className="wa-stat-label">countries</span></div>
           <div className="wa-stat-div" />
-          <div className="wa-stat"><span className="wa-stat-num">$4.99</span><span className="wa-stat-label">to download</span></div>
+          <div className="wa-stat"><span className="wa-stat-num">{formatPrice(currency)}</span><span className="wa-stat-label">to download</span></div>
         </div>
       </section>
 
@@ -473,7 +495,7 @@ export default function WhatsApp() {
           <div className="wa-how-step">
             <div className="wa-how-num">03</div>
             <div className="wa-how-title">Review and generate</div>
-            <div className="wa-how-body">Check the extracted fields, adjust anything that needs changing, then generate your complete legal document. Free preview. $4.99 to download the clean PDF.</div>
+            <div className="wa-how-body">Check the extracted fields, adjust anything that needs changing, then generate your complete legal document. Free preview. {formatPrice(currency)} to download the clean PDF.</div>
           </div>
         </div>
       </section>
@@ -538,7 +560,7 @@ export default function WhatsApp() {
         <button className="wa-bottom-btn" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           Paste your conversation →
         </button>
-        <p className="wa-bottom-note">Free preview · $4.99 to download · No account needed · Any jurisdiction</p>
+        <p className="wa-bottom-note">Free preview · {formatPrice(currency)} to download · No account needed · Any jurisdiction</p>
       </section>
 
       {/* Footer */}

@@ -13,16 +13,32 @@ import {
 import './Preview.css'
 
 // Geo detect — same sessionStorage key used by Landing.jsx
-function useIsNigeria() {
+const CURRENCY_MAP_PREVIEW = {
+  NG: { symbol: '₦', amount: 6900, code: 'NGN' },
+  GH: { symbol: 'GH₵', amount: 75, code: 'GHS' },
+  KE: { symbol: 'KSh', amount: 650, code: 'KES' },
+  ZA: { symbol: 'R', amount: 93, code: 'ZAR' },
+  IN: { symbol: '₹', amount: 418, code: 'INR' },
+  GB: { symbol: '£', amount: 3.95, code: 'GBP' },
+  DE: { symbol: '€', amount: 4.60, code: 'EUR' },
+  FR: { symbol: '€', amount: 4.60, code: 'EUR' },
+  US: { symbol: '$', amount: 4.99, code: 'USD' },
+}
+const DEFAULT_CURRENCY_PREVIEW = { symbol: '$', amount: 4.99, code: 'USD' }
+
+function useGeoCurrency() {
   const [isNG, setIsNG] = useState(false)
+  const [currency, setCurrency] = useState(DEFAULT_CURRENCY_PREVIEW)
+
   useEffect(() => {
     // Key must match Landing.jsx which writes 'sig_geo'
     const cached = sessionStorage.getItem('sig_geo')
     if (cached) {
       try {
         const parsed = JSON.parse(cached)
-        // sig_geo stores { currency: { code, ... }, countryCode: 'NG' }
+        // sig_geo stores { currency: { code, symbol, amount, local }, countryCode: 'NG' }
         setIsNG(parsed.countryCode === 'NG' || parsed.currency?.code === 'NGN')
+        if (parsed.currency) setCurrency(parsed.currency)
       } catch {
         // Ignore JSON parse errors for cached data
       }
@@ -31,10 +47,16 @@ function useIsNigeria() {
     // Use our own API endpoint which leverages Vercel geo headers (free, unlimited)
     fetch('/api/geo')
       .then(r => r.json())
-      .then(d => setIsNG(d.country_code === 'NG'))
+      .then(d => {
+        if (d.country_code) {
+          setIsNG(d.country_code === 'NG')
+          const cur = CURRENCY_MAP_PREVIEW[d.country_code] || DEFAULT_CURRENCY_PREVIEW
+          setCurrency(cur)
+        }
+      })
       .catch(() => {})
   }, [])
-  return isNG
+  return { isNG, currency }
 }
 
 
@@ -42,7 +64,7 @@ function useIsNigeria() {
 
 export default function Preview() {
   const navigate = useNavigate()
-  const isNigeria = useIsNigeria()
+  const { isNG: isNigeria, currency } = useGeoCurrency()
   const [doc, setDoc] = useState(null)
   const [paying, setPaying] = useState(false)
   const [paid, setPaid] = useState(false)
@@ -510,7 +532,7 @@ export default function Preview() {
             </button>
           ) : (
             <button className="btn-pay" onClick={handleDownload} disabled={paying}>
-              {paying ? <><span className="spinner-sm" /> Processing…</> : <>Download PDF — $4.99</>}
+              {paying ? <><span className="spinner-sm" /> Processing…</> : <>Download PDF — {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`}</>}
             </button>
           )}
         </div>
@@ -571,9 +593,9 @@ export default function Preview() {
                         onClick={handleDownload}
                         disabled={paying}
                       >
-                        {paying 
-                          ? <><span className="spinner-sm" /> Processing…</> 
-                          : <>Unlock Full Document — $4.99</>
+                        {paying
+                          ? <><span className="spinner-sm" /> Processing…</>
+                          : <>Unlock Full Document — {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`}</>
                         }
                       </button>
                       <p className="locked-guarantee">30-day money-back guarantee · Instant download</p>
@@ -661,8 +683,14 @@ export default function Preview() {
             )}
 
             <div className="sidebar-price">
-              <span className="price-big">$4.99</span>
-              <span className="price-label">one-time · instant download</span>
+              <span className="price-big">
+                {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`}
+              </span>
+              <span className="price-label">
+                {currency.code === 'USD'
+                  ? 'one-time · instant download'
+                  : `≈ $4.99 · one-time · instant download`}
+              </span>
             </div>
 
             {/* Guarantee — prominent, not buried */}
@@ -790,14 +818,14 @@ export default function Preview() {
                     >
                       {payingUsdt
                         ? <><span className="spinner-sm" /> Preparing invoice…</>
-                        : <>⬡ Pay $4.99 in USDT / Crypto →</>}
+                        : <>⬡ Pay {currency.symbol}{currency.amount.toLocaleString()} in USDT / Crypto →</>}
                     </button>
                     <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Works with Myaza, Binance & all African crypto wallets</p>
                     <div className="usdt-divider"><span>or try card payment</span></div>
                     <button className="btn-pay-full btn-pay-secondary" onClick={handleDownload} disabled={paying}>
                       {paying
                         ? <><span className="spinner-sm" /> Processing…</>
-                        : <>💳 Pay $4.99 by Card →</>
+                        : <>💳 Pay {currency.symbol}{currency.amount.toLocaleString()} by Card →</>
                       }
                     </button>
                     <div className="trust-badge">🔒 SSL encrypted · Secure checkout · Instant delivery</div>
@@ -809,7 +837,7 @@ export default function Preview() {
                     <button className="btn-pay-full" onClick={handleDownload} disabled={paying}>
                       {paying
                         ? <><span className="spinner-sm" /> Processing…</>
-                        : <>Download full document — $4.99 →</>
+                        : <>Download full document — {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} →</>
                       }
                     </button>
                     <p className="trust-line">🔒 SSL secure · No account · Instant PDF · 30-day refund</p>
@@ -822,7 +850,7 @@ export default function Preview() {
                       >
                         {payingUsdt
                           ? <><span className="spinner-sm" /> Preparing invoice…</>
-                          : <>⬡ Pay $4.99 in USDT / Crypto →</>}
+                          : <>⬡ Pay {currency.code === 'USD' ? '$4.99' : `${currency.symbol}${currency.amount.toLocaleString()}`} in USDT / Crypto →</>}
                       </button>
                       <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Works with Myaza, Binance & all African crypto wallets · Instant confirmation</p>
                     </div>
