@@ -4,6 +4,9 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
+import { randomUUID } from 'node:crypto'
+import http from 'node:http'
 import { z } from 'zod'
 
 // ─── Server factory ───────────────────────────────────────────────────────────
@@ -416,31 +419,69 @@ export function createSandboxServer() {
 // ─── CLI entrypoint ──────────────────────────────────────────────────────────
 
 async function main() {
-  // Check if running in build/test mode (no stdin available)
-  const isBuildMode = process.env.NODE_ENV === 'build' ||
-                      process.env.EBENOVA_API_KEY === 'sk_test_sandbox' ||
-                      !process.stdin.isTTY
-
-  // Apify detection: Actor runs timeout because stdio server waits forever for stdin.
-  // When on Apify, just verify the server starts and exit cleanly.
+  // Apify detection — actor times out waiting for stdin; verify + exit cleanly.
   const isApify = !!(process.env.APIFY_IS_AT_HOME ||
                      process.env.ACTOR_IS_AT_HOME ||
                      process.env.APIFY_ACTOR_RUN_ID ||
                      process.env.ACTOR_RUN_ID ||
                      process.env.APIFY_CONTAINER_URL)
 
-  const server = createServer()
-
-  // Build mode or Apify: just verify server starts, then exit
-  if (isBuildMode || isApify) {
-    process.stderr.write('[ebenova-legal-docs-mcp] Server initialized successfully\n')
-    process.stderr.write('[ebenova-legal-docs-mcp] Tools registered: generate_legal_document, extract_from_conversation, list_document_types, generate_invoice, analyze_scope_creep, generate_change_order, check_usage\n')
+  if (isApify) {
+    process.stderr.write('[ebenova-legal-docs-mcp] Apify mode — server initialized\n')
+    process.stderr.write('[ebenova-legal-docs-mcp] Tools: generate_legal_document, extract_from_conversation, list_document_types, generate_invoice, analyze_scope_creep, generate_change_order, check_usage\n')
     process.exit(0)
     return
   }
-  
-  const transport = new StdioServerTransport()
-  await server.connect(transport)
+
+  const port = process.env.PORT
+
+  if (port) {
+    // ── HTTP / Streamable-HTTP mode (MCPize, Railway, Render, etc.) ──────────
+    // MCPize deploys behind an HTTP-to-MCP bridge and sets PORT.
+    // Each incoming request gets its own stateless transport instance.
+    const httpServer = http.createServer(async (req, res) => {
+      if (req.method === 'GET' && req.url === '/ping') {
+        res.writeHead(200, { 'Content-Type': 'text/plain' })
+        res.end('pong')
+        return
+      }
+
+      if (req.url === '/' || req.url === '/mcp') {
+        // Buffer body
+        const chunks = []
+        for await (const chunk of req) chunks.push(chunk)
+        const body = Buffer.concat(chunks).toString('utf8')
+
+        let parsedBody
+        try { parsedBody = JSON.parse(body) } catch { parsedBody = undefined }
+
+        const transport = new StreamableHTTPServerTransport({
+          sessionIdGenerator: () => randomUUID(),
+          onsessioninitialized: (id) => {
+            process.stderr.write(`[ebenova-legal-docs-mcp] Session: ${id}\n`)
+          },
+        })
+
+        const server = createServer()
+        await server.connect(transport)
+        await transport.handleRequest(req, res, parsedBody)
+        return
+      }
+
+      res.writeHead(404, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ error: 'Not found' }))
+    })
+
+    httpServer.listen(parseInt(port, 10), () => {
+      process.stderr.write(`[ebenova-legal-docs-mcp] HTTP server listening on port ${port}\n`)
+      process.stderr.write('[ebenova-legal-docs-mcp] Tools ready: generate_legal_document, extract_from_conversation, list_document_types, generate_invoice, analyze_scope_creep, generate_change_order, check_usage\n')
+    })
+  } else {
+    // ── Stdio mode (Claude Desktop, Cursor, Smithery, npx) ──────────────────
+    const server = createServer()
+    const transport = new StdioServerTransport()
+    await server.connect(transport)
+  }
 }
 
 main().catch(err => {

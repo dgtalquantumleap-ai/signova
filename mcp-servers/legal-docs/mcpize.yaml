@@ -8,22 +8,18 @@ slug: "ebenova-legal-docs"
 
 runtime: nodejs
 
-# No build step needed - pure Node.js server
 build:
   install: "npm install"
-  # No build command - source files are ready to run
 
 start:
-  type: stdio
+  type: http
   command: "node src/index.js"
-
-bridge:
-  mode: stdio
+  port: 8080
 
 # Environment variables required
 env:
   EBENOVA_API_KEY:
-    description: "Your Ebenova API key"
+    description: "Your Ebenova API key. Get a free key at https://ebenova.dev/dashboard"
     required: true
   EBENOVA_API_BASE:
     description: "API base URL"
