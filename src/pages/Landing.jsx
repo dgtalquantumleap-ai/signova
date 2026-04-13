@@ -703,18 +703,18 @@ export default function Landing() {
                 <span className="hero-demo-app">💬 WhatsApp</span>
               </div>
               <div className="hero-demo-chat">
-                <div className="hero-chat-them">Rent is ₦1.2m/year. 12 months. No pets.</div>
-                <div className="hero-chat-me">Agreed. I'm Amaka Nwosu. April 1st move-in?</div>
-                <div className="hero-chat-them">Yes. 6 months caution — ₦600k upfront.</div>
-                <div className="hero-chat-me">Fine. Let's sign before I transfer.</div>
+                <div className="hero-chat-them">We need a full website — 5 pages, blog, contact form. Budget $2,500.</div>
+                <div className="hero-chat-me">Got it. Timeline and revisions?</div>
+                <div className="hero-chat-them">3 weeks. 2 rounds included, extra revisions billed.</div>
+                <div className="hero-chat-me">50% upfront, rest on delivery?</div>
               </div>
             </div>
             <div className="hero-demo-arrow">↓ Signova extracts 9 terms</div>
             <div className="hero-demo-result">
               <span className="hero-result-icon">✓</span>
               <div>
-                <div className="hero-result-title">Tenancy Agreement ready</div>
-                <div className="hero-result-sub">Landlord · Tenant · Rent · Duration · Deposit · Restrictions…</div>
+                <div className="hero-result-title">Freelance Contract ready</div>
+                <div className="hero-result-sub">Client · Scope · Deliverables · Timeline · Payment · Revisions…</div>
               </div>
             </div>
             <div className="hero-demo-cta">Try free → getsignova.com/whatsapp</div>
