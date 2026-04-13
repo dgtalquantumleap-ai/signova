@@ -276,11 +276,7 @@ export default function ApiLanding() {
 
   const handlePricingCta = (tier) => {
     track('pricing_cta_click', { tier })
-    if (tier === 'free' || tier === 'starter' || tier === 'growth') {
-      navigate('/dashboard')
-    } else if (tier === 'scale') {
-      window.location.href = 'mailto:api@ebenova.dev?subject=Scale%20Tier%20Inquiry'
-    }
+    navigate('/pricing')
   }
 
   const handleViewDocs = () => {
@@ -340,7 +336,7 @@ export default function ApiLanding() {
           </div>
           <div className="api-nav-links">
             <a href="#apis">APIs</a>
-            <a href="#pricing">Pricing</a>
+            <a href="/pricing">Pricing</a>
             <a href="#mcp">MCP</a>
             <a href="/insights">Insights</a>
             <a href="/docs">Docs</a>
@@ -794,7 +790,7 @@ export default function ApiLanding() {
               <a href="#apis">APIs</a>
               <a href="/docs#scope-guard">Scope Guard API</a>
               <a href="/insights">Insights</a>
-              <a href="#pricing">Pricing</a>
+              <a href="/pricing">Pricing</a>
               <a href="#mcp">MCP Servers</a>
               <a href="/docs">Documentation</a>
             </div>
