@@ -1,6 +1,6 @@
 /* eslint no-unused-vars: off */
 import { Routes, Route } from 'react-router-dom'
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useState, useEffect } from 'react'
 
 const Landing    = lazy(() => import('./pages/Landing'))
 const ApiLanding = lazy(() => import('./pages/ApiLanding'))
@@ -27,21 +27,31 @@ const Vigil             = lazy(() => import('./pages/VigilLanding'))
 const Insights          = lazy(() => import('./pages/Insights'))
 const InsightsDashboard = lazy(() => import('./pages/InsightsDashboard'))
 
-const PageShell = () => (
-  <div style={{ minHeight: '100vh', background: '#0e0e0e' }} />
-)
+function SuspenseFallback() {
+  const [timedOut, setTimedOut] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setTimedOut(true), 2000)
+    return () => clearTimeout(t)
+  }, [])
+  if (timedOut) {
+    return (
+      <div style={{ minHeight: '100vh', background: '#0e0e0e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px', padding: '24px', textAlign: 'center' }}>
+        <p style={{ color: '#c8c4bc', fontFamily: "'DM Sans', system-ui, sans-serif", fontSize: '16px' }}>Page is taking longer than expected. Please refresh.</p>
+        <a href="/" style={{ background: '#c9a84c', color: '#0e0e0e', border: 'none', borderRadius: '8px', padding: '14px 28px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', textDecoration: 'none', display: 'inline-block' }}>Back to Signova →</a>
+      </div>
+    )
+  }
+  return <div style={{ minHeight: '100vh', background: '#0e0e0e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ width: '32px', height: '32px', border: '3px solid #333', borderTopColor: '#c9a84c', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /></div>
+}
 
 // Serve the correct root page based on which domain is being visited.
 // ebenova.dev  → ApiLanding (the API platform homepage)
 // getsignova.com / anything else → Landing (the Signova product homepage)
 function isEbenovaDomain() {
   const hostname = window.location.hostname
-  // localhost / 127.0.0.1 included so local dev can reach /insights routes
   return hostname === 'ebenova.dev'
     || hostname === 'www.ebenova.dev'
     || hostname === 'api.ebenova.dev'
-    || hostname === 'localhost'
-    || hostname === '127.0.0.1'
 }
 
 function RootPage() {
@@ -59,7 +69,7 @@ function InsightsDashboardPage() {
 
 export default function App() {
   return (
-    <Suspense fallback={<PageShell />}>
+    <Suspense fallback={<SuspenseFallback />}>
       <a href="#main-content" className="skip-nav">Skip to main content</a>
       <Routes>
         <Route path="/" element={<RootPage />} />

@@ -284,47 +284,61 @@ export default function ApiLanding() {
     navigate('/docs')
   }
 
+  const isEbenova = typeof window !== 'undefined'
+    && (window.location.hostname === 'ebenova.dev'
+      || window.location.hostname === 'www.ebenova.dev'
+      || window.location.hostname === 'api.ebenova.dev')
+
   return (
     <div className="api-landing">
       <Helmet>
-        <title>Ebenova — The API Layer for Business Agreements</title>
-        <meta name="description" content="Generate contracts, verify payments, detect fraud, enforce scope — 27 document types, 18 jurisdictions. MCP-native. Built for Africa, open to the world. Free tier available." />
-        <link rel="canonical" href="https://www.ebenova.dev/" />
-        <link rel="alternate" hreflang="en" href="https://www.ebenova.dev/" />
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="Ebenova" />
-        <meta property="og:url" content="https://www.ebenova.dev/" />
-        <meta property="og:title" content="Ebenova — The API Layer for Business Agreements" />
-        <meta property="og:description" content="Generate contracts, verify payments, detect fraud, enforce scope — 27 document types, 18 jurisdictions. MCP-native. Built for Africa, open to the world." />
-        <meta property="og:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@quantimleap100" />
-        <meta name="twitter:title" content="Ebenova — The API Layer for Business Agreements" />
-        <meta name="twitter:description" content="Contracts, invoices, fraud detection, scope enforcement. 27 document types, 18 jurisdictions. MCP-native. Free tier." />
-        <meta name="twitter:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
-        <script type="application/ld+json">{JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "SoftwareApplication",
-          "name": "Ebenova API",
-          "url": "https://www.ebenova.dev",
-          "description": "Developer-first API platform for legal document generation, invoices, contract enforcement, and Reddit monitoring. 27 document types across 18 jurisdictions including Nigeria, Kenya, Ghana, UK, US, and Canada.",
-          "applicationCategory": "DeveloperApplication",
-          "operatingSystem": "Web",
-          "offers": [
-            { "@type": "Offer", "name": "Free Tier", "price": "0", "priceCurrency": "USD" },
-            { "@type": "Offer", "name": "Starter", "price": "29", "priceCurrency": "USD", "billingIncrement": "month" },
-            { "@type": "Offer", "name": "Growth", "price": "79", "priceCurrency": "USD", "billingIncrement": "month" },
-            { "@type": "Offer", "name": "Scale", "price": "199", "priceCurrency": "USD", "billingIncrement": "month" }
-          ],
-          "provider": {
-            "@type": "Organization",
-            "name": "Ebenova Solutions",
-            "url": "https://www.ebenova.dev",
-            "email": "api@ebenova.dev"
-          }
-        })}</script>
+        {isEbenova ? (
+          <>
+            <title>Ebenova — The API Layer for Business Agreements</title>
+            <meta name="description" content="Generate contracts, verify payments, detect fraud, enforce scope — 27 document types, 18 jurisdictions. MCP-native. Built for Africa, open to the world. Free tier available." />
+            <link rel="canonical" href="https://www.ebenova.dev/" />
+            <link rel="alternate" hreflang="en" href="https://www.ebenova.dev/" />
+            <meta property="og:type" content="website" />
+            <meta property="og:site_name" content="Ebenova" />
+            <meta property="og:url" content="https://www.ebenova.dev/" />
+            <meta property="og:title" content="Ebenova — The API Layer for Business Agreements" />
+            <meta property="og:description" content="Generate contracts, verify payments, detect fraud, enforce scope — 27 document types, 18 jurisdictions. MCP-native. Built for Africa, open to the world." />
+            <meta property="og:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
+            <meta property="og:image:width" content="1200" />
+            <meta property="og:image:height" content="630" />
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:site" content="@quantimleap100" />
+            <meta name="twitter:title" content="Ebenova — The API Layer for Business Agreements" />
+            <meta name="twitter:description" content="Contracts, invoices, fraud detection, scope enforcement. 27 document types, 18 jurisdictions. MCP-native. Free tier." />
+            <meta name="twitter:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
+            <script type="application/ld+json">{JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "Ebenova API",
+              "url": "https://www.ebenova.dev",
+              "description": "Developer-first API platform for legal document generation, invoices, contract enforcement, and Reddit monitoring. 27 document types across 18 jurisdictions including Nigeria, Kenya, Ghana, UK, US, and Canada.",
+              "applicationCategory": "DeveloperApplication",
+              "operatingSystem": "Web",
+              "offers": [
+                { "@type": "Offer", "name": "Free Tier", "price": "0", "priceCurrency": "USD" },
+                { "@type": "Offer", "name": "Starter", "price": "29", "priceCurrency": "USD", "billingIncrement": "month" },
+                { "@type": "Offer", "name": "Growth", "price": "79", "priceCurrency": "USD", "billingIncrement": "month" },
+                { "@type": "Offer", "name": "Scale", "price": "199", "priceCurrency": "USD", "billingIncrement": "month" }
+              ],
+              "provider": {
+                "@type": "Organization",
+                "name": "Ebenova Solutions",
+                "url": "https://www.ebenova.dev",
+                "email": "api@ebenova.dev"
+              }
+            })}</script>
+          </>
+        ) : (
+          <>
+            <title>Signova — Professional Legal Documents</title>
+            <meta name="robots" content="noindex" />
+          </>
+        )}
       </Helmet>
 
       {/* Navigation */}
