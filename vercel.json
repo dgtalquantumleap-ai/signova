@@ -50,6 +50,10 @@
       "destination": "/api/v1/insights/monitors/router"
     },
     {
+      "source": "/stripe-webhook",
+      "destination": "/api/stripe-webhook"
+    },
+    {
       "source": "/v1/(.*)",
       "destination": "/api/v1/$1"
     },
@@ -107,8 +111,10 @@
     "api/v1/keys/create.js": { "maxDuration": 30 },
     "api/v1/keys/usage.js": { "maxDuration": 30 },
     "api/v1/documents/types.js": { "maxDuration": 30 },
+    "api/stripe-webhook.js": { "maxDuration": 30 },
     "api/v1/billing/checkout.js": { "maxDuration": 30 },
     "api/v1/billing/webhook.js": { "maxDuration": 30 },
+    "api/v1/keys/self-serve.js": { "maxDuration": 30 },
     "api/v1/billing/portal.js": { "maxDuration": 30 },
     "api/v1/insights/matches/draft.js": { "maxDuration": 60 },
     "api/v1/insights/monitors/create.js": { "maxDuration": 30 },
