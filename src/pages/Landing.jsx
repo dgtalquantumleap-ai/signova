@@ -794,17 +794,18 @@ export default function Landing() {
           <div className="wa-banner-right">
             <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px', textAlign: 'right' }}>Example conversation</div>
             <div className="wa-banner-chat" style={{ cursor: 'pointer' }} onClick={() => navigate('/whatsapp')}>
-              <div className="wa-msg wa-msg-them">Rent is ₦1.2m per year. 1 year tenancy.</div>
-              <div className="wa-msg wa-msg-me">Agreed. I'm Amaka Nwosu. When do I move in?</div>
-              <div className="wa-msg wa-msg-them">1st April. 6 months caution deposit — 600k.</div>
-              <div className="wa-msg wa-msg-me">Fine. No pets right?</div>
-              <div className="wa-msg wa-msg-them">No pets, no subletting. We sign before you move in.</div>
+              <div className="wa-msg wa-msg-them">We need a full website — 5 pages, blog, contact form. Budget is $2,500.</div>
+              <div className="wa-msg wa-msg-me">Got it. Timeline and revisions?</div>
+              <div className="wa-msg wa-msg-them">3 weeks. 2 rounds included, extra revisions billed.</div>
+              <div className="wa-msg wa-msg-me">50% upfront, rest on delivery?</div>
+              <div className="wa-msg wa-msg-them">Agreed. I'll send the details now.</div>
+              <div className="wa-msg wa-msg-me">Perfect — I'll send over the agreement before we start.</div>
               <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', textAlign: 'center', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.15)' }}>Tap to try with your own conversation →</div>
             </div>
             <div className="wa-banner-arrow">↓</div>
             <div className="wa-banner-result">
               <span className="wa-result-check">✓</span>
-              <span className="wa-result-text">9 fields auto-filled — Tenancy Agreement ready</span>
+              <span className="wa-result-text">9 fields auto-filled — Freelance Contract ready</span>
             </div>
           </div>
         </div>
