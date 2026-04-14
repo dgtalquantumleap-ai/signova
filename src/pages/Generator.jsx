@@ -660,6 +660,30 @@ const DOC_CONFIG = {
       { id: 'country', label: 'Governing law', type: 'select', options: ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Canada — Ontario', 'United Kingdom', 'United States — Delaware', 'United States — California', 'Singapore', 'Cayman Islands', 'Other'] },
     ],
   },
+
+  'data-processing-agreement': {
+    name: 'Data Processing Agreement (DPA)',
+    icon: '🛡️',
+    fields: [
+      { id: 'controllerName', label: 'Data Controller (your organisation)', type: 'text', placeholder: 'e.g. PaySwift Ltd.' },
+      { id: 'processorName', label: 'Data Processor (vendor/contractor)', type: 'text', placeholder: 'e.g. CloudServ Africa Ltd.' },
+      { id: 'controllerAddress', label: 'Controller address', type: 'text', placeholder: 'e.g. 14 Keffi St, Ikoyi, Lagos' },
+      { id: 'processorAddress', label: 'Processor address', type: 'text', placeholder: 'e.g. 22 Oxford Road, Sandton, Johannesburg' },
+      { id: 'dataSubjects', label: 'Categories of data subjects', type: 'checkbox', options: ['Customers', 'Employees', 'Website visitors', 'Suppliers', 'Contractors', 'Job applicants', 'Minors (under 18)'] },
+      { id: 'dataCategories', label: 'Categories of personal data processed', type: 'checkbox', options: ['Names', 'Email addresses', 'Phone numbers', 'Physical addresses', 'Payment / financial details', 'Government IDs (BVN, NIN, passport)', 'Location data', 'Device / IP addresses', 'Employment records', 'Health / medical data', 'Biometric data'] },
+      { id: 'specialCategoryData', label: 'Is special category / sensitive data processed?', type: 'radio', options: ['No', 'Yes — health or medical data', 'Yes — biometric data', 'Yes — government-issued IDs', 'Yes — data about minors', 'Yes — other sensitive categories'] },
+      { id: 'processingPurpose', label: 'Purpose of processing', type: 'textarea', placeholder: 'e.g. Cloud hosting of customer database, email marketing campaign management, payroll processing on behalf of the Controller.' },
+      { id: 'processingActivities', label: 'Description of processing activities', type: 'textarea', placeholder: 'e.g. Storing, retrieving, transmitting and backing up customer data on AWS cloud infrastructure located in South Africa.' },
+      { id: 'retentionPeriod', label: 'Data retention period', type: 'text', placeholder: 'e.g. Duration of contract + 30 days after termination' },
+      { id: 'subProcessors', label: 'Sub-processor authorisation', type: 'radio', options: ['Yes — with prior written authorisation from Controller', 'No — sub-processors not permitted', 'Yes — specific list of sub-processors attached as schedule'] },
+      { id: 'securityMeasures', label: 'Technical & organisational security measures', type: 'checkbox', options: ['Encryption at rest (AES-256)', 'Encryption in transit (TLS 1.3)', 'Role-based access control (RBAC)', 'Multi-factor authentication (MFA)', 'Regular penetration testing', 'Vulnerability scanning', 'Incident response plan', 'Staff security training', 'Physical security controls'] },
+      { id: 'dataTransfers', label: 'Cross-border data transfers', type: 'radio', options: ['No — data stays within the country', 'Yes — transferred to specific countries (list below)', 'Yes — globally with adequate safeguards in place'] },
+      { id: 'transferCountries', label: 'If cross-border, list destination countries', type: 'text', placeholder: 'e.g. South Africa, United Kingdom, United States' },
+      { id: 'jurisdiction', label: 'Governing law / data protection regime', type: 'select', options: ['Nigeria — NDPA 2023', 'United Kingdom — UK GDPR / DPA 2018', 'European Union — GDPR', 'South Africa — POPIA', 'Kenya — Data Protection Act 2019', 'Ghana — Data Protection Act 2012', 'Other'] },
+      { id: 'dpoContact', label: 'Data Protection Officer / contact person', type: 'text', placeholder: 'e.g. dpo@payswift.ng or Legal Department' },
+      { id: 'breachNotificationHours', label: 'Breach notification timeline (Processor to Controller)', type: 'text', placeholder: 'e.g. 24 hours — regulator notification is 72 hours under NDPA' },
+    ],
+  },
 }
 
 export default function Generator() {
