@@ -242,7 +242,7 @@ export default function Insights() {
           <a href="#how" className="ins-nav-link">How it works</a>
           <a href="#api" className="ins-nav-link">API</a>
           <a href="#pricing" className="ins-nav-link">Pricing</a>
-          <button className="ins-nav-cta" onClick={scrollToWaitlist}>Get access</button>
+          <button className="ins-nav-cta" onClick={scrollToWaitlist}>Get started</button>
         </div>
       </nav>
 
@@ -256,7 +256,7 @@ export default function Insights() {
           that sounds like a person, not a pitch.
         </p>
         <div className="ins-hero-actions">
-          <button className="ins-btn-gold" onClick={scrollToWaitlist}>Join waitlist — $49/mo</button>
+          <CheckoutButton tier="insights_starter" className="ins-btn-gold">Get Started — $49/mo</CheckoutButton>
           <a href="#preview" className="ins-btn-ghost">See a live alert →</a>
         </div>
         <div className="ins-hero-proof">
@@ -386,7 +386,7 @@ export default function Insights() {
 
           <div className="ins-api-auth-note">
             Base URL: <code>https://api.ebenova.dev</code> &nbsp;·&nbsp; All endpoints require <code>Authorization: Bearer sk_live_your_key</code> with Insights access.
-            {' '}<a href="mailto:akin@ebenova.dev">Email us</a> to get a key during beta.
+            {' '}<a href="https://ebenova.dev/dashboard">Get your API key</a> from the dashboard.
           </div>
         </div>
       </section>
@@ -394,8 +394,8 @@ export default function Insights() {
       {/* ── Pricing ── */}
       <section id="pricing" className="ins-section ins-pricing-section">
         <div className="ins-section-label">Pricing</div>
-        <h2>Simple pricing. Founding rate locked.</h2>
-        <p className="ins-section-sub">Beta opens to 10 founding members. $49/month locked for life.</p>
+        <h2>Simple pricing. No surprises.</h2>
+        <p className="ins-section-sub">All plans include email alerts, AI reply drafts, and subreddit safety checks.</p>
 
         <div className="ins-pricing-grid">
           {[
@@ -441,11 +441,11 @@ export default function Insights() {
         </div>
       </section>
 
-      {/* ── Waitlist ── */}
+      {/* ── CTA ── */}
       <section className="ins-waitlist-section" ref={waitlistRef}>
-        <h2>Get early access</h2>
-        <p>Beta opens to 10 founding members. You get $49/month locked for life, plus direct setup support from the builder.</p>
-        <WaitlistForm plan="starter" />
+        <h2>Start monitoring today</h2>
+        <p>Set up your first keyword monitor in under 60 seconds. Cancel any time.</p>
+        <CheckoutButton tier="insights_starter" className="ins-btn-gold">Get Starter — $49/mo →</CheckoutButton>
       </section>
 
       {/* ── Footer ── */}
