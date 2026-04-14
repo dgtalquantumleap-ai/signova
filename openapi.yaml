@@ -24,12 +24,13 @@ info:
 servers:
   - url: https://api.ebenova.dev
     description: Production
-  - url: https://www.getsignova.com
-    description: Signova (alias)
+
+security:
+  - BearerAuth: []
 
 tags:
   - name: Documents
-    description: Generate legally compliant documents — 27 types, 18 jurisdictions
+    description: Generate legally compliant documents — 34 types, 18 jurisdictions
   - name: Invoices
     description: Generate invoices, receipts, proformas and credit notes
   - name: Extraction
@@ -107,7 +108,7 @@ paths:
     get:
       operationId: listDocumentTypes
       summary: List all supported document types
-      description: Returns all 27 supported document types, grouped by category. No authentication required.
+      description: Returns all 34 supported document types, grouped by category. No authentication required.
       tags: [Documents]
       responses:
         '200':
@@ -764,6 +765,13 @@ components:
             - terms-of-service
             - mou
             - letter-of-intent
+            - data-processing-agreement
+            - founders-agreement
+            - ip-assignment-agreement
+            - advisory-board-agreement
+            - vesting-agreement
+            - term-sheet
+            - safe-agreement
         fields:
           type: object
           description: Document-specific fields. See the field reference at ebenova.dev/docs/legal for required fields per document type.

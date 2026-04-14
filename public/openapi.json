@@ -26,7 +26,7 @@
   "tags": [
     {
       "name": "Documents",
-      "description": "Generate legally compliant documents — 27 types, 18 jurisdictions"
+      "description": "Generate legally compliant documents — 34 types, 18 jurisdictions"
     },
     {
       "name": "Invoices",
@@ -133,7 +133,7 @@
       "get": {
         "operationId": "listDocumentTypes",
         "summary": "List all supported document types",
-        "description": "Returns all 27 supported document types, grouped by category. No authentication required.",
+        "description": "Returns all 34 supported document types, grouped by category. No authentication required.",
         "tags": [
           "Documents"
         ],
@@ -776,7 +776,7 @@
           },
           "total": {
             "type": "integer",
-            "example": 27
+            "example": 34
           },
           "types": {
             "type": "array",
