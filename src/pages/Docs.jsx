@@ -465,7 +465,7 @@ export default function Docs() {
           {/* ── Document Types ── */}
           <section id="document-types">
             <h2>Document Type Reference</h2>
-            <p>34 document types across 5 categories:</p>
+            <p>34 document types across 6 categories:</p>
 
             <h3>Business Contracts</h3>
             <ul className="doc-type-list">
@@ -512,6 +512,17 @@ export default function Docs() {
               <li><code>terms-of-service</code> — Terms of Service</li>
               <li><code>mou</code> — Memorandum of Understanding</li>
               <li><code>letter-of-intent</code> — Letter of Intent</li>
+              <li><code>data-processing-agreement</code> — Data Processing Agreement (DPA)</li>
+            </ul>
+
+            <h3>Startup &amp; Fundraising</h3>
+            <ul className="doc-type-list">
+              <li><code>founders-agreement</code> — Founders&apos; Agreement</li>
+              <li><code>ip-assignment-agreement</code> — IP Assignment Agreement</li>
+              <li><code>advisory-board-agreement</code> — Advisory Board Agreement</li>
+              <li><code>vesting-agreement</code> — Vesting Agreement</li>
+              <li><code>term-sheet</code> — Term Sheet</li>
+              <li><code>safe-agreement</code> — SAFE Agreement</li>
             </ul>
           </section>
 

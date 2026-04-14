@@ -170,6 +170,11 @@ const SEO_META = {
     description: 'Generate a SAFE (Simple Agreement for Future Equity) for early-stage startup fundraising. Covers valuation cap, discount rate and pro-rata rights. Africa, UK, US.',
     keywords: 'SAFE agreement template, simple agreement for future equity, SAFE note Nigeria, startup SAFE agreement, convertible note alternative, Y Combinator SAFE Africa',
   },
+  'data-processing-agreement': {
+    title: 'Data Processing Agreement (DPA) Generator | NDPA & GDPR Compliant — Signova',
+    description: 'Generate a jurisdiction-aware Data Processing Agreement with NDPA 2023, GDPR, POPIA, and Kenya DPA compliance. Includes breach notification, cross-border transfer, and GAID AI provisions.',
+    keywords: 'data processing agreement template, DPA generator, NDPA 2023 DPA, GDPR DPA, data protection agreement Nigeria, GAID compliance, data processor agreement',
+  },
 }
 
 const DOC_CONFIG = {

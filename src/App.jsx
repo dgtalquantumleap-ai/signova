@@ -67,10 +67,33 @@ function InsightsDashboardPage() {
   return isEbenovaDomain() ? <InsightsDashboard /> : <NotFound />
 }
 
+function CookieConsent() {
+  const [visible, setVisible] = useState(false)
+  useEffect(() => {
+    if (!localStorage.getItem('sig_cookie_consent')) setVisible(true)
+  }, [])
+  if (!visible) return null
+  const accept = () => { localStorage.setItem('sig_cookie_consent', 'accepted'); setVisible(false) }
+  const decline = () => {
+    localStorage.setItem('sig_cookie_consent', 'declined')
+    setVisible(false)
+    // Disable GA4 if user declines
+    window['ga-disable-G-BT3L97QKS5'] = true
+  }
+  return (
+    <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999, background: '#1a1a1a', borderTop: '1px solid #333', padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', flexWrap: 'wrap', fontFamily: "'DM Sans', system-ui, sans-serif", fontSize: '13px', color: '#c8c4bc' }}>
+      <span>We use cookies for analytics (Google Analytics). No tracking cookies. <a href="/privacy" style={{ color: '#c9a84c', textDecoration: 'underline' }}>Privacy Policy</a></span>
+      <button onClick={accept} style={{ background: '#c9a84c', color: '#0e0e0e', border: 'none', borderRadius: '6px', padding: '8px 18px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Accept</button>
+      <button onClick={decline} style={{ background: 'transparent', color: '#888', border: '1px solid #444', borderRadius: '6px', padding: '8px 18px', fontSize: '13px', cursor: 'pointer' }}>Decline</button>
+    </div>
+  )
+}
+
 export default function App() {
   return (
     <Suspense fallback={<SuspenseFallback />}>
       <a href="#main-content" className="skip-nav">Skip to main content</a>
+      <CookieConsent />
       <Routes>
         <Route path="/" element={<RootPage />} />
         <Route path="/api" element={<ApiLanding />} />
