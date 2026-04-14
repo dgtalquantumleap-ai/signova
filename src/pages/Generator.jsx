@@ -837,7 +837,26 @@ export default function Generator() {
         return `${f.label}: ${display}`
       }).filter(Boolean).join('\n')
 
-      const prompt = `Generate a professional, comprehensive ${config.name} document for the following business:
+      const isDpa = config.id === 'data-processing-agreement'
+      const prompt = isDpa
+        ? `Generate a Data Processing Agreement (DPA) compliant with the ${answers.jurisdiction || 'Nigeria Data Protection Act 2023'} for the following:
+
+${fieldSummary}
+
+The DPA must include:
+1. A "Key Obligations Summary" at the top — 5 plain-language bullet points stating "Who must do What by When"
+2. The formal DPA with clear numbered sections covering: Controller/Processor roles, Data Subject Rights, Breach Notification (72h to regulator), Cross-Border Transfer restrictions, Security Measures, and Data Retention/Deletion
+3. A "Data Flow Mapping Template" at the end — a practical checklist for operational implementability
+
+Requirements:
+- Use formal legal language but prioritise clarity over complexity
+- Every obligation must have a clear "Who," "What," and "When"
+- Do not include any placeholder text like [INSERT NAME] — use the actual values provided
+- End the formal DPA with a signature block, then append the Data Flow Mapping Template
+- Do NOT add any disclaimers, footnotes, notes, or suggestions to seek legal advice
+
+Output the complete document only, no preamble, explanation, or closing notes.`
+        : `Generate a professional, comprehensive ${config.name} document for the following business:
 
 ${fieldSummary}
 

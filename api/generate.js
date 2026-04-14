@@ -5,6 +5,7 @@
 import Stripe from 'stripe'
 import { parseBody } from '../lib/parse-body.js'
 import { logError, logWarn, logInfo } from '../lib/logger.js'
+import { buildDpaSystemPrompt } from './v1/documents/clauses.js'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
@@ -45,6 +46,11 @@ export default async function handler(req, res) {
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) return res.status(500).json({ error: 'Server misconfigured — missing Anthropic key' })
 
+  const isDpa = prompt.toLowerCase().includes('data processing agreement') || prompt.toLowerCase().includes('dpa')
+  const systemPrompt = isDpa
+    ? buildDpaSystemPrompt('Nigeria — NDPA 2023') + '\n\nThis is a premium paid document — make it exceptional.'
+    : 'You are an expert legal document drafter with deep knowledge of international law. Generate comprehensive, professional legal documents tailored precisely to the user details provided. Use formal legal language, clear numbered sections, and include all standard clauses. This is a premium paid document — make it exceptional. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.'
+
   try {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 90000) // 90s timeout
@@ -58,9 +64,8 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
-        system:
-          'You are an expert legal document drafter with deep knowledge of international law. Generate comprehensive, professional legal documents tailored precisely to the user details provided. Use formal legal language, clear numbered sections, and include all standard clauses. This is a premium paid document — make it exceptional. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.',
+        max_tokens: 8000,
+        system: systemPrompt,
         messages: [{ role: 'user', content: prompt }],
       }),
       signal: controller.signal,

@@ -6,6 +6,7 @@ import { authenticate, recordUsage, buildUsageBlock } from '../../../lib/api-aut
 import { DocumentGenerateSchema, formatValidationError } from '../../../lib/validators.js'
 import { logError, logRequest, logDetailedError } from '../../../lib/logger.js'
 import { parseBody } from '../../../lib/parse-body.js'
+import { buildDpaSystemPrompt, buildKeyObligationsSummary, buildDataFlowMappingTemplate, getDpaClauses } from './clauses.js'
 
 const LEGAL_DISCLAIMER = {
   type: 'disclaimer',
@@ -25,6 +26,32 @@ function buildPrompt(docType, fields) {
     .join('\n')
 
   const docName = docType.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+
+  if (docType === 'data-processing-agreement') {
+    const jurisdiction = fields.jurisdiction || 'Nigeria — NDPA 2023'
+    const summary = buildKeyObligationsSummary(fields, jurisdiction)
+    const dataFlow = buildDataFlowMappingTemplate(fields)
+    return `Generate a Data Processing Agreement (DPA) for the following:
+
+${fieldSummary}
+
+The generated DPA must include THREE sections in this order:
+
+SECTION 1 — KEY OBLIGATIONS SUMMARY (plain language, top of document):
+${summary}
+
+SECTION 2 — THE FORMAL DPA:
+Write a comprehensive Data Processing Agreement with clear numbered sections. Include all standard DPA clauses tailored to the details provided. Use formal legal language but prioritise clarity — every obligation must state "Who," "What," and "When."
+
+SECTION 3 — DATA FLOW MAPPING TEMPLATE (operational checklist):
+${dataFlow}
+
+Requirements:
+- Do not include any placeholder text like [INSERT NAME] — use the actual values provided
+- End with a signature block after Section 2 (before Section 3)
+- Do NOT add any disclaimers, footnotes, notes, or suggestions to seek legal advice
+- Output the complete document only, no preamble, explanation, or closing notes.`
+  }
 
   return `Generate a professional, comprehensive ${docName} document for the following:
 
@@ -94,7 +121,11 @@ export default async function handler(req, res) {
 
   try {
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 90000) // 90s timeout
+    const timeoutId = setTimeout(() => controller.abort(), 90000)
+
+    const systemPrompt = document_type === 'data-processing-agreement'
+      ? buildDpaSystemPrompt(fields.jurisdiction)
+      : 'You are an expert legal document drafter with deep knowledge of international law. Generate comprehensive, professional legal documents tailored precisely to the details provided. Use formal legal language, clear numbered sections, and include all standard clauses. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.'
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -105,9 +136,8 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5-20250929',
-        max_tokens: 4000,
-        system:
-          'You are an expert legal document drafter with deep knowledge of international law. Generate comprehensive, professional legal documents tailored precisely to the details provided. Use formal legal language, clear numbered sections, and include all standard clauses. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.',
+        max_tokens: 8000,
+        system: systemPrompt,
         messages: [{ role: 'user', content: prompt }],
       }),
       signal: controller.signal,

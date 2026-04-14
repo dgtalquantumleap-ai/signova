@@ -227,6 +227,10 @@ const DOC_CATEGORIES = [
     name: 'Finance & Investment',
     docs: ['loan-agreement', 'hire-purchase', 'shareholder-agreement'],
   },
+  {
+    name: 'Data Protection & Compliance',
+    docs: ['data-processing-agreement', 'privacy-policy', 'terms-of-service'],
+  },
 ]
 
 const DOCS = [
@@ -263,6 +267,7 @@ const DOCS = [
   { id: 'vesting-agreement', icon: '📈', name: 'Vesting Agreement', desc: 'Document equity vesting schedules for founders and employees with cliff, acceleration and leaver terms.', time: '4 min', popular: false },
   { id: 'term-sheet', icon: '📋', name: 'Investment Term Sheet', desc: 'Non-binding term sheet covering valuation, equity %, investor rights and conditions for angel/seed funding.', time: '5 min', popular: false },
   { id: 'safe-agreement', icon: '🔐', name: 'SAFE Agreement', desc: 'Simple Agreement for Future Equity — the standard early-stage fundraising instrument. Valuation cap, discount, pro-rata.', time: '4 min', popular: false },
+  { id: 'data-processing-agreement', icon: '🛡️', name: 'Data Processing Agreement (DPA)', desc: 'NDPA/GAID-compliant DPA — controller-processor roles, breach notification, cross-border transfers, data subject rights.', time: '5 min', popular: true },
 ]
 
 // Build a lookup map for docs

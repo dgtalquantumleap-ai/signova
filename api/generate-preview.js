@@ -5,6 +5,7 @@
 
 import { parseBody } from '../lib/parse-body.js'
 import { logError, logInfo } from '../lib/logger.js'
+import { buildDpaSystemPrompt } from './v1/documents/clauses.js'
 
 const WINDOW_MS = 60 * 60 * 1000 // 1 hour
 const MAX_PER_WINDOW = 3
@@ -45,6 +46,11 @@ export default async function handler(req, res) {
   const apiKey = process.env.GROQ_API_KEY
   if (!apiKey) return res.status(500).json({ error: 'Server misconfigured — missing GROQ key' })
 
+  const isDpa = prompt.toLowerCase().includes('data processing agreement') || prompt.toLowerCase().includes('dpa')
+  const systemContent = isDpa
+    ? buildDpaSystemPrompt('Nigeria — NDPA 2023')
+    : 'You are a legal document drafting assistant. Generate professional, comprehensive legal documents based on the user details provided. Use formal legal language with clear numbered sections. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.'
+
   try {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -54,12 +60,9 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
-        max_tokens: 3000,
+        max_tokens: 6000,
         messages: [
-          {
-            role: 'system',
-            content: 'You are a legal document drafting assistant. Generate professional, comprehensive legal documents based on the user details provided. Use formal legal language with clear numbered sections. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.',
-          },
+          { role: 'system', content: systemContent },
           { role: 'user', content: prompt },
         ],
       }),

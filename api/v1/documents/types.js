@@ -36,10 +36,11 @@ const DOCUMENT_TYPES = {
     { type: 'facility-manager-agreement',label: 'Facility Manager Agreement' },
   ],
   legal_compliance: [
-    { type: 'privacy-policy',   label: 'Privacy Policy' },
-    { type: 'terms-of-service', label: 'Terms of Service' },
-    { type: 'mou',              label: 'Memorandum of Understanding' },
-    { type: 'letter-of-intent', label: 'Letter of Intent' },
+    { type: 'privacy-policy',       label: 'Privacy Policy' },
+    { type: 'terms-of-service',     label: 'Terms of Service' },
+    { type: 'mou',                  label: 'Memorandum of Understanding' },
+    { type: 'letter-of-intent',     label: 'Letter of Intent' },
+    { type: 'data-processing-agreement', label: 'Data Processing Agreement (DPA)' },
   ],
 }
 
