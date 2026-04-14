@@ -143,7 +143,8 @@ export default async function handler(req, res) {
   }
   await incrementUseCount(upperCode)
 
-  const secret = process.env.PROMO_SECRET || 'signova_promo_2026'
+  const secret = process.env.PROMO_SECRET
+  if (!secret) return res.status(500).json({ valid: false, error: 'Server misconfigured — promo system unavailable.' })
   const timestamp = Date.now()
   const payload = `${upperCode}::${timestamp}`
 

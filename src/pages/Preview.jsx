@@ -405,14 +405,14 @@ export default function Preview() {
                   }
                 } else {
                   // Regeneration failed — user still has unlocked preview, don't revert
-                  console.error('Promo regeneration failed:', regenRes.status)
+                  if (DEV) console.error('Promo regeneration failed:', regenRes.status)
                   setPromoMsg(data.message + ' (preview version — regeneration unavailable)')
                 }
               }
             }
           } catch (regenErr) {
             // Graceful fallback: user keeps unlocked preview, log the error
-            console.error('Promo regeneration error:', regenErr)
+            if (DEV) console.error('Promo regeneration error:', regenErr)
             setPromoMsg(data.message + ' (preview version)')
           }
         }
