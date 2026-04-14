@@ -113,7 +113,7 @@ export default function AboutPage() {
           border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden'
         }}>
           {[
-            { num: '27', label: 'Document types' },
+            { num: '33', label: 'Document types' },
             { num: '180+', label: 'Countries supported' },
             { num: '$4.99', label: 'Per document' },
           ].map((s, i) => (

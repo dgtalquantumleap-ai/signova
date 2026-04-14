@@ -65,10 +65,10 @@ function useGeoCurrency() {
 // Simplified currency options for checkout dropdown
 const CHECKOUT_CURRENCY_OPTIONS = [
   { code: 'USD', symbol: '$', amount: 4.99, label: 'USD — $4.99' },
-  { code: 'NGN', symbol: '₦', amount: 6900, label: 'NGN — ₦6,900' },
-  { code: 'GBP', symbol: '£', amount: 3.95, label: 'GBP — £3.95' },
-  { code: 'EUR', symbol: '€', amount: 4.60, label: 'EUR — €4.60' },
-  { code: 'GHS', symbol: 'GH₵', amount: 75, label: 'GHS — GH₵75' },
+  { code: 'NGN', symbol: '₦', amount: 6900, label: 'NGN — ₦6,900 /doc' },
+  { code: 'GBP', symbol: '£', amount: 3.95, label: 'GBP — £3.95 /doc' },
+  { code: 'EUR', symbol: '€', amount: 4.60, label: 'EUR — €4.60 /doc' },
+  { code: 'GHS', symbol: 'GH₵', amount: 75, label: 'GHS — GH₵75 /doc' },
 ]
 
 
@@ -366,6 +366,47 @@ export default function Preview() {
           setPromoMsg(data.message)
           trackPromoApplied(doc?.docType, promoCode)
           setPaid(true)
+
+          // ── Trigger Claude Sonnet regeneration for premium quality ──
+          // The user unlocked via promo — regenerate with Anthropic instead of Llama preview
+          try {
+            const storedDoc = sessionStorage.getItem('signova_doc')
+            if (storedDoc) {
+              const parsed = JSON.parse(storedDoc)
+              if (parsed.prompt) {
+                setPromoMsg('Unlocked! Regenerating premium version…')
+                const regenRes = await fetch('/api/generate', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    prompt: parsed.prompt,
+                    promoToken: data.token,
+                  }),
+                })
+                if (regenRes.ok) {
+                  const regenData = await regenRes.json()
+                  if (regenData.text) {
+                    setDoc(prev => ({ ...prev, content: regenData.text }))
+                    // Update sessionStorage with premium content
+                    sessionStorage.setItem('signova_doc', JSON.stringify({
+                      ...parsed,
+                      content: regenData.text,
+                      isPremium: true,
+                    }))
+                    setPromoMsg('✓ Premium document ready — powered by Claude Sonnet')
+                  }
+                } else {
+                  // Regeneration failed — user still has unlocked preview, don't revert
+                  console.error('Promo regeneration failed:', regenRes.status)
+                  setPromoMsg(data.message + ' (preview version — regeneration unavailable)')
+                }
+              }
+            }
+          } catch (regenErr) {
+            // Graceful fallback: user keeps unlocked preview, log the error
+            console.error('Promo regeneration error:', regenErr)
+            setPromoMsg(data.message + ' (preview version)')
+          }
         }
       }
     } catch {

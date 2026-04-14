@@ -47,9 +47,13 @@ export default async function handler(req, res) {
   if (!apiKey) return res.status(500).json({ error: 'Server misconfigured — missing GROQ key' })
 
   const isDpa = prompt.toLowerCase().includes('data processing agreement') || prompt.toLowerCase().includes('dpa')
+  const isNigeria = prompt.toLowerCase().includes('nigeria')
+  const nigeriaClause = isNigeria && !isDpa
+    ? '\n\nIMPORTANT — NIGERIAN JURISDICTION: When the governing law is Nigeria, strictly apply the Nigeria Data Protection Act 2023 (NDPA), NDPC GAID guidelines, and CBN regulations where relevant. Include clauses for: Lawful Basis for data processing (NDPA Section 25), Data Subject Rights (Section 34), DPO designation requirements, 72-hour breach notification to the NDPC (Section 41), and Cross-Border Transfer restrictions (Section 43). Reference the Companies and Allied Matters Act (CAMA) 2020 for corporate governance matters.'
+    : ''
   const systemContent = isDpa
     ? buildDpaSystemPrompt('Nigeria — NDPA 2023')
-    : 'You are a legal document drafting assistant. Generate professional, comprehensive legal documents based on the user details provided. Use formal legal language with clear numbered sections. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.'
+    : 'You are a legal document drafting assistant. Generate professional, comprehensive legal documents based on the user details provided. Use formal legal language with clear numbered sections. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.' + nigeriaClause
 
   try {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {

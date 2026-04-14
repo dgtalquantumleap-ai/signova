@@ -11,13 +11,31 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
   const body = await parseBody(req)
-  const { prompt, sessionId, oxapayTrackId } = body
+  const { prompt, sessionId, oxapayTrackId, promoToken } = body
   if (!prompt) return res.status(400).json({ error: 'Missing prompt' })
 
-  if (!sessionId && !oxapayTrackId) {
+  if (!sessionId && !oxapayTrackId && !promoToken) {
     return res.status(403).json({
       error: 'Payment verification required. Use /api/generate-preview for free previews.',
     })
+  }
+
+  // Verify promo token if that's the auth method
+  if (promoToken && !sessionId && !oxapayTrackId) {
+    try {
+      const verifyRes = await fetch(`https://${req.headers.host}/api/promo-verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: promoToken }),
+      })
+      const verifyData = await verifyRes.json()
+      if (!verifyRes.ok || !verifyData.valid) {
+        return res.status(403).json({ error: 'Invalid or expired promo token.' })
+      }
+    } catch (promoErr) {
+      logError('/generate', { message: 'Promo token verification failed', error: promoErr.message })
+      return res.status(500).json({ error: 'Promo verification failed. Please try again.' })
+    }
   }
 
   // OxaPay payments are pre-verified in Preview.jsx before calling generate
@@ -47,9 +65,13 @@ export default async function handler(req, res) {
   if (!apiKey) return res.status(500).json({ error: 'Server misconfigured — missing Anthropic key' })
 
   const isDpa = prompt.toLowerCase().includes('data processing agreement') || prompt.toLowerCase().includes('dpa')
+  const isNigeria = prompt.toLowerCase().includes('nigeria')
+  const nigeriaClause = isNigeria && !isDpa
+    ? '\n\nIMPORTANT — NIGERIAN JURISDICTION: When the governing law is Nigeria, strictly apply the Nigeria Data Protection Act 2023 (NDPA), NDPC GAID guidelines, and CBN regulations where relevant. Include clauses for: Lawful Basis for data processing (NDPA Section 25), Data Subject Rights (Section 34), DPO designation requirements, 72-hour breach notification to the NDPC (Section 41), and Cross-Border Transfer restrictions (Section 43). Reference the Companies and Allied Matters Act (CAMA) 2020 for corporate governance matters.'
+    : ''
   const systemPrompt = isDpa
     ? buildDpaSystemPrompt('Nigeria — NDPA 2023') + '\n\nThis is a premium paid document — make it exceptional.'
-    : 'You are an expert legal document drafter with deep knowledge of international law. Generate comprehensive, professional legal documents tailored precisely to the user details provided. Use formal legal language, clear numbered sections, and include all standard clauses. This is a premium paid document — make it exceptional. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.'
+    : 'You are an expert legal document drafter with deep knowledge of international law. Generate comprehensive, professional legal documents tailored precisely to the user details provided. Use formal legal language, clear numbered sections, and include all standard clauses. This is a premium paid document — make it exceptional. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.' + nigeriaClause
 
   try {
     const controller = new AbortController()
