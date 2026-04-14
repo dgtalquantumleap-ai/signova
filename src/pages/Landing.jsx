@@ -486,7 +486,7 @@ export default function Landing() {
             <a href="/scope-guard" onClick={closeNav} role="menuitem" aria-label="Scope Guard — detect scope creep">Scope Guard</a>
             <a href="#pricing" onClick={closeNav} role="menuitem" aria-label="Pricing">Pricing</a>
             <a href="#faq" onClick={closeNav} role="menuitem" aria-label="Frequently asked questions">FAQ</a>
-            <a href="/dashboard" onClick={closeNav} role="menuitem" aria-label="Go to your dashboard">Dashboard</a>
+            <a href="https://ebenova.dev/dashboard" onClick={closeNav} role="menuitem" aria-label="Developer dashboard — manage API keys">API Dashboard</a>
             <a href="/whatsapp" onClick={closeNav} className="nav-cta-link" role="menuitem" aria-label="Preview a document for free">Preview Free →</a>
           </div>
 
