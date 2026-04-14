@@ -111,15 +111,29 @@ export default function ScopeGuard() {
     }
   }
 
+  const [upgradeLoading, setUpgradeLoading] = useState(false)
+
   async function handleUpgradeSubmit(e) {
     e.preventDefault()
     if (!upgradeEmail.includes('@')) return
-    await fetch('/api/scope-guard-waitlist', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: upgradeEmail }),
-    }).catch(() => {})
-    setUpgradeSubmitted(true)
+    setUpgradeLoading(true)
+    try {
+      const res = await fetch('/api/scope-guard-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: upgradeEmail }),
+      })
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        setUpgradeSubmitted(true) // fallback if checkout fails
+      }
+    } catch {
+      setUpgradeSubmitted(true) // graceful fallback
+    } finally {
+      setUpgradeLoading(false)
+    }
   }
 
   function copyResponse() {
@@ -298,14 +312,16 @@ export default function ScopeGuard() {
             <div className="sg-upgrade-overlay">
               <div className="sg-upgrade-box">
                 <h3>You've used your 3 free analyses</h3>
-                <p>Join the waitlist for unlimited Scope Guard access at {currency.symbol}{currency.proAmount.toLocaleString()}/month (50% off launch price of {currency.symbol}{(currency.proAmount * 2).toLocaleString()}).</p>
+                <p>Upgrade to Scope Guard Pro for unlimited analyses at {currency.symbol}{currency.proAmount.toLocaleString()}/month.</p>
                 {!upgradeSubmitted ? (
                   <form className="sg-form" onSubmit={handleUpgradeSubmit}>
                     <input className="sg-input" type="email" placeholder="your@email.com" value={upgradeEmail} onChange={e => setUpgradeEmail(e.target.value)} />
-                    <button className="sg-btn-primary" type="submit">Get early access →</button>
+                    <button className="sg-btn-primary" type="submit" disabled={upgradeLoading}>
+                      {upgradeLoading ? 'Redirecting to checkout…' : `Upgrade — ${currency.symbol}${currency.proAmount.toLocaleString()}/mo →`}
+                    </button>
                   </form>
                 ) : (
-                  <p className="sg-success-title">✓ You're on the list. We'll email you when unlimited access launches.</p>
+                  <p className="sg-success-title">✓ Redirecting to checkout…</p>
                 )}
                 <button className="sg-upgrade-close" onClick={() => setShowUpgrade(false)}>✕</button>
               </div>
@@ -356,7 +372,6 @@ export default function ScopeGuard() {
               <div className="sg-price-popular">Most Popular</div>
               <div className="sg-price-tier">Pro</div>
               <div className="sg-price-amount">{currency.symbol}{currency.proAmount.toLocaleString()}<span>/mo</span></div>
-              <div className="sg-price-early">Early access price · {currency.symbol}{(currency.proAmount * 2).toLocaleString()} after launch</div>
               <ul className="sg-price-features">
                 <li>✓ Unlimited Scope Guard</li>
                 <li>✓ 500 documents/month</li>
@@ -365,7 +380,7 @@ export default function ScopeGuard() {
                 <li>✓ 18 jurisdictions</li>
               </ul>
               <button className="sg-btn-primary sg-btn-full" onClick={() => setShowUpgrade(true)}>
-                Join waitlist for 50% off →
+                Get Pro →
               </button>
             </div>
             <div className="sg-price-card sg-price-scale">
