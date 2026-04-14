@@ -440,36 +440,59 @@ async function main() {
     // MCPize deploys behind an HTTP-to-MCP bridge and sets PORT.
     // Each incoming request gets its own stateless transport instance.
     const httpServer = http.createServer(async (req, res) => {
-      if (req.method === 'GET' && req.url === '/ping') {
-        res.writeHead(200, { 'Content-Type': 'text/plain' })
-        res.end('pong')
+      // Health check endpoints
+      if (req.method === 'GET' && (req.url === '/ping' || req.url === '/health')) {
+        res.writeHead(200, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ status: 'ok', server: 'ebenova-legal-docs-mcp', version: '1.5.1' }))
         return
       }
 
-      if (req.url === '/' || req.url === '/mcp') {
-        // Buffer body
-        const chunks = []
-        for await (const chunk of req) chunks.push(chunk)
-        const body = Buffer.concat(chunks).toString('utf8')
-
-        let parsedBody
-        try { parsedBody = JSON.parse(body) } catch { parsedBody = undefined }
-
-        const transport = new StreamableHTTPServerTransport({
-          sessionIdGenerator: () => randomUUID(),
-          onsessioninitialized: (id) => {
-            process.stderr.write(`[ebenova-legal-docs-mcp] Session: ${id}\n`)
-          },
-        })
-
-        const server = createServer()
-        await server.connect(transport)
-        await transport.handleRequest(req, res, parsedBody)
+      // GET on root or /mcp — return server info for discovery
+      if (req.method === 'GET' && (req.url === '/' || req.url === '/mcp' || req.url === '/sse')) {
+        res.writeHead(200, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({
+          name: 'ebenova-legal-docs',
+          version: '1.5.1',
+          transport: 'streamable-http',
+          description: 'Generate 34 legal document types across 18 jurisdictions via AI',
+          endpoints: { mcp: '/', health: '/ping' },
+        }))
         return
       }
 
-      res.writeHead(404, { 'Content-Type': 'application/json' })
-      res.end(JSON.stringify({ error: 'Not found' }))
+      // POST on root or /mcp — handle MCP JSON-RPC
+      if (req.method === 'POST' && (req.url === '/' || req.url === '/mcp')) {
+        try {
+          const chunks = []
+          for await (const chunk of req) chunks.push(chunk)
+          const body = Buffer.concat(chunks).toString('utf8')
+
+          let parsedBody
+          try { parsedBody = JSON.parse(body) } catch { parsedBody = undefined }
+
+          const transport = new StreamableHTTPServerTransport({
+            sessionIdGenerator: () => randomUUID(),
+            onsessioninitialized: (id) => {
+              process.stderr.write(`[ebenova-legal-docs-mcp] Session: ${id}\n`)
+            },
+          })
+
+          const server = createServer()
+          await server.connect(transport)
+          await transport.handleRequest(req, res, parsedBody)
+        } catch (err) {
+          process.stderr.write(`[ebenova-legal-docs-mcp] Error: ${err.message}\n`)
+          if (!res.headersSent) {
+            res.writeHead(500, { 'Content-Type': 'application/json' })
+            res.end(JSON.stringify({ error: 'Internal server error' }))
+          }
+        }
+        return
+      }
+
+      // Method not allowed
+      res.writeHead(405, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ error: 'Method not allowed', allowed: ['GET', 'POST'] }))
     })
 
     httpServer.listen(parseInt(port, 10), () => {
