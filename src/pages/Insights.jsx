@@ -461,7 +461,7 @@ export default function Insights() {
           <span>·</span>
           <Link to="/terms">Terms</Link>
         </div>
-        <div className="ins-footer-copy">© {new Date().getFullYear()} Ebenova Solutions · Africa-first · Built in Canada</div>
+        <div className="ins-footer-copy">© {new Date().getFullYear()} Ebenova Solutions · Built in Canada</div>
       </footer>
 
     </div>

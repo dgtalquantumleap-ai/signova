@@ -12,7 +12,7 @@ const FREE_PLAN = {
   description: 'Try the API at no cost.',
   features: [
     '5 API calls per month',
-    'All 33 document types',
+    'All 34 document types',
     '18 jurisdictions',
     'JSON + HTML output',
     'Community support',
@@ -31,7 +31,7 @@ const PLANS = [
     description: 'For freelancers and small teams.',
     features: [
       '100 API calls per month',
-      'All 33 document types',
+      'All 34 document types',
       '18 jurisdictions',
       'Batch generation (up to 10)',
       'WhatsApp extraction',

@@ -27,6 +27,14 @@ const DOCUMENT_TYPES = {
     { type: 'shareholder-agreement',    label: 'Shareholder Agreement' },
     { type: 'hire-purchase',            label: 'Hire Purchase Agreement' },
   ],
+  startup_fundraising: [
+    { type: 'founders-agreement',        label: "Founders' Agreement" },
+    { type: 'ip-assignment-agreement',   label: 'IP Assignment Agreement' },
+    { type: 'advisory-board-agreement',  label: 'Advisory Board Agreement' },
+    { type: 'vesting-agreement',         label: 'Vesting Agreement' },
+    { type: 'term-sheet',               label: 'Term Sheet' },
+    { type: 'safe-agreement',           label: 'SAFE Agreement' },
+  ],
   real_estate: [
     { type: 'tenancy-agreement',         label: 'Tenancy / Rental Agreement' },
     { type: 'quit-notice',               label: 'Quit Notice / Notice to Vacate' },

@@ -422,7 +422,7 @@ export default function Landing() {
     <div className="landing">
       <Helmet>
         <title>Signova — Professional Legal Documents for Freelancers, Landlords & Businesses | Free Preview</title>
-        <meta name="description" content="Generate legal contracts in 3 minutes. NDAs, freelance contracts, tenancy agreements and 27 more. Free preview, $4.99 to download. No lawyer needed." />
+        <meta name="description" content="Generate legal contracts in 3 minutes. NDAs, freelance contracts, tenancy agreements and 31 more. Free preview, $4.99 to download. No lawyer needed." />
         <meta name="keywords" content="legal document generator Nigeria, tenancy agreement Nigeria, NDA template, freelance contract, deed of assignment Nigeria, loan agreement template, business proposal template, MOU template, hire purchase agreement Nigeria, power of attorney Nigeria, employment offer letter, shareholder agreement, joint venture agreement, service agreement, distribution agreement, quit notice Nigeria, privacy policy generator, terms of service generator" />
         <link rel="canonical" href="https://www.getsignova.com/" />
         <link rel="alternate" hreflang="en" href="https://www.getsignova.com/" />
@@ -601,7 +601,7 @@ export default function Landing() {
 
         {/* All documents — searchable grid */}
         <div className="hero-picks-row" id="documents">
-          <p className="all-docs-label">All 33 document types</p>
+          <p className="all-docs-label">All 34 document types</p>
 
           {/* Search input */}
           <div className="doc-search-wrapper">
@@ -738,7 +738,7 @@ export default function Landing() {
             <div className="wa-banner-badge">✉️ WhatsApp, iMessage, Telegram, email — paste any negotiation</div>
             <h2 className="wa-banner-title">Agreed terms in a chat or email? Paste it.</h2>
             <p className="wa-banner-body">
-              We extract the agreed terms — names, amounts, dates, restrictions — and auto-fill your document in seconds. Works for tenancy agreements, loan agreements, freelance contracts and 24 more document types.
+              We extract the agreed terms — names, amounts, dates, restrictions — and auto-fill your document in seconds. Works for tenancy agreements, loan agreements, freelance contracts and 31 more document types.
             </p>
             <button className="wa-banner-btn" onClick={() => navigate('/whatsapp')}>
               Turn your chat into a contract →
@@ -771,7 +771,7 @@ export default function Landing() {
           </div>
           <div className="steps">
             {[
-              { n: '01', title: 'Choose your document', body: 'Pick from 33 document types built for global use — Tenancy Agreement, NDA, Freelance Contract, Deed of Assignment, Loan Agreement, Business Proposal, and more. Works in any jurisdiction.' },
+              { n: '01', title: 'Choose your document', body: 'Pick from 34 document types built for global use — Tenancy Agreement, NDA, Freelance Contract, Deed of Assignment, Loan Agreement, Business Proposal, and more. Works in any jurisdiction.' },
               { n: '02', title: 'Answer a few questions', body: 'Tell us your names, jurisdiction, and deal terms. Takes 2 minutes. No legal knowledge required — the questions are plain language. An old template won\'t know this client\'s name, this amount, or these terms. Signova does.' },
               { n: '03', title: 'Preview free, download when ready', body: 'See your complete, properly structured document instantly — built on real legal frameworks used by attorneys, not generic AI output. When you\'re happy, download the clean PDF for the price of a phone call — not a lawyer.' },
             ].map(s => (
@@ -879,7 +879,7 @@ export default function Landing() {
               <p className="price-desc">See your full document before paying anything. No account, no card required.</p>
               <ul className="price-list">
                 <li className="price-yes">Preview any document in full</li>
-                <li className="price-yes">33 document types</li>
+                <li className="price-yes">34 document types</li>
                 <li className="price-yes">WhatsApp extraction</li>
                 <li className="price-yes">180+ jurisdictions</li>
                 <li className="price-no">Download PDF</li>
@@ -905,7 +905,7 @@ export default function Landing() {
               <ul className="price-list">
                 <li className="price-yes">Clean PDF — no watermark</li>
                 <li className="price-yes">Instant download</li>
-                <li className="price-yes">33 document types</li>
+                <li className="price-yes">34 document types</li>
                 <li className="price-yes">Jurisdiction-aware content</li>
                 <li className="price-yes">Pay by card or USDT crypto</li>
                 <li className="price-yes">30-day money-back guarantee</li>

@@ -9,7 +9,7 @@ export default function Docs() {
     <div className="docs-page">
       <Helmet>
         <title>API Documentation | Ebenova — Legal Document Generation API</title>
-        <meta name="description" content="Generate legally compliant contracts, NDAs, and business documents via API. 27 document types, 18 jurisdictions. Simple REST API with JSON responses." />
+        <meta name="description" content="Generate legally compliant contracts, NDAs, and business documents via API. 34 document types, 18 jurisdictions. Simple REST API with JSON responses." />
         <link rel="canonical" href="https://ebenova.dev/docs" />
       </Helmet>
 
@@ -47,7 +47,7 @@ export default function Docs() {
           <h1>Ebenova API</h1>
           <p className="docs-intro">
             Generate professionally drafted legal documents in seconds.
-            27 document types, 18 jurisdictions, one simple API.
+            34 document types, 18 jurisdictions, one simple API.
           </p>
 
           {/* ── Quickstart ── */}
@@ -239,7 +239,7 @@ export default function Docs() {
             <h2>List Document Types</h2>
             <p><code>GET /v1/documents/types</code> — No authentication required. Cached 1 hour.</p>
             <pre className="code-block">{`curl https://api.ebenova.dev/v1/documents/types`}</pre>
-            <p>Returns all 27 document types as a flat list and grouped by category.</p>
+            <p>Returns all 34 document types as a flat list and grouped by category.</p>
           </section>
 
           {/* ── Extract ── */}
@@ -465,7 +465,7 @@ export default function Docs() {
           {/* ── Document Types ── */}
           <section id="document-types">
             <h2>Document Type Reference</h2>
-            <p>27 document types across 5 categories:</p>
+            <p>34 document types across 5 categories:</p>
 
             <h3>Business Contracts</h3>
             <ul className="doc-type-list">
