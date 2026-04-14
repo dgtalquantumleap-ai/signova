@@ -67,6 +67,23 @@ const CURRENCY_MAP = {
   CA: { symbol: 'CA$', amount: 6.85, code: 'CAD', local: '≈ CA$6.85'      },
   AU: { symbol: 'A$',  amount: 7.80, code: 'AUD', local: '≈ A$7.80'       },
   NZ: { symbol: 'NZ$', amount: 8.50, code: 'NZD', local: '≈ NZ$8.50'      },
+  CN: { symbol: '¥',   amount: 36,   code: 'CNY', local: '≈ ¥36'          },
+  HK: { symbol: 'HK$', amount: 39,   code: 'HKD', local: '≈ HK$39'       },
+  TW: { symbol: 'NT$', amount: 160,  code: 'TWD', local: '≈ NT$160'      },
+  JP: { symbol: '¥',   amount: 750,  code: 'JPY', local: '≈ ¥750'        },
+  KR: { symbol: '₩',   amount: 6900, code: 'KRW', local: '≈ ₩6,900'     },
+  TH: { symbol: '฿',   amount: 175,  code: 'THB', local: '≈ ฿175'        },
+  VN: { symbol: '₫',   amount: 128000,code: 'VND', local: '≈ ₫128,000'  },
+  CL: { symbol: '$',   amount: 4800, code: 'CLP', local: '≈ CLP 4,800'  },
+  PE: { symbol: 'S/',   amount: 19,   code: 'PEN', local: '≈ S/19'       },
+  RW: { symbol: 'FRw',  amount: 6800, code: 'RWF', local: '≈ FRw 6,800' },
+  MA: { symbol: 'MAD',  amount: 50,   code: 'MAD', local: '≈ MAD 50'     },
+  TR: { symbol: '₺',   amount: 175,  code: 'TRY', local: '≈ ₺175'       },
+  IL: { symbol: '₪',   amount: 18,   code: 'ILS', local: '≈ ₪18'        },
+  PL: { symbol: 'zł',  amount: 20,   code: 'PLN', local: '≈ zł20'       },
+  SE: { symbol: 'kr',   amount: 52,   code: 'SEK', local: '≈ kr52'       },
+  NO: { symbol: 'kr',   amount: 54,   code: 'NOK', local: '≈ kr54'       },
+  DK: { symbol: 'kr',   amount: 34,   code: 'DKK', local: '≈ kr34'       },
 }
 const DEFAULT_CURRENCY = { symbol: '$', amount: 4.99, code: 'USD', local: null }
 

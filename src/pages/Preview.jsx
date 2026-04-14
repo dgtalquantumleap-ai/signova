@@ -26,6 +26,14 @@ const CURRENCY_MAP_PREVIEW = {
   DE: { symbol: '€', amount: 4.60, code: 'EUR' },
   FR: { symbol: '€', amount: 4.60, code: 'EUR' },
   US: { symbol: '$', amount: 4.99, code: 'USD' },
+  CN: { symbol: '¥', amount: 36, code: 'CNY' },
+  HK: { symbol: 'HK$', amount: 39, code: 'HKD' },
+  JP: { symbol: '¥', amount: 750, code: 'JPY' },
+  KR: { symbol: '₩', amount: 6900, code: 'KRW' },
+  TH: { symbol: '฿', amount: 175, code: 'THB' },
+  TR: { symbol: '₺', amount: 175, code: 'TRY' },
+  PL: { symbol: 'zł', amount: 20, code: 'PLN' },
+  SE: { symbol: 'kr', amount: 52, code: 'SEK' },
 }
 const DEFAULT_CURRENCY_PREVIEW = { symbol: '$', amount: 4.99, code: 'USD' }
 
