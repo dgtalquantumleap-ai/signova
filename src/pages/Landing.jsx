@@ -2,6 +2,15 @@ import { useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef, useCallback, startTransition } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { trackDocSelected, trackHeroCtaClick } from '../lib/analytics'
+import {
+  Rocket, Handshake, PenNib, Lock, FileText, CurrencyDollar,
+  House, Briefcase, Article, Car, ShoppingCart, ChartBar,
+  ClipboardText, Scales, GraduationCap, TrendUp, ShieldCheck,
+  Shield, Robot, Receipt, ChatCircle, Link, Package,
+  Broadcast, ArrowsLeftRight, EnvelopeSimple, MapTrifold,
+  Note, Warning, Globe, Bank, DeviceMobile, CheckCircle,
+  XCircle, Star, Key, User, CreditCard, LightbulbFilament,
+} from '@phosphor-icons/react'
 import './Landing.css'
 
 // Update this number periodically — shown in hero as social proof
@@ -150,71 +159,71 @@ function useGeo() {
 
 // ── Geo-prioritised quick-pick documents ────────────────────────────────────
 const QUICKPICK_DEFAULT = [
-  { id: 'business-proposal', icon: '🚀', name: 'Business Proposal' },
-  { id: 'nda', icon: '🤝', name: 'NDA' },
-  { id: 'freelance-contract', icon: '✍️', name: 'Freelance Contract' },
-  { id: 'privacy-policy', icon: '🔒', name: 'Privacy Policy' },
-  { id: 'service-agreement', icon: '📝', name: 'Service Agreement' },
-  { id: 'loan-agreement', icon: '💰', name: 'Loan Agreement' },
-  { id: 'tenancy-agreement', icon: '🏠', name: 'Tenancy Agreement' },
-  { id: 'employment-offer-letter', icon: '👔', name: 'Offer Letter' },
+  { id: 'business-proposal', icon: <Rocket size={20} weight="duotone" color="currentColor" />, name: 'Business Proposal' },
+  { id: 'nda', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: 'NDA' },
+  { id: 'freelance-contract', icon: <PenNib size={20} weight="duotone" color="currentColor" />, name: 'Freelance Contract' },
+  { id: 'privacy-policy', icon: <Lock size={20} weight="duotone" color="currentColor" />, name: 'Privacy Policy' },
+  { id: 'service-agreement', icon: <FileText size={20} weight="duotone" color="currentColor" />, name: 'Service Agreement' },
+  { id: 'loan-agreement', icon: <CurrencyDollar size={20} weight="duotone" color="currentColor" />, name: 'Loan Agreement' },
+  { id: 'tenancy-agreement', icon: <House size={20} weight="duotone" color="currentColor" />, name: 'Tenancy Agreement' },
+  { id: 'employment-offer-letter', icon: <Briefcase size={20} weight="duotone" color="currentColor" />, name: 'Offer Letter' },
 ]
 const QUICKPICK_REGIONS = {
   NG: [
-    { id: 'founders-agreement', icon: '🤝', name: "Founders' Agreement" },
-    { id: 'tenancy-agreement', icon: '🏠', name: 'Tenancy Agreement' },
-    { id: 'deed-of-assignment', icon: '📜', name: 'Deed of Assignment' },
-    { id: 'business-proposal', icon: '🚀', name: 'Business Proposal' },
-    { id: 'quit-notice', icon: '💰', name: 'Quit Notice' },
-    { id: 'loan-agreement', icon: '💰', name: 'Loan Agreement' },
-    { id: 'nda', icon: '🤝', name: 'NDA' },
-    { id: 'ip-assignment-agreement', icon: '💡', name: 'IP Assignment' },
+    { id: 'founders-agreement', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: "Founders' Agreement" },
+    { id: 'tenancy-agreement', icon: <House size={20} weight="duotone" color="currentColor" />, name: 'Tenancy Agreement' },
+    { id: 'deed-of-assignment', icon: <Article size={20} weight="duotone" color="currentColor" />, name: 'Deed of Assignment' },
+    { id: 'business-proposal', icon: <Rocket size={20} weight="duotone" color="currentColor" />, name: 'Business Proposal' },
+    { id: 'quit-notice', icon: <CurrencyDollar size={20} weight="duotone" color="currentColor" />, name: 'Quit Notice' },
+    { id: 'loan-agreement', icon: <CurrencyDollar size={20} weight="duotone" color="currentColor" />, name: 'Loan Agreement' },
+    { id: 'nda', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: 'NDA' },
+    { id: 'ip-assignment-agreement', icon: <LightbulbFilament size={20} weight="duotone" color="currentColor" />, name: 'IP Assignment' },
   ],
   GH: 'NG', KE: 'NG', ZA: 'NG', TZ: 'NG', UG: 'NG', ET: 'NG',
   SN: 'NG', CI: 'NG', CM: 'NG', EG: 'NG', ZW: 'NG',
   IN: [
-    { id: 'nda', icon: '🤝', name: 'NDA' },
-    { id: 'freelance-contract', icon: '✍️', name: 'Freelance Contract' },
-    { id: 'service-agreement', icon: '📝', name: 'Service Agreement' },
-    { id: 'employment-offer-letter', icon: '👔', name: 'Offer Letter' },
-    { id: 'consulting-agreement', icon: '💰', name: 'Consulting Agreement' },
-    { id: 'business-proposal', icon: '🚀', name: 'Business Proposal' },
-    { id: 'loan-agreement', icon: '💰', name: 'Loan Agreement' },
-    { id: 'mou', icon: '🗒️', name: 'MOU' },
+    { id: 'nda', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: 'NDA' },
+    { id: 'freelance-contract', icon: <PenNib size={20} weight="duotone" color="currentColor" />, name: 'Freelance Contract' },
+    { id: 'service-agreement', icon: <FileText size={20} weight="duotone" color="currentColor" />, name: 'Service Agreement' },
+    { id: 'employment-offer-letter', icon: <Briefcase size={20} weight="duotone" color="currentColor" />, name: 'Offer Letter' },
+    { id: 'consulting-agreement', icon: <CurrencyDollar size={20} weight="duotone" color="currentColor" />, name: 'Consulting Agreement' },
+    { id: 'business-proposal', icon: <Rocket size={20} weight="duotone" color="currentColor" />, name: 'Business Proposal' },
+    { id: 'loan-agreement', icon: <CurrencyDollar size={20} weight="duotone" color="currentColor" />, name: 'Loan Agreement' },
+    { id: 'mou', icon: <Note size={20} weight="duotone" color="currentColor" />, name: 'MOU' },
   ],
   PK: 'IN', BD: 'IN', PH: 'IN', ID: 'IN', MY: 'IN', SG: 'IN',
   US: [
-    { id: 'founders-agreement', icon: '🤝', name: "Founders' Agreement" },
-    { id: 'privacy-policy', icon: '🔒', name: 'Privacy Policy' },
-    { id: 'terms-of-service', icon: '📋', name: 'Terms of Service' },
-    { id: 'nda', icon: '🤝', name: 'NDA' },
-    { id: 'freelance-contract', icon: '✍️', name: 'Freelance Contract' },
-    { id: 'independent-contractor', icon: '👤', name: 'Contractor Agreement' },
-    { id: 'employment-offer-letter', icon: '👔', name: 'Offer Letter' },
-    { id: 'ip-assignment-agreement', icon: '💡', name: 'IP Assignment' },
+    { id: 'founders-agreement', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: "Founders' Agreement" },
+    { id: 'privacy-policy', icon: <Lock size={20} weight="duotone" color="currentColor" />, name: 'Privacy Policy' },
+    { id: 'terms-of-service', icon: <ClipboardText size={20} weight="duotone" color="currentColor" />, name: 'Terms of Service' },
+    { id: 'nda', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: 'NDA' },
+    { id: 'freelance-contract', icon: <PenNib size={20} weight="duotone" color="currentColor" />, name: 'Freelance Contract' },
+    { id: 'independent-contractor', icon: <User size={20} weight="duotone" color="currentColor" />, name: 'Contractor Agreement' },
+    { id: 'employment-offer-letter', icon: <Briefcase size={20} weight="duotone" color="currentColor" />, name: 'Offer Letter' },
+    { id: 'ip-assignment-agreement', icon: <LightbulbFilament size={20} weight="duotone" color="currentColor" />, name: 'IP Assignment' },
   ],
   CA: 'US', GB: 'US', AU: 'US', NZ: 'US',
   DE: 'US', FR: 'US', IT: 'US', ES: 'US', NL: 'US', PT: 'US',
   AE: [
-    { id: 'mou', icon: '🗒️', name: 'MOU' },
-    { id: 'business-partnership', icon: '🤝', name: 'Partnership Agreement' },
-    { id: 'nda', icon: '🤝', name: 'NDA' },
-    { id: 'service-agreement', icon: '📝', name: 'Service Agreement' },
-    { id: 'distribution-agreement', icon: '📝', name: 'Distribution Agreement' },
-    { id: 'supply-agreement', icon: '📦', name: 'Supply Agreement' },
-    { id: 'joint-venture', icon: '🗺️', name: 'Joint Venture' },
-    { id: 'business-proposal', icon: '🚀', name: 'Business Proposal' },
+    { id: 'mou', icon: <Note size={20} weight="duotone" color="currentColor" />, name: 'MOU' },
+    { id: 'business-partnership', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: 'Partnership Agreement' },
+    { id: 'nda', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: 'NDA' },
+    { id: 'service-agreement', icon: <FileText size={20} weight="duotone" color="currentColor" />, name: 'Service Agreement' },
+    { id: 'distribution-agreement', icon: <FileText size={20} weight="duotone" color="currentColor" />, name: 'Distribution Agreement' },
+    { id: 'supply-agreement', icon: <Package size={20} weight="duotone" color="currentColor" />, name: 'Supply Agreement' },
+    { id: 'joint-venture', icon: <MapTrifold size={20} weight="duotone" color="currentColor" />, name: 'Joint Venture' },
+    { id: 'business-proposal', icon: <Rocket size={20} weight="duotone" color="currentColor" />, name: 'Business Proposal' },
   ],
   SA: 'AE',
   BR: [
-    { id: 'freelance-contract', icon: '✍️', name: 'Freelance Contract' },
-    { id: 'service-agreement', icon: '📝', name: 'Service Agreement' },
-    { id: 'nda', icon: '🤝', name: 'NDA' },
-    { id: 'employment-offer-letter', icon: '👔', name: 'Offer Letter' },
-    { id: 'business-proposal', icon: '🚀', name: 'Business Proposal' },
-    { id: 'loan-agreement', icon: '💰', name: 'Loan Agreement' },
-    { id: 'business-partnership', icon: '🤝', name: 'Partnership Agreement' },
-    { id: 'tenancy-agreement', icon: '🏠', name: 'Tenancy Agreement' },
+    { id: 'freelance-contract', icon: <PenNib size={20} weight="duotone" color="currentColor" />, name: 'Freelance Contract' },
+    { id: 'service-agreement', icon: <FileText size={20} weight="duotone" color="currentColor" />, name: 'Service Agreement' },
+    { id: 'nda', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: 'NDA' },
+    { id: 'employment-offer-letter', icon: <Briefcase size={20} weight="duotone" color="currentColor" />, name: 'Offer Letter' },
+    { id: 'business-proposal', icon: <Rocket size={20} weight="duotone" color="currentColor" />, name: 'Business Proposal' },
+    { id: 'loan-agreement', icon: <CurrencyDollar size={20} weight="duotone" color="currentColor" />, name: 'Loan Agreement' },
+    { id: 'business-partnership', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: 'Partnership Agreement' },
+    { id: 'tenancy-agreement', icon: <House size={20} weight="duotone" color="currentColor" />, name: 'Tenancy Agreement' },
   ],
   MX: 'BR', CO: 'BR', AR: 'BR',
 }
@@ -251,40 +260,40 @@ const DOC_CATEGORIES = [
 ]
 
 const DOCS = [
-  { id: 'privacy-policy', icon: '🔒', name: 'Privacy Policy', desc: 'Required for any app, website or service that collects user data.', time: '2 min', popular: true },
-  { id: 'terms-of-service', icon: '📋', name: 'Terms of Service', desc: 'Define the rules users must agree to when using your product.', time: '2 min', popular: true },
-  { id: 'nda', icon: '🤝', name: 'Non-Disclosure Agreement', desc: 'Protect confidential information shared with employees or partners.', time: '3 min', popular: false },
-  { id: 'freelance-contract', icon: '✍️', name: 'Freelance Contract', desc: 'Set expectations, deliverables, and payment terms for client work.', time: '3 min', popular: false },
-  { id: 'independent-contractor', icon: '🤝', name: 'Independent Contractor Agreement', desc: 'Formally define the relationship between your business and contractors.', time: '3 min', popular: false },
-  { id: 'hire-purchase', icon: '🚗', name: 'Hire Purchase Agreement', desc: 'Finance any asset — vehicle, equipment, machinery, with structured instalment payments.', time: '3 min', popular: true },
-  { id: 'purchase-agreement', icon: '🛒', name: 'Basic Purchase Agreement', desc: 'Document the one-time sale of goods, assets, or property between a buyer and seller.', time: '2 min', popular: false },
-  { id: 'service-agreement', icon: '📝', name: 'Service Agreement', desc: 'Define scope, fees, and terms between a service provider and client — for any industry.', time: '3 min', popular: true },
-  { id: 'consulting-agreement', icon: '💰', name: 'Consulting Agreement', desc: 'Formalise advisory or consulting engagements with clear deliverables, rates and IP terms.', time: '3 min', popular: false },
-  { id: 'employment-offer-letter', icon: '👔', name: 'Employment Offer Letter', desc: 'Professionally extend a job offer with salary, benefits, start date and terms clearly documented.', time: '3 min', popular: true },
-  { id: 'non-compete-agreement', icon: '🚚', name: 'Non-Compete Agreement', desc: 'Protect your business by restricting employees or contractors from working with competitors.', time: '2 min', popular: false },
-  { id: 'payment-terms-agreement', icon: '💰', name: 'Payment Terms Agreement', desc: 'Document agreed repayment schedules, due dates, and late penalty terms between buyer and seller.', time: '2 min', popular: false },
-  { id: 'business-partnership', icon: '🤝', name: 'Business Partnership Agreement', desc: 'Formally structure a business partnership — capital, profit sharing, roles and exit terms.', time: '4 min', popular: true },
-  { id: 'joint-venture', icon: '🗺️', name: 'Joint Venture Agreement', desc: 'Two companies joining forces for a specific project — ownership, management, and profit sharing.', time: '4 min', popular: false },
-  { id: 'loan-agreement', icon: '💰', name: 'Loan Agreement', desc: 'Document personal or business loans — amount, interest, repayment schedule, and collateral.', time: '3 min', popular: true },
-  { id: 'shareholder-agreement', icon: '📊', name: 'Shareholder Agreement', desc: 'Define rights between company shareholders — voting, dividends, transfers, and protections.', time: '4 min', popular: false },
-  { id: 'mou', icon: '🗒️', name: 'Memorandum of Understanding (MOU)', desc: 'Document a formal understanding between two organisations before a full contract is signed.', time: '3 min', popular: true },
-  { id: 'letter-of-intent', icon: '🤝', name: 'Letter of Intent (LOI)', desc: 'Signal serious intent to acquire, invest, partner, or lease — before formal negotiations begin.', time: '3 min', popular: false },
-  { id: 'distribution-agreement', icon: '📝', name: 'Distribution / Reseller Agreement', desc: 'Appoint distributors or resellers for your products — territory, exclusivity, margin and terms.', time: '3 min', popular: false },
-  { id: 'supply-agreement', icon: '🤝', name: 'Supply Agreement', desc: 'Contract between supplier and buyer for regular goods — pricing, delivery, quality and volume.', time: '3 min', popular: false },
-  { id: 'business-proposal', icon: '🚀', name: 'Business Proposal', desc: 'Win clients with a professional proposal — problem, solution, deliverables, timeline and pricing.', time: '5 min', popular: true },
-  { id: 'tenancy-agreement', icon: '🤝', name: 'Tenancy Agreement', desc: 'Legally binding rental contract between landlord and tenant for any residential or commercial property.', time: '3 min', popular: true },
-  { id: 'quit-notice', icon: '💰', name: 'Quit Notice', desc: 'Formal notice to vacate a property — for expired tenancy, non-payment, or breach of terms.', time: '2 min', popular: false },
-  { id: 'deed-of-assignment', icon: '📜', name: 'Deed of Assignment', desc: 'Transfer property ownership from seller to buyer with full legal documentation.', time: '3 min', popular: true },
-  { id: 'power-of-attorney', icon: '⚖️', name: 'Power of Attorney', desc: 'Legally authorise another person to act on your behalf for property, financial, or business matters.', time: '3 min', popular: false },
-  { id: 'landlord-agent-agreement', icon: '🤝', name: 'Landlord & Agent Agreement', desc: 'Define terms between a property owner and their estate agent — commissions, duties, and authority.', time: '3 min', popular: false },
-  { id: 'facility-manager-agreement', icon: '🗺️', name: 'Facility Manager Agreement', desc: 'Formal contract between property owner and facility management company covering all services and fees.', time: '3 min', popular: false },
-  { id: 'founders-agreement', icon: '🤝', name: "Founders' Agreement", desc: 'Define equity, roles, vesting, IP ownership and exit terms between co-founders before conflict arises.', time: '5 min', popular: true },
-  { id: 'ip-assignment-agreement', icon: '💡', name: 'IP Assignment Agreement', desc: 'Transfer intellectual property rights from a freelancer, employee or agency to your company.', time: '3 min', popular: false },
-  { id: 'advisory-board-agreement', icon: '🎓', name: 'Advisory Board Agreement', desc: 'Onboard advisors and mentors with equity, vesting schedule, time commitment and confidentiality terms.', time: '4 min', popular: false },
-  { id: 'vesting-agreement', icon: '📈', name: 'Vesting Agreement', desc: 'Document equity vesting schedules for founders and employees with cliff, acceleration and leaver terms.', time: '4 min', popular: false },
-  { id: 'term-sheet', icon: '📋', name: 'Investment Term Sheet', desc: 'Non-binding term sheet covering valuation, equity %, investor rights and conditions for angel/seed funding.', time: '5 min', popular: false },
-  { id: 'safe-agreement', icon: '🔐', name: 'SAFE Agreement', desc: 'Simple Agreement for Future Equity — the standard early-stage fundraising instrument. Valuation cap, discount, pro-rata.', time: '4 min', popular: false },
-  { id: 'data-processing-agreement', icon: '🛡️', name: 'Data Processing Agreement (DPA)', desc: 'NDPA/GAID-compliant DPA — controller-processor roles, breach notification, cross-border transfers, data subject rights.', time: '5 min', popular: true },
+  { id: 'privacy-policy', icon: <Lock size={18} weight="duotone" color="currentColor" />, name: 'Privacy Policy', desc: 'Required for any app, website or service that collects user data.', time: '2 min', popular: true },
+  { id: 'terms-of-service', icon: <ClipboardText size={18} weight="duotone" color="currentColor" />, name: 'Terms of Service', desc: 'Define the rules users must agree to when using your product.', time: '2 min', popular: true },
+  { id: 'nda', icon: <Handshake size={18} weight="duotone" color="currentColor" />, name: 'Non-Disclosure Agreement', desc: 'Protect confidential information shared with employees or partners.', time: '3 min', popular: false },
+  { id: 'freelance-contract', icon: <PenNib size={18} weight="duotone" color="currentColor" />, name: 'Freelance Contract', desc: 'Set expectations, deliverables, and payment terms for client work.', time: '3 min', popular: false },
+  { id: 'independent-contractor', icon: <Handshake size={18} weight="duotone" color="currentColor" />, name: 'Independent Contractor Agreement', desc: 'Formally define the relationship between your business and contractors.', time: '3 min', popular: false },
+  { id: 'hire-purchase', icon: <Car size={18} weight="duotone" color="currentColor" />, name: 'Hire Purchase Agreement', desc: 'Finance any asset — vehicle, equipment, machinery, with structured instalment payments.', time: '3 min', popular: true },
+  { id: 'purchase-agreement', icon: <ShoppingCart size={18} weight="duotone" color="currentColor" />, name: 'Basic Purchase Agreement', desc: 'Document the one-time sale of goods, assets, or property between a buyer and seller.', time: '2 min', popular: false },
+  { id: 'service-agreement', icon: <FileText size={18} weight="duotone" color="currentColor" />, name: 'Service Agreement', desc: 'Define scope, fees, and terms between a service provider and client — for any industry.', time: '3 min', popular: true },
+  { id: 'consulting-agreement', icon: <CurrencyDollar size={18} weight="duotone" color="currentColor" />, name: 'Consulting Agreement', desc: 'Formalise advisory or consulting engagements with clear deliverables, rates and IP terms.', time: '3 min', popular: false },
+  { id: 'employment-offer-letter', icon: <Briefcase size={18} weight="duotone" color="currentColor" />, name: 'Employment Offer Letter', desc: 'Professionally extend a job offer with salary, benefits, start date and terms clearly documented.', time: '3 min', popular: true },
+  { id: 'non-compete-agreement', icon: <Shield size={18} weight="duotone" color="currentColor" />, name: 'Non-Compete Agreement', desc: 'Protect your business by restricting employees or contractors from working with competitors.', time: '2 min', popular: false },
+  { id: 'payment-terms-agreement', icon: <CurrencyDollar size={18} weight="duotone" color="currentColor" />, name: 'Payment Terms Agreement', desc: 'Document agreed repayment schedules, due dates, and late penalty terms between buyer and seller.', time: '2 min', popular: false },
+  { id: 'business-partnership', icon: <Handshake size={18} weight="duotone" color="currentColor" />, name: 'Business Partnership Agreement', desc: 'Formally structure a business partnership — capital, profit sharing, roles and exit terms.', time: '4 min', popular: true },
+  { id: 'joint-venture', icon: <MapTrifold size={18} weight="duotone" color="currentColor" />, name: 'Joint Venture Agreement', desc: 'Two companies joining forces for a specific project — ownership, management, and profit sharing.', time: '4 min', popular: false },
+  { id: 'loan-agreement', icon: <CurrencyDollar size={18} weight="duotone" color="currentColor" />, name: 'Loan Agreement', desc: 'Document personal or business loans — amount, interest, repayment schedule, and collateral.', time: '3 min', popular: true },
+  { id: 'shareholder-agreement', icon: <ChartBar size={18} weight="duotone" color="currentColor" />, name: 'Shareholder Agreement', desc: 'Define rights between company shareholders — voting, dividends, transfers, and protections.', time: '4 min', popular: false },
+  { id: 'mou', icon: <Note size={18} weight="duotone" color="currentColor" />, name: 'Memorandum of Understanding (MOU)', desc: 'Document a formal understanding between two organisations before a full contract is signed.', time: '3 min', popular: true },
+  { id: 'letter-of-intent', icon: <Handshake size={18} weight="duotone" color="currentColor" />, name: 'Letter of Intent (LOI)', desc: 'Signal serious intent to acquire, invest, partner, or lease — before formal negotiations begin.', time: '3 min', popular: false },
+  { id: 'distribution-agreement', icon: <FileText size={18} weight="duotone" color="currentColor" />, name: 'Distribution / Reseller Agreement', desc: 'Appoint distributors or resellers for your products — territory, exclusivity, margin and terms.', time: '3 min', popular: false },
+  { id: 'supply-agreement', icon: <Handshake size={18} weight="duotone" color="currentColor" />, name: 'Supply Agreement', desc: 'Contract between supplier and buyer for regular goods — pricing, delivery, quality and volume.', time: '3 min', popular: false },
+  { id: 'business-proposal', icon: <Rocket size={18} weight="duotone" color="currentColor" />, name: 'Business Proposal', desc: 'Win clients with a professional proposal — problem, solution, deliverables, timeline and pricing.', time: '5 min', popular: true },
+  { id: 'tenancy-agreement', icon: <Handshake size={18} weight="duotone" color="currentColor" />, name: 'Tenancy Agreement', desc: 'Legally binding rental contract between landlord and tenant for any residential or commercial property.', time: '3 min', popular: true },
+  { id: 'quit-notice', icon: <CurrencyDollar size={18} weight="duotone" color="currentColor" />, name: 'Quit Notice', desc: 'Formal notice to vacate a property — for expired tenancy, non-payment, or breach of terms.', time: '2 min', popular: false },
+  { id: 'deed-of-assignment', icon: <Article size={18} weight="duotone" color="currentColor" />, name: 'Deed of Assignment', desc: 'Transfer property ownership from seller to buyer with full legal documentation.', time: '3 min', popular: true },
+  { id: 'power-of-attorney', icon: <Scales size={18} weight="duotone" color="currentColor" />, name: 'Power of Attorney', desc: 'Legally authorise another person to act on your behalf for property, financial, or business matters.', time: '3 min', popular: false },
+  { id: 'landlord-agent-agreement', icon: <Handshake size={18} weight="duotone" color="currentColor" />, name: 'Landlord & Agent Agreement', desc: 'Define terms between a property owner and their estate agent — commissions, duties, and authority.', time: '3 min', popular: false },
+  { id: 'facility-manager-agreement', icon: <MapTrifold size={18} weight="duotone" color="currentColor" />, name: 'Facility Manager Agreement', desc: 'Formal contract between property owner and facility management company covering all services and fees.', time: '3 min', popular: false },
+  { id: 'founders-agreement', icon: <Handshake size={18} weight="duotone" color="currentColor" />, name: "Founders' Agreement", desc: 'Define equity, roles, vesting, IP ownership and exit terms between co-founders before conflict arises.', time: '5 min', popular: true },
+  { id: 'ip-assignment-agreement', icon: <LightbulbFilament size={18} weight="duotone" color="currentColor" />, name: 'IP Assignment Agreement', desc: 'Transfer intellectual property rights from a freelancer, employee or agency to your company.', time: '3 min', popular: false },
+  { id: 'advisory-board-agreement', icon: <GraduationCap size={18} weight="duotone" color="currentColor" />, name: 'Advisory Board Agreement', desc: 'Onboard advisors and mentors with equity, vesting schedule, time commitment and confidentiality terms.', time: '4 min', popular: false },
+  { id: 'vesting-agreement', icon: <TrendUp size={18} weight="duotone" color="currentColor" />, name: 'Vesting Agreement', desc: 'Document equity vesting schedules for founders and employees with cliff, acceleration and leaver terms.', time: '4 min', popular: false },
+  { id: 'term-sheet', icon: <ClipboardText size={18} weight="duotone" color="currentColor" />, name: 'Investment Term Sheet', desc: 'Non-binding term sheet covering valuation, equity %, investor rights and conditions for angel/seed funding.', time: '5 min', popular: false },
+  { id: 'safe-agreement', icon: <ShieldCheck size={18} weight="duotone" color="currentColor" />, name: 'SAFE Agreement', desc: 'Simple Agreement for Future Equity — the standard early-stage fundraising instrument. Valuation cap, discount, pro-rata.', time: '4 min', popular: false },
+  { id: 'data-processing-agreement', icon: <Shield size={18} weight="duotone" color="currentColor" />, name: 'Data Processing Agreement (DPA)', desc: 'NDPA/GAID-compliant DPA — controller-processor roles, breach notification, cross-border transfers, data subject rights.', time: '5 min', popular: true },
 ]
 
 // Build a lookup map for docs
@@ -533,7 +542,7 @@ export default function Landing() {
             {/* Trust signals immediately below CTA */}
             <div className="hero-trust-below-cta">
               <div className="hero-proof-badge">
-                📄 {DOCS_GENERATED.toLocaleString()}+ documents generated
+                <FileText size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> {DOCS_GENERATED.toLocaleString()}+ documents generated
               </div>
               <div className="hero-jurisdictions">
                 <span aria-label="Nigeria">🇳🇬</span>
@@ -578,7 +587,7 @@ export default function Landing() {
                 <span className="hero-demo-dot" aria-hidden="true" />
                 <span className="hero-demo-dot" aria-hidden="true" />
                 <span className="hero-demo-dot" aria-hidden="true" />
-                <span className="hero-demo-app">💬 WhatsApp</span>
+                <span className="hero-demo-app"><ChatCircle size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> WhatsApp</span>
               </div>
               <div className="hero-demo-chat">
                 <div className="hero-chat-them">We need a full website — 5 pages, blog, contact form. Budget $2,500.</div>
@@ -792,7 +801,7 @@ export default function Landing() {
         <div className="section-inner">
           <div className="scope-guard-card">
             <div className="scope-guard-left">
-              <div className="scope-guard-badge">🛡️ Scope Guard — Free Tool</div>
+              <div className="scope-guard-badge"><Shield size={16} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 6 }} /> Scope Guard — Free Tool</div>
               <h2 className="scope-guard-title">Client adding extras after you signed?</h2>
               <p className="scope-guard-body">
                 Paste their message + your contract — detect scope creep instantly.
@@ -958,10 +967,10 @@ export default function Landing() {
         <div className="section-inner">
           <div className="trust-grid">
             {[
-              { icon: '⚡', title: 'Ready in 3 minutes', body: 'From question to signed-ready PDF faster than a WhatsApp voice note.' },
-              { icon: '🔑', title: 'Your data stays yours', body: "Nothing is saved to a database. Close the tab and it's gone." },
-              { icon: '🌍', title: 'Works in any jurisdiction', body: "Jurisdiction-aware documents for Nigeria, UK, US, India, and more. Not generic templates — tailored to your country's laws." },
-              { icon: '💳', title: 'Pay with card or crypto', body: 'Accepts all major cards and USDT. No restrictions — pay the way you already pay.' },
+              { icon: <Warning size={32} weight="duotone" color="currentColor" />, title: 'Ready in 3 minutes', body: 'From question to signed-ready PDF faster than a WhatsApp voice note.' },
+              { icon: <Key size={32} weight="duotone" color="currentColor" />, title: 'Your data stays yours', body: "Nothing is saved to a database. Close the tab and it's gone." },
+              { icon: <Globe size={32} weight="duotone" color="currentColor" />, title: 'Works in any jurisdiction', body: "Jurisdiction-aware documents for Nigeria, UK, US, India, and more. Not generic templates — tailored to your country's laws." },
+              { icon: <CreditCard size={32} weight="duotone" color="currentColor" />, title: 'Pay with card or crypto', body: 'Accepts all major cards and USDT. No restrictions — pay the way you already pay.' },
             ].map(t => (
               <div key={t.title} className="trust-item">
                 <span className="trust-icon" aria-hidden="true">{t.icon}</span>

@@ -2,12 +2,17 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { track } from '../lib/analytics'
+import {
+  FileText, Receipt, Shield, Lock, ChatCircle, Link,
+  Package, ClipboardText, Robot, Broadcast, ArrowsLeftRight,
+  House, Briefcase, Bank,
+} from '@phosphor-icons/react'
 import './ApiLanding.css'
 
 const API_CARDS = [
   {
     id: 'documents',
-    icon: '📄',
+    icon: <FileText size={24} weight="duotone" color="currentColor" />,
     title: 'Legal Documents API',
     desc: 'Generate 34 document types across 18 jurisdictions. NDAs, contracts, tenancy agreements, and more.',
     features: ['34 document types', '18 jurisdictions', 'AI-powered drafting'],
@@ -17,7 +22,7 @@ const API_CARDS = [
   },
   {
     id: 'invoices',
-    icon: '🧾',
+    icon: <Receipt size={24} weight="duotone" color="currentColor" />,
     title: 'Invoice & Receipt API',
     desc: 'Create professional invoices, receipts, and proforma invoices with multi-currency support.',
     features: ['PDF + HTML output', '12+ currencies', 'Auto-calculations'],
@@ -27,7 +32,7 @@ const API_CARDS = [
   },
   {
     id: 'scope-guard',
-    icon: '🛡️',
+    icon: <Shield size={24} weight="duotone" color="currentColor" />,
     title: 'Scope Guard™ API',
     desc: 'Your client just asked for something not in the contract. Paste the contract + their message. Get back: what they\'re violating, 3 professional response drafts, and a change order price. One API call.',
     features: ['Detects 6 violation types', '3 professional response drafts', 'Auto-calculated change order pricing', 'Zero API competitors — industry first'],
@@ -38,7 +43,7 @@ const API_CARDS = [
   },
   {
     id: 'vigil',
-    icon: '🔒',
+    icon: <Lock size={24} weight="duotone" color="currentColor" />,
     title: 'Vigil Fraud Alert API',
     desc: 'Proximity-based card fraud detection — GPS haversine engine decides approve/decline in under 150ms. AI risk scoring and AML reports require a separately deployed Vigil server with ANTHROPIC_API_KEY set. Contact api@ebenova.dev to get access.',
     features: ['Real-time proximity authorization', 'AI risk scoring 0–100 (Claude Haiku · requires Vigil server)', 'AML compliance reports (Claude Sonnet · Scale+ tier)', '13 MCP tools — Claude-native'],
@@ -49,7 +54,7 @@ const API_CARDS = [
   },
   {
     id: 'extraction',
-    icon: '💬',
+    icon: <ChatCircle size={24} weight="duotone" color="currentColor" />,
     title: 'WhatsApp Extraction API',
     desc: 'Paste any conversation — WhatsApp, email, chat. Extract structured fields and generate contracts.',
     features: ['Field extraction', 'Auto-document generation', '10k context window'],
@@ -59,7 +64,7 @@ const API_CARDS = [
   },
   {
     id: 'contract-link',
-    icon: '🔗',
+    icon: <Link size={24} weight="duotone" color="currentColor" />,
     title: 'Contract-Payment Linking API',
     desc: 'Associate contracts with payment references. Track which contracts have been paid, look up by bank transfer ref or contract ID.',
     features: ['Bidirectional lookup', 'Payment status tracking', 'Redis-backed storage'],
@@ -69,7 +74,7 @@ const API_CARDS = [
   },
   {
     id: 'batch',
-    icon: '📦',
+    icon: <Package size={24} weight="duotone" color="currentColor" />,
     title: 'Batch Generation API',
     desc: 'Generate up to 10 legal documents in a single API call. Perfect for onboarding multiple clients or vendors at once.',
     features: ['Up to 10 docs per call', 'Independent processing', 'Detailed results'],
@@ -79,7 +84,7 @@ const API_CARDS = [
   },
   {
     id: 'templates',
-    icon: '📋',
+    icon: <ClipboardText size={24} weight="duotone" color="currentColor" />,
     title: 'Document Templates API',
     desc: 'Get field schemas for all 34 document types. Build dynamic forms, validate input, or understand requirements before generating.',
     features: ['34 document schemas', 'Field types & validation', 'Zero AI cost'],
@@ -89,7 +94,7 @@ const API_CARDS = [
   },
   {
     id: 'fieldops',
-    icon: '🤖',
+    icon: <Robot size={24} weight="duotone" color="currentColor" />,
     title: 'FieldOps Agent API',
     desc: 'WhatsApp-native booking, revenue recovery, and staff coordination for service businesses. Proxied through the Ebenova API — requires a FieldOps server deployment. Contact api@ebenova.dev to get started.',
     features: ['WhatsApp booking + confirmation', '3-step invoice recovery', 'Staff job briefings', '5-tool MCP server', 'OxaPay + Polar payments'],
@@ -101,7 +106,7 @@ const API_CARDS = [
   },
   {
     id: 'insights',
-    icon: '📡',
+    icon: <Broadcast size={24} weight="duotone" color="currentColor" />,
     title: 'Insights — Reddit Monitor API',
     desc: 'Monitor Reddit and Nairaland for keywords about your product. Get email alerts with AI-drafted replies every 15 minutes. Built for founders doing distribution.',
     features: ['Reddit + Nairaland monitoring', 'AI reply drafts (community tone)', 'Subreddit safety system', 'Multi-tenant — serve multiple clients'],
@@ -114,7 +119,7 @@ const API_CARDS = [
 const COMING_SOON_APIS = [
   {
     id: 'payouts',
-    icon: '💸',
+    icon: <ArrowsLeftRight size={24} weight="duotone" color="currentColor" />,
     title: 'Africa Payouts API',
     desc: 'Send payments to bank accounts and mobile money across 10+ African countries.',
     features: ['Mobile money + bank', 'Real-time settlement', 'Join waitlist for early access'],
@@ -126,25 +131,25 @@ const COMING_SOON_APIS = [
 
 const USE_CASES = [
   {
-    icon: '🏠',
+    icon: <House size={24} weight="duotone" color="currentColor" />,
     title: 'Property Rental Platforms',
     problem: 'Tenants forge bank transfer receipts. Landlords release keys without payment.',
     solution: 'Link tenancy agreements to payment references. Verify transfers before auto-sending keys.',
   },
   {
-    icon: '💼',
+    icon: <Briefcase size={24} weight="duotone" color="currentColor" />,
     title: 'Freelance Marketplaces',
     problem: 'Clients request "small extras" until scope balloons. Freelancers have no leverage.',
     solution: 'Auto-detect scope violations. Generate change orders with one click. Link payment to deliverables.',
   },
   {
-    icon: '🏦',
+    icon: <Bank size={24} weight="duotone" color="currentColor" />,
     title: 'Fintechs & Lenders',
     problem: 'Loan agreements are generic. Jurisdiction enforcement is manual. Default tracking is broken.',
     solution: 'Generate jurisdiction-aware loan agreements. Link to repayment schedules. Auto-track defaults.',
   },
   {
-    icon: '🤖',
+    icon: <Robot size={24} weight="duotone" color="currentColor" />,
     title: 'AI Agents & SaaS',
     problem: 'AI agents can draft documents but cannot verify payments or enforce contracts.',
     solution: 'MCP-native API. Connect Claude, Cursor, or custom agents to the full trust stack.',
@@ -422,7 +427,7 @@ export default function ApiLanding() {
                 onClick={() => handleCopyCode(CURL_EXAMPLE, 'hero-curl')}
                 aria-label="Copy curl example"
               >
-                {copiedCode === 'hero-curl' ? '✓ Copied' : '📋 Copy'}
+                {copiedCode === 'hero-curl' ? '✓ Copied' : 'Copy'}
               </button>
             </div>
             <pre className="code-block">
@@ -726,7 +731,7 @@ export default function ApiLanding() {
                   onClick={() => handleCopyCode(MCP_EXAMPLE, 'mcp-config')}
                   aria-label="Copy MCP config"
                 >
-                  {copiedCode === 'mcp-config' ? '✓ Copied' : '📋 Copy'}
+                  {copiedCode === 'mcp-config' ? '✓ Copied' : 'Copy'}
                 </button>
               </div>
               <pre className="code-block">

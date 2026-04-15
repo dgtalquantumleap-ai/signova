@@ -2,6 +2,13 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { trackGenerateStarted, trackGenerateCompleted } from '../lib/analytics'
+import {
+  Lock, ClipboardText, Handshake, PenNib, FileText, Briefcase,
+  Shield, CreditCard, MapTrifold, CurrencyDollar, ChartBar,
+  Note, Package, Rocket, House, Article, Scales, Car,
+  ShoppingCart, LightbulbFilament, GraduationCap, TrendUp,
+  ShieldCheck, ChatCircle, EnvelopeSimple,
+} from '@phosphor-icons/react'
 import './Generator.css'
 
 const SEO_META = {
@@ -180,7 +187,7 @@ const SEO_META = {
 const DOC_CONFIG = {
   'privacy-policy': {
     name: 'Privacy Policy',
-    icon: '🔒',
+    icon: <Lock size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'company', label: 'Company / App name', type: 'text', placeholder: 'e.g. Acme Inc.' },
       { id: 'website', label: 'Website or app URL', type: 'text', placeholder: 'e.g. https://acme.com' },
@@ -192,7 +199,7 @@ const DOC_CONFIG = {
   },
   'terms-of-service': {
     name: 'Terms of Service',
-    icon: '📋',
+    icon: <ClipboardText size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'company', label: 'Company / App name', type: 'text', placeholder: 'e.g. Acme Inc.' },
       { id: 'website', label: 'Website or app URL', type: 'text', placeholder: 'e.g. https://acme.com' },
@@ -204,7 +211,7 @@ const DOC_CONFIG = {
   },
   'nda': {
     name: 'Non-Disclosure Agreement',
-    icon: '🤝',
+    icon: <Handshake size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'disclosingParty', label: 'Disclosing party (your company)', type: 'text', placeholder: 'e.g. Acme Inc.' },
       { id: 'receivingParty', label: 'Receiving party (who you\'re sharing with)', type: 'text', placeholder: 'e.g. John Smith / XYZ Consulting' },
@@ -216,7 +223,7 @@ const DOC_CONFIG = {
   },
   'freelance-contract': {
     name: 'Freelance Contract',
-    icon: '✍️',
+    icon: <PenNib size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'freelancer', label: 'Your name / company', type: 'text', placeholder: 'e.g. Jane Smith / Jane Smith Design' },
       { id: 'client', label: 'Client name / company', type: 'text', placeholder: 'e.g. Acme Inc.' },
@@ -229,7 +236,7 @@ const DOC_CONFIG = {
   },
   'service-agreement': {
     name: 'Service Agreement',
-    icon: '📝',
+    icon: <FileText size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'provider', label: 'Service provider name / company', type: 'text', placeholder: 'e.g. Bright Solutions Ltd. / Amara Consulting' },
       { id: 'client', label: 'Client name / company', type: 'text', placeholder: 'e.g. Zenith Corp / Mr. Kwame Mensah' },
@@ -244,7 +251,7 @@ const DOC_CONFIG = {
   },
   'consulting-agreement': {
     name: 'Consulting Agreement',
-    icon: '💼',
+    icon: <Briefcase size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'consultant', label: 'Consultant name / company', type: 'text', placeholder: 'e.g. Dr. Adebayo Okonkwo / Okonkwo Advisory Ltd.' },
       { id: 'client', label: 'Client / company name', type: 'text', placeholder: 'e.g. Pinnacle Group Nigeria' },
@@ -258,7 +265,7 @@ const DOC_CONFIG = {
   },
   'employment-offer-letter': {
     name: 'Employment Offer Letter',
-    icon: '👔',
+    icon: <Briefcase size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'employer', label: 'Employer / company name', type: 'text', placeholder: 'e.g. TechBridge Nigeria Ltd.' },
       { id: 'employee', label: 'Employee full name', type: 'text', placeholder: 'e.g. Miss Fatima Al-Hassan' },
@@ -274,7 +281,7 @@ const DOC_CONFIG = {
   },
   'non-compete-agreement': {
     name: 'Non-Compete Agreement',
-    icon: '🚫',
+    icon: <Shield size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'employer', label: 'Employer / company enforcing the agreement', type: 'text', placeholder: 'e.g. Apex Solutions Ltd.' },
       { id: 'employee', label: 'Employee / contractor name', type: 'text', placeholder: 'e.g. Mr. Daniel Osei' },
@@ -287,7 +294,7 @@ const DOC_CONFIG = {
   },
   'payment-terms-agreement': {
     name: 'Payment Terms Agreement',
-    icon: '💳',
+    icon: <CreditCard size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'creditor', label: 'Creditor / seller name (who is owed money)', type: 'text', placeholder: 'e.g. Zenith Supplies Ltd.' },
       { id: 'debtor', label: 'Debtor / buyer name (who owes money)', type: 'text', placeholder: 'e.g. Global Traders Inc.' },
@@ -301,7 +308,7 @@ const DOC_CONFIG = {
   },
   'business-partnership': {
     name: 'Business Partnership Agreement',
-    icon: '🤝',
+    icon: <Handshake size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'partner1', label: 'Partner 1 full name', type: 'text', placeholder: 'e.g. Mr. Chidi Okafor' },
       { id: 'partner2', label: 'Partner 2 full name', type: 'text', placeholder: 'e.g. Mrs. Amina Bello' },
@@ -316,7 +323,7 @@ const DOC_CONFIG = {
   },
   'joint-venture': {
     name: 'Joint Venture Agreement',
-    icon: '🏗️',
+    icon: <MapTrifold size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'party1', label: 'Party 1 name / company', type: 'text', placeholder: 'e.g. Skybridge Construction Ltd.' },
       { id: 'party2', label: 'Party 2 name / company', type: 'text', placeholder: 'e.g. Delta Engineering Co.' },
@@ -330,7 +337,7 @@ const DOC_CONFIG = {
   },
   'loan-agreement': {
     name: 'Loan Agreement',
-    icon: '💰',
+    icon: <CurrencyDollar size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'lender', label: 'Lender name / company', type: 'text', placeholder: 'e.g. Mr. Emeka Eze (individual) or Capital Finance Ltd.' },
       { id: 'borrower', label: 'Borrower name / company', type: 'text', placeholder: 'e.g. Mrs. Ngozi Adeyemi or Sunrise Ventures Ltd.' },
@@ -345,7 +352,7 @@ const DOC_CONFIG = {
   },
   'shareholder-agreement': {
     name: 'Shareholder Agreement',
-    icon: '📊',
+    icon: <ChartBar size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'companyName', label: 'Company name', type: 'text', placeholder: 'e.g. Nexus Fintech Limited' },
       { id: 'shareholders', label: 'Shareholders (list all names)', type: 'textarea', placeholder: 'e.g. Shareholder 1: James Obi — 40%\nShareholder 2: Priya Sharma — 35%\nShareholder 3: TechFund Capital Ltd — 25%' },
@@ -358,7 +365,7 @@ const DOC_CONFIG = {
   },
   'mou': {
     name: 'Memorandum of Understanding (MOU)',
-    icon: '🗒️',
+    icon: <Note size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'party1', label: 'Party 1 name / organisation', type: 'text', placeholder: 'e.g. Lagos State Ministry of Education or Alibaba Group Ltd.' },
       { id: 'party2', label: 'Party 2 name / organisation', type: 'text', placeholder: 'e.g. EduTech Africa Ltd.' },
@@ -372,7 +379,7 @@ const DOC_CONFIG = {
   },
   'letter-of-intent': {
     name: 'Letter of Intent (LOI)',
-    icon: '✉️',
+    icon: <EnvelopeSimple size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'sender', label: 'Sender name / company (issuing the LOI)', type: 'text', placeholder: 'e.g. Mr. David Mensah / Horizon Capital Ltd.' },
       { id: 'recipient', label: 'Recipient name / company', type: 'text', placeholder: 'e.g. Mrs. Amaka Obi / Target Acquisitions Ltd.' },
@@ -385,7 +392,7 @@ const DOC_CONFIG = {
   },
   'distribution-agreement': {
     name: 'Distribution / Reseller Agreement',
-    icon: '📦',
+    icon: <Package size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'supplier', label: 'Supplier / manufacturer name', type: 'text', placeholder: 'e.g. NovaTech Electronics Co., Shenzhen or AgriPure Foods Ltd., Lagos' },
       { id: 'distributor', label: 'Distributor / reseller name', type: 'text', placeholder: 'e.g. Pan-Africa Distribution Ltd.' },
@@ -400,7 +407,7 @@ const DOC_CONFIG = {
   },
   'supply-agreement': {
     name: 'Supply Agreement',
-    icon: '🏭',
+    icon: <Package size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'supplier', label: 'Supplier name / company', type: 'text', placeholder: 'e.g. Agro-Fresh Produce Ltd., Kano or Shenzhen Components Co., Ltd.' },
       { id: 'buyer', label: 'Buyer / purchaser name / company', type: 'text', placeholder: 'e.g. Nestco Foods Nigeria Ltd.' },
@@ -416,7 +423,7 @@ const DOC_CONFIG = {
   },
   'business-proposal': {
     name: 'Business Proposal',
-    icon: '🚀',
+    icon: <Rocket size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'proposingCompany', label: 'Your company / name (proposing party)', type: 'text', placeholder: 'e.g. Ebenova Solutions or Bright Consulting Ltd.' },
       { id: 'prospectName', label: 'Prospect / client name (who you are pitching to)', type: 'text', placeholder: 'e.g. Mr. Emeka Eze, CEO, Zenith Manufacturing Ltd.' },
@@ -433,7 +440,7 @@ const DOC_CONFIG = {
   },
   'tenancy-agreement': {
     name: 'Tenancy Agreement',
-    icon: '🏠',
+    icon: <House size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'landlord', label: 'Landlord full name / company', type: 'text', placeholder: 'e.g. Chief Emeka Okafor / Okafor Properties Ltd.' },
       { id: 'tenant', label: 'Tenant full name', type: 'text', placeholder: 'e.g. Mrs. Amaka Nwosu' },
@@ -449,7 +456,7 @@ const DOC_CONFIG = {
   },
   'quit-notice': {
     name: 'Quit Notice',
-    icon: '📮',
+    icon: <EnvelopeSimple size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'landlord', label: 'Landlord / issuing party name', type: 'text', placeholder: 'e.g. Chief Emeka Okafor' },
       { id: 'tenant', label: 'Tenant name (receiving party)', type: 'text', placeholder: 'e.g. Mrs. Amaka Nwosu' },
@@ -462,7 +469,7 @@ const DOC_CONFIG = {
   },
   'deed-of-assignment': {
     name: 'Deed of Assignment',
-    icon: '📜',
+    icon: <Article size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'assignor', label: 'Assignor (current owner / seller)', type: 'text', placeholder: 'e.g. Mr. Biodun Adeleke' },
       { id: 'assignee', label: 'Assignee (new owner / buyer)', type: 'text', placeholder: 'e.g. Dr. Chukwuemeka Eze' },
@@ -474,7 +481,7 @@ const DOC_CONFIG = {
   },
   'power-of-attorney': {
     name: 'Power of Attorney',
-    icon: '⚖️',
+    icon: <Scales size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'donor', label: 'Donor (person granting authority)', type: 'text', placeholder: 'e.g. Mr. Tunde Fashola' },
       { id: 'attorney', label: 'Attorney (person receiving authority)', type: 'text', placeholder: 'e.g. Mrs. Ngozi Fashola / ABC Law Firm' },
@@ -487,7 +494,7 @@ const DOC_CONFIG = {
   },
   'landlord-agent-agreement': {
     name: 'Landlord & Agent Agreement',
-    icon: '🤝',
+    icon: <Handshake size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'landlord', label: 'Landlord name / company', type: 'text', placeholder: 'e.g. Chief Emeka Okafor' },
       { id: 'agent', label: 'Agent / estate firm name', type: 'text', placeholder: 'e.g. Lagos Realty Ltd. / Femi Adeyemi' },
@@ -500,7 +507,7 @@ const DOC_CONFIG = {
   },
   'facility-manager-agreement': {
     name: 'Facility Manager Agreement',
-    icon: '🏢',
+    icon: <MapTrifold size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'propertyOwner', label: 'Property owner / client name', type: 'text', placeholder: 'e.g. Skyline Towers Ltd.' },
       { id: 'facilityManager', label: 'Facility manager / company name', type: 'text', placeholder: 'e.g. ProManage Services Ltd.' },
@@ -514,7 +521,7 @@ const DOC_CONFIG = {
   },
   'hire-purchase': {
     name: 'Hire Purchase Agreement',
-    icon: '🚗',
+    icon: <Car size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'seller', label: 'Seller / Finance company name', type: 'text', placeholder: 'e.g. Acme Equipment Ltd.' },
       { id: 'buyer', label: 'Buyer name / company', type: 'text', placeholder: 'e.g. John Smith / Smith Logistics' },
@@ -530,7 +537,7 @@ const DOC_CONFIG = {
   },
   'independent-contractor': {
     name: 'Independent Contractor Agreement',
-    icon: '📋',
+    icon: <ClipboardText size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'company', label: 'Company / hiring party', type: 'text', placeholder: 'e.g. Acme Inc.' },
       { id: 'contractor', label: 'Contractor name / company', type: 'text', placeholder: 'e.g. John Smith / Smith Consulting' },
@@ -543,7 +550,7 @@ const DOC_CONFIG = {
   },
   'purchase-agreement': {
     name: 'Basic Purchase Agreement',
-    icon: '🛒',
+    icon: <ShoppingCart size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'seller', label: 'Seller name / company', type: 'text', placeholder: 'e.g. Jane Smith / Acme Trading Ltd.' },
       { id: 'buyer', label: 'Buyer name / company', type: 'text', placeholder: 'e.g. John Doe / XYZ Enterprises' },
@@ -561,7 +568,7 @@ const DOC_CONFIG = {
 
   'founders-agreement': {
     name: "Founders' Agreement",
-    icon: '🤝',
+    icon: <Handshake size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'companyName', label: 'Company / startup name', type: 'text', placeholder: 'e.g. Nexus Fintech Limited' },
       { id: 'founder1', label: 'Founder 1 full name', type: 'text', placeholder: 'e.g. Chidi Okafor' },
@@ -581,7 +588,7 @@ const DOC_CONFIG = {
 
   'ip-assignment-agreement': {
     name: 'IP Assignment Agreement',
-    icon: '💡',
+    icon: <LightbulbFilament size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'assignee', label: 'Assignee — company receiving the IP', type: 'text', placeholder: 'e.g. Nexus Fintech Limited' },
       { id: 'assignor', label: 'Assignor — person transferring the IP', type: 'text', placeholder: 'e.g. John Smith (freelance developer) or Jane Osei (co-founder)' },
@@ -597,7 +604,7 @@ const DOC_CONFIG = {
 
   'advisory-board-agreement': {
     name: 'Advisory Board Agreement',
-    icon: '🎓',
+    icon: <GraduationCap size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'companyName', label: 'Company / startup name', type: 'text', placeholder: 'e.g. Nexus Fintech Limited' },
       { id: 'advisorName', label: 'Advisor full name', type: 'text', placeholder: 'e.g. Dr. Ngozi Adichie-Obi' },
@@ -615,7 +622,7 @@ const DOC_CONFIG = {
 
   'vesting-agreement': {
     name: 'Vesting Agreement',
-    icon: '📈',
+    icon: <TrendUp size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'companyName', label: 'Company name', type: 'text', placeholder: 'e.g. Nexus Fintech Limited' },
       { id: 'recipientName', label: 'Recipient name (founder or employee)', type: 'text', placeholder: 'e.g. Chidi Okafor' },
@@ -632,7 +639,7 @@ const DOC_CONFIG = {
 
   'term-sheet': {
     name: 'Investment Term Sheet',
-    icon: '📋',
+    icon: <ClipboardText size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'companyName', label: 'Company / startup name', type: 'text', placeholder: 'e.g. Nexus Fintech Limited' },
       { id: 'investorName', label: 'Investor name / fund', type: 'text', placeholder: 'e.g. Lagos Angel Network / Ventures Platform / Mr. Emeka Eze' },
@@ -651,7 +658,7 @@ const DOC_CONFIG = {
 
   'safe-agreement': {
     name: 'SAFE Agreement',
-    icon: '🔐',
+    icon: <ShieldCheck size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'companyName', label: 'Company / startup name', type: 'text', placeholder: 'e.g. Nexus Fintech Limited' },
       { id: 'investorName', label: 'Investor name / fund', type: 'text', placeholder: 'e.g. Ventures Platform / Mr. Emeka Eze' },
@@ -668,7 +675,7 @@ const DOC_CONFIG = {
 
   'data-processing-agreement': {
     name: 'Data Processing Agreement (DPA)',
-    icon: '🛡️',
+    icon: <Shield size={48} weight="duotone" color="currentColor" />,
     fields: [
       { id: 'controllerName', label: 'Data Controller (your organisation)', type: 'text', placeholder: 'e.g. PaySwift Ltd.' },
       { id: 'processorName', label: 'Data Processor (vendor/contractor)', type: 'text', placeholder: 'e.g. CloudServ Africa Ltd.' },
@@ -977,7 +984,7 @@ Output the complete document only, no preamble, explanation, or closing notes.`
           {/* ── Auto-fill from conversation ── */}
           {!showExtract ? (
             <button className="extract-toggle" onClick={() => setShowExtract(true)}>
-              💬 Have a WhatsApp or email conversation? Auto-fill this form →
+              <ChatCircle size={16} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 6 }} /> Have a WhatsApp or email conversation? Auto-fill this form →
             </button>
           ) : (
             <div className="extract-box">
@@ -1101,7 +1108,7 @@ Output the complete document only, no preamble, explanation, or closing notes.`
                   {isLastStep ? 'Generate →' : 'Next →'}
                 </button>
               </div>
-              <p className="chat-privacy-note">🔒 Your answers are used only to generate this document — never stored.</p>
+              <p className="chat-privacy-note"><Lock size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> Your answers are used only to generate this document — never stored.</p>
             </div>
           )}
 

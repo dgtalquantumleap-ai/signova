@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useNavigate } from 'react-router-dom'
+import { Package, ArrowsLeftRight, Warning, Briefcase, Shield, ClipboardText } from '@phosphor-icons/react'
 import './ScopeGuard.css'
 
 // ── Geo-currency for ScopeGuard subscription pricing ────────────────────────
@@ -43,10 +44,10 @@ function useGeoCurrency() {
 }
 
 const VIOLATIONS_DEMO = [
-  { icon: '📦', title: 'Scope creep', example: '"Can you also add a blog section? Should be quick."', response: 'Auto-drafts a change order with estimated hours and cost.' },
-  { icon: '🔄', title: 'Extra revisions', example: '"One more round of changes — just small tweaks!"', response: 'Cites your revision limit clause and offers a paid revision quote.' },
-  { icon: '⏰', title: 'Deadline compression', example: '"Actually, we need this by Friday, not end of month."', response: 'Calculates rush fee and sends a formal timeline adjustment notice.' },
-  { icon: '💸', title: 'Unpaid extras', example: '"Can you handle the hosting setup too? It\'s tiny."', response: 'Flags the request as outside scope and drafts a professional pushback.' },
+  { icon: <Package size={24} weight="duotone" color="currentColor" />, title: 'Scope creep', example: '"Can you also add a blog section? Should be quick."', response: 'Auto-drafts a change order with estimated hours and cost.' },
+  { icon: <ClipboardText size={24} weight="duotone" color="currentColor" />, title: 'Extra revisions', example: '"One more round of changes — just small tweaks!"', response: 'Cites your revision limit clause and offers a paid revision quote.' },
+  { icon: <Warning size={24} weight="duotone" color="currentColor" />, title: 'Deadline compression', example: '"Actually, we need this by Friday, not end of month."', response: 'Calculates rush fee and sends a formal timeline adjustment notice.' },
+  { icon: <ArrowsLeftRight size={24} weight="duotone" color="currentColor" />, title: 'Unpaid extras', example: '"Can you handle the hosting setup too? It\'s tiny."', response: 'Flags the request as outside scope and drafts a professional pushback.' },
 ]
 
 // Free-tier uses tracked server-side via IP (no localStorage needed)
@@ -226,7 +227,7 @@ export default function ScopeGuard() {
               </div>
               {toolError && <p className="sg-tool-error">{toolError}</p>}
               <button className="sg-btn-primary sg-btn-analyze" type="submit" disabled={analyzing}>
-                {analyzing ? '🔍 Analyzing…' : '🛡️ Analyze for scope violations →'}
+                {analyzing ? 'Analyzing…' : <><Shield size={16} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 6 }} /> Analyze for scope violations →</>}
               </button>
             </form>
           ) : (
@@ -234,8 +235,8 @@ export default function ScopeGuard() {
               {/* Summary */}
               <div className={`sg-result-header ${result.violation_detected ? 'sg-violation-found' : 'sg-no-violation'}`}>
                 {result.violation_detected
-                  ? <><span className="sg-result-icon">⚠️</span><div><strong>{result.violations?.length} violation{result.violations?.length !== 1 ? 's' : ''} detected</strong><p>{result.summary}</p></div></>
-                  : <><span className="sg-result-icon">✅</span><div><strong>No violations detected</strong><p>{result.summary}</p></div></>
+                  ? <><span className="sg-result-icon"><Warning size={24} weight="duotone" color="currentColor" /></span><div><strong>{result.violations?.length} violation{result.violations?.length !== 1 ? 's' : ''} detected</strong><p>{result.summary}</p></div></>
+                  : <><span className="sg-result-icon"><Shield size={24} weight="duotone" color="currentColor" /></span><div><strong>No violations detected</strong><p>{result.summary}</p></div></>
                 }
               </div>
 
@@ -249,7 +250,7 @@ export default function ScopeGuard() {
                         <span className="sg-viol-severity">{v.severity}</span>
                       </div>
                       <p className="sg-viol-desc">{v.description}</p>
-                      {v.contract_reference && <p className="sg-viol-ref">📄 {v.contract_reference}</p>}
+                      {v.contract_reference && <p className="sg-viol-ref"><ClipboardText size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> {v.contract_reference}</p>}
                     </div>
                   ))}
                 </div>
@@ -274,7 +275,7 @@ export default function ScopeGuard() {
                   <div className="sg-response-draft">
                     <pre className="sg-draft-text">{result.response_options[selectedResponse]?.draft}</pre>
                     <button className="sg-btn-copy" onClick={copyResponse}>
-                      {copied ? '✓ Copied!' : '📋 Copy response'}
+                      {copied ? '✓ Copied!' : 'Copy response'}
                     </button>
                   </div>
                 </div>
@@ -283,7 +284,7 @@ export default function ScopeGuard() {
               {/* Change order suggestion */}
               {result.suggested_change_order?.applicable && (
                 <div className="sg-change-order-hint">
-                  <h4>💼 Suggested change order</h4>
+                  <h4><Briefcase size={16} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 6 }} /> Suggested change order</h4>
                   <p>{result.suggested_change_order.additional_work_description}</p>
                   <div className="sg-co-meta">
                     {result.suggested_change_order.estimated_hours && <span>~{result.suggested_change_order.estimated_hours} hrs</span>}

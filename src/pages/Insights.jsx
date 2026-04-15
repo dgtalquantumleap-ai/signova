@@ -5,6 +5,7 @@
 import { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
+import { Broadcast, Warning, PenNib, EnvelopeSimple } from '@phosphor-icons/react'
 import './Insights.css'
 
 const API_BASE   = import.meta.env.VITE_API_BASE   || 'https://api.ebenova.dev'
@@ -53,11 +54,11 @@ function EmailPreview() {
     <div className="ins-email-preview">
       <div className="ins-email-chrome">
         <span className="ins-dot red" /><span className="ins-dot yellow" /><span className="ins-dot green" />
-        <span className="ins-chrome-bar">📨 Insights: 3 new mentions — freelance contract, client refused to pay…</span>
+        <span className="ins-chrome-bar"><EnvelopeSimple size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> Insights: 3 new mentions — freelance contract, client refused to pay…</span>
       </div>
       <div className="ins-email-body">
         <div className="ins-email-header">
-          <div className="ins-email-title">📡 Ebenova Insights Alert</div>
+          <div className="ins-email-title"><Broadcast size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> Ebenova Insights Alert</div>
           <div className="ins-email-meta">3 mentions · {new Date().toUTCString().slice(0, 16)}</div>
         </div>
         {PREVIEW_MATCHES.map((m, i) => (
@@ -65,10 +66,10 @@ function EmailPreview() {
             <div className="ins-match-meta">r/{m.subreddit} · u/{m.author} · {m.score} upvotes</div>
             <div className="ins-match-title">{m.title}</div>
             <div className="ins-match-body">{m.body}</div>
-            {!m.approved && <div className="ins-dnp">⚠️ DO NOT POST — r/{m.subreddit} not approved</div>}
+            {!m.approved && <div className="ins-dnp"><Warning size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> DO NOT POST — r/{m.subreddit} not approved</div>}
             {m.draft && (
               <div className="ins-draft-box">
-                <div className="ins-draft-label">✏️ Suggested reply</div>
+                <div className="ins-draft-label"><PenNib size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> Suggested reply</div>
                 <div className="ins-draft-text">{m.draft}</div>
               </div>
             )}
@@ -235,7 +236,7 @@ export default function Insights() {
       {/* ── Nav ── */}
       <nav className="ins-nav">
         <a href="https://ebenova.dev" className="ins-nav-brand">
-          <span className="ins-nav-logo">📡 Ebenova Insights</span>
+          <span className="ins-nav-logo"><Broadcast size={16} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> Ebenova Insights</span>
           <span className="ins-nav-badge">Live</span>
         </a>
         <div className="ins-nav-links">
