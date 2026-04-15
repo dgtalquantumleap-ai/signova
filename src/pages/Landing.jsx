@@ -358,7 +358,7 @@ export default function Landing() {
   const closeNav = useCallback(() => setNavOpen(false), [])
 
   // FAQ state — pre-open #0 ("Is this legally binding?")
-  const [openFaq, setOpenFaq] = useState(0)
+  const [openFaq, setOpenFaq] = useState(null)
 
   // Video lazy loading
   const [videoRef, videoVisible] = useLazyLoad({ threshold: 0.15 })
@@ -371,6 +371,8 @@ export default function Landing() {
 
   // Document search & filter
   const [docSearch, setDocSearch] = useState('')
+  const [showAllDocs, setShowAllDocs] = useState(false)
+  const [productsOpen, setProductsOpen] = useState(false)
   const [openDocCategories, setOpenDocCategories] = useState([true, false, false, false]) // First category open by default on mobile
 
   // Scope Guard mini-demo
@@ -492,10 +494,29 @@ export default function Landing() {
           <div className={`nav-links ${navOpen ? 'open' : ''}`} role="menubar">
             <a href="/" onClick={closeNav} role="menuitem" aria-label="Home">Home</a>
             <a href="#how" onClick={closeNav} role="menuitem" aria-label="How Signova works">How it Works</a>
-            <a href="/scope-guard" onClick={closeNav} role="menuitem" aria-label="Scope Guard — detect scope creep">Scope Guard</a>
+            <div
+              className={`nav-dropdown ${productsOpen ? 'open' : ''}`}
+              onMouseEnter={() => setProductsOpen(true)}
+              onMouseLeave={() => setProductsOpen(false)}
+            >
+              <button
+                type="button"
+                className="nav-dropdown-trigger"
+                onClick={() => setProductsOpen(o => !o)}
+                aria-expanded={productsOpen}
+                aria-haspopup="true"
+              >
+                Products <span aria-hidden="true">▾</span>
+              </button>
+              <div className="nav-dropdown-menu" role="menu">
+                <a href="/scope-guard" onClick={closeNav} role="menuitem">Scope Guard <span className="nav-dropdown-sub">Detect scope creep</span></a>
+                <a href="/whatsapp" onClick={closeNav} role="menuitem">Chat → Contract <span className="nav-dropdown-sub">Extract terms from WhatsApp</span></a>
+                <a href="https://ebenova.dev/dashboard" onClick={closeNav} role="menuitem">API Dashboard <span className="nav-dropdown-sub">Manage keys & usage</span></a>
+              </div>
+            </div>
             <a href="#pricing" onClick={closeNav} role="menuitem" aria-label="Pricing">Pricing</a>
+            <a href="/trust" onClick={closeNav} role="menuitem" aria-label="Document trust and provenance">Trust</a>
             <a href="#faq" onClick={closeNav} role="menuitem" aria-label="Frequently asked questions">FAQ</a>
-            <a href="https://ebenova.dev/dashboard" onClick={closeNav} role="menuitem" aria-label="Developer dashboard — manage API keys">API Dashboard</a>
             <a href="/whatsapp" onClick={closeNav} className="nav-cta-link" role="menuitem" aria-label="Preview a document for free">Preview Free →</a>
           </div>
 
@@ -571,17 +592,13 @@ export default function Landing() {
             <p className="hero-trust-line">Free preview · No account required · $4.99 {activeCurrency.local ? `(${activeCurrency.local})` : ''} to download · Enforceable in 180+ countries · 30-day refund</p>
           </div>
 
-          {/* RIGHT: live WhatsApp demo */}
+          {/* RIGHT: animated proof — visual-only demo (not a primary CTA) */}
           <div
             className="hero-right"
             data-lazy-load
-            onClick={() => navigate('/whatsapp')}
-            role="button"
-            tabIndex={0}
-            aria-label="Try WhatsApp extraction demo — tap to open"
-            onKeyDown={e => e.key === 'Enter' && navigate('/whatsapp')}
+            aria-label="Live example: a WhatsApp chat becoming a contract"
           >
-            <div className="hero-demo-label" aria-hidden="true">Free demo — tap to try with your own chat</div>
+            <div className="hero-demo-label" aria-hidden="true">Live example</div>
             <div className="hero-demo-phone">
               <div className="hero-demo-bar">
                 <span className="hero-demo-dot" aria-hidden="true" />
@@ -604,7 +621,14 @@ export default function Landing() {
                 <div className="hero-result-sub">Client · Scope · Deliverables · Timeline · Payment · Revisions…</div>
               </div>
             </div>
-            <div className="hero-demo-cta">Try free → getsignova.com/whatsapp</div>
+            <button
+              type="button"
+              className="hero-demo-cta-link"
+              onClick={() => navigate('/whatsapp')}
+              aria-label="Try with your own chat"
+            >
+              Try with your own chat →
+            </button>
           </div>
         </div>
 
@@ -633,19 +657,45 @@ export default function Landing() {
             )}
           </div>
 
-          {/* Desktop: flat grid */}
-          <div className="all-docs-grid">
-            {filteredDocs.map(doc => (
-              <button
-                key={doc.id}
-                className="all-doc-btn"
-                onClick={() => { trackDocSelected(doc.id, 'all_docs'); navigate(`/generate/${doc.id}`) }}
-                aria-label={`Generate ${doc.name}`}
-              >
-                <span aria-hidden="true">{doc.icon}</span> {doc.name}
-              </button>
-            ))}
-          </div>
+          {/* Desktop: progressive disclosure — show 8 by default, expand to full list on demand */}
+          {(() => {
+            const visibleDocs = (docSearch.trim() || showAllDocs) ? filteredDocs : filteredDocs.slice(0, 8)
+            const hiddenCount = filteredDocs.length - visibleDocs.length
+            return (
+              <>
+                <div className="all-docs-grid">
+                  {visibleDocs.map(doc => (
+                    <button
+                      key={doc.id}
+                      className="all-doc-btn"
+                      onClick={() => { trackDocSelected(doc.id, 'all_docs'); navigate(`/generate/${doc.id}`) }}
+                      aria-label={`Generate ${doc.name}`}
+                    >
+                      <span aria-hidden="true">{doc.icon}</span> {doc.name}
+                    </button>
+                  ))}
+                </div>
+                {!docSearch && hiddenCount > 0 && (
+                  <button
+                    className="docs-show-all"
+                    onClick={() => setShowAllDocs(true)}
+                    aria-label={`Show all ${filteredDocs.length} document types`}
+                  >
+                    Show all {filteredDocs.length} document types →
+                  </button>
+                )}
+                {!docSearch && showAllDocs && (
+                  <button
+                    className="docs-show-all"
+                    onClick={() => setShowAllDocs(false)}
+                    aria-label="Show fewer documents"
+                  >
+                    ↑ Show fewer
+                  </button>
+                )}
+              </>
+            )
+          })()}
           {docSearch && filteredDocs.length === 0 && (
             <p className="doc-search-empty">No documents match "{docSearch}"</p>
           )}
@@ -1023,6 +1073,7 @@ export default function Landing() {
           <nav className="footer-links" aria-label="Footer navigation">
             <a href="/privacy">Privacy Policy</a>
             <a href="/terms">Terms of Service</a>
+            <a href="/trust">Trust &amp; Provenance</a>
             <a href="/scope-guard">Scope Guard</a>
             <a href="/contact">Contact</a>
           </nav>

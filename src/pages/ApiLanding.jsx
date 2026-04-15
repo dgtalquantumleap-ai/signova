@@ -5,7 +5,7 @@ import { track } from '../lib/analytics'
 import {
   FileText, Receipt, Shield, Lock, ChatCircle, Link,
   Package, ClipboardText, Robot, Broadcast, ArrowsLeftRight,
-  House, Briefcase, Bank,
+  House, Briefcase, Bank, Code,
 } from '@phosphor-icons/react'
 import './ApiLanding.css'
 
@@ -771,7 +771,7 @@ export default function ApiLanding() {
         <div className="section-inner">
           <h2 id="founder-heading" className="sr-only">Built By</h2>
           <div className="founder-card">
-            <div className="founder-avatar" aria-hidden="true">👨🏾‍💻</div>
+            <div className="founder-avatar" aria-hidden="true"><Code size={32} weight="duotone" /></div>
             <div className="founder-content">
               <h3>Olumide Akinsola</h3>
               <p className="founder-title">Fraud Officer @ RBC | Nigerian-Canadian Founder</p>

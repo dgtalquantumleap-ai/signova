@@ -5,7 +5,7 @@ import ScopeGuardStats from '../components/ScopeGuardStats'
 import RevenueMetrics from '../components/RevenueMetrics'
 import {
   Scales, Shield, ChartBar, CurrencyDollar, Broadcast,
-  FileText, Note, ChatCircle, EnvelopeSimple,
+  FileText, Note, ChatCircle, EnvelopeSimple, Calendar, Books,
 } from '@phosphor-icons/react'
 import './Dashboard.css'
 
@@ -386,10 +386,10 @@ export default function Dashboard() {
                 </p>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '12px' }}>
                   <a href="https://ebenova.dev/insights" className="dash-btn-secondary" style={{ textDecoration: 'none' }}>
-                    📅 View Monitors
+                    <Calendar size={14} weight="regular" style={{ verticalAlign: '-2px', marginRight: 6 }} />View Monitors
                   </a>
                   <a href="https://ebenova.dev/docs#insights" className="dash-btn-secondary" style={{ textDecoration: 'none' }}>
-                    📚 API Docs
+                    <Books size={14} weight="regular" style={{ verticalAlign: '-2px', marginRight: 6 }} />API Docs
                   </a>
                 </div>
                 <code className="dash-code-block" style={{ marginTop: '12px' }}>GET https://api.ebenova.dev/v1/insights/monitors</code>

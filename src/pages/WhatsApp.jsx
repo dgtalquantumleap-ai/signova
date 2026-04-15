@@ -1,8 +1,16 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
+import {
+  House, CurrencyDollar, PenNib, Handshake, Briefcase, Prohibit,
+  Package, Factory, Buildings, ChartBar, Scales, EnvelopeSimple,
+  ShoppingCart, Lock, ClipboardText, Note, CreditCard, Article,
+  Car, Rocket,
+} from '@phosphor-icons/react'
 import { trackWaExtraction, trackWaExtractionSuccess } from '../lib/analytics'
 import './WhatsApp.css'
+
+const ICON = { size: 24, weight: 'duotone', color: 'currentColor' }
 
 // Compact currency map — mirrors Landing.jsx CURRENCY_MAP
 const CURRENCY_MAP = {
@@ -54,65 +62,66 @@ const GEO_DOC_PRIORITY = {
 // Geo-aware use cases — global, specific to each region
 const GEO_USECASES = {
   NG: [
-    { icon: '🏠', title: 'Landlords & tenants', body: 'Rent amount, duration, caution deposit, move-in date — agreed on WhatsApp, turned into a signed tenancy agreement in minutes.' },
-    { icon: '💰', title: 'Friends lending money', body: '"Pay back in 3 months" agreed on WhatsApp but never written down. Turn that chat into a loan agreement before money moves.' },
-    { icon: '✍️', title: 'Freelancers & clients', body: 'Project scope, payment terms, IP ownership — negotiated over chat, extracted into a professional contract in minutes.' },
-    { icon: '🤝', title: 'Business partners', body: 'Profit split, capital contribution — discussed in a WhatsApp group, turned into a partnership agreement before work begins.' },
+    { icon: <House {...ICON} />, title: 'Landlords & tenants', body: 'Rent amount, duration, caution deposit, move-in date — agreed on WhatsApp, turned into a signed tenancy agreement in minutes.' },
+    { icon: <CurrencyDollar {...ICON} />, title: 'Friends lending money', body: '"Pay back in 3 months" agreed on WhatsApp but never written down. Turn that chat into a loan agreement before money moves.' },
+    { icon: <PenNib {...ICON} />, title: 'Freelancers & clients', body: 'Project scope, payment terms, IP ownership — negotiated over chat, extracted into a professional contract in minutes.' },
+    { icon: <Handshake {...ICON} />, title: 'Business partners', body: 'Profit split, capital contribution — discussed in a WhatsApp group, turned into a partnership agreement before work begins.' },
   ],
   IN: [
-    { icon: '✍️', title: 'Freelancers & clients', body: 'Scope, rate, delivery date — negotiated on WhatsApp or email, extracted into a professional service agreement.' },
-    { icon: '🤝', title: 'Service providers', body: 'Agreed terms across IT services, consulting, and outsourcing — turned into a clean, signed contract from any chat thread.' },
-    { icon: '🏠', title: 'Rental agreements', body: 'Rent, deposit, maintenance — agreed over messaging, generated into a proper tenancy agreement in minutes.' },
-    { icon: '💼', title: 'Business proposals', body: 'Terms discussed over email with clients — extracted and formatted into a professional business proposal.' },
+    { icon: <PenNib {...ICON} />, title: 'Freelancers & clients', body: 'Scope, rate, delivery date — negotiated on WhatsApp or email, extracted into a professional service agreement.' },
+    { icon: <Handshake {...ICON} />, title: 'Service providers', body: 'Agreed terms across IT services, consulting, and outsourcing — turned into a clean, signed contract from any chat thread.' },
+    { icon: <House {...ICON} />, title: 'Rental agreements', body: 'Rent, deposit, maintenance — agreed over messaging, generated into a proper tenancy agreement in minutes.' },
+    { icon: <Briefcase {...ICON} />, title: 'Business proposals', body: 'Terms discussed over email with clients — extracted and formatted into a professional business proposal.' },
   ],
   US: [
-    { icon: '🤝', title: 'NDAs & confidentiality', body: 'Agreed to keep something confidential over email or Slack? Extract those terms into a signed NDA.' },
-    { icon: '✍️', title: 'Freelancers & contractors', body: 'Rate, scope, IP ownership — negotiated over email or iMessage, turned into an independent contractor agreement.' },
-    { icon: '🚫', title: 'Non-compete agreements', body: 'Employment terms discussed over email — extract the agreed restrictions into a compliant non-compete clause.' },
-    { icon: '💼', title: 'Consulting agreements', body: 'Scope, exclusivity, payment schedule — agreed over email, generated into a formal consulting contract.' },
+    { icon: <Handshake {...ICON} />, title: 'NDAs & confidentiality', body: 'Agreed to keep something confidential over email or Slack? Extract those terms into a signed NDA.' },
+    { icon: <PenNib {...ICON} />, title: 'Freelancers & contractors', body: 'Rate, scope, IP ownership — negotiated over email or iMessage, turned into an independent contractor agreement.' },
+    { icon: <Prohibit {...ICON} />, title: 'Non-compete agreements', body: 'Employment terms discussed over email — extract the agreed restrictions into a compliant non-compete clause.' },
+    { icon: <Briefcase {...ICON} />, title: 'Consulting agreements', body: 'Scope, exclusivity, payment schedule — agreed over email, generated into a formal consulting contract.' },
   ],
   GB: [
-    { icon: '✍️', title: 'Freelancers & contractors', body: 'Rate, deliverables, IP rights — negotiated on email or WhatsApp, extracted into a professional UK-compliant contract.' },
-    { icon: '💼', title: 'Consultants', body: 'Engagement terms agreed over email — extracted into a signed consulting agreement ready for both parties.' },
-    { icon: '🤝', title: 'NDAs', body: 'Confidentiality discussed in a chat — turn those agreed terms into a proper NDA in minutes.' },
-    { icon: '👔', title: 'Employment offers', body: 'Offer terms discussed over email — generate a formal employment offer letter from the agreed conversation.' },
+    { icon: <PenNib {...ICON} />, title: 'Freelancers & contractors', body: 'Rate, deliverables, IP rights — negotiated on email or WhatsApp, extracted into a professional UK-compliant contract.' },
+    { icon: <Briefcase {...ICON} />, title: 'Consultants', body: 'Engagement terms agreed over email — extracted into a signed consulting agreement ready for both parties.' },
+    { icon: <Handshake {...ICON} />, title: 'NDAs', body: 'Confidentiality discussed in a chat — turn those agreed terms into a proper NDA in minutes.' },
+    { icon: <Briefcase {...ICON} />, title: 'Employment offers', body: 'Offer terms discussed over email — generate a formal employment offer letter from the agreed conversation.' },
   ],
   DEFAULT: [
-    { icon: '✍️', title: 'Freelancers & clients', body: 'Project scope, payment terms, IP ownership — negotiated over any messaging platform, extracted into a professional contract.' },
-    { icon: '🤝', title: 'NDAs & confidentiality', body: 'Agreed to keep something confidential in a chat? Extract those terms into a properly signed NDA.' },
-    { icon: '🏠', title: 'Rental agreements', body: 'Rent amount, duration, deposit — agreed over messaging, generated into a signed tenancy agreement in minutes.' },
-    { icon: '💼', title: 'Business agreements', body: 'Partnership terms, consulting scope, service fees — discussed in any chat thread, turned into a legal document.' },
+    { icon: <PenNib {...ICON} />, title: 'Freelancers & clients', body: 'Project scope, payment terms, IP ownership — negotiated over any messaging platform, extracted into a professional contract.' },
+    { icon: <Handshake {...ICON} />, title: 'NDAs & confidentiality', body: 'Agreed to keep something confidential in a chat? Extract those terms into a properly signed NDA.' },
+    { icon: <House {...ICON} />, title: 'Rental agreements', body: 'Rent amount, duration, deposit — agreed over messaging, generated into a signed tenancy agreement in minutes.' },
+    { icon: <Briefcase {...ICON} />, title: 'Business agreements', body: 'Partnership terms, consulting scope, service fees — discussed in any chat thread, turned into a legal document.' },
   ],
 }
 
+const DOC_ICON = { size: 20, weight: 'duotone', color: 'currentColor' }
 const ALL_DOCS = [
-  { id: 'tenancy-agreement',    label: 'Tenancy Agreement',       icon: '🏠' },
-  { id: 'loan-agreement',       label: 'Loan Agreement',           icon: '💰' },
-  { id: 'freelance-contract',   label: 'Freelance Contract',       icon: '✍️' },
-  { id: 'nda',                  label: 'NDA',                      icon: '🤝' },
-  { id: 'service-agreement',    label: 'Service Agreement',        icon: '📝' },
-  { id: 'business-partnership', label: 'Business Partnership',     icon: '🤝' },
-  { id: 'payment-terms-agreement', label: 'Payment Agreement',     icon: '💳' },
-  { id: 'deed-of-assignment',   label: 'Deed of Assignment',       icon: '📜' },
-  { id: 'mou',                  label: 'MOU',                      icon: '🗒️' },
-  { id: 'independent-contractor', label: 'Contractor Agreement',   icon: '📋' },
-  { id: 'consulting-agreement', label: 'Consulting Agreement',     icon: '💼' },
-  { id: 'hire-purchase',        label: 'Hire Purchase',            icon: '🚗' },
-  { id: 'joint-venture',        label: 'Joint Venture',            icon: '🏗️' },
-  { id: 'employment-offer-letter', label: 'Employment Offer',      icon: '👔' },
-  { id: 'quit-notice',          label: 'Quit Notice',              icon: '📮' },
-  { id: 'supply-agreement',     label: 'Supply Agreement',         icon: '🏭' },
-  { id: 'distribution-agreement', label: 'Distribution Agreement', icon: '📦' },
-  { id: 'business-proposal',    label: 'Business Proposal',        icon: '🚀' },
-  { id: 'shareholder-agreement', label: 'Shareholder Agreement',   icon: '📊' },
-  { id: 'power-of-attorney',    label: 'Power of Attorney',        icon: '⚖️' },
-  { id: 'letter-of-intent',     label: 'Letter of Intent',         icon: '✉️' },
-  { id: 'landlord-agent-agreement', label: 'Landlord & Agent',     icon: '🤝' },
-  { id: 'non-compete-agreement', label: 'Non-Compete',             icon: '🚫' },
-  { id: 'purchase-agreement',   label: 'Purchase Agreement',       icon: '🛒' },
-  { id: 'privacy-policy',       label: 'Privacy Policy',           icon: '🔒' },
-  { id: 'terms-of-service',     label: 'Terms of Service',         icon: '📋' },
-  { id: 'facility-manager-agreement', label: 'Facility Manager',   icon: '🏢' },
+  { id: 'tenancy-agreement',    label: 'Tenancy Agreement',       icon: <House {...DOC_ICON} /> },
+  { id: 'loan-agreement',       label: 'Loan Agreement',           icon: <CurrencyDollar {...DOC_ICON} /> },
+  { id: 'freelance-contract',   label: 'Freelance Contract',       icon: <PenNib {...DOC_ICON} /> },
+  { id: 'nda',                  label: 'NDA',                      icon: <Handshake {...DOC_ICON} /> },
+  { id: 'service-agreement',    label: 'Service Agreement',        icon: <Note {...DOC_ICON} /> },
+  { id: 'business-partnership', label: 'Business Partnership',     icon: <Handshake {...DOC_ICON} /> },
+  { id: 'payment-terms-agreement', label: 'Payment Agreement',     icon: <CreditCard {...DOC_ICON} /> },
+  { id: 'deed-of-assignment',   label: 'Deed of Assignment',       icon: <Article {...DOC_ICON} /> },
+  { id: 'mou',                  label: 'MOU',                      icon: <Note {...DOC_ICON} /> },
+  { id: 'independent-contractor', label: 'Contractor Agreement',   icon: <ClipboardText {...DOC_ICON} /> },
+  { id: 'consulting-agreement', label: 'Consulting Agreement',     icon: <Briefcase {...DOC_ICON} /> },
+  { id: 'hire-purchase',        label: 'Hire Purchase',            icon: <Car {...DOC_ICON} /> },
+  { id: 'joint-venture',        label: 'Joint Venture',            icon: <Buildings {...DOC_ICON} /> },
+  { id: 'employment-offer-letter', label: 'Employment Offer',      icon: <Briefcase {...DOC_ICON} /> },
+  { id: 'quit-notice',          label: 'Quit Notice',              icon: <EnvelopeSimple {...DOC_ICON} /> },
+  { id: 'supply-agreement',     label: 'Supply Agreement',         icon: <Factory {...DOC_ICON} /> },
+  { id: 'distribution-agreement', label: 'Distribution Agreement', icon: <Package {...DOC_ICON} /> },
+  { id: 'business-proposal',    label: 'Business Proposal',        icon: <Rocket {...DOC_ICON} /> },
+  { id: 'shareholder-agreement', label: 'Shareholder Agreement',   icon: <ChartBar {...DOC_ICON} /> },
+  { id: 'power-of-attorney',    label: 'Power of Attorney',        icon: <Scales {...DOC_ICON} /> },
+  { id: 'letter-of-intent',     label: 'Letter of Intent',         icon: <EnvelopeSimple {...DOC_ICON} /> },
+  { id: 'landlord-agent-agreement', label: 'Landlord & Agent',     icon: <Handshake {...DOC_ICON} /> },
+  { id: 'non-compete-agreement', label: 'Non-Compete',             icon: <Prohibit {...DOC_ICON} /> },
+  { id: 'purchase-agreement',   label: 'Purchase Agreement',       icon: <ShoppingCart {...DOC_ICON} /> },
+  { id: 'privacy-policy',       label: 'Privacy Policy',           icon: <Lock {...DOC_ICON} /> },
+  { id: 'terms-of-service',     label: 'Terms of Service',         icon: <ClipboardText {...DOC_ICON} /> },
+  { id: 'facility-manager-agreement', label: 'Facility Manager',   icon: <Buildings {...DOC_ICON} /> },
 ]
 
 // Sample conversations — globally representative
