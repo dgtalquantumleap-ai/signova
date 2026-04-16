@@ -41,11 +41,6 @@ const SIGNOVA_LINKS = {
     { label: 'Blog',    href: '/blog' },
     { label: 'Contact', href: '/contact' },
   ],
-  'Developer APIs': [
-    { label: 'Ebenova API',       href: 'https://www.ebenova.dev', external: true },
-    { label: 'Vigil Fraud Alert', href: 'https://www.ebenova.dev/vigil', external: true },
-    { label: 'Insights',          href: 'https://www.ebenova.dev/insights', external: true },
-  ],
   Legal: [
     { label: 'Privacy', href: '/privacy' },
     { label: 'Terms',   href: '/terms' },
