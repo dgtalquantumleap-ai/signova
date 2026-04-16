@@ -512,9 +512,6 @@ export default function Landing() {
               <div className="nav-dropdown-menu" role="menu">
                 <a href="/scope-guard" onClick={closeNav} role="menuitem">Scope Guard <span className="nav-dropdown-sub">Detect scope creep</span></a>
                 <a href="/whatsapp" onClick={closeNav} role="menuitem">Chat → Contract <span className="nav-dropdown-sub">Extract terms from WhatsApp</span></a>
-                <a href="https://www.ebenova.dev/vigil" onClick={closeNav} role="menuitem">Vigil Fraud Alert <span className="nav-dropdown-sub">GPS card fraud detection</span></a>
-                <a href="https://www.ebenova.dev/insights" onClick={closeNav} role="menuitem">Insights <span className="nav-dropdown-sub">Reddit lead monitoring</span></a>
-                <a href="https://www.ebenova.dev/dashboard" onClick={closeNav} role="menuitem">API Dashboard <span className="nav-dropdown-sub">Manage keys & usage</span></a>
               </div>
             </div>
             <a href="#pricing" onClick={closeNav} role="menuitem" aria-label="Pricing">Pricing</a>
@@ -876,31 +873,6 @@ export default function Landing() {
                 <div className="scope-example-msg" aria-hidden="true">"Can you also add a blog section? Should be quick."</div>
                 <div className="scope-example-arrow" aria-hidden="true">↓ Scope Guard detects: <strong>scope creep</strong></div>
                 <div className="scope-example-response" aria-hidden="true">Auto-drafts a change order with estimated hours and cost.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Vigil Fraud Alert Section ─────────────────────────────────── */}
-      <section className="scope-guard-section" id="vigil-promo">
-        <div className="section-inner">
-          <div className="scope-guard-card" style={{ borderColor: 'var(--accent-red, #e74c3c)' }}>
-            <div className="scope-guard-left">
-              <div className="scope-guard-badge" style={{ background: 'var(--accent-red, #e74c3c)', color: '#fff' }}>
-                <CreditCard size={16} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 6 }} /> Vigil Fraud Alert — New
-              </div>
-              <h2 className="scope-guard-title">Your card was just used in Lagos. You&apos;re in Calgary.</h2>
-              <p className="scope-guard-body">
-                GPS proximity-based card authorization. Claude AI fraud analysis. AML compliance reports. 8 MCP tools for AI agents.
-              </p>
-              <a href="https://www.ebenova.dev/vigil" className="scope-guard-btn" style={{ background: 'var(--accent-red, #e74c3c)' }}>Explore Vigil →</a>
-            </div>
-            <div className="scope-guard-right">
-              <div className="scope-guard-demo-result">
-                <div className="scope-example-msg" aria-hidden="true">POST /v1/vigil/authorize</div>
-                <div className="scope-example-arrow" aria-hidden="true">↓ GPS haversine check: <strong>8,342 km from device</strong></div>
-                <div className="scope-example-response" aria-hidden="true">DECLINED — reason: OUTSIDE_RADIUS — 2ms</div>
               </div>
             </div>
           </div>
