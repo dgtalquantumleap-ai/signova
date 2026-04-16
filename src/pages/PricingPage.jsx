@@ -18,7 +18,7 @@ const FREE_PLAN = {
     'Community support',
   ],
   cta:        'Get Free Key',
-  ctaHref:    '/docs#get-started',
+  ctaHref:    '/docs#quickstart',
   highlight:  false,
 }
 
@@ -395,7 +395,7 @@ function FreePlanCard() {
         </p>
       </div>
       <a
-        href="/docs#get-started"
+        href="/docs#quickstart"
         style={{
           background:   'transparent',
           color:        '#c9a84c',
@@ -517,7 +517,7 @@ export default function PricingPage() {
           <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
             <a href="/docs"      style={{ color: '#888', fontSize: '14px', textDecoration: 'none' }}>Docs</a>
             <a href="/dashboard" style={{ color: '#888', fontSize: '14px', textDecoration: 'none' }}>Dashboard</a>
-            <a href="/docs#get-started" style={{
+            <a href="/docs#quickstart" style={{
               background: '#c9a84c', color: '#0e0e0e',
               padding: '8px 18px', borderRadius: '6px',
               fontSize: '13px', fontWeight: 700, textDecoration: 'none',

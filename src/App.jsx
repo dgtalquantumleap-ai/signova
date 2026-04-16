@@ -1,6 +1,7 @@
 /* eslint no-unused-vars: off */
 import { Routes, Route } from 'react-router-dom'
 import { lazy, Suspense, useState, useEffect } from 'react'
+import ScrollToHash from './components/ScrollToHash'
 
 const Landing    = lazy(() => import('./pages/Landing'))
 const ApiLanding = lazy(() => import('./pages/ApiLanding'))
@@ -94,6 +95,7 @@ function CookieConsent() {
 export default function App() {
   return (
     <Suspense fallback={<SuspenseFallback />}>
+      <ScrollToHash />
       <a href="#main-content" className="skip-nav">Skip to main content</a>
       <CookieConsent />
       <Routes>
