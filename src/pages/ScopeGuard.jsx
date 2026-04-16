@@ -393,7 +393,7 @@ export default function ScopeGuard() {
                 <li>✓ MCP server included</li>
                 <li>✓ Build your own tools</li>
               </ul>
-              <a className="sg-btn-secondary sg-btn-full" href="https://ebenova.dev/docs#scope">View API docs →</a>
+              <a className="sg-btn-secondary sg-btn-full" href="https://ebenova.dev/docs#scope-guard">View API docs →</a>
             </div>
           </div>
         </div>

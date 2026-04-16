@@ -70,7 +70,7 @@ const API_CARDS = [
     features: ['Bidirectional lookup', 'Payment status tracking', 'Redis-backed storage'],
     endpoint: 'POST /v1/contracts/link',
     cta: 'View Docs',
-    link: '/docs#contract-link',
+    link: '/docs',
   },
   {
     id: 'batch',
@@ -80,7 +80,7 @@ const API_CARDS = [
     features: ['Up to 10 docs per call', 'Independent processing', 'Detailed results'],
     endpoint: 'POST /v1/documents/batch',
     cta: 'View Docs',
-    link: '/docs#batch',
+    link: '/docs',
   },
   {
     id: 'templates',
@@ -90,7 +90,7 @@ const API_CARDS = [
     features: ['34 document schemas', 'Field types & validation', 'Zero AI cost'],
     endpoint: 'GET /v1/documents/templates',
     cta: 'View Templates',
-    link: '/docs#templates',
+    link: '/docs#document-types',
   },
   {
     id: 'fieldops',
@@ -99,8 +99,8 @@ const API_CARDS = [
     desc: 'WhatsApp-native booking, revenue recovery, and staff coordination for service businesses. Proxied through the Ebenova API — requires a FieldOps server deployment. Contact api@ebenova.dev to get started.',
     features: ['WhatsApp booking + confirmation', '3-step invoice recovery', 'Staff job briefings', '5-tool MCP server', 'OxaPay + Polar payments'],
     endpoint: 'POST /v1/bookings',
-    cta: 'View Docs',
-    link: '/docs#fieldops',
+    cta: 'Contact Sales',
+    link: '/contact',
     highlight: true,
     badge: 'Separate Service',
   },
