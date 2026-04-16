@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useNavigate } from 'react-router-dom'
 import { Package, ArrowsLeftRight, Warning, Briefcase, Shield, ClipboardText } from '@phosphor-icons/react'
+import SiteFooter from '../components/SiteFooter'
+import SiteNav from '../components/SiteNav'
 import './ScopeGuard.css'
 
 // ── Geo-currency for ScopeGuard subscription pricing ────────────────────────
@@ -163,13 +165,7 @@ export default function ScopeGuard() {
         <meta name="twitter:image" content="https://www.getsignova.com/og-image.png" />
       </Helmet>
 
-      <nav className="sg-nav">
-        <div className="sg-logo" onClick={() => navigate('/')}>
-          <span className="sg-logo-mark">S</span>
-          <span className="sg-logo-text">Signova</span>
-        </div>
-        <a href="https://www.getsignova.com" className="sg-nav-link">← Back to Signova</a>
-      </nav>
+      <SiteNav variant="signova" />
 
       {/* ── Hero ── */}
       <section className="sg-hero">
@@ -393,26 +389,13 @@ export default function ScopeGuard() {
                 <li>✓ MCP server included</li>
                 <li>✓ Build your own tools</li>
               </ul>
-              <a className="sg-btn-secondary sg-btn-full" href="https://ebenova.dev/docs#scope-guard">View API docs →</a>
+              <a className="sg-btn-secondary sg-btn-full" href="https://www.ebenova.dev/docs#scope-guard">View API docs →</a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer className="sg-footer">
-        <div className="sg-logo" onClick={() => navigate('/')}>
-          <span className="sg-logo-mark">S</span>
-          <span className="sg-logo-text">Signova</span>
-        </div>
-        <div className="sg-footer-links">
-          <a href="https://www.getsignova.com">Home</a>
-          <a href="https://www.getsignova.com/#documents">Documents</a>
-          <a href="https://ebenova.dev/docs">API Docs</a>
-          <a href="mailto:info@ebenova.net">Contact</a>
-        </div>
-        <p className="sg-footer-copy">© 2026 Ebenova Solutions · Calgary, Alberta</p>
-      </footer>
+      <SiteFooter variant="signova" />
     </div>
   )
 }

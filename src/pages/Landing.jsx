@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef, useCallback, startTransition } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { trackDocSelected, trackHeroCtaClick } from '../lib/analytics'
+import SiteFooter from '../components/SiteFooter'
 import {
   Rocket, Handshake, PenNib, Lock, FileText, CurrencyDollar,
   House, Briefcase, Article, Car, ShoppingCart, ChartBar,
@@ -1090,28 +1091,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Footer ─────────────────────────────────────────────────────── */}
-      <footer className="footer" role="contentinfo">
-        <div className="footer-inner">
-          <div className="logo" aria-label="Signova">
-            <span className="logo-mark" aria-hidden="true">S</span>
-            <span className="logo-text">Signova</span>
-          </div>
-          <nav className="footer-links" aria-label="Footer navigation">
-            <a href="/privacy">Privacy Policy</a>
-            <a href="/terms">Terms of Service</a>
-            <a href="/trust">Trust &amp; Provenance</a>
-            <a href="/scope-guard">Scope Guard</a>
-            <a href="https://www.ebenova.dev/vigil">Vigil Fraud Alert</a>
-            <a href="https://www.ebenova.dev/insights">Insights</a>
-            <a href="/contact">Contact</a>
-          </nav>
-          <p className="footer-disc">
-            Signova is a document generation tool, not a law firm. Documents are AI-generated starting points — not legal advice. No attorney-client relationship is created by using this service. For complex or high-stakes matters, consult a qualified attorney before signing or relying on any document.
-          </p>
-          <p className="footer-copy">© 2026 Signova · Ebenova Solutions</p>
-        </div>
-      </footer>
+      <SiteFooter variant="signova" />
 
       {/* ── Mobile sticky CTA ──────────────────────────────────────────── */}
       <div className="mobile-sticky-cta" aria-label="Quick actions">

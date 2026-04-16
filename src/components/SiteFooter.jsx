@@ -61,14 +61,14 @@ const EBENOVA_LINKS = {
   ],
   Solutions: [
     { label: 'Vigil Fraud Alert', href: '/vigil' },
-    { label: 'Scope Guard',       href: '/scope-guard' },
     { label: 'Insights',          href: '/insights' },
     { label: 'Sign In',           href: '/dashboard' },
   ],
   Company: [
-    { label: 'About',   href: '/about' },
-    { label: 'Contact', href: '/contact' },
-    { label: 'Signova', href: 'https://www.getsignova.com', external: true },
+    { label: 'About',        href: '/about' },
+    { label: 'Contact',      href: '/contact' },
+    { label: 'Signova',      href: 'https://www.getsignova.com', external: true },
+    { label: 'Scope Guard',  href: 'https://www.getsignova.com/scope-guard', external: true },
   ],
   Legal: [
     { label: 'Privacy',      href: '/privacy' },

@@ -46,7 +46,7 @@ export default function Dashboard() {
   const fetchUsage = useCallback(async (key) => {
     if (!key) return
     try {
-      const res = await fetch(`${API}/api/v1/keys/usage`, {
+      const res = await fetch(`${API}/v1/keys/usage`, {
         headers: { Authorization: `Bearer ${key}` },
       })
       const data = await res.json()
@@ -57,7 +57,7 @@ export default function Dashboard() {
   const fetchScopeGuardStats = useCallback(async (key) => {
     if (!key) return
     try {
-      const res = await fetch(`${API}/api/v1/scope/stats`, {
+      const res = await fetch(`${API}/v1/scope/stats`, {
         headers: { Authorization: `Bearer ${key}` },
       })
       const data = await res.json()
@@ -68,7 +68,7 @@ export default function Dashboard() {
   const fetchRevenueMetrics = useCallback(async (adminToken) => {
     if (!adminToken) return
     try {
-      const res = await fetch(`${API}/api/v1/admin/revenue`, {
+      const res = await fetch(`${API}/v1/admin/revenue`, {
         headers: { Authorization: `Bearer ${adminToken}` },
       })
       const data = await res.json()
@@ -108,7 +108,7 @@ export default function Dashboard() {
   async function verifyMagicToken(token) {
     setView('loading')
     try {
-      const res = await fetch(`${API}/api/v1/auth/verify`, {
+      const res = await fetch(`${API}/v1/auth/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token }),
@@ -135,7 +135,7 @@ export default function Dashboard() {
     if (!email || !email.includes('@')) return setError('Enter a valid email')
     setSendingLink(true); setError('')
     try {
-      const res = await fetch(`${API}/api/v1/auth/magic-link`, {
+      const res = await fetch(`${API}/v1/auth/magic-link`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -150,7 +150,7 @@ export default function Dashboard() {
   async function handleUpgrade(tier) {
     setUpgrading(tier)
     try {
-      const res = await fetch(`${API}/api/v1/billing/checkout`, {
+      const res = await fetch(`${API}/v1/billing/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${activeKey?.key}` },
         body: JSON.stringify({ tier, success_url: `${window.location.origin}/dashboard?subscribed=1`, cancel_url: `${window.location.origin}/dashboard` }),
