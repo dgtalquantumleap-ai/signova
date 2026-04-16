@@ -5,7 +5,7 @@
 const TOOLS = [
   {
     name: 'generate_legal_document',
-    description: 'Generate a professionally drafted legal document. 27 document types, 18 jurisdictions including Nigeria, UK, US, Canada, Ghana, Kenya, UAE and more.',
+    description: 'Generate a professionally drafted legal document. 34 document types, 18 jurisdictions including Nigeria, UK, US, Canada, Ghana, Kenya, UAE and more.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -31,7 +31,7 @@ const TOOLS = [
   },
   {
     name: 'list_document_types',
-    description: 'List all 27 supported legal document types grouped by category.',
+    description: 'List all 34 supported legal document types grouped by category.',
     inputSchema: { type: 'object', properties: {} },
   },
   {

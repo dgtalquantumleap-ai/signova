@@ -59,7 +59,7 @@ function createServer(config = {}) {
       description: `Generate a professionally drafted legal document using the Ebenova API.
 
 Use this tool when the user needs to create any legal document — contracts, NDAs, agreements,
-privacy policies, tenancy agreements, and more. Supports 27 document types across 18 jurisdictions.
+privacy policies, tenancy agreements, and more. Supports 34 document types across 18 jurisdictions.
 
 When to use:
 - "Create an NDA between me and John Smith"

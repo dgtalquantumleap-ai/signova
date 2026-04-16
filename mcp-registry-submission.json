@@ -1,6 +1,6 @@
 {
   "name": "ebenova-legal-docs",
-  "description": "Generate legal documents, detect scope violations, extract terms from conversations, and link contracts to payments. 27 document types, 18 jurisdictions including Nigeria, UK, US, Canada, Ghana, Kenya, UAE. Built for developers, SaaS platforms, and AI agents.",
+  "description": "Generate legal documents, detect scope violations, extract terms from conversations, and link contracts to payments. 34 document types, 18 jurisdictions including Nigeria, UK, US, Canada, Ghana, Kenya, UAE. Built for developers, SaaS platforms, and AI agents.",
   "url": "https://www.getsignova.com/mcp",
   "homepage": "https://ebenova.dev",
   "documentation": "https://ebenova.dev/docs",
@@ -12,7 +12,7 @@
   "tools": [
     {
       "name": "generate_legal_document",
-      "description": "Generate a professionally drafted legal document. 27 types, 18 jurisdictions."
+      "description": "Generate a professionally drafted legal document. 34 types, 18 jurisdictions."
     },
     {
       "name": "extract_from_conversation",
@@ -20,7 +20,7 @@
     },
     {
       "name": "list_document_types",
-      "description": "List all 27 supported legal document types grouped by category."
+      "description": "List all 34 supported legal document types grouped by category."
     },
     {
       "name": "check_usage",

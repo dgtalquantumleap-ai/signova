@@ -380,7 +380,7 @@ export default function WhatsApp() {
           <span className="wa-platform">Any chat</span>
         </div>
         <div className="wa-stats">
-          <div className="wa-stat"><span className="wa-stat-num">27</span><span className="wa-stat-label">document types</span></div>
+          <div className="wa-stat"><span className="wa-stat-num">34</span><span className="wa-stat-label">document types</span></div>
           <div className="wa-stat-div" />
           <div className="wa-stat"><span className="wa-stat-num">180+</span><span className="wa-stat-label">countries</span></div>
           <div className="wa-stat-div" />
@@ -411,7 +411,7 @@ export default function WhatsApp() {
             ))}
           </div>
           <button className="wa-show-all" onClick={() => setShowAll(v => !v)}>
-            {showAll ? '↑ Show fewer' : '+ Show all 27 document types'}
+            {showAll ? '↑ Show fewer' : '+ Show all 34 document types'}
           </button>
         </div>
 

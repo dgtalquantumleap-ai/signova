@@ -1,14 +1,14 @@
 {
   "name": "ebenova-legal-docs",
   "version": "1.0.0",
-  "description": "Generate professional legal documents via AI — NDAs, freelance contracts, tenancy agreements, and 24 more document types across 18 jurisdictions including Nigeria, Kenya, UK, Canada, and globally.",
+  "description": "Generate professional legal documents via AI — NDAs, freelance contracts, tenancy agreements, and 31 more document types across 18 jurisdictions including Nigeria, Kenya, UK, Canada, and globally.",
   "vendor": "Ebenova Solutions",
   "homepage": "https://ebenova.dev",
   "license": "MIT",
   "tools": [
     {
       "name": "generate_legal_document",
-      "description": "Generate any of 27 legal document types in 18 jurisdictions",
+      "description": "Generate any of 34 legal document types in 18 jurisdictions",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -33,7 +33,7 @@
     },
     {
       "name": "list_document_types",
-      "description": "List all 27 supported legal document types",
+      "description": "List all 34 supported legal document types",
       "inputSchema": { "type": "object", "properties": {} }
     },
     {

@@ -190,7 +190,7 @@ export default function GetStarted() {
             <div className="gs-step">
               <div className="gs-step-num">2</div>
               <h3>Read the Docs</h3>
-              <p>Learn all 27 document types, parameters, and error handling.</p>
+              <p>Learn all 34 document types, parameters, and error handling.</p>
               <a href="/docs" className="gs-link">View API Documentation →</a>
             </div>
 
