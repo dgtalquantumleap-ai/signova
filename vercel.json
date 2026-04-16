@@ -26,6 +26,36 @@
       "source": "/favicon.ico",
       "destination": "/favicon.svg",
       "permanent": false
+    },
+    {
+      "source": "/vigil",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "destination": "https://www.ebenova.dev/vigil",
+      "permanent": true
+    },
+    {
+      "source": "/insights/:path*",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "destination": "https://www.ebenova.dev/insights/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/docs",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "destination": "https://www.ebenova.dev/docs",
+      "permanent": true
+    },
+    {
+      "source": "/dashboard",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "destination": "https://www.ebenova.dev/dashboard",
+      "permanent": true
+    },
+    {
+      "source": "/api-landing",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "destination": "https://www.ebenova.dev/api-landing",
+      "permanent": true
     }
   ],
   "rewrites": [
