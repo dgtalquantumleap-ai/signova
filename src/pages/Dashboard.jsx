@@ -385,10 +385,10 @@ export default function Dashboard() {
                   Plan: <strong>{insightsPlan ? insightsPlan.charAt(0).toUpperCase() + insightsPlan.slice(1) : 'Starter'}</strong>
                 </p>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '12px' }}>
-                  <a href="https://ebenova.dev/insights" className="dash-btn-secondary" style={{ textDecoration: 'none' }}>
+                  <a href="https://www.ebenova.dev/insights" className="dash-btn-secondary" style={{ textDecoration: 'none' }}>
                     <Calendar size={14} weight="regular" style={{ verticalAlign: '-2px', marginRight: 6 }} />View Monitors
                   </a>
-                  <a href="https://ebenova.dev/docs#insights" className="dash-btn-secondary" style={{ textDecoration: 'none' }}>
+                  <a href="https://www.ebenova.dev/docs#insights" className="dash-btn-secondary" style={{ textDecoration: 'none' }}>
                     <Books size={14} weight="regular" style={{ verticalAlign: '-2px', marginRight: 6 }} />API Docs
                   </a>
                 </div>
@@ -437,8 +437,8 @@ export default function Dashboard() {
   -d '{"document_type":"nda","fields":{"party_a":"Acme Inc","party_b":"Jane Smith"},"jurisdiction":"Nigeria"}'`}</pre>
             <div className="dash-links-row">
               <a href="/docs" className="dash-link"><FileText size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> API Docs</a>
-              <a href="https://ebenova.dev/blog" className="dash-link"><Note size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> Blog</a>
-              <a href="mailto:api@ebenova.dev" className="dash-link"><ChatCircle size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> Support</a>
+              <a href="https://www.ebenova.dev/blog" className="dash-link"><Note size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> Blog</a>
+              <a href="mailto:info@ebenova.net" className="dash-link"><ChatCircle size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> Support</a>
             </div>
           </section>
 

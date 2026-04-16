@@ -40,7 +40,7 @@ export default async function handler(req, res) {
       success: false,
       error: {
         code: 'FIELDOPS_UNAVAILABLE',
-        message: 'FieldOps service not configured. Contact api@ebenova.dev for access.',
+        message: 'FieldOps service not configured. Contact info@ebenova.net for access.',
         hint: 'Deploy the FieldOps Agent server and set FIELDOPS_API_URL.',
       },
     })

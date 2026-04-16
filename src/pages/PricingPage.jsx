@@ -84,7 +84,7 @@ const FAQS = [
   },
   {
     q: 'Can I upgrade or downgrade my plan?',
-    a: 'Yes. Email api@ebenova.dev or use your Stripe billing portal. Upgrades take effect immediately; downgrades apply at the next billing cycle.',
+    a: 'Yes. Email info@ebenova.net or use your Stripe billing portal. Upgrades take effect immediately; downgrades apply at the next billing cycle.',
   },
   {
     q: 'What counts as an API call?',
@@ -595,7 +595,7 @@ export default function PricingPage() {
             </h2>
             <p style={{ color: '#555', fontSize: '15px', margin: 0 }}>
               Still have questions?{' '}
-              <a href="mailto:api@ebenova.dev" style={{ color: '#c9a84c', textDecoration: 'none' }}>
+              <a href="mailto:info@ebenova.net" style={{ color: '#c9a84c', textDecoration: 'none' }}>
                 Email us
               </a>
             </p>
@@ -615,7 +615,7 @@ export default function PricingPage() {
             {' · '}
             <a href="/terms"   style={{ color: '#444', textDecoration: 'none' }}>Terms</a>
             {' · '}
-            <a href="mailto:api@ebenova.dev" style={{ color: '#444', textDecoration: 'none' }}>api@ebenova.dev</a>
+            <a href="mailto:info@ebenova.net" style={{ color: '#444', textDecoration: 'none' }}>info@ebenova.net</a>
           </p>
         </div>
       </div>

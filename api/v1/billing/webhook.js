@@ -532,7 +532,7 @@ async function sendWelcomeEmail(email, apiKey, tier) {
     <hr style="border:none;border-top:1px solid #1e1e1e;margin:0 0 24px;">
     <p style="color:#555;font-size:13px;margin:0;">
       Questions? Reply to this email or reach us at
-      <a href="mailto:api@ebenova.dev" style="color:#c9a84c;text-decoration:none;">api@ebenova.dev</a>
+      <a href="mailto:info@ebenova.net" style="color:#c9a84c;text-decoration:none;">info@ebenova.net</a>
     </p>
     <p style="color:#333;font-size:12px;margin:8px 0 0;">
       Ebenova &mdash; Legal &amp; Business APIs
@@ -549,9 +549,10 @@ async function sendWelcomeEmail(email, apiKey, tier) {
         'Authorization': `Bearer ${resendKey}`,
       },
       body: JSON.stringify({
-        from:    'Ebenova <api@ebenova.dev>',
-        to:      email,
-        subject: `Your Ebenova API key — ${tierLabel} plan`,
+        from:     'Ebenova <api@ebenova.dev>',
+        reply_to: 'info@ebenova.net',
+        to:       email,
+        subject:  `Your Ebenova API key — ${tierLabel} plan`,
         html,
       }),
     })

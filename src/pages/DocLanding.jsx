@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
+import SiteFooter from '../components/SiteFooter'
 import './Landing.css'
 import './NDALanding.css'
 
@@ -175,21 +176,7 @@ export default function DocLanding() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="footer">
-        <div className="footer-inner">
-          <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            <div className="logo-mark">S</div>
-            <span className="logo-text">Signova</span>
-          </div>
-          <p className="footer-copy">© {new Date().getFullYear()} Signova. All rights reserved.</p>
-          <div className="footer-links">
-            <a href="/privacy">Privacy</a>
-            <a href="/terms">Terms</a>
-            <a href="/blog">Blog</a>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter variant="signova" />
     </div>
   )
 }

@@ -70,7 +70,7 @@ export default async function handler(req, res) {
               <div style="background:#1a1500;border:1px solid #c9a84c33;border-radius:10px;padding:16px 20px;margin-bottom:24px;"><p style="margin:0 0 6px;color:#c9a84c;font-weight:700;font-size:12px;">Coming soon — Signova Pro</p><p style="margin:0;color:#9a9690;font-size:12px;line-height:1.5;">Paste any client message and instantly know if it violates your contract — plus a ready-to-send professional response. We'll email you when it launches.</p></div>
               <p style="color:#9a9690;font-size:13px;">Need another document? <a href="https://getsignova.com" style="color:#c9a84c;">getsignova.com</a></p>
               <hr style="border:none;border-top:1px solid #2a2a2a;margin:24px 0;"/>
-              <p style="color:#5a5754;font-size:11px;">Signova · Ebenova Solutions · <a href="mailto:hello@getsignova.com" style="color:#5a5754;">hello@getsignova.com</a></p>
+              <p style="color:#5a5754;font-size:11px;">Signova · Ebenova Solutions · <a href="mailto:info@ebenova.net" style="color:#5a5754;">info@ebenova.net</a></p>
             </div>
           `,
         }),
@@ -111,7 +111,7 @@ export default async function handler(req, res) {
                 Your document will regenerate fresh when you return. Takes under 30 seconds.
               </p>
               <hr style="border:none;border-top:1px solid #2a2a2a;margin:28px 0;" />
-              <p style="color:#5a5754;font-size:11px;">Signova · Ebenova Solutions · <a href="mailto:hello@getsignova.com" style="color:#5a5754;">hello@getsignova.com</a></p>
+              <p style="color:#5a5754;font-size:11px;">Signova · Ebenova Solutions · <a href="mailto:info@ebenova.net" style="color:#5a5754;">info@ebenova.net</a></p>
             </div>
           `,
         }),
@@ -196,7 +196,7 @@ export default async function handler(req, res) {
             <hr style="border:none;border-top:1px solid #2a2a2a;margin:28px 0;" />
             <p style="color:#5a5754;font-size:11px;">
               Signova · Ebenova Solutions ·
-              <a href="mailto:hello@getsignova.com" style="color:#5a5754;">hello@getsignova.com</a>
+              <a href="mailto:info@ebenova.net" style="color:#5a5754;">info@ebenova.net</a>
             </p>
           </div>
         `,

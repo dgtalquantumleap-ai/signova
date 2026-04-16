@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
+import SiteFooter from '../components/SiteFooter'
 import './LegalPage.css'
 
 export default function VigilTerms() {
@@ -59,7 +60,7 @@ export default function VigilTerms() {
           <li><strong>Never submit full PANs.</strong> Vigil's <code>card_id</code> field is meant for your internal tokens or network IDs — not 16-digit card numbers. If you send a full PAN, we will reject the request and may suspend your key.</li>
           <li><strong>Cardholder consent for GPS.</strong> Before calling <code>POST /v1/vigil/gps</code> with a cardholder's device location, you must have obtained their informed consent in a manner compliant with GDPR, PIPEDA, CCPA, and any other privacy law applicable to that cardholder.</li>
           <li><strong>PII minimization.</strong> Submit only the fields required by the endpoint schema. Do not embed names, addresses, emails, phone numbers, or government IDs in free-text fields.</li>
-          <li><strong>DPA.</strong> If you process personal data of EU/UK/Canadian/California residents through Vigil, you must sign our Data Processing Addendum before going to production. Email <a href="mailto:api@ebenova.dev">api@ebenova.dev</a> to request one.</li>
+          <li><strong>DPA.</strong> If you process personal data of EU/UK/Canadian/California residents through Vigil, you must sign our Data Processing Addendum before going to production. Email <a href="mailto:info@ebenova.net">info@ebenova.net</a> to request one.</li>
         </ul>
 
         <h2>4. What we store, and for how long</h2>
@@ -162,10 +163,10 @@ export default function VigilTerms() {
 
         <h2>14. Contact</h2>
         <p>
-          For DPA requests, security reports, incident coordination, or questions about
-          this addendum, email <a href="mailto:api@ebenova.dev">api@ebenova.dev</a>.
-          Security vulnerabilities may be reported confidentially to
-          <a href="mailto:security@ebenova.dev"> security@ebenova.dev</a>.
+          For DPA requests, security reports, incident coordination, vulnerability reports,
+          or questions about this addendum, email
+          <a href="mailto:info@ebenova.net"> info@ebenova.net</a>.
+          Mark vulnerability reports with subject line <strong>[security]</strong> for priority handling.
         </p>
 
         <h2>15. Changes</h2>
@@ -175,6 +176,7 @@ export default function VigilTerms() {
           Vigil after the effective date constitutes acceptance.
         </p>
       </div>
+      <SiteFooter variant="ebenova" />
     </div>
   )
 }
