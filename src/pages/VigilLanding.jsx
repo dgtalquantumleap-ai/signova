@@ -68,7 +68,7 @@ export default function VigilLanding() {
       if (!res.ok) { setError(data.error?.message || 'Request failed'); return }
       setResult(data)
     } catch {
-      setError('Demo unavailable — Vigil backend not deployed. Sign up for API access to test live.')
+      setError('Demo requires an API key. Sign up free at ebenova.dev/dashboard to test live.')
     } finally {
       setLoading(false)
     }
@@ -98,16 +98,16 @@ export default function VigilLanding() {
     <div className="vigil-page">
       <Helmet>
         <title>Vigil Fraud Alert API — Proximity-based card fraud detection | Ebenova</title>
-        <meta name="description" content="Real-time card fraud detection using GPS proximity. Claude AI risk scoring 0–100. AML compliance reports. 13 MCP tools. Free tier available." />
+        <meta name="description" content="Real-time card fraud detection using GPS proximity. Claude AI risk scoring 0–100. AML compliance reports. 8 MCP tools. Free tier available." />
         <link rel="canonical" href="https://www.ebenova.dev/vigil" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://www.ebenova.dev/vigil" />
         <meta property="og:title" content="Vigil Fraud Alert API — GPS-powered card fraud detection" />
-        <meta property="og:description" content="Real-time fraud detection using GPS proximity. Risk scoring 0–100. AML reports. 13 MCP tools. Free tier available." />
+        <meta property="og:description" content="Real-time fraud detection using GPS proximity. Risk scoring 0–100. AML reports. 8 MCP tools. Free tier available." />
         <meta property="og:image" content="https://www.ebenova.dev/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Vigil Fraud Alert API — GPS-powered card fraud detection" />
-        <meta name="twitter:description" content="Detect card fraud in real time using GPS proximity. Claude AI risk scoring. 13 MCP tools. Free tier." />
+        <meta name="twitter:description" content="Detect card fraud in real time using GPS proximity. Claude AI risk scoring. 8 MCP tools. Free tier." />
         <meta name="twitter:image" content="https://www.ebenova.dev/og-image.png" />
       </Helmet>
 
@@ -139,7 +139,7 @@ export default function VigilLanding() {
           </h1>
           <p className="vigil-hero-sub">
             Vigil blocks it before it clears. Proximity-based card authorization powered by GPS haversine engine + Claude AI risk scoring.
-            13 MCP tools — Claude-native.
+            8 MCP tools — Claude-native.
           </p>
           <div className="vigil-hero-actions">
             <button className="vigil-btn-primary" onClick={() => navigate('/dashboard')}>
@@ -152,7 +152,7 @@ export default function VigilLanding() {
           <div className="vigil-trust">
             <span>✓ GPS haversine engine</span>
             <span>✓ Claude AI risk scoring</span>
-            <span>✓ 13 MCP tools</span>
+            <span>✓ 8 MCP tools</span>
             <span>✓ No credit card required</span>
           </div>
         </div>
@@ -165,7 +165,7 @@ export default function VigilLanding() {
             <p className="vigil-label">Live Demo</p>
             <h2 className="vigil-section-title">Run a real authorization</h2>
             <p className="vigil-section-sub">
-              Requires Vigil running at <code>localhost:3000</code>. <a href="https://github.com/ebenova/vigil-fraud-alert-mcp" target="_blank" rel="noopener noreferrer">Get the server →</a>
+              Uses the built-in proximity engine. <a href="/docs#vigil">See full API docs →</a>
             </p>
           </div>
           <form className="vigil-demo-form" onSubmit={handleDemo}>
@@ -295,7 +295,7 @@ export default function VigilLanding() {
           <div className="vigil-mcp-inner">
             <div className="vigil-mcp-text">
               <p className="vigil-label">Claude-native</p>
-              <h2 className="vigil-section-title">13 MCP tools. Works in Claude Desktop.</h2>
+              <h2 className="vigil-section-title">8 MCP tools. Works in Claude Desktop.</h2>
               <p className="vigil-section-sub">
                 Add Vigil as a custom MCP connector in Claude Desktop and run fraud checks, travel plan updates,
                 and AML reports directly in conversation — no code required.
