@@ -1,23 +1,18 @@
 {
   "name": "ebenova-vigil-fraud-alert",
-  "version": "1.0.0",
-  "description": "Proximity-based card fraud detection and authorization engine. Authorize transactions using GPS proximity, manage travel plans, block cards, analyze risk profiles, and get AI-generated fraud investigation reports.",
+  "version": "1.2.0",
+  "description": "Proximity-based card fraud detection via GPS. Authorize transactions, manage cards, submit GPS, compute risk scores, run AI fraud analysis (Claude Haiku), and generate AML compliance reports (Claude Sonnet).",
   "vendor": "Ebenova Solutions",
   "homepage": "https://ebenova.dev/vigil",
   "license": "MIT",
   "tools": [
-    { "name": "vigil_authorize", "description": "Authorize a transaction using GPS proximity and card mode" },
-    { "name": "vigil_get_card", "description": "Get card details, GPS status, and current mode" },
-    { "name": "vigil_update_card_mode", "description": "Set card mode: home, travel, or lockdown" },
-    { "name": "vigil_update_gps", "description": "Update the GPS location for a card" },
-    { "name": "vigil_add_travel_plan", "description": "Add a travel plan to allow foreign transactions" },
-    { "name": "vigil_list_transactions", "description": "List recent transactions with authorization results" },
-    { "name": "vigil_list_alerts", "description": "List fraud alerts for a card" },
-    { "name": "vigil_update_alert", "description": "Acknowledge, dismiss, or escalate a fraud alert" },
-    { "name": "vigil_get_risk_profile", "description": "Get the risk score and profile for a card" },
-    { "name": "vigil_confirm_transaction", "description": "Manually confirm a flagged transaction" },
-    { "name": "vigil_analyze_transaction", "description": "AI-powered fraud analysis for a specific transaction" },
-    { "name": "vigil_block_transaction", "description": "AI-powered decision to block a suspicious transaction" },
-    { "name": "vigil_generate_report", "description": "Generate a full fraud investigation report for a card" }
+    { "name": "vigil_authorize", "description": "Authorize a card transaction using GPS proximity engine. Returns approve/decline with reason code and distance." },
+    { "name": "vigil_register_card", "description": "Register a card for proximity monitoring. Set home location, radius, and mode." },
+    { "name": "vigil_update_card", "description": "Update card settings — mode (normal/travel/lockdown), radius, travel plans." },
+    { "name": "vigil_submit_gps", "description": "Submit device GPS location for a card. Powers proximity-based authorization." },
+    { "name": "vigil_get_risk_score", "description": "Get live risk score (0–1.0) with contributing factors breakdown." },
+    { "name": "vigil_analyze_transaction", "description": "AI fraud pattern analysis using Claude Haiku. Returns risk level and indicators." },
+    { "name": "vigil_generate_aml_report", "description": "Generate AML compliance report using Claude Sonnet. Scale+ plan required." },
+    { "name": "vigil_emergency_lockdown", "description": "Immediately lock a card — blocks all transactions until manually unlocked." }
   ]
 }

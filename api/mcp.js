@@ -135,37 +135,84 @@ const TOOLS = [
   // ── Vigil Fraud Alert tools ───────────────────────────────────────────────
   {
     name: 'vigil_authorize',
-    description: 'Run a card transaction through the Vigil proximity fraud engine. Returns approve/decline with distance from home, risk score, and fraud alert if triggered. Requires card_id + merchant location + amount.',
+    description: 'Run a card transaction through the Vigil proximity fraud engine. Returns approve/decline with reason code, distance from device GPS, and processing time. Requires Starter+ plan.',
     inputSchema: {
       type: 'object',
       properties: {
         card_id: { type: 'string', description: 'Card identifier (e.g. card_01)' },
         merchant_name: { type: 'string', description: 'Merchant name' },
-        merchant_city: { type: 'string', description: 'City where transaction is occurring' },
         merchant_country: { type: 'string', description: '2-letter ISO country code, e.g. CA, US, GB' },
-        merchant_lat: { type: 'number', description: 'Merchant latitude' },
-        merchant_lng: { type: 'number', description: 'Merchant longitude' },
+        merchant_lat: { type: 'number', description: 'Merchant latitude (optional — uses card home if omitted)' },
+        merchant_lng: { type: 'number', description: 'Merchant longitude (optional)' },
         amount_cents: { type: 'number', description: 'Transaction amount in cents' },
-        currency: { type: 'string', description: 'ISO currency code, e.g. cad, usd' },
-        merchant_mcc: { type: 'string', description: 'Merchant category code (optional)' },
+        currency: { type: 'string', description: 'ISO currency code, e.g. CAD, USD' },
+        mcc: { type: 'string', description: 'Merchant category code (optional)' },
       },
       required: ['card_id', 'merchant_name', 'merchant_country', 'amount_cents', 'currency'],
     },
   },
   {
-    name: 'vigil_analyze_transaction',
-    description: 'AI-powered fraud analysis for a transaction. Returns risk score 0–100, reasoning, contributing factors, recommended action, and pre-written SMS alert copy. Uses Claude Haiku.',
+    name: 'vigil_register_card',
+    description: 'Register a card for Vigil proximity monitoring. Set home location, radius, and mode.',
     inputSchema: {
       type: 'object',
       properties: {
-        transaction_id: { type: 'string', description: 'Transaction ID from vigil_authorize result' },
+        card_id: { type: 'string', description: 'Unique card identifier' },
+        home_lat: { type: 'number', description: 'Home latitude' },
+        home_lng: { type: 'number', description: 'Home longitude' },
+        home_country: { type: 'string', description: 'Home country code' },
+        radius_km: { type: 'number', description: 'Proximity radius in km (default 25)' },
+        mode: { type: 'string', description: 'Card mode: normal, travel, or lockdown' },
       },
-      required: ['transaction_id'],
+      required: ['card_id'],
+    },
+  },
+  {
+    name: 'vigil_update_card',
+    description: 'Update card settings — change mode (normal/travel/lockdown), radius, or add travel plans.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        card_id: { type: 'string', description: 'Card identifier' },
+        mode: { type: 'string', description: 'Card mode: normal, travel, or lockdown' },
+        radius_km: { type: 'number', description: 'New proximity radius in km' },
+        is_active: { type: 'boolean', description: 'Enable/disable the card' },
+        travel_plans: {
+          type: 'array',
+          description: 'Travel plans array',
+          items: {
+            type: 'object',
+            properties: {
+              destination_country: { type: 'string' },
+              start_date: { type: 'string' },
+              end_date: { type: 'string' },
+              is_active: { type: 'boolean' },
+            },
+          },
+        },
+      },
+      required: ['card_id'],
+    },
+  },
+  {
+    name: 'vigil_submit_gps',
+    description: 'Submit GPS location from a device for a card. Powers proximity-based authorization. GPS expires after 1 hour.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        card_id: { type: 'string', description: 'Card identifier' },
+        lat: { type: 'number', description: 'Device latitude' },
+        lng: { type: 'number', description: 'Device longitude' },
+        accuracy_meters: { type: 'number', description: 'GPS accuracy in meters' },
+        is_mock_location: { type: 'boolean', description: 'Whether location is spoofed' },
+        is_jailbroken: { type: 'boolean', description: 'Whether device is jailbroken/rooted' },
+      },
+      required: ['card_id', 'lat', 'lng'],
     },
   },
   {
     name: 'vigil_get_risk_score',
-    description: 'Get the live risk profile (score 0–100) for a card with explanation of contributing factors.',
+    description: 'Get the live risk score (0–1.0) for a card with breakdown of contributing factors. Requires Starter+ plan.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -175,14 +222,42 @@ const TOOLS = [
     },
   },
   {
-    name: 'vigil_generate_aml_report',
-    description: 'Generate a full AML (Anti-Money Laundering) compliance report for a card over a date range. Uses Claude Sonnet. Requires Scale plan or above.',
+    name: 'vigil_analyze_transaction',
+    description: 'AI-powered fraud pattern analysis using Claude Haiku. Returns risk level, fraud indicators, and recommended actions. Requires Growth+ plan.',
     inputSchema: {
       type: 'object',
       properties: {
         card_id: { type: 'string', description: 'Card identifier' },
-        period_start: { type: 'string', description: 'Start date ISO string e.g. 2026-03-01' },
-        period_end: { type: 'string', description: 'End date ISO string e.g. 2026-03-31' },
+        merchant_name: { type: 'string', description: 'Merchant name' },
+        merchant_country: { type: 'string', description: 'Merchant country code' },
+        amount_cents: { type: 'number', description: 'Transaction amount in cents' },
+        currency: { type: 'string', description: 'Currency code' },
+        mcc: { type: 'string', description: 'Merchant category code' },
+      },
+      required: ['card_id'],
+    },
+  },
+  {
+    name: 'vigil_generate_aml_report',
+    description: 'Generate a full AML compliance report for a card using Claude Sonnet. Includes risk assessment, transaction analysis, and compliance status. Requires Scale+ plan.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        card_id: { type: 'string', description: 'Card identifier' },
+        period: { type: 'string', description: 'Report period e.g. "last 30 days" or "2026-Q1"' },
+        report_type: { type: 'string', description: 'Report type: standard, detailed, or regulatory' },
+      },
+      required: ['card_id'],
+    },
+  },
+  {
+    name: 'vigil_emergency_lockdown',
+    description: 'Immediately lock down a card — blocks all transactions until manually unlocked. Use for suspected fraud.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        card_id: { type: 'string', description: 'Card to lock down' },
+        reason: { type: 'string', description: 'Reason for lockdown' },
       },
       required: ['card_id'],
     },
@@ -214,9 +289,9 @@ function getApiKey(req) {
   } catch { return '' }
 }
 
-async function callApi(path, body, key) {
+async function callApi(path, body, key, method = 'POST') {
   const r = await fetch(`${API_BASE}${path}`, {
-    method: 'POST',
+    method,
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
     body: JSON.stringify(body),
   })
@@ -363,31 +438,71 @@ async function callTool(name, args, apiKey) {
   if (name === 'vigil_authorize') {
     const data = await callApi('/v1/vigil/authorize', args, apiKey)
     if (!data.success) return text(`Error: ${data.error?.message || 'Authorization failed'}`)
-    const d = data.decision || data
-    return text(`Decision: ${d.approved ? '✅ APPROVED' : '❌ DECLINED'}\nCard: ${args.card_id} | Amount: ${args.currency?.toUpperCase()} ${(args.amount_cents/100).toFixed(2)}\nMerchant: ${args.merchant_name}, ${args.merchant_country}\nRisk score: ${d.risk_score ?? 'N/A'}/100 | Distance: ${d.distance_km != null ? d.distance_km + ' km from home' : 'N/A'}\n${d.alert_id ? `⚠️ Alert created: ${d.alert_id}` : ''}`)
+    const a = data.authorization || data
+    return text(`Decision: ${a.approved ? 'APPROVED' : 'DECLINED'}\nReason: ${a.reason_code}\nCard: ${args.card_id} (mode: ${a.card_mode || 'normal'})\nAmount: ${args.currency?.toUpperCase()} ${(args.amount_cents/100).toFixed(2)}\nMerchant: ${args.merchant_name}, ${args.merchant_country}\nDistance: ${a.distance_km != null ? a.distance_km.toFixed(1) + ' km' : 'N/A'}\nProcessing: ${a.processing_ms ?? '?'}ms`)
   }
 
-  if (name === 'vigil_analyze_transaction') {
-    const data = await callApi('/v1/vigil/analyze', args, apiKey)
-    if (!data.success) return text(`Error: ${data.error?.message}`)
-    const a = data.analysis || data
-    const lines = [`AI Fraud Analysis — txn ${args.transaction_id}`, `Risk: ${a.risk_score ?? '?'}/100 — ${a.recommendation ?? ''}`, '']
-    if (a.risk_factors?.length) { lines.push('Risk factors:'); a.risk_factors.forEach(f => lines.push(`  • ${f}`)) }
-    if (a.sms_copy) lines.push(`\nSMS alert: "${a.sms_copy}"`)
-    return text(lines.join('\n'))
+  if (name === 'vigil_register_card') {
+    const data = await callApi('/v1/vigil/card', args, apiKey)
+    if (!data.success) return text(`Error: ${data.error?.message || 'Registration failed'}`)
+    const c = data.card
+    return text(`Card registered: ${c.card_id}\nMode: ${c.mode} | Radius: ${c.radius_km}km | Active: ${c.is_active}\nHome: ${c.home_lat || 'not set'}, ${c.home_lng || 'not set'}`)
+  }
+
+  if (name === 'vigil_update_card') {
+    const data = await callApi('/v1/vigil/card', args, apiKey, 'PUT')
+    if (!data.success) return text(`Error: ${data.error?.message || 'Update failed'}`)
+    const c = data.card
+    return text(`Card updated: ${c.card_id}\nMode: ${c.mode} | Radius: ${c.radius_km}km | Active: ${c.is_active}`)
+  }
+
+  if (name === 'vigil_submit_gps') {
+    const data = await callApi('/v1/vigil/gps', args, apiKey)
+    if (!data.success) return text(`Error: ${data.error?.message || 'GPS submission failed'}`)
+    const g = data.gps
+    return text(`GPS updated for ${g.card_id}\nLocation: ${g.lat}, ${g.lng} (accuracy: ${g.accuracy_meters}m)\nRecorded: ${g.recorded_at}\nExpires in: ${g.expires_in_seconds}s`)
   }
 
   if (name === 'vigil_get_risk_score') {
     const data = await getApi(`/v1/vigil/score?card_id=${encodeURIComponent(args.card_id)}`, apiKey)
     if (!data.success) return text(`Error: ${data.error?.message}`)
-    const r = data.risk_profile || data
-    return text(`Risk Profile — ${args.card_id}\nScore: ${r.score ?? '?'}/100 (${r.level ?? 'unknown'})\n${r.explanation ?? ''}`)
+    const r = data.risk || data
+    return text(`Risk Profile for ${args.card_id}\nScore: ${r.score ?? '?'} (${r.level ?? 'unknown'})\nCard mode: ${r.card_mode || 'unknown'} | Active: ${r.is_active}\nStats: ${r.stats?.total_authorizations || 0} total auths, ${r.stats?.blocked_authorizations || 0} blocked (${r.stats?.block_rate || 0}%)`)
+  }
+
+  if (name === 'vigil_analyze_transaction') {
+    const data = await callApi('/v1/vigil/analyze', { transaction: args }, apiKey)
+    if (!data.success) return text(`Error: ${data.error?.message}`)
+    const a = data.analysis || data
+    const lines = [`AI Fraud Analysis for ${args.card_id}`, `Risk: ${a.risk_score ?? '?'} (${a.risk_level || 'unknown'}) | Recommendation: ${a.recommendation ?? ''}`, '']
+    if (a.fraud_indicators?.length) { lines.push('Fraud indicators:'); a.fraud_indicators.forEach(f => lines.push(`  [${f.severity}] ${f.type}: ${f.description}`)) }
+    if (a.explanation) lines.push(`\n${a.explanation}`)
+    if (a.suggested_actions?.length) { lines.push('\nSuggested actions:'); a.suggested_actions.forEach(s => lines.push(`  - ${s}`)) }
+    return text(lines.join('\n'))
   }
 
   if (name === 'vigil_generate_aml_report') {
     const data = await callApi('/v1/vigil/report', args, apiKey)
     if (!data.success) return text(`Error: ${data.error?.message}`)
-    return text(data.report || JSON.stringify(data, null, 2))
+    const r = data.report
+    if (typeof r === 'object') {
+      const lines = [
+        `AML Report: ${r.report_id || 'N/A'}`,
+        `Period: ${r.period || 'N/A'}`,
+        `Overall Risk: ${r.risk_assessment?.overall_risk || 'N/A'} (score: ${r.risk_assessment?.risk_score || '?'})`,
+        '', r.executive_summary || '', '',
+        'Recommendations:',
+      ]
+      if (r.recommendations?.length) r.recommendations.forEach(rec => lines.push(`  [${rec.priority}] ${rec.action}`))
+      return text(lines.join('\n'))
+    }
+    return text(typeof r === 'string' ? r : JSON.stringify(r, null, 2))
+  }
+
+  if (name === 'vigil_emergency_lockdown') {
+    const data = await callApi('/v1/vigil/card', { card_id: args.card_id, mode: 'lockdown', is_active: false }, apiKey, 'PUT')
+    if (!data.success) return text(`Error: ${data.error?.message || 'Lockdown failed'}`)
+    return text(`EMERGENCY LOCKDOWN: ${args.card_id}\nCard is now LOCKED. All transactions will be declined.\nReason: ${args.reason || 'Suspected fraud'}\nTo unlock: use vigil_update_card with mode "normal" and is_active true`)
   }
 
   return { content: [{ type: 'text', text: `Unknown tool: ${name}` }], isError: true }

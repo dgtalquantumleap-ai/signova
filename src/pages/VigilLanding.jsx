@@ -240,10 +240,12 @@ export default function VigilLanding() {
               Drop into your card issuing flow in under an hour. Works with any stack.
             </p>
             <ul className="vigil-curl-bullets">
-              <li>✓ POST /v1/vigil/authorize — GPS proximity decision</li>
-              <li>✓ POST /v1/vigil/analyze — Claude AI fraud analysis</li>
-              <li>✓ GET /v1/vigil/score/:id — cached risk score lookup</li>
-              <li>✓ POST /v1/vigil/report — Claude Sonnet AML report</li>
+              <li>POST /v1/vigil/authorize — GPS proximity decision</li>
+              <li>POST /v1/vigil/analyze — Claude Haiku fraud analysis</li>
+              <li>GET /v1/vigil/score?card_id= — live risk score</li>
+              <li>POST /v1/vigil/report — Claude Sonnet AML report</li>
+              <li>POST /v1/vigil/card — register and manage cards</li>
+              <li>POST /v1/vigil/gps — submit device GPS location</li>
             </ul>
           </div>
           <div className="vigil-code-block">
@@ -304,9 +306,11 @@ export default function VigilLanding() {
                 </div>
                 <pre className="vigil-code-pre"><code>{`{
   "mcpServers": {
-    "vigil": {
-      "command": "node",
-      "args": ["/path/to/vigil-fraud-alert-mcp/dist/index.js"]
+    "ebenova": {
+      "url": "https://www.getsignova.com/mcp",
+      "headers": {
+        "Authorization": "Bearer sk_live_your_api_key"
+      }
     }
   }
 }`}</code></pre>
@@ -315,10 +319,9 @@ export default function VigilLanding() {
             <div className="vigil-mcp-tools">
               <p className="vigil-mcp-tools-label">Available MCP tools</p>
               {[
-                'vigil_authorize_transaction','vigil_analyze_fraud','vigil_get_risk_score',
-                'vigil_create_alert','vigil_update_travel_plan','vigil_set_card_mode',
-                'vigil_emergency_lockdown','vigil_generate_aml_report','vigil_list_alerts',
-                'vigil_get_card_status','vigil_bulk_authorize','vigil_webhook_test','vigil_health_check',
+                'vigil_authorize','vigil_register_card','vigil_update_card',
+                'vigil_submit_gps','vigil_get_risk_score','vigil_analyze_transaction',
+                'vigil_generate_aml_report','vigil_emergency_lockdown',
               ].map(tool => (
                 <div key={tool} className="vigil-tool-chip">{tool}</div>
               ))}

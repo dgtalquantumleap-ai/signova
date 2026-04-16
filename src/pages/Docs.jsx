@@ -710,19 +710,114 @@ console.log(result.document)`}</pre>
             </table>
           </section>
 
-          {/* ── Vigil API ── */}
+          {/* ── Vigil Fraud Alert API ── */}
           <section id="vigil">
-            <h2>Vigil API</h2>
+            <h2>Vigil Fraud Alert API</h2>
             <p>
-              Live fraud risk scoring for payment cards. Returns a 0–100 risk score.
-              Requires authentication.
+              Proximity-based card fraud detection. Authorize transactions using GPS proximity,
+              manage card profiles, compute risk scores, and generate AI-powered fraud analysis
+              and AML compliance reports. All endpoints require authentication.
+            </p>
+
+            <h3>Endpoints</h3>
+            <table className="docs-table">
+              <thead><tr><th>Method</th><th>Endpoint</th><th>Tier</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td>POST</td><td>/v1/vigil/authorize</td><td>Starter+</td><td>Authorize a card transaction via GPS proximity</td></tr>
+                <tr><td>GET</td><td>/v1/vigil/score</td><td>Starter+</td><td>Get live risk score for a card</td></tr>
+                <tr><td>GET/POST/PUT</td><td>/v1/vigil/card</td><td>Starter+</td><td>Register, retrieve, or update card profiles</td></tr>
+                <tr><td>POST</td><td>/v1/vigil/gps</td><td>Starter+</td><td>Submit device GPS location for a card</td></tr>
+                <tr><td>POST</td><td>/v1/vigil/analyze</td><td>Growth+</td><td>AI fraud analysis (Claude Haiku)</td></tr>
+                <tr><td>POST</td><td>/v1/vigil/report</td><td>Scale+</td><td>AML compliance report (Claude Sonnet)</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Authorize Transaction</h3>
+            <p><code>POST /v1/vigil/authorize</code></p>
+            <pre className="code-block">{`curl -X POST "https://api.ebenova.dev/v1/vigil/authorize" \\
+  -H "Authorization: Bearer sk_live_your_api_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "card_id": "card_abc123",
+    "merchant_name": "Tim Hortons",
+    "merchant_country": "CA",
+    "amount_cents": 450,
+    "currency": "CAD"
+  }'`}</pre>
+            <p>
+              The engine checks the card&apos;s GPS proximity, mode (normal/travel/lockdown),
+              and travel plans. Returns an approve/decline decision with reason code and distance.
             </p>
 
             <h3>Get Risk Score</h3>
             <p><code>GET /v1/vigil/score?card_id=CARD_ID</code></p>
             <pre className="code-block">{`curl "https://api.ebenova.dev/v1/vigil/score?card_id=card_abc123" \\
   -H "Authorization: Bearer sk_live_your_api_key"`}</pre>
-            <p>Requires <code>VIGIL_API_URL</code> to be configured on the server. Returns the upstream Vigil service response.</p>
+            <p>Returns a 0&ndash;1.0 risk score with breakdown: block rate, outside-radius events, and lockdown history.</p>
+
+            <h3>Register Card</h3>
+            <p><code>POST /v1/vigil/card</code></p>
+            <pre className="code-block">{`curl -X POST "https://api.ebenova.dev/v1/vigil/card" \\
+  -H "Authorization: Bearer sk_live_your_api_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "card_id": "card_abc123",
+    "home_lat": 43.6532,
+    "home_lng": -79.3832,
+    "home_country": "CA",
+    "radius_km": 25
+  }'`}</pre>
+
+            <h3>Submit GPS</h3>
+            <p><code>POST /v1/vigil/gps</code></p>
+            <pre className="code-block">{`curl -X POST "https://api.ebenova.dev/v1/vigil/gps" \\
+  -H "Authorization: Bearer sk_live_your_api_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "card_id": "card_abc123",
+    "lat": 43.6510,
+    "lng": -79.3470,
+    "accuracy_meters": 15
+  }'`}</pre>
+            <p>GPS data expires after 1 hour. Submit regularly from the cardholder&apos;s device.</p>
+
+            <h3>AI Fraud Analysis (Growth+)</h3>
+            <p><code>POST /v1/vigil/analyze</code></p>
+            <pre className="code-block">{`curl -X POST "https://api.ebenova.dev/v1/vigil/analyze" \\
+  -H "Authorization: Bearer sk_live_your_api_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "card_id": "card_abc123",
+    "merchant_name": "CryptoExchange",
+    "merchant_country": "NG",
+    "amount_cents": 500000,
+    "currency": "USD",
+    "mcc": "6051"
+  }'`}</pre>
+            <p>Claude Haiku analyzes velocity, geography, MCC risk, time-of-day, and amount patterns.</p>
+
+            <h3>AML Report (Scale+)</h3>
+            <p><code>POST /v1/vigil/report</code></p>
+            <pre className="code-block">{`curl -X POST "https://api.ebenova.dev/v1/vigil/report" \\
+  -H "Authorization: Bearer sk_live_your_api_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "card_id": "card_abc123",
+    "period": "last 30 days",
+    "report_type": "standard"
+  }'`}</pre>
+            <p>Claude Sonnet generates audit-ready AML compliance reports with risk assessment, transaction analysis, and regulatory recommendations.</p>
+
+            <h3>Plans &amp; Limits</h3>
+            <table className="docs-table">
+              <thead><tr><th>Plan</th><th>Price</th><th>Authorizations/mo</th><th>AI Analysis</th><th>AML Reports</th></tr></thead>
+              <tbody>
+                <tr><td>Starter</td><td>$29/mo</td><td>500</td><td>-</td><td>-</td></tr>
+                <tr><td>Growth</td><td>$79/mo</td><td>5,000</td><td>Included</td><td>-</td></tr>
+                <tr><td>Scale</td><td>$199/mo</td><td>25,000</td><td>Included</td><td>Included</td></tr>
+                <tr><td>Enterprise</td><td>Custom</td><td>100,000+</td><td>Included</td><td>Included</td></tr>
+              </tbody>
+            </table>
           </section>
 
           <section id="support">
