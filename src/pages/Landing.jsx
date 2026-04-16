@@ -514,7 +514,7 @@ export default function Landing() {
                 <a href="/whatsapp" onClick={closeNav} role="menuitem">Chat → Contract <span className="nav-dropdown-sub">Extract terms from WhatsApp</span></a>
                 <a href="https://www.ebenova.dev/vigil" onClick={closeNav} role="menuitem">Vigil Fraud Alert <span className="nav-dropdown-sub">GPS card fraud detection</span></a>
                 <a href="https://www.ebenova.dev/insights" onClick={closeNav} role="menuitem">Insights <span className="nav-dropdown-sub">Reddit lead monitoring</span></a>
-                <a href="https://ebenova.dev/dashboard" onClick={closeNav} role="menuitem">API Dashboard <span className="nav-dropdown-sub">Manage keys & usage</span></a>
+                <a href="https://www.ebenova.dev/dashboard" onClick={closeNav} role="menuitem">API Dashboard <span className="nav-dropdown-sub">Manage keys & usage</span></a>
               </div>
             </div>
             <a href="#pricing" onClick={closeNav} role="menuitem" aria-label="Pricing">Pricing</a>
