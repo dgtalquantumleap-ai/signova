@@ -5,6 +5,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
+import {
+  Broadcast, MagnifyingGlass, Warning, ThumbsUp, ThumbsDown, Sparkle, Lightning,
+} from '@phosphor-icons/react'
 import './InsightsDashboard.css'
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'https://api.ebenova.dev'
@@ -70,7 +73,7 @@ function LoginScreen({ onLogin }) {
   return (
     <div className="idb-login">
       <div className="idb-login-box">
-        <div className="idb-login-logo">📡 Ebenova Insights</div>
+        <div className="idb-login-logo"><Broadcast size={22} weight="duotone" style={{ verticalAlign: '-5px', marginRight: 8 }} />Ebenova Insights</div>
         <h1>Dashboard</h1>
         <p>Enter your API key to access your monitors and matches.</p>
         <form onSubmit={handleSubmit}>
@@ -166,8 +169,8 @@ function MatchCard({ match, apiKey, monitorId }) {
         <span className="idb-author">u/{match.author}</span>
         <span className="idb-score">▲ {match.score}</span>
         <span className="idb-time">{timeAgo(match.createdAt)}</span>
-        {match.semanticScore && <span className="idb-semantic">🔍 {Math.round(match.semanticScore * 100)}%</span>}
-        {!match.approved && <span className="idb-dnp-badge">⚠️ DO NOT POST</span>}
+        {match.semanticScore && <span className="idb-semantic"><MagnifyingGlass size={12} weight="regular" style={{ verticalAlign: '-1px', marginRight: 3 }} />{Math.round(match.semanticScore * 100)}%</span>}
+        {!match.approved && <span className="idb-dnp-badge"><Warning size={12} weight="fill" style={{ verticalAlign: '-1px', marginRight: 3 }} />DO NOT POST</span>}
       </div>
 
       <a className="idb-match-title" href={match.url} target="_blank" rel="noreferrer">
@@ -191,17 +194,17 @@ function MatchCard({ match, apiKey, monitorId }) {
                 </button>
                 <button
                   className={`idb-fb-btn ${feedback === 'up' ? 'active-up' : ''}`}
-                  onClick={() => sendFeedback('up')}>👍</button>
+                  onClick={() => sendFeedback('up')}><ThumbsUp size={18} weight="duotone" /></button>
                 <button
                   className={`idb-fb-btn ${feedback === 'down' ? 'active-down' : ''}`}
-                  onClick={() => sendFeedback('down')}>👎</button>
+                  onClick={() => sendFeedback('down')}><ThumbsDown size={18} weight="duotone" /></button>
               </div>
             </div>
             <div className="idb-draft-text">{draft}</div>
           </>
         ) : (
           <button className="idb-gen-btn" onClick={regenerateDraft} disabled={loading}>
-            {loading ? 'Generating…' : '✨ Generate reply draft'}
+            {loading ? 'Generating…' : <><Sparkle size={14} weight="fill" style={{ verticalAlign: '-2px', marginRight: 6 }} />Generate reply draft</>}
           </button>
         )}
       </div>
@@ -451,14 +454,14 @@ export default function InsightsDashboard() {
 
   if (loading) return (
     <div className="idb-splash">
-      <div className="idb-splash-logo">📡</div>
+      <div className="idb-splash-logo"><Broadcast size={48} weight="duotone" /></div>
       <div className="idb-splash-text">Loading…</div>
     </div>
   )
 
   if (networkError) return (
     <div className="idb-splash">
-      <div className="idb-splash-logo">⚡</div>
+      <div className="idb-splash-logo"><Lightning size={48} weight="duotone" /></div>
       <div className="idb-splash-text" style={{ color: '#fa5a5a', marginBottom: 12 }}>Can't reach the API</div>
       <div className="idb-splash-text" style={{ marginBottom: 20, maxWidth: 340, textAlign: 'center', lineHeight: 1.5 }}>
         Could not connect to <code>api.ebenova.dev</code>. Check your internet connection or try again shortly.
@@ -494,7 +497,7 @@ export default function InsightsDashboard() {
       {/* ── Sidebar ── */}
       <aside className="idb-sidebar">
         <div className="idb-sidebar-brand">
-          <Link to="/insights" className="idb-brand-link">📡 Insights</Link>
+          <Link to="/insights" className="idb-brand-link"><Broadcast size={16} weight="duotone" style={{ verticalAlign: '-3px', marginRight: 6 }} />Insights</Link>
         </div>
 
         <div className="idb-sidebar-section-label">Monitors</div>
@@ -527,7 +530,7 @@ export default function InsightsDashboard() {
       <main className="idb-main">
         {monitors.length === 0 ? (
           <div className="idb-empty-state">
-            <div className="idb-empty-icon">📡</div>
+            <div className="idb-empty-icon"><Broadcast size={40} weight="duotone" /></div>
             <h2>No monitors yet</h2>
             <p>Create your first monitor to start tracking Reddit for your keywords.</p>
             <button className="idb-btn-gold" onClick={() => setShowCreate(true)}>

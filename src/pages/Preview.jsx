@@ -4,6 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import { useEffect, useState, useRef } from 'react'
 import { Helmet } from 'react-helmet-async'
 import {
+  Lock, Target, EnvelopeSimple, CurrencyCircleDollar, ClipboardText,
+  CreditCard, Globe, Handshake, Package, Prohibit, Paperclip, PenNib,
+} from '@phosphor-icons/react'
+
+const CICON = { size: 18, weight: 'duotone', color: 'currentColor' }
+import {
   trackPreviewLoaded,
   trackPaymentAttempted,
   trackPaymentSuccess,
@@ -702,7 +708,7 @@ export default function Preview() {
         <div className="preview-doc-wrap">
           {!paid && (
             <div className="preview-watermark-bar">
-              🔒 Preview — showing first 40% of your document
+              <Lock size={14} weight="regular" style={{ verticalAlign: '-2px', marginRight: 6 }} />Preview — showing first 40% of your document
             </div>
           )}
           {paid && (
@@ -737,7 +743,7 @@ export default function Preview() {
                   </div>
                   <div className="locked-overlay">
                     <div className="locked-content">
-                      <div className="locked-icon">🔒</div>
+                      <div className="locked-icon"><Lock size={32} weight="duotone" /></div>
                       <h3 className="locked-title">
                         {hiddenSectionCount > 0 
                           ? `${hiddenSectionCount} more section${hiddenSectionCount > 1 ? 's' : ''} hidden`
@@ -799,7 +805,7 @@ export default function Preview() {
 
             {/* First paying customer — honest signal */}
             <div className="sidebar-social-proof">
-              <span className="proof-badge">🎯</span>
+              <span className="proof-badge"><Target size={18} weight="duotone" /></span>
               <p className="proof-text">First paying customer — March 2026. Early access open.</p>
             </div>
 
@@ -813,7 +819,7 @@ export default function Preview() {
                 ) : (
                   <>
                     <p className="email-capture-label">
-                      📧 Not ready to pay?
+                      <EnvelopeSimple size={16} weight="regular" style={{ verticalAlign: '-3px', marginRight: 6 }} />Not ready to pay?
                     </p>
                     <p className="email-capture-sub">
                       Get a link to this preview sent to your inbox. Come back anytime.
@@ -850,7 +856,7 @@ export default function Preview() {
                   aria-label="Change currency"
                   title="Change currency"
                 >
-                  💱 {effectiveCurrency.code === 'USD' ? '$4.99 USD' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()} ${effectiveCurrency.code}`}
+                  <CurrencyCircleDollar size={16} weight="regular" style={{ verticalAlign: '-3px', marginRight: 6 }} />{effectiveCurrency.code === 'USD' ? '$4.99 USD' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()} ${effectiveCurrency.code}`}
                 </button>
                 {currencyOpen && (
                   <div className="sidebar-currency-dropdown">
@@ -969,7 +975,7 @@ export default function Preview() {
                 {!emailSubmitted ? (
                   <div className="buyer-capture">
                     <p className="buyer-capture-label">
-                      📋 Get your free checklist
+                      <ClipboardText size={16} weight="regular" style={{ verticalAlign: '-3px', marginRight: 6 }} />Get your free checklist
                     </p>
                     <p className="buyer-capture-sub">
                       5 ways to protect your document after signing — sent to your inbox instantly.
@@ -1009,7 +1015,7 @@ export default function Preview() {
                     >
                       {paying
                         ? <><span className="spinner-sm" /> Processing…</>
-                        : <>💳 Pay {effectiveCurrency.symbol}{effectiveCurrency.amount.toLocaleString()} with Nigerian Card →</>
+                        : <><CreditCard size={16} weight="regular" style={{ verticalAlign: '-3px', marginRight: 6 }} />Pay {effectiveCurrency.symbol}{effectiveCurrency.amount.toLocaleString()} with Nigerian Card →</>
                       }
                     </button>
                     <p className="usdt-sub">GTBank · Access · FirstBank · UBA · Kuda · All Nigerian debit cards</p>
@@ -1028,11 +1034,11 @@ export default function Preview() {
                     <button className="btn-pay-full btn-pay-secondary" onClick={handleDownload} disabled={paying}>
                       {paying
                         ? <><span className="spinner-sm" /> Processing…</>
-                        : <>🌍 Pay $4.99 USD by Card →</>
+                        : <><Globe size={16} weight="regular" style={{ verticalAlign: '-3px', marginRight: 6 }} />Pay $4.99 USD by Card →</>
                       }
                     </button>
-                    <div className="trust-badge">🔒 SSL encrypted · Secure checkout · Instant delivery</div>
-                    <p className="trust-line">🔒 Secure checkout · Instant delivery · No account needed</p>
+                    <div className="trust-badge"><Lock size={12} weight="regular" style={{ verticalAlign: '-1px', marginRight: 4 }} />SSL encrypted · Secure checkout · Instant delivery</div>
+                    <p className="trust-line"><Lock size={12} weight="regular" style={{ verticalAlign: '-1px', marginRight: 4 }} />Secure checkout · Instant delivery · No account needed</p>
                   </>
                 ) : (
                   // Everyone else: card first, crypto below
@@ -1043,7 +1049,7 @@ export default function Preview() {
                         : <>Download full document — {effectiveCurrency.code === 'USD' ? '$4.99' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()}`} →</>
                       }
                     </button>
-                    <p className="trust-line">🔒 SSL secure · No account · Instant PDF · 30-day refund</p>
+                    <p className="trust-line"><Lock size={12} weight="regular" style={{ verticalAlign: '-1px', marginRight: 4 }} />SSL secure · No account · Instant PDF · 30-day refund</p>
                     <div className="sidebar-usdt">
                       <div className="usdt-divider"><span>or pay with crypto</span></div>
                       <button
@@ -1071,21 +1077,21 @@ export default function Preview() {
           {/* Companion doc — context-aware suggestion */}
           {doc && (() => {
             const companions = {
-              'privacy-policy': { id: 'terms-of-service', label: 'Terms of Service', icon: '📋', reason: 'Every app needs both.' },
-              'terms-of-service': { id: 'privacy-policy', label: 'Privacy Policy', icon: '🔒', reason: 'Required alongside Terms of Service.' },
-              'nda': { id: 'freelance-contract', label: 'Freelance Contract', icon: '✍️', reason: 'Protect scope and payment too.' },
-              'freelance-contract': { id: 'nda', label: 'NDA', icon: '🤝', reason: 'Protect your ideas before the project.' },
-              'tenancy-agreement': { id: 'quit-notice', label: 'Quit Notice', icon: '📦', reason: 'Ready if you ever need it.' },
-              'loan-agreement': { id: 'payment-terms-agreement', label: 'Payment Terms', icon: '💳', reason: 'Document the repayment schedule too.' },
-              'business-partnership': { id: 'nda', label: 'NDA', icon: '🤝', reason: 'Protect confidential info before you start.' },
-              'consulting-agreement': { id: 'nda', label: 'NDA', icon: '🤝', reason: 'Standard companion for consulting work.' },
-              'employment-offer-letter': { id: 'non-compete-agreement', label: 'Non-Compete', icon: '🚫', reason: 'Protect your business from day one.' },
+              'privacy-policy': { id: 'terms-of-service', label: 'Terms of Service', icon: <ClipboardText {...CICON} />, reason: 'Every app needs both.' },
+              'terms-of-service': { id: 'privacy-policy', label: 'Privacy Policy', icon: <Lock {...CICON} />, reason: 'Required alongside Terms of Service.' },
+              'nda': { id: 'freelance-contract', label: 'Freelance Contract', icon: <PenNib {...CICON} />, reason: 'Protect scope and payment too.' },
+              'freelance-contract': { id: 'nda', label: 'NDA', icon: <Handshake {...CICON} />, reason: 'Protect your ideas before the project.' },
+              'tenancy-agreement': { id: 'quit-notice', label: 'Quit Notice', icon: <Package {...CICON} />, reason: 'Ready if you ever need it.' },
+              'loan-agreement': { id: 'payment-terms-agreement', label: 'Payment Terms', icon: <CreditCard {...CICON} />, reason: 'Document the repayment schedule too.' },
+              'business-partnership': { id: 'nda', label: 'NDA', icon: <Handshake {...CICON} />, reason: 'Protect confidential info before you start.' },
+              'consulting-agreement': { id: 'nda', label: 'NDA', icon: <Handshake {...CICON} />, reason: 'Standard companion for consulting work.' },
+              'employment-offer-letter': { id: 'non-compete-agreement', label: 'Non-Compete', icon: <Prohibit {...CICON} />, reason: 'Protect your business from day one.' },
             }
             const c = companions[doc.docType]
             if (!c) return null
             return (
               <div className="sidebar-companion">
-                <p className="companion-reason">📎 You'll also need</p>
+                <p className="companion-reason"><Paperclip size={14} weight="regular" style={{ verticalAlign: '-2px', marginRight: 4 }} />You'll also need</p>
                 <button className="companion-btn" onClick={() => { trackCompanionClicked(doc.docType, c.id); navigate(`/generate/${c.id}`) }}>
                   <span className="companion-icon">{c.icon}</span>
                   <span>

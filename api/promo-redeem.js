@@ -1,8 +1,8 @@
 // Promo code redemption — bypasses payment, grants one free document download
 
-// ── In-memory rate limiter (5 attempts per IP per hour) ─────────────────────
+// ── In-memory rate limiter fallback (5 attempts per IP per hour) ─────────────
 const PROMO_RATE = new Map()
-function isPromoRateLimited(ip) {
+function isPromoRateLimitedInMemory(ip) {
   const now = Date.now()
   const entry = PROMO_RATE.get(ip)
   if (!entry || now > entry.resetAt) {
@@ -14,45 +14,79 @@ function isPromoRateLimited(ip) {
   return false
 }
 
+async function isPromoRateLimited(ip) {
+  const url = process.env.UPSTASH_REDIS_REST_URL
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN
+  if (!url || !token) {
+    // No Redis — fall back to in-memory (acceptable for local dev)
+    return isPromoRateLimitedInMemory(ip)
+  }
+  const key = `promo_ratelimit:${ip}`
+  try {
+    // INCR + EXPIRE pattern: atomic count increment, set TTL only on first hit
+    const incrRes = await fetch(`${url}/incr/${key}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    const incrJson = await incrRes.json()
+    const count = parseInt(incrJson.result, 10)
+    if (count === 1) {
+      // First request in window — set 1 hour TTL
+      await fetch(`${url}/expire/${key}/3600`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+    }
+    return count > 5
+  } catch {
+    return isPromoRateLimitedInMemory(ip)
+  }
+}
+
 // ── Persistent use tracking via Upstash Redis ──────────────────────────────
 // Falls back to in-memory if Redis env vars are missing (local dev)
 const CODE_USE_COUNT_FALLBACK = new Map()
 
-async function getUseCount(code) {
-  const url = process.env.UPSTASH_REDIS_REST_URL
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN
-  if (!url || !token) return CODE_USE_COUNT_FALLBACK.get(code) || 0
-  try {
-    const r = await fetch(`${url}/get/promo_uses:${code}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    const json = await r.json()
-    return parseInt(json.result || '0', 10)
-  } catch { return CODE_USE_COUNT_FALLBACK.get(code) || 0 }
-}
-
-async function incrementUseCount(code) {
+async function atomicIncrementUseCount(code, maxUses) {
   const url = process.env.UPSTASH_REDIS_REST_URL
   const token = process.env.UPSTASH_REDIS_REST_TOKEN
   if (!url || !token) {
-    CODE_USE_COUNT_FALLBACK.set(code, (CODE_USE_COUNT_FALLBACK.get(code) || 0) + 1)
-    return
+    // In-memory fallback — also atomic within a single process
+    const current = CODE_USE_COUNT_FALLBACK.get(code) || 0
+    const newCount = current + 1
+    if (newCount > maxUses) return { ok: false }
+    CODE_USE_COUNT_FALLBACK.set(code, newCount)
+    return { ok: true, count: newCount }
   }
   try {
-    await fetch(`${url}/incr/promo_uses:${code}`, {
+    // INCR returns the new value atomically
+    const r = await fetch(`${url}/incr/promo_uses:${code}`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
     })
-  } catch { CODE_USE_COUNT_FALLBACK.set(code, (CODE_USE_COUNT_FALLBACK.get(code) || 0) + 1) }
+    const json = await r.json()
+    const newCount = parseInt(json.result, 10)
+    if (newCount > maxUses) {
+      // Undo the increment — limit exceeded
+      await fetch(`${url}/decr/promo_uses:${code}`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      return { ok: false }
+    }
+    return { ok: true, count: newCount }
+  } catch {
+    // Fallback on Redis error
+    const current = CODE_USE_COUNT_FALLBACK.get(code) || 0
+    const newCount = current + 1
+    if (newCount > maxUses) return { ok: false }
+    CODE_USE_COUNT_FALLBACK.set(code, newCount)
+    return { ok: true, count: newCount }
+  }
 }
 
 const VALID_CODES = {
-  PRODUCTHUNT: {
-    expiresAt: new Date('2026-04-09T23:59:59Z'),
-    maxUses: 100,
-    description: 'Product Hunt launch — 1 free document',
-  },
-  SIGNOVA10: {
+SIGNOVA10: {
     expiresAt: new Date('2026-12-31T23:59:59Z'),
     maxUses: 500,
     description: 'General discount — 1 free document',
@@ -114,7 +148,7 @@ export default async function handler(req, res) {
     req.headers['x-real-ip'] ||
     req.socket?.remoteAddress ||
     'unknown'
-  if (isPromoRateLimited(ip)) {
+  if (await isPromoRateLimited(ip)) {
     return res.status(429).json({ valid: false, error: 'Too many attempts. Please try again later.' })
   }
 
@@ -136,12 +170,11 @@ export default async function handler(req, res) {
     return res.status(400).json({ valid: false, error: 'This promo code has expired.' })
   }
 
-  // Enforce maxUses — persisted in Upstash Redis across cold starts
-  const currentUses = await getUseCount(upperCode)
-  if (currentUses >= promo.maxUses) {
+  // Enforce maxUses — persisted in Upstash Redis across cold starts (atomic)
+  const result = await atomicIncrementUseCount(upperCode, promo.maxUses)
+  if (!result.ok) {
     return res.status(400).json({ valid: false, error: 'This promo code has reached its usage limit.' })
   }
-  await incrementUseCount(upperCode)
 
   const secret = process.env.PROMO_SECRET
   if (!secret) return res.status(500).json({ valid: false, error: 'Server misconfigured — promo system unavailable.' })
@@ -149,7 +182,7 @@ export default async function handler(req, res) {
   const payload = `${upperCode}::${timestamp}`
 
   const { createHmac } = await import('crypto')
-  const sig = createHmac('sha256', secret).update(payload).digest('hex').slice(0, 16)
+  const sig = createHmac('sha256', secret).update(payload).digest('hex')
   const token = Buffer.from(`${payload}:${sig}`).toString('base64url')
 
   try {

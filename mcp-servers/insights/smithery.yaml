@@ -1,91 +1,25 @@
 # Smithery MCP Server Configuration
 # https://smithery.ai/docs/build/publish
 
-name: ebenova-insights
-version: 1.0.2
-description: Monitor Reddit and Nairaland for keywords about your product. Get email alerts with AI-drafted replies every 15 minutes.
-
-author: Ebenova Solutions <api@ebenova.dev>
-license: MIT
-homepage: https://ebenova.dev/insights
-repository: https://github.com/dgtalquantumleap-ai/insights-mcp
-
-keywords:
-  - reddit
-  - monitor
-  - insights
-  - distribution
-  - marketing
-  - nairaland
-  - ai-drafts
-  - saas
-  - founder
-  - ebenova
-
-configSchema:
-  type: object
-  required:
-    - EBENOVA_API_KEY
-  properties:
-    EBENOVA_API_KEY:
-      type: string
-      description: "Your Ebenova API key with Insights access. Get one at https://ebenova.dev/insights"
-      required: true
-    INSIGHTS_API_BASE:
-      type: string
-      description: "Insights API base URL (optional, defaults to https://api.ebenova.dev)"
-      default: "https://api.ebenova.dev"
-      required: false
-
-deployment:
+startCommand:
   type: stdio
-  command: node
-  args:
-    - index.js
-
-installation:
-  npm: "npx -y @ebenova/insights-mcp"
-  claude_desktop:
+  configSchema:
+    type: object
+    properties:
+      ebenovaApiKey:
+        type: string
+        description: "Your Ebenova API key with Insights access. Get one at https://ebenova.dev/insights"
+      insightsApiBase:
+        type: string
+        description: "Insights API base URL (optional, defaults to https://api.ebenova.dev)"
+        default: "https://api.ebenova.dev"
+    required:
+      - ebenovaApiKey
+  commandFunction:
     command: npx
-    args: ["-y", "@ebenova/insights-mcp"]
+    args:
+      - "-y"
+      - "@ebenova/insights-mcp"
     env:
-      EBENOVA_API_KEY: "sk_live_your_key"
-
-startCommand: "node index.js"
-entryPoint: "index.js"
-runtime: nodejs
-serverCard: "https://api.ebenova.dev/.well-known/mcp/server-card.json"
-
-capabilities:
-  tools:
-    - name: list_monitors
-      description: "List all your Reddit/Nairaland keyword monitors"
-    - name: create_monitor
-      description: "Create a new keyword monitor with subreddit targeting and product context"
-    - name: delete_monitor
-      description: "Deactivate a monitor"
-    - name: get_matches
-      description: "Fetch recent Reddit/Nairaland posts that matched your keywords"
-    - name: regenerate_draft
-      description: "Re-generate the AI reply draft for a specific match"
-    - name: rate_draft
-      description: "Rate a draft thumbs up or down to improve quality over time"
-
-examples:
-  - name: "See today's Reddit matches"
-    prompt: "Show me the latest Reddit matches from my Insights monitor"
-  - name: "Create a monitor"
-    prompt: "Create a monitor called 'Signova' watching r/freelance and r/webdev for 'freelance contract' and 'scope creep'"
-  - name: "Get a draft"
-    prompt: "Regenerate the reply draft for match 1abc23 on monitor mon_xyz"
-  - name: "Check all monitors"
-    prompt: "List my Insights monitors and show me which one has the most matches"
-
-pricing:
-  starter: "$49/month — 3 monitors, 20 keywords each"
-  growth:  "$99/month — 20 monitors, 100 keywords each, semantic search"
-  scale:   "$249/month — 100 monitors, 500 keywords, Claude Sonnet drafts"
-
-support:
-  email: akin@ebenova.dev
-  documentation: https://ebenova.dev/insights
+      EBENOVA_API_KEY: "{{ebenovaApiKey}}"
+      INSIGHTS_API_BASE: "{{insightsApiBase}}"

@@ -3,7 +3,7 @@
 .nda-hero {
   position: relative;
   overflow: hidden;
-  padding: 140px 24px 80px;
+  padding: 140px var(--space-5) 80px;
   text-align: center;
 }
 .nda-hero-inner {
@@ -18,9 +18,9 @@
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 1px;
-  padding: 6px 16px;
+  padding: 6px var(--space-4);
   border-radius: 20px;
-  margin-bottom: 24px;
+  margin-bottom: var(--space-5);
 }
 .nda-h1 {
   font-family: var(--font-display);
@@ -39,10 +39,10 @@
 }
 .nda-cta {
   background: var(--gold);
-  color: #0e0e0e;
+  color: var(--bg);
   border: none;
   border-radius: 10px;
-  padding: 16px 36px;
+  padding: var(--space-4) 36px;
   font-size: 17px;
   font-weight: 700;
   cursor: pointer;
@@ -52,21 +52,21 @@
 .nda-cta-sub {
   font-size: 13px;
   color: var(--text-muted);
-  margin-top: 12px;
+  margin-top: var(--space-3);
 }
 .nda-trust {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 16px 32px;
-  margin-top: 48px;
-  font-size: 14px;
+  gap: var(--space-4) var(--space-6);
+  margin-top: var(--space-7);
+  font-size: var(--text-sm);
   color: var(--text2);
 }
 
 /* ── Sections ── */
 .nda-section {
-  padding: 80px 24px;
+  padding: 80px var(--space-5);
 }
 .nda-section-alt {
   background: #111;
@@ -81,39 +81,39 @@
   font-weight: 700;
   color: var(--text);
   text-align: center;
-  margin-bottom: 48px;
+  margin-bottom: var(--space-7);
 }
 
 /* ── How it works steps ── */
 .nda-steps {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
+  gap: var(--space-6);
 }
 .nda-step {
   background: #161616;
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 28px 24px;
+  padding: 28px var(--space-5);
 }
 .nda-step-num {
   width: 36px; height: 36px;
   background: var(--gold);
-  color: #0e0e0e;
+  color: var(--bg);
   border-radius: 50%;
   font-weight: 800;
-  font-size: 16px;
+  font-size: var(--text-base);
   display: flex; align-items: center; justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
 }
 .nda-step h3 {
-  font-size: 16px;
+  font-size: var(--text-base);
   font-weight: 700;
   color: var(--text);
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
 }
 .nda-step p {
-  font-size: 14px;
+  font-size: var(--text-sm);
   color: var(--text2);
   line-height: 1.7;
   margin: 0;
@@ -123,13 +123,13 @@
 .nda-types {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  gap: var(--space-5);
 }
 .nda-type-card {
   background: #161616;
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 28px 24px;
+  padding: 28px var(--space-5);
   cursor: pointer;
   transition: border-color 0.2s, transform 0.2s;
 }
@@ -138,7 +138,7 @@
   transform: translateY(-2px);
 }
 .nda-type-icon {
-  font-size: 24px;
+  font-size: var(--text-xl);
   color: var(--gold);
   margin-bottom: 14px;
   font-weight: 700;
@@ -150,10 +150,10 @@
   margin-bottom: 10px;
 }
 .nda-type-card p {
-  font-size: 14px;
+  font-size: var(--text-sm);
   color: var(--text2);
   line-height: 1.7;
-  margin: 0 0 16px;
+  margin: 0 0 var(--space-4);
 }
 .nda-type-cta {
   font-size: 13px;
@@ -166,7 +166,7 @@
   background: linear-gradient(135deg, #161616 0%, #1a1506 100%);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  padding: 72px 24px;
+  padding: 72px var(--space-5);
 }
 
 /* ── FAQ ── */
@@ -178,7 +178,7 @@
 }
 .nda-faq:last-child { border-bottom: none; }
 .nda-faq-q {
-  font-size: 16px;
+  font-size: var(--text-base);
   font-weight: 700;
   color: var(--text);
   margin-bottom: 10px;
@@ -193,5 +193,5 @@
 /* ── Responsive ── */
 @media (max-width: 700px) {
   .nda-steps, .nda-types { grid-template-columns: 1fr; }
-  .nda-trust { gap: 12px 20px; font-size: 13px; }
+  .nda-trust { gap: var(--space-3) 20px; font-size: 13px; }
 }

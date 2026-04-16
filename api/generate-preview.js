@@ -5,6 +5,7 @@
 
 import { parseBody } from '../lib/parse-body.js'
 import { logError, logInfo } from '../lib/logger.js'
+import { buildReceipt } from '../lib/doc-hash.js'
 import { buildDpaSystemPrompt } from './v1/documents/clauses.js'
 
 const WINDOW_MS = 60 * 60 * 1000 // 1 hour
@@ -87,9 +88,14 @@ export default async function handler(req, res) {
     const data = await response.json()
     const text = data.choices?.[0]?.message?.content || ''
     if (!text) return res.status(500).json({ error: 'Preview generation failed. Please try again.' })
-    
-    logInfo('/generate-preview', { success: true, text_length: text.length })
-    return res.status(200).json({ text, isPreview: true })
+
+    // Advisory receipt for previews — the preview itself is not the final
+    // document (that comes from /api/generate after payment), but returning
+    // a hash lets clients show "fingerprint so far" in the UI and proves the
+    // preview isn't mutated in transit.
+    const receipt = buildReceipt(text, { doc_tier: 'preview' })
+    logInfo('/generate-preview', { success: true, text_length: text.length, hash: receipt.fingerprint })
+    return res.status(200).json({ text, isPreview: true, receipt })
   } catch (err) {
     logError('/generate-preview', { message: err.message, stack: err.stack })
     return res.status(500).json({ error: 'Preview generation failed. Please try again.' })

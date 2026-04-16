@@ -69,14 +69,17 @@ When to use:
 - "I need a service agreement for my consulting work"`,
       inputSchema: z.object({
         document_type: z.enum([
-          'nda', 'freelance-contract', 'service-agreement', 'consulting-agreement',
-          'independent-contractor', 'business-partnership', 'joint-venture',
-          'distribution-agreement', 'supply-agreement', 'business-proposal', 'purchase-agreement',
-          'employment-offer-letter', 'non-compete-agreement', 'loan-agreement',
-          'payment-terms-agreement', 'shareholder-agreement', 'hire-purchase',
-          'tenancy-agreement', 'quit-notice', 'deed-of-assignment', 'power-of-attorney',
-          'landlord-agent-agreement', 'facility-manager-agreement',
-          'privacy-policy', 'terms-of-service', 'mou', 'letter-of-intent',
+          'nda', 'freelance-contract', 'tenancy-agreement', 'employment-contract',
+          'service-agreement', 'partnership-agreement', 'loan-agreement',
+          'power-of-attorney', 'will', 'invoice', 'receipt', 'proforma-invoice',
+          'credit-note', 'privacy-policy', 'terms-of-service', 'cookie-policy',
+          'dmca-notice', 'cease-and-desist', 'affidavit', 'statutory-declaration',
+          'memorandum-of-understanding', 'share-purchase-agreement',
+          'joint-venture-agreement', 'non-compete-agreement', 'consulting-agreement',
+          'subcontractor-agreement', 'licensing-agreement', 'franchise-agreement',
+          'distribution-agreement', 'agency-agreement', 'sale-of-goods-agreement',
+          'intellectual-property-assignment', 'data-processing-agreement',
+          'deed-of-assignment',
         ]).describe('The type of legal document to generate'),
         fields: z.record(z.union([z.string(), z.array(z.string())])).describe(
           'Document-specific fields as key-value pairs. Include all relevant parties, terms, dates, and conditions.'

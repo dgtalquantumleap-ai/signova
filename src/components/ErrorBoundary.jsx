@@ -3,6 +3,7 @@
 // instead of a blank white screen.
 
 import { Component } from 'react'
+import { Warning } from '@phosphor-icons/react'
 
 export default class ErrorBoundary extends Component {
   constructor(props) {
@@ -53,7 +54,7 @@ export default class ErrorBoundary extends Component {
             maxWidth: '480px',
             textAlign: 'center',
           }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
+            <Warning size={56} weight="fill" color="var(--gold, #c9a84c)" style={{ marginBottom: '16px' }} />
             <h1 style={{
               fontSize: '24px',
               fontWeight: '700',

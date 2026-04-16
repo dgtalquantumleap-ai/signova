@@ -1,20 +1,55 @@
 # Signova — AI-Powered Legal Document Platform
 
-**[getsignova.com](https://www.getsignova.com)** · **[API Docs](https://api.ebenova.dev/docs)** · **[Status](https://status.ebenova.dev)**
+**[getsignova.com](https://www.getsignova.com)** · **[ebenova.dev](https://www.ebenova.dev)** · **[api.ebenova.dev](https://api.ebenova.dev)**
 
-Signova generates professional legal documents, contracts, invoices, and compliance reports using AI. Built for freelancers, agencies, and small businesses who need legal protection without lawyer fees.
+Signova generates professional legal documents, contracts, invoices, and compliance reports using AI — built for freelancers, agencies, and small businesses who need legal protection without lawyer fees.
 
 ---
 
-## Features
+## Overview
 
-- 📄 **Document Generation** — NDAs, contracts, terms of service, privacy policies, invoices, and more
-- 🤖 **AI-Powered** — Uses Anthropic Claude for high-quality, jurisdiction-aware legal drafting
-- 💳 **Pay-Per-Document** — $4.99 per document, no subscription required
-- 🌍 **Geo-Aware Pricing** — Automatic currency detection for 35+ countries
-- 🔐 **API-First** — RESTful API with API key authentication, rate limiting, and usage tracking
-- 🤖 **MCP Support** — Model Context Protocol servers for AI agent integration
-- 📊 **Insights Dashboard** — Business intelligence monitoring for contract analytics
+Signova ships three surfaces from a single codebase:
+
+- **Consumer web app** at `getsignova.com` — pay-per-document generation, promo redemption, buyer capture
+- **Developer platform** at `ebenova.dev` + `api.ebenova.dev` — subscription API with keys, usage tracking, and Stripe billing
+- **MCP servers** — Model Context Protocol servers that expose the same legal/insights/scope tooling to AI agents (Claude Desktop, Cursor, etc.)
+
+The platform generates 27+ document types (NDAs, contracts, offer letters, privacy policies, invoices, change orders, etc.) across 18 jurisdictions, with geo-aware currency detection and locale-specific drafting via Anthropic Claude.
+
+---
+
+## Live URLs
+
+| Surface | URL |
+|---------|-----|
+| Consumer site | https://www.getsignova.com |
+| Developer site | https://www.ebenova.dev |
+| API base | https://api.ebenova.dev |
+| OpenAPI spec (file) | [`openapi.yaml`](./openapi.yaml) |
+
+---
+
+## Architecture
+
+```
+Browser / AI Agent
+      │
+      ▼
+Vercel Edge (vercel.json routing + redirects)
+      │
+      ├─ Static SPA:  Vite build of src/  →  React 19 + React Router 7
+      │
+      └─ Serverless:  api/*.js  (Node.js functions)
+             │
+             ├─ Upstash Redis        (API keys, usage, promo state, rate limits)
+             ├─ Anthropic Claude     (document generation, scope analysis)
+             ├─ Stripe               (consumer checkout + API subscriptions)
+             ├─ Resend               (transactional email, waitlist, receipts)
+             ├─ Paystack / OxaPay    (Africa + crypto payments)
+             └─ Groq                 (fast previews, insight drafts)
+```
+
+Deployed on **Vercel** (project `signova`, owner `ebenovasolu-5755s-projects`). Cron jobs defined in `vercel.json` drive `/v1/insights/poll` (every 15 min) and `/api/cron/ots-upgrade` (every 2 hours).
 
 ---
 
@@ -22,320 +57,249 @@ Signova generates professional legal documents, contracts, invoices, and complia
 
 | Layer | Technology |
 |-------|-----------|
-| **Frontend** | React 19, Vite 7, React Router 7 |
-| **Backend** | Vercel Serverless Functions (Node.js) |
-| **Database** | Upstash Redis (serverless) |
-| **Payments** | Stripe Checkout + OxaPay (crypto) |
-| **AI** | Anthropic Claude, Groq (previews) |
-| **Email** | Resend |
-| **Analytics** | Google Analytics 4, Microsoft Clarity, Vercel Analytics |
-| **Deployment** | Vercel (Edge Network) |
+| Frontend | React 19, Vite 7, React Router 7, Phosphor Icons |
+| Backend | Vercel Serverless Functions (Node.js, ESM) |
+| Validation | Zod 3 |
+| Data | Upstash Redis (serverless REST) |
+| AI | Anthropic Claude (primary), Groq (previews/drafts) |
+| Payments | Stripe (primary), Paystack (NGN), OxaPay (crypto), Flutterwave |
+| Email | Resend |
+| Analytics | Vercel Analytics, Vercel Speed Insights |
+| MCP | `@modelcontextprotocol/sdk` |
+| Testing | Vitest, @testing-library/react, jsdom |
 
 ---
 
-## Project Structure
+## Features
 
-```
-signova/
-├── api/                      # Vercel serverless functions
-│   ├── v1/                   # API v1 endpoints
-│   │   ├── auth/             # Authentication (magic links, verification)
-│   │   ├── billing/          # Stripe checkout, webhooks, portal
-│   │   ├── documents/        # Document generation endpoints
-│   │   ├── insights/         # Business intelligence endpoints
-│   │   ├── vigil/            # Compliance monitoring endpoints
-│   │   ├── scope/            # Scope change analysis
-│   │   ├── contracts/        # Contract linking
-│   │   ├── extract/          # Term extraction
-│   │   ├── invoices/         # Invoice generation
-│   │   └── keys/             # API key provisioning
-│   ├── contact.js            # Contact form handler
-│   ├── generate-preview.js   # Free preview generation (Groq)
-│   ├── generate.js           # Premium document generation (Anthropic)
-│   ├── mcp.js                # Model Context Protocol endpoint
-│   └── ...
-├── lib/                      # Shared libraries
-│   ├── api-auth.js           # API key authentication & rate limiting
-│   ├── cors-middleware.js    # CORS allowlist handling
-│   ├── logger.js             # Structured logging
-│   ├── parse-body.js         # Request body parsing
-│   ├── redis.js              # Redis client & helpers
-│   ├── sanitize.js           # HTML escaping utilities
-│   ├── validators.js         # Zod validation schemas
-│   └── analytics.js          # Tracking utilities
-├── src/                      # React frontend
-│   ├── pages/                # Page components
-│   ├── components/           # Reusable UI components
-│   ├── lib/                  # Frontend utilities
-│   ├── App.jsx               # Main app with lazy-loaded routes
-│   └── main.jsx              # Entry point
-├── mcp-servers/              # Model Context Protocol servers
-│   ├── insights/             # Business intelligence MCP
-│   └── legal-docs/           # Legal document drafting MCP
-├── registry/                 # Package registry (Go)
-├── tests/                    # Vitest test suite
-├── openapi.yaml              # OpenAPI 3.1.0 specification
-└── vercel.json               # Vercel deployment configuration
-```
+### Document generation
+- 27+ document types: NDA, freelance/service/consulting agreements, employment offer letters, privacy policy, terms of service, invoices, change orders, scope analysis, and more
+- 18 jurisdictions with locale-aware drafting
+- Free Groq-powered preview (`api/generate-preview.js`), premium Claude output on payment verification (`api/generate.js`, `api/v1/documents/generate.js`)
+- Conversation-to-document extraction (`api/v1/extract/conversation.js`)
+
+### Promo system
+Promo codes bypass payment to unlock one free document. State is stored in Upstash Redis (`promo_uses:CODE` counters, `promo_ratelimit:IP` per-IP hourly limiter). IP rate limit: 5 attempts/hour. All codes defined in [`api/promo-redeem.js`](./api/promo-redeem.js).
+
+| Code | Description | Max uses | Expires |
+|------|-------------|---------:|---------|
+| `SIGNOVA10` | General discount | 500 | 2026-12-31 |
+| `OLUMIDE` | Founder access (unlimited testing) | 9,999 | 2027-12-31 |
+| `AFRICA` | Taryl African Founders Community | 1,200 | 2026-12-31 |
+| `KREDO` | Kredo partnership | 20 | 2026-12-31 |
+| `MEST2026` | MEST cohort | 100 | 2026-12-31 |
+| `CCHUBNIG` | CcHUB Nigeria | 200 | 2026-12-31 |
+| `BAOBAB26` | Baobab Network cohort | 80 | 2026-12-31 |
+| `ACCLAFRICA` | Accelerate Africa cohort | 50 | 2026-12-31 |
+| `TEF2026` | Tony Elumelu Foundation | 1,000 | 2026-12-31 |
+| `ROSEMARY` | Single-use promo | 10 | 2026-12-31 |
+
+### Billing (Stripe)
+- Consumer pay-per-document checkout (`api/stripe-checkout.js`, `api/stripe-verify.js`, `api/stripe-webhook.js`)
+- Subscription plans for the API: **Starter $29**, **Growth $79**, **Scale $199** (`api/v1/billing/checkout.js`)
+- Insights add-on plans: **Starter $49**, **Growth $99**, **Scale $249** — activated commercial feature
+- Stripe Customer Portal (`api/v1/billing/portal.js`), webhook handler (`api/v1/billing/webhook.js`)
+- Scope Guard Pro checkout (`api/scope-guard-checkout.js`) — activated commercial feature
+
+### MCP servers
+Three first-party MCP servers live under [`mcp-servers/`](./mcp-servers/):
+
+| Server | Purpose |
+|--------|---------|
+| `mcp-servers/legal-docs` | Document drafting tools for AI agents (NDAs, contracts, invoices, change orders) |
+| `mcp-servers/insights` | Business-intelligence / contract analytics tools |
+| `mcp-servers/scope-guard` | Scope-creep detection and change-order generation |
+
+Each has its own `package.json`, `server.json`, and Dockerfile, and publishes independently to npm / the MCP registry / Smithery / Glama.
+
+The site itself also exposes an HTTP MCP endpoint at `api/mcp.js`.
 
 ---
 
-## Getting Started
+## API authentication
+
+Authenticated endpoints under `/v1/*` use two distinct credentials:
+
+1. **Bearer API keys** (`Authorization: Bearer sk_live_...`) — end-user keys validated against Upstash Redis via [`lib/api-auth.js`](./lib/api-auth.js). Used for document generation, extract, scope, vigil, contracts, insights, invoices.
+2. **Admin/setup secret** (`EBENOVA_ADMIN_SECRET`) — gates `/v1/keys/create` so only operators can provision new customer keys. `ADMIN_API_TOKEN` similarly gates `/v1/admin/revenue`. `BYPASS_ADMIN_SECRET` gates `api/create-bypass.js`. `CRON_SECRET` / `POLL_CRON_SECRET` authenticate Vercel cron invocations.
+
+Rate limits and monthly document caps are enforced per key in Redis.
+
+> Note: there is no live `/docs` HTML endpoint today. Consume the OpenAPI spec directly via [`openapi.yaml`](./openapi.yaml).
+
+---
+
+## Local development
 
 ### Prerequisites
-
 - Node.js 20+ (ESM)
-- Upstash Redis account
+- Upstash Redis database (free tier)
 - Anthropic API key
-- Stripe account
+- Stripe account (only needed to exercise paid flows)
 - Resend API key (optional, for email)
 
-### Installation
-
+### Setup
 ```bash
-# Clone the repository
-git clone https://github.com/ebenova/signova.git
+git clone <repo-url>
 cd signova
-
-# Install dependencies
 npm install
-
-# Copy environment variables
 cp .env.example .env
-# Edit .env and add your API keys
+# edit .env with your keys
 ```
 
-### Development
-
+### Scripts
 ```bash
-# Start development server
-npm run dev
-
-# Lint code
-npm run lint
-
-# Run tests
-npm test
-
-# Run a single test file
-npx vitest tests/lib/sanitize.test.js
+npm run dev            # Vite dev server
+npm run build          # Production build
+npm run preview        # Preview built SPA
+npm run lint           # ESLint
+npm test               # Vitest
+npm run test:coverage  # Vitest with coverage
+npm run check:css      # Validate CSS design tokens
+npm run keygen         # Generate API/admin secrets
 ```
 
-### Build & Preview
-
+Running the serverless `api/` functions locally requires the Vercel CLI:
 ```bash
-# Production build
-npm run build
-
-# Preview production build
-npm run preview
+npm i -g vercel
+vercel dev
 ```
 
 ---
 
-## API Usage
+## Environment variables
 
-### Authentication
+See [`.env.example`](./.env.example) for the full template.
 
-All API endpoints require a Bearer token in the Authorization header:
+### Required (core)
+| Variable | Purpose |
+|----------|---------|
+| `ANTHROPIC_API_KEY` | Primary AI generation |
+| `UPSTASH_REDIS_REST_URL` | Redis REST URL |
+| `UPSTASH_REDIS_REST_TOKEN` | Redis auth token |
+| `EBENOVA_ADMIN_SECRET` | Protects `/v1/keys/create` |
+| `PROMO_SECRET` | HMAC secret for signed promo tokens |
 
-```
-Authorization: Bearer sk_live_YOUR_API_KEY
-```
+### Stripe (required for paid flows)
+| Variable | Purpose |
+|----------|---------|
+| `STRIPE_SECRET_KEY` | Stripe API |
+| `STRIPE_WEBHOOK_SECRET` | Webhook signature verification |
+| `STRIPE_PRICE_STARTER` / `_GROWTH` / `_SCALE` | Main API plan price IDs |
+| `STRIPE_PRICE_INSIGHTS_STARTER` / `_GROWTH` / `_SCALE` | Insights add-on price IDs |
 
-Get your API key from the [Signova Dashboard](https://www.getsignova.com/dashboard).
+### Optional (email, alt-payments, misc)
+| Variable | Purpose |
+|----------|---------|
+| `RESEND_API_KEY` | Transactional email |
+| `ALERT_EMAIL` | Where insight alerts are sent (defaults to `info@ebenova.net`) |
+| `GROQ_API_KEY` | Fast preview + draft generation |
+| `OXAPAY_MERCHANT_KEY` | Crypto checkout |
+| `PAYSTACK_SECRET_KEY` / `PAYSTACK_PUBLIC_KEY` | NGN card checkout |
+| `FLUTTERWAVE_SECRET_KEY` / `FLUTTERWAVE_PUBLIC_KEY` | African card checkout |
+| `NEXT_PUBLIC_APP_URL` | Magic-link base URL (defaults to `https://www.getsignova.com`) |
+| `CORS_ALLOWED_ORIGINS` | Comma-separated CORS allowlist |
+| `LOG_LEVEL` | `DEBUG` / `INFO` / `WARN` / `ERROR` |
+| `NODE_ENV` | `development` / `production` |
 
-### Example: Generate a Document
-
-```bash
-curl -X POST https://api.ebenova.dev/v1/documents/generate \
-  -H "Authorization: Bearer sk_live_YOUR_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "docType": "nda",
-    "docName": "Mutual NDA",
-    "prompt": "Draft a mutual NDA between Acme Corp and Beta LLC..."
-  }'
-```
-
-### Rate Limits
-
-| Tier | Requests/Minute | Documents/Month |
-|------|----------------|----------------|
-| Free | 5 | 0 (preview only) |
-| Starter | 10 | 100 |
-| Growth | 30 | 500 |
-| Scale | 60 | 2000 |
-| Enterprise | 120 | Unlimited |
-
-### OpenAPI Specification
-
-Full API documentation is available in OpenAPI 3.1.0 format:
-- **Raw**: [`openapi.yaml`](./openapi.yaml)
-- **Rendered**: [api.ebenova.dev/docs](https://api.ebenova.dev/docs)
-
----
-
-## Environment Variables
-
-See [`.env.example`](./.env.example) for all required environment variables.
-
-### Required
-
-| Variable | Description | Where to Get |
-|----------|-------------|--------------|
-| `ANTHROPIC_API_KEY` | AI document generation | [console.anthropic.com](https://console.anthropic.com) |
-| `GROQ_API_KEY` | Preview generation | [console.groq.com](https://console.groq.com) |
-| `UPSTASH_REDIS_REST_URL` | Redis REST endpoint | [upstash.com](https://upstash.com) |
-| `UPSTASH_REDIS_REST_TOKEN` | Redis auth token | [upstash.com](https://upstash.com) |
-| `STRIPE_SECRET_KEY` | Payment processing | [dashboard.stripe.com](https://dashboard.stripe.com) |
-| `STRIPE_WEBHOOK_SECRET` | Webhook verification | Stripe Dashboard → Developers → Webhooks |
-| `RESEND_API_KEY` | Email sending | [resend.com](https://resend.com) |
-| `EBENOVA_ADMIN_SECRET` | Admin endpoint auth | Generate randomly |
-
-### Optional
-
-| Variable | Description |
-|----------|-------------|
-| `CORS_ALLOWED_ORIGINS` | Comma-separated list of allowed origins |
-| `LOG_LEVEL` | Log level: DEBUG, INFO, WARN, ERROR (default: INFO) |
-| `NODE_ENV` | `development` or `production` |
-
----
-
-## Testing
-
-```bash
-# Run all tests
-npm test
-
-# Run with coverage
-npm test -- --coverage
-
-# Watch mode
-npm test -- --watch
-
-# Run specific test file
-npx vitest tests/lib/sanitize.test.js
-```
-
-### Test Coverage
-
-| Module | Status |
-|--------|--------|
-| `lib/sanitize.js` | ✅ Tested |
-| `lib/parse-body.js` | ✅ Tested |
-| `lib/cors-middleware.js` | ✅ Tested |
-| API endpoints | 🚧 Coming soon |
-| React components | 🚧 Coming soon |
+### Admin, cron, integrations (optional)
+| Variable | Purpose |
+|----------|---------|
+| `ADMIN_API_TOKEN` | Gates `/v1/admin/revenue` |
+| `ADMIN_SECRET` | Gates `api/admin/index-doc.js` |
+| `BYPASS_ADMIN_SECRET` | Gates `api/create-bypass.js` |
+| `CRON_SECRET` | Authenticates `/api/cron/ots-upgrade` |
+| `POLL_CRON_SECRET` | Authenticates `/v1/insights/poll` |
+| `FIELDOPS_API_URL` / `FIELDOPS_INTERNAL_KEY` | FieldOps bookings bridge |
+| `VIGIL_API_URL` | Vigil compliance backend |
 
 ---
 
 ## Deployment
 
-### Vercel (Recommended)
+The project is deployed on **Vercel**:
 
-This project is optimized for Vercel deployment:
+- Project: `signova`
+- Owner: `ebenovasolu-5755s-projects`
+- Domains routed via `vercel.json` redirects: apex `getsignova.com` → `www.getsignova.com`, apex `ebenova.dev` → `www.ebenova.dev`
+- Cron jobs configured in `vercel.json`
 
 ```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy to preview
-vercel
-
-# Deploy to production
-vercel --prod
+vercel          # preview deploy
+vercel --prod   # production deploy
 ```
 
-### Environment Variables
-
-Set all required environment variables in your Vercel dashboard:
-- Project Settings → Environment Variables
-
-### Custom Domains
-
-Configure custom domains in Vercel:
-- Project Settings → Domains
-- Add `getsignova.com`, `www.getsignova.com`, `api.ebenova.dev`
+Configure environment variables in Vercel → Project Settings → Environment Variables (mirror the list above).
 
 ---
 
-## Architecture
+## Testing
 
-### Request Flow
+Current status — be honest about what ships vs. what is planned:
 
-```
-Client → Vercel Edge Network
-  → vercel.json (routing, headers, rewrites)
-    → api/*.js (serverless functions)
-      → lib/* (shared utilities)
-        → External APIs (Anthropic, Stripe, Redis, Resend)
-```
+| Area | Status |
+|------|--------|
+| `lib/sanitize.js` | Done |
+| `lib/parse-body.js` | Done |
+| `lib/cors-middleware.js` | Done |
+| API endpoint integration tests | Planned |
+| React component tests | Planned |
 
-### Security
-
-- **CORS**: Origin allowlist (no wildcards on auth/payment endpoints)
-- **Authentication**: Bearer token with Redis-backed key validation
-- **Rate Limiting**: Per-key, per-minute sliding window
-- **Input Validation**: Zod schemas on all user inputs
-- **HTML Sanitization**: Server-side escaping on all user-generated content
-- **Security Headers**: HSTS, CSP, X-Frame-Options, X-Content-Type-Options
-- **Payment Verification**: Stripe webhook signature verification
-
-### Caching Strategy
-
-| Resource | TTL | Strategy |
-|----------|-----|----------|
-| Static assets (JS/CSS) | 1 year | Immutable, hash-based filenames |
-| Fonts | 1 year | Immutable |
-| Images | 1 day | Stale-while-revalidate |
-| API CORS preflight | 1 day | max-age=86400 |
-| Geo location | 1 hour | In-memory cache |
+Run with `npm test` (Vitest). `npm run test:coverage` emits a v8 coverage report.
 
 ---
 
-## Contributing
+## Project structure
 
-We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md) (coming soon).
+```
+signova/
+├── api/                   # Vercel serverless functions
+│   ├── v1/                # Versioned API (auth, billing, documents, insights,
+│   │                      #   vigil, scope, contracts, extract, invoices, keys, admin)
+│   ├── admin/             # Admin-only operator endpoints
+│   ├── cron/              # Scheduled tasks (ots-upgrade)
+│   ├── generate.js        # Premium document generation (Claude)
+│   ├── generate-preview.js# Free preview generation (Groq)
+│   ├── promo-redeem.js    # Promo code redemption (10 codes)
+│   ├── stripe-*.js        # Consumer Stripe flow
+│   ├── paystack-*.js      # Paystack flow
+│   ├── oxapay-*.js        # OxaPay crypto flow
+│   ├── mcp.js             # HTTP MCP endpoint
+│   └── ...
+├── lib/                   # Shared server libraries (auth, CORS, Redis, validators,
+│                          #   sanitize, parse-body, logger, analytics)
+├── src/                   # React SPA (pages, components, lib, styles)
+├── mcp-servers/
+│   ├── legal-docs/        # Legal document MCP server (publishable)
+│   ├── insights/          # Insights MCP server (publishable)
+│   └── scope-guard/       # Scope-guard MCP server
+├── tests/                 # Vitest test suite
+├── scripts/               # Dev utilities (keygen, CSS token check, etc.)
+├── openapi.yaml           # OpenAPI 3.1.0 specification
+└── vercel.json            # Vercel routing, redirects, cron
+```
 
-### Development Workflow
+---
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/my-feature`)
-3. Commit changes (`git commit -m 'feat: add my feature'`)
-4. Push to branch (`git push origin feature/my-feature`)
-5. Open a Pull Request
+## Related repositories
 
-### Commit Convention
-
-We use [Conventional Commits](https://www.conventionalcommits.org/):
-
-- `feat:` — new feature
-- `fix:` — bug fix
-- `docs:` — documentation
-- `chore:` — maintenance
-- `test:` — testing
-- `refactor:` — code restructuring
+- **ebenova-legal-docs-mcp** — published distribution of the legal-docs MCP server (npm, MCP Registry, Smithery, Glama, MCPize)
 
 ---
 
 ## License
 
-© 2026 Ebenova Solutions. All rights reserved.
-
-This is a commercial product. Unauthorized copying, distribution, or modification is prohibited. See [LICENSE](./LICENSE) for details.
+© 2026 Ebenova Solutions. All rights reserved. Commercial product — unauthorized copying, distribution, or modification is prohibited. See [`LICENSE`](./LICENSE).
 
 ---
 
 ## Support
 
-- **Email**: [info@ebenova.net](mailto:info@ebenova.net)
-- **API Status**: [status.ebenova.dev](https://status.ebenova.dev)
-- **Documentation**: [getsignova.com/docs](https://www.getsignova.com/docs)
+- Email: [info@ebenova.net](mailto:info@ebenova.net)
+- Site: [getsignova.com](https://www.getsignova.com)
 
 ---
 
-## Legal Disclaimer
+## Legal disclaimer
 
-Documents generated by Signova are for informational purposes only and do not constitute legal advice. Always consult a qualified attorney before using AI-generated legal documents.
+Documents generated by Signova are for informational purposes only and do not constitute legal advice. Always consult a qualified attorney before relying on AI-generated legal documents.

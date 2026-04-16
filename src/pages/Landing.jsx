@@ -312,7 +312,7 @@ const SOCIAL_PROOF = {
   stats: [
     { n: '83', label: 'visitors/week', sub: 'organic, no ads' },
     { n: '$4.99', label: 'price point', sub: 'cheaper than losing one invoice' },
-    { n: '180+', label: 'countries', sub: 'jurisdiction-aware' },
+    { n: '47', label: 'currencies', sub: 'jurisdiction-aware' },
     { n: 'Mar \'26', label: 'first paying customer', sub: 'week 3 after launch' },
   ],
 }
@@ -324,7 +324,7 @@ const FAQS = [
   },
   {
     q: 'What countries are supported?',
-    a: 'Signova generates documents suitable for use globally — including the US, UK, Canada, Australia, EU, Nigeria, South Africa, Kenya, Ghana, India, Singapore, UAE, Brazil, Mexico, and 180+ more countries. During generation you specify your jurisdiction so the document is tailored accordingly. Documents follow local legal conventions and terminology.',
+    a: 'Signova generates documents suitable for use globally — including the US, UK, Canada, Australia, EU, Nigeria, South Africa, Kenya, Ghana, India, Singapore, UAE, Brazil, Mexico, and more. During generation you specify your jurisdiction so the document is tailored accordingly. Documents follow local legal conventions and terminology.',
   },
   {
     q: 'What file format do I receive?',
@@ -569,7 +569,7 @@ export default function Landing() {
                 <span aria-label="Nigeria">🇳🇬</span>
                 <span aria-label="Canada">🇨🇦</span>
                 <span aria-label="Singapore">🇸🇬</span>
-                <span className="jurisdiction-more">180+ countries</span>
+                <span className="jurisdiction-more">any jurisdiction worldwide</span>
               </div>
             </div>
 
@@ -589,7 +589,7 @@ export default function Landing() {
               ))}
             </div>
 
-            <p className="hero-trust-line">Free preview · No account required · $4.99 {activeCurrency.local ? `(${activeCurrency.local})` : ''} to download · Enforceable in 180+ countries · 30-day refund</p>
+            <p className="hero-trust-line">Free preview · No account required · $4.99 {activeCurrency.local ? `(${activeCurrency.local})` : ''} to download · Enforceable in any jurisdiction worldwide · 30-day refund</p>
           </div>
 
           {/* RIGHT: animated proof — visual-only demo (not a primary CTA) */}
@@ -940,7 +940,7 @@ export default function Landing() {
                 <li className="price-yes">Preview any document in full</li>
                 <li className="price-yes">34 document types</li>
                 <li className="price-yes">WhatsApp extraction</li>
-                <li className="price-yes">180+ jurisdictions</li>
+                <li className="price-yes">Any jurisdiction worldwide</li>
                 <li className="price-no">Download PDF</li>
                 <li className="price-no">Watermark-free version</li>
               </ul>

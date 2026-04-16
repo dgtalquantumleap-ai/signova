@@ -5,7 +5,9 @@
 import { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
-import { Broadcast, Warning, PenNib, EnvelopeSimple } from '@phosphor-icons/react'
+import { Broadcast, Warning, PenNib, EnvelopeSimple, Target, ShieldCheck, Globe, Plugs, MagnifyingGlass } from '@phosphor-icons/react'
+
+const INS_ICON = { size: 24, weight: 'duotone', color: 'currentColor' }
 import './Insights.css'
 
 const API_BASE   = import.meta.env.VITE_API_BASE   || 'https://api.ebenova.dev'
@@ -321,12 +323,12 @@ export default function Insights() {
           <h2>Built for distribution, not vanity metrics</h2>
           <div className="ins-features-grid">
             {[
-              ['🎯', 'Subreddit-scoped search', 'Keywords run against the exact subreddits you care about — fewer false positives, higher intent.', null],
+              [<Target {...INS_ICON} />, 'Subreddit-scoped search', 'Keywords run against the exact subreddits you care about — fewer false positives, higher intent.', null],
               ['✍️', 'AI reply drafts', 'Groq + Llama 3.3 70b. Community tone, not marketing copy. Helpful first, product mention optional.', 'Groq / Llama 3.3 70b'],
-              ['🛡️', 'Subreddit safety system', '71-subreddit whitelist. Every match flagged approved or DO NOT POST automatically.', null],
-              ['🌍', 'Nairaland included', "Nigeria's largest forum monitored alongside Reddit. Essential for products targeting African users.", null],
-              ['🔌', 'Full REST API', 'Create monitors, list matches, trigger drafts, send feedback — all via API. Bring your own dashboard.', 'Growth+'],
-              ['🔍', 'Semantic search', 'Embedding-based search catches intent even when your keyword isn\'t in the post. Coming in V2.', 'Coming soon'],
+              [<ShieldCheck {...INS_ICON} />, 'Subreddit safety system', '71-subreddit whitelist. Every match flagged approved or DO NOT POST automatically.', null],
+              [<Globe {...INS_ICON} />, 'Nairaland included', "Nigeria's largest forum monitored alongside Reddit. Essential for products targeting African users.", null],
+              [<Plugs {...INS_ICON} />, 'Full REST API', 'Create monitors, list matches, trigger drafts, send feedback — all via API. Bring your own dashboard.', 'Growth+'],
+              [<MagnifyingGlass {...INS_ICON} />, 'Semantic search', 'Embedding-based search catches intent even when your keyword isn\'t in the post. Coming in V2.', 'Coming soon'],
             ].map(([icon, title, desc, tag]) => (
               <div key={title} className="ins-feature-card">
                 <div className="ins-feature-icon">{icon}</div>

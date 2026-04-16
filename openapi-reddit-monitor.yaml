@@ -1,0 +1,270 @@
+openapi: 3.1.0
+info:
+  title: Ebenova Reddit & Nairaland Monitor API
+  version: 1.0.0
+  description: |
+    Monitor Reddit and Nairaland for keywords about your product. Get email alerts with AI-drafted replies every 15 minutes. Built for founders doing distribution.
+
+    **Base URL:** `https://insights.ebenova.dev`
+
+    **Authentication:** All endpoints require a Bearer token:
+    ```
+    Authorization: Bearer sk_live_your_api_key
+    ```
+
+    Get your API key at https://ebenova.dev/dashboard
+  contact:
+    email: api@ebenova.dev
+    url: https://ebenova.dev
+  license:
+    name: Proprietary
+    url: https://ebenova.dev/terms
+
+servers:
+  - url: https://insights.ebenova.dev
+    description: Production
+
+tags:
+  - name: Monitors
+    description: Create and manage keyword monitors
+  - name: Matches
+    description: View matches and manage AI reply drafts
+
+paths:
+
+  /v1/monitors:
+    get:
+      operationId: listMonitors
+      summary: List all monitors
+      description: Returns all monitors owned by the authenticated API key.
+      tags: [Monitors]
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of monitors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  monitors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        active:
+                          type: boolean
+                        keywords_count:
+                          type: integer
+                  count:
+                    type: integer
+        '401':
+          description: Unauthorized
+
+    post:
+      operationId: createMonitor
+      summary: Create a keyword monitor
+      description: |
+        Creates a keyword monitor. The worker scans Reddit and Nairaland for matching posts every 15 minutes.
+      tags: [Monitors]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, productContext, keywords]
+              properties:
+                name:
+                  type: string
+                  example: "My Product Monitor"
+                productContext:
+                  type: string
+                  description: Description of your product for AI reply drafting
+                  example: "Signova helps freelancers create contracts and detect scope creep."
+                alertEmail:
+                  type: string
+                  example: "alerts@yourcompany.com"
+                keywords:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      keyword:
+                        type: string
+                      subreddits:
+                        type: array
+                        items:
+                          type: string
+                  example:
+                    - keyword: "freelance contract"
+                      subreddits: ["freelance", "freelancers"]
+                    - keyword: "scope creep"
+                      subreddits: ["freelance", "webdev"]
+      responses:
+        '201':
+          description: Monitor created
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '429':
+          description: Monitor limit reached
+
+  /v1/monitors/{id}:
+    delete:
+      operationId: deleteMonitor
+      summary: Deactivate a monitor
+      description: Deactivates a monitor. Data preserved for 7 days.
+      tags: [Monitors]
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Monitor deactivated
+        '401':
+          description: Unauthorized
+        '404':
+          description: Monitor not found
+
+  /v1/matches:
+    get:
+      operationId: listMatches
+      summary: List recent matches
+      description: |
+        Returns recent Reddit/Nairaland posts matching a monitor's keywords.
+        Each match includes the post, keyword trigger, subreddit safety flag, and AI reply draft.
+      tags: [Matches]
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: monitor_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of matches
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  matches:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        url:
+                          type: string
+                        subreddit:
+                          type: string
+                        keyword:
+                          type: string
+                        draft:
+                          type: string
+                          description: AI-generated reply draft
+                        score:
+                          type: integer
+                        createdAt:
+                          type: string
+        '401':
+          description: Unauthorized
+
+  /v1/matches/draft:
+    post:
+      operationId: regenerateDraft
+      summary: Regenerate AI reply draft
+      description: Re-runs AI draft generation for a specific match using latest product context.
+      tags: [Matches]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [monitor_id, match_id]
+              properties:
+                monitor_id:
+                  type: string
+                match_id:
+                  type: string
+      responses:
+        '200':
+          description: Draft regenerated
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+  /v1/matches/feedback:
+    post:
+      operationId: rateMatchDraft
+      summary: Rate a reply draft
+      description: Records feedback on a draft to improve AI quality over time.
+      tags: [Matches]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [monitor_id, match_id, feedback]
+              properties:
+                monitor_id:
+                  type: string
+                match_id:
+                  type: string
+                feedback:
+                  type: string
+                  enum: [up, down]
+      responses:
+        '200':
+          description: Feedback recorded
+        '401':
+          description: Unauthorized
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Format: Bearer sk_live_your_key. Get your key at ebenova.dev/dashboard'

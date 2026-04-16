@@ -114,7 +114,7 @@ export default function AboutPage() {
         }}>
           {[
             { num: '34', label: 'Document types' },
-            { num: '180+', label: 'Countries supported' },
+            { num: '47', label: 'Geo-currencies' },
             { num: '$4.99', label: 'Per document' },
           ].map((s, i) => (
             <div key={i} style={{

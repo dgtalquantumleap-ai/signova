@@ -382,7 +382,7 @@ export default function WhatsApp() {
         <div className="wa-stats">
           <div className="wa-stat"><span className="wa-stat-num">34</span><span className="wa-stat-label">document types</span></div>
           <div className="wa-stat-div" />
-          <div className="wa-stat"><span className="wa-stat-num">180+</span><span className="wa-stat-label">countries</span></div>
+          <div className="wa-stat"><span className="wa-stat-num">47</span><span className="wa-stat-label">geo-currencies</span></div>
           <div className="wa-stat-div" />
           <div className="wa-stat"><span className="wa-stat-num">{formatPrice(currency)}</span><span className="wa-stat-label">to download</span></div>
         </div>

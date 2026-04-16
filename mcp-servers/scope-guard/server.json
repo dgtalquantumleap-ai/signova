@@ -1,0 +1,12 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.dgtalquantumleap-ai/ebenova-scope-guard",
+  "description": "AI contract scope violation detector. Detect scope creep, draft responses.",
+  "repository": { "url": "https://github.com/dgtalquantumleap-ai/scope-guard-mcp", "source": "github" },
+  "version": "1.0.1",
+  "packages": [{
+    "registryType": "npm", "identifier": "@ebenova/scope-guard-mcp", "version": "1.0.1",
+    "transport": { "type": "stdio" },
+    "environmentVariables": [{ "name": "EBENOVA_API_KEY", "description": "Ebenova API key from ebenova.dev/dashboard", "isRequired": true, "format": "string", "isSecret": true }]
+  }]
+}

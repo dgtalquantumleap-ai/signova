@@ -160,7 +160,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your Service Agreement Free',
-        body: `Signova generates a complete service agreement customised to your business in under 3 minutes. Free preview. $4.99 to download. No account needed. Works for businesses in Nigeria, the UK, Canada, the US, Kenya, Ghana, South Africa, and 180+ countries.`
+        body: `Signova generates a complete service agreement customised to your business in under 3 minutes. Free preview. $4.99 to download. No account needed. Works for businesses in Nigeria, the UK, Canada, the US, Kenya, Ghana, South Africa, and any jurisdiction worldwide.`
       },
     ],
     cta: { label: 'Generate Service Agreement Free →', href: '/generate/service-agreement' }
@@ -197,7 +197,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your Freelance Contract Free',
-        body: `Signova generates a complete, professionally worded freelance contract in under 3 minutes. Works for freelancers in the US, UK, Canada, Australia, Europe, Africa, Asia, and 180+ countries. Free preview, $4.99 to download. No account required.`
+        body: `Signova generates a complete, professionally worded freelance contract in under 3 minutes. Works for freelancers in the US, UK, Canada, Australia, Europe, Africa, Asia, and any jurisdiction worldwide. Free preview, $4.99 to download. No account required.`
       },
     ],
     cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
@@ -234,7 +234,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your NDA Free',
-        body: `Signova generates a complete NDA customised to your situation in under 3 minutes. Free preview, $4.99 to download. No account required. Works in 180+ countries.`
+        body: `Signova generates a complete NDA customised to your situation in under 3 minutes. Free preview, $4.99 to download. No account required. Works in any jurisdiction worldwide.`
       },
     ],
     cta: { label: 'Generate NDA Free →', href: '/generate/nda' }
@@ -267,7 +267,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your Independent Contractor Agreement Free',
-        body: `Signova generates a complete independent contractor agreement in under 3 minutes. Works for businesses and contractors in the US, UK, Canada, Australia, EU, and 180+ countries. Free preview, $4.99 to download. No account required.`
+        body: `Signova generates a complete independent contractor agreement in under 3 minutes. Works for businesses and contractors in the US, UK, Canada, Australia, EU, and any jurisdiction worldwide. Free preview, $4.99 to download. No account required.`
       },
     ],
     cta: { label: 'Generate Contractor Agreement Free →', href: '/generate/independent-contractor' }
@@ -1506,7 +1506,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Step 4: For future projects — the contract you needed',
-        body: `The most painful lesson from non-payment situations is simple: a proper freelance contract before work starts eliminates most of this.\n\nA good freelance contract specifies exactly what deliverables are included, the payment schedule (ideally with a deposit before you start), what happens if the client misses a payment deadline, and who owns the work until payment is received.\n\nYou don't need a lawyer. Generate a Freelance Contract on Signova in 3 minutes — jurisdiction-aware for Nigeria, Kenya, UK, Canada, India, and 180+ countries. No account required.`
+        body: `The most painful lesson from non-payment situations is simple: a proper freelance contract before work starts eliminates most of this.\n\nA good freelance contract specifies exactly what deliverables are included, the payment schedule (ideally with a deposit before you start), what happens if the client misses a payment deadline, and who owns the work until payment is received.\n\nYou don't need a lawyer. Generate a Freelance Contract on Signova in 3 minutes — jurisdiction-aware for Nigeria, Kenya, UK, Canada, India, and any jurisdiction worldwide. No account required.`
       },
       {
         heading: 'What if nothing works?',

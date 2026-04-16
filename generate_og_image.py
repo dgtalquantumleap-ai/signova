@@ -78,7 +78,7 @@ draw.text((W//2 - sub_w//2, 400), sub, fill='#c8c4bc', font=font_sub)
 
 # Stats bar
 stats_y = 470
-stats = ["27 Document Types", "~2 Min Average", "$4.99 Per Document", "180+ Countries"]
+stats = ["34 Document Types", "~2 Min Average", "$4.99 Per Document", "Any Jurisdiction"]
 stat_widths = []
 for s in stats:
     bbox = draw.textbbox((0,0), s, font=font_stats)

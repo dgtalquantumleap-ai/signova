@@ -83,6 +83,51 @@ async function provisionInsightsKey(redis, email, insightsPlan, stripeCustomerId
   return { key, isNew: true }
 }
 
+async function provisionScopeGuardKey(redis, email, tier, stripeCustomerId, stripeSubscriptionId) {
+  // Scope Guard Pro: upgrade existing key with scopeGuard access, or create a new one.
+  // The tier from checkout metadata determines the API tier (defaults to 'growth').
+  const resolvedTier = tier || 'growth'
+  const existingKeyRef = await redis.get(`customer:${stripeCustomerId}:apikey`)
+
+  if (existingKeyRef) {
+    const raw = await redis.get(apiKeyRedisKey(existingKeyRef))
+    if (raw) {
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw
+      parsed.scopeGuard = true
+      parsed.scopeGuardPlan = 'pro'
+      parsed.tier = resolvedTier
+      parsed.monthlyLimit = TIER_LIMITS[resolvedTier] || parsed.monthlyLimit
+      parsed.disabled = false
+      parsed.stripeSubscriptionId = stripeSubscriptionId
+      await redis.set(apiKeyRedisKey(existingKeyRef), JSON.stringify(parsed))
+      console.log(`Updated existing key for ${email} → scopeGuard: true, tier: ${resolvedTier}`)
+      return { key: existingKeyRef, isNew: false }
+    }
+  }
+
+  // No existing key — provision a new one with Scope Guard enabled
+  const key = generateKey()
+  const keyData = {
+    owner: email,
+    tier: resolvedTier,
+    monthlyLimit: TIER_LIMITS[resolvedTier] || 500,
+    label: `Scope Guard Pro`,
+    createdAt: new Date().toISOString(),
+    disabled: false,
+    scopeGuard: true,
+    scopeGuardPlan: 'pro',
+    stripeCustomerId,
+    stripeSubscriptionId,
+  }
+
+  await redis.set(apiKeyRedisKey(key), JSON.stringify(keyData))
+  await redis.set(`customer:${stripeCustomerId}:apikey`, key)
+  await redis.set(`customer:${stripeCustomerId}:email`, email)
+  await redis.set(`owner:${email.toLowerCase().trim()}`, key)
+  console.log(`Provisioned Scope Guard Pro key for ${email} → tier: ${resolvedTier}`)
+  return { key, isNew: true }
+}
+
 async function provisionKey(redis, email, tier, stripeCustomerId, stripeSubscriptionId) {
   // Check if this customer already has a key — update rather than create new
   const existingKeyRef = await redis.get(`customer:${stripeCustomerId}:apikey`)
@@ -118,6 +163,8 @@ async function provisionKey(redis, email, tier, stripeCustomerId, stripeSubscrip
   await redis.set(apiKeyRedisKey(key), JSON.stringify(keyData))
   await redis.set(`customer:${stripeCustomerId}:apikey`, key)
   await redis.set(`customer:${stripeCustomerId}:email`, email)
+  // Reverse lookup: owner:{email} → key (used by /v1/keys/self-serve)
+  await redis.set(`owner:${email.toLowerCase().trim()}`, key)
 
   console.log(`Provisioned new key for ${email} → tier: ${tier}`)
   return { key, isNew: true }
@@ -196,6 +243,11 @@ export default async function handler(req, res) {
             redis, email, insightsPlan, session.customer, session.subscription,
           )
           if (isNew) await sendInsightsWelcomeEmail(email, key, insightsPlan)
+        } else if (product === 'scope-guard-pro') {
+          const { key, isNew } = await provisionScopeGuardKey(
+            redis, email, tier, session.customer, session.subscription,
+          )
+          if (isNew) await sendWelcomeEmail(email, key, tier)
         } else {
           const { key, isNew } = await provisionKey(
             redis, email, tier, session.customer, session.subscription,
@@ -224,6 +276,11 @@ export default async function handler(req, res) {
         if (product === 'insights') {
           parsed.insights = sub.status === 'active'
           parsed.insightsPlan = INSIGHTS_PLAN_MAP[tier] || 'starter'
+        } else if (product === 'scope-guard-pro') {
+          parsed.scopeGuard = sub.status === 'active'
+          parsed.scopeGuardPlan = sub.status === 'active' ? 'pro' : null
+          parsed.tier = tier
+          parsed.monthlyLimit = TIER_LIMITS[tier] || parsed.monthlyLimit
         } else {
           parsed.tier = tier
           parsed.monthlyLimit = TIER_LIMITS[tier] || parsed.monthlyLimit
@@ -247,6 +304,19 @@ export default async function handler(req, res) {
               parsed.insightsPlan = null
               await redis.set(apiKeyRedisKey(existingKey), JSON.stringify(parsed))
               console.log(`Removed Insights access for customer ${sub.customer}`)
+            }
+          }
+        } else if (product === 'scope-guard-pro') {
+          // Remove Scope Guard access but keep the key active for main API
+          const existingKey = await redis.get(`customer:${sub.customer}:apikey`)
+          if (existingKey) {
+            const raw = await redis.get(apiKeyRedisKey(existingKey))
+            if (raw) {
+              const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw
+              parsed.scopeGuard = false
+              parsed.scopeGuardPlan = null
+              await redis.set(apiKeyRedisKey(existingKey), JSON.stringify(parsed))
+              console.log(`Removed Scope Guard access for customer ${sub.customer}`)
             }
           }
         } else {
@@ -371,64 +441,127 @@ async function sendInsightsWelcomeEmail(email, apiKey, insightsPlan) {
 
 async function sendWelcomeEmail(email, apiKey, tier) {
   const resendKey = process.env.RESEND_API_KEY
-  if (!resendKey) return
+  if (!resendKey) {
+    console.warn('[billing/webhook] RESEND_API_KEY not set — skipping welcome email')
+    return
+  }
 
-  const tierLabels = { starter: 'Starter (100 docs/mo)', growth: 'Growth (500 docs/mo)', scale: 'Scale (2,000 docs/mo)' }
+  const tierLabel = {
+    starter: 'Starter',
+    growth:  'Growth',
+    scale:   'Scale',
+  }[tier] || tier
+
+  const monthlyLimit = TIER_LIMITS[tier] ?? 100
+  const limitLabel   = monthlyLimit >= 99999
+    ? 'Unlimited'
+    : `${monthlyLimit.toLocaleString()} docs/month`
+
+  const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#0e0e0e;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+  <div style="max-width:580px;margin:0 auto;padding:48px 24px;">
+
+    <!-- Header -->
+    <div style="margin-bottom:40px;">
+      <span style="font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#c9a84c;">Ebenova</span>
+      <h1 style="font-size:26px;font-weight:700;color:#f0ece4;margin:12px 0 0;">Your API key is ready</h1>
+      <p style="color:#888;font-size:15px;margin:8px 0 0;">
+        You're subscribed to the <strong style="color:#c9a84c;">${tierLabel} plan</strong> — ${limitLabel}.
+      </p>
+    </div>
+
+    <!-- Key card -->
+    <div style="background:#161616;border:1px solid #2a2a2a;border-radius:12px;padding:28px;margin-bottom:32px;">
+      <p style="color:#888;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 12px;">
+        Your API Key
+      </p>
+      <div style="background:#0e0e0e;border:1px solid #333;border-radius:8px;padding:16px 20px;margin-bottom:16px;">
+        <code style="color:#c9a84c;font-family:'Courier New',Courier,monospace;font-size:13px;word-break:break-all;line-height:1.6;">
+          ${apiKey}
+        </code>
+      </div>
+      <p style="color:#e05252;font-size:13px;font-weight:600;margin:0;">
+        &#9888; Store this key securely — it cannot be retrieved again
+      </p>
+    </div>
+
+    <!-- Usage snippet -->
+    <div style="background:#111;border-left:3px solid #c9a84c;border-radius:0 8px 8px 0;padding:16px 20px;margin-bottom:32px;">
+      <p style="color:#888;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 10px;">How to use</p>
+      <code style="color:#f0ece4;font-family:'Courier New',Courier,monospace;font-size:12px;line-height:1.8;">
+        Authorization: Bearer ${apiKey}
+      </code>
+    </div>
+
+    <!-- Plan details -->
+    <div style="background:#161616;border:1px solid #2a2a2a;border-radius:12px;padding:24px;margin-bottom:32px;">
+      <p style="color:#888;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 16px;">Plan details</p>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;">
+        <tr>
+          <td style="padding:6px 0;color:#888;">Plan</td>
+          <td style="padding:6px 0;color:#f0ece4;text-align:right;">${tierLabel}</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 0;color:#888;">Monthly limit</td>
+          <td style="padding:6px 0;color:#f0ece4;text-align:right;">${limitLabel}</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 0;color:#888;">Key prefix</td>
+          <td style="padding:6px 0;color:#f0ece4;text-align:right;font-family:monospace;font-size:12px;">sk_live_...</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- CTAs -->
+    <div style="display:flex;gap:12px;margin-bottom:40px;flex-wrap:wrap;">
+      <a href="https://ebenova.dev/dashboard"
+         style="display:inline-block;background:#c9a84c;color:#0e0e0e;padding:14px 26px;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none;margin-right:12px;margin-bottom:8px;">
+        View Dashboard
+      </a>
+      <a href="https://ebenova.dev/docs"
+         style="display:inline-block;background:transparent;color:#c9a84c;padding:14px 26px;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none;border:1px solid #c9a84c;margin-bottom:8px;">
+        Read the Docs
+      </a>
+    </div>
+
+    <!-- Footer -->
+    <hr style="border:none;border-top:1px solid #1e1e1e;margin:0 0 24px;">
+    <p style="color:#555;font-size:13px;margin:0;">
+      Questions? Reply to this email or reach us at
+      <a href="mailto:api@ebenova.dev" style="color:#c9a84c;text-decoration:none;">api@ebenova.dev</a>
+    </p>
+    <p style="color:#333;font-size:12px;margin:8px 0 0;">
+      Ebenova &mdash; Legal &amp; Business APIs
+    </p>
+  </div>
+</body>
+</html>`
 
   try {
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${resendKey}` },
+    const resp = await fetch('https://api.resend.com/emails', {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${resendKey}`,
+      },
       body: JSON.stringify({
-        from: 'Ebenova API <api@ebenova.dev>',
-        to: email,
-        subject: `Your Ebenova API key — ${tierLabels[tier] || tier}`,
-        html: `
-          <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:40px 24px;">
-            <h1 style="font-size:24px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">
-              Your API key is ready 🎉
-            </h1>
-            <p style="color:#555;margin-bottom:32px;">
-              Thanks for subscribing to Ebenova ${tierLabels[tier] || tier}. 
-              Here's your API key — store it somewhere safe.
-            </p>
-
-            <div style="background:#1a1a1a;border-radius:8px;padding:20px;margin-bottom:32px;">
-              <p style="color:#999;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">
-                Your API Key
-              </p>
-              <code style="color:#c9a84c;font-family:monospace;font-size:14px;word-break:break-all;">
-                ${apiKey}
-              </code>
-            </div>
-
-            <p style="color:#555;font-size:14px;margin-bottom:24px;">
-              Add it to your requests like this:
-            </p>
-            <div style="background:#f5f5f5;border-radius:8px;padding:16px;margin-bottom:32px;">
-              <code style="font-family:monospace;font-size:12px;color:#333;">
-                Authorization: Bearer ${apiKey}
-              </code>
-            </div>
-
-            <div style="margin-bottom:32px;">
-              <a href="https://ebenova.dev/docs" 
-                 style="display:inline-block;background:#c9a84c;color:#0e0e0e;padding:14px 28px;
-                        border-radius:8px;font-weight:600;text-decoration:none;font-size:15px;">
-                View Documentation →
-              </a>
-            </div>
-
-            <p style="color:#999;font-size:13px;">
-              Questions? Reply to this email or reach us at 
-              <a href="mailto:api@ebenova.dev" style="color:#c9a84c;">api@ebenova.dev</a>
-            </p>
-          </div>
-        `,
+        from:    'Ebenova <api@ebenova.dev>',
+        to:      email,
+        subject: `Your Ebenova API key — ${tierLabel} plan`,
+        html,
       }),
     })
+    if (!resp.ok) {
+      const body = await resp.text()
+      console.error(`[billing/webhook] Resend error ${resp.status}:`, body)
+    } else {
+      console.log(`[billing/webhook] Welcome email sent to ${email}`)
+    }
   } catch (err) {
-    console.error('Welcome email failed:', err.message)
-    // Non-fatal
+    // Non-fatal — key is already provisioned
+    console.error('[billing/webhook] sendWelcomeEmail failed:', err.message)
   }
 }

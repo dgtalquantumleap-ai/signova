@@ -1,0 +1,12 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.dgtalquantumleap-ai/ebenova-insights",
+  "description": "Reddit and Nairaland keyword monitoring with AI reply drafts.",
+  "repository": { "url": "https://github.com/dgtalquantumleap-ai/insights-mcp", "source": "github" },
+  "version": "1.0.4",
+  "packages": [{
+    "registryType": "npm", "identifier": "@ebenova/insights-mcp", "version": "1.0.4",
+    "transport": { "type": "stdio" },
+    "environmentVariables": [{ "name": "EBENOVA_API_KEY", "description": "Ebenova API key from ebenova.dev/dashboard", "isRequired": true, "format": "string", "isSecret": true }]
+  }]
+}

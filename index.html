@@ -323,41 +323,10 @@
     </div>
     <script type="module" src="/src/main.jsx"></script>
 
-    <!-- Email obfuscation script -- populates email spans from data attributes (deferred) -->
-    <script defer>
-      document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.email-obfuscated').forEach(function(el) {
-          var user = el.getAttribute('data-user');
-          var domain = el.getAttribute('data-domain');
-          if (user && domain) {
-            el.textContent = user + '@' + domain;
-          }
-        });
-      });
-    </script>
+    <!-- Email obfuscation — external to satisfy CSP no-unsafe-inline -->
+    <script defer src="/email-obfuscate.js"></script>
 
-    <!-- Google Analytics GA4 — deferred until idle to not block interactivity -->
-    <script defer>
-      function loadGA4() {
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-BT3L97QKS5');
-
-        var gaScript = document.createElement('script');
-        gaScript.async = true;
-        gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-BT3L97QKS5';
-        document.head.appendChild(gaScript);
-      }
-
-      // Wait for load event, then wait for idle
-      window.addEventListener('load', function() {
-        if (typeof requestIdleCallback !== 'undefined') {
-          requestIdleCallback(loadGA4, { timeout: 10000 });
-        } else {
-          setTimeout(loadGA4, 5000);
-        }
-      });
-    </script>
+    <!-- Google Analytics GA4 — deferred until idle, external for CSP compliance -->
+    <script defer src="/ga4-loader.js"></script>
   </body>
 </html>

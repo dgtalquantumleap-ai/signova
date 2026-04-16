@@ -2,27 +2,27 @@
 
 .preview-nav {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 24px; height: 64px; gap: 16px;
+  padding: 0 var(--space-5); height: 64px; gap: var(--space-4);
   border-bottom: 1px solid var(--border);
   position: sticky; top: 0; background: rgba(14,14,14,0.95);
   backdrop-filter: blur(12px); z-index: 10; flex-shrink: 0;
 }
-.preview-nav-right { display: flex; align-items: center; gap: 12px; }
-.gen-back { background: none; border: none; color: var(--text2); font-size: 14px; cursor: pointer; transition: color 0.2s; white-space: nowrap; }
+.preview-nav-right { display: flex; align-items: center; gap: var(--space-3); }
+.gen-back { background: none; border: none; color: var(--text2); font-size: var(--text-sm); cursor: pointer; transition: color 0.2s; white-space: nowrap; }
 .gen-back:hover { color: var(--text); }
 .logo { display: flex; align-items: center; gap: 10px; }
 .logo-mark {
   width: 32px; height: 32px; border-radius: 8px;
-  background: var(--gold); color: #0e0e0e;
-  font-family: var(--font-display); font-size: 18px; font-weight: 700;
+  background: var(--gold); color: var(--bg);
+  font-family: var(--font-display); font-size: var(--text-md); font-weight: 700;
   display: flex; align-items: center; justify-content: center;
 }
-.logo-text { font-family: var(--font-display); font-size: 20px; font-weight: 600; }
+.logo-text { font-family: var(--font-display); font-size: var(--text-lg); font-weight: 600; }
 
 .btn-pay, .btn-download {
   padding: 10px 20px; border-radius: var(--radius);
-  font-size: 14px; font-weight: 600; border: none; cursor: pointer;
-  display: flex; align-items: center; gap: 8px; transition: background 0.2s;
+  font-size: var(--text-sm); font-weight: 600; border: none; cursor: pointer;
+  display: flex; align-items: center; gap: var(--space-2); transition: background 0.2s;
 }
 .btn-pay { background: var(--trust-blue); color: #fff; }
 .btn-pay:hover { background: var(--trust-blue-hover); }
@@ -34,7 +34,7 @@
 .preview-layout {
   display: grid; grid-template-columns: 1fr 320px;
   gap: 0; flex: 1; align-items: start;
-  max-width: 1200px; margin: 0 auto; padding: 32px 24px;
+  max-width: 1200px; margin: 0 auto; padding: var(--space-6) var(--space-5);
   width: 100%;
 }
 
@@ -42,24 +42,24 @@
 .preview-doc-wrap { position: relative; }
 .preview-watermark-bar {
   background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2);
-  border-radius: var(--radius); padding: 12px 16px;
-  font-size: 14px; color: var(--gold); margin-bottom: 16px;
-  display: flex; align-items: center; gap: 8px;
+  border-radius: var(--radius); padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm); color: var(--gold); margin-bottom: var(--space-4);
+  display: flex; align-items: center; gap: var(--space-2);
 }
 .preview-watermark-bar button {
   background: none; border: none; color: var(--gold);
-  font-weight: 600; cursor: pointer; text-decoration: underline; font-size: 14px;
+  font-weight: 600; cursor: pointer; text-decoration: underline; font-size: var(--text-sm);
 }
 .preview-paid-bar {
   background: rgba(76,175,125,0.08); border: 1px solid rgba(76,175,125,0.25);
-  border-radius: var(--radius); padding: 12px 16px;
-  font-size: 14px; color: var(--green); margin-bottom: 16px;
+  border-radius: var(--radius); padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm); color: var(--green); margin-bottom: var(--space-4);
 }
 
 .preview-doc {
   position: relative; overflow: hidden;
   background: #fff; border-radius: var(--radius);
-  padding: 56px 64px; color: #111;
+  padding: 56px var(--space-8); color: #111;
   font-family: Georgia, serif;
   box-shadow: 0 8px 48px rgba(0,0,0,0.3);
   min-height: 600px;
@@ -72,7 +72,7 @@
   z-index: 2;
 }
 .watermark-overlay span {
-  font-size: 64px; font-weight: 900;
+  font-size: var(--text-4xl); font-weight: 900;
   color: rgba(201,168,76,0.08); transform: rotate(-30deg);
   text-align: center; white-space: nowrap;
   letter-spacing: 4px;
@@ -82,21 +82,21 @@
 }
 
 .doc-content { position: relative; z-index: 1; }
-.doc-content h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: #111; }
-.doc-content h2 { font-size: 17px; font-weight: 700; margin-top: 32px; margin-bottom: 8px; color: #222; }
+.doc-content h1 { font-size: var(--text-xl); font-weight: 700; margin-bottom: var(--space-2); color: #111; }
+.doc-content h2 { font-size: 17px; font-weight: 700; margin-top: var(--space-6); margin-bottom: var(--space-2); color: #222; }
 .doc-content h3 { font-size: 15px; font-weight: 600; margin-top: 20px; color: #333; }
-.doc-content p { font-size: 13px; line-height: 1.9; margin-bottom: 12px; color: #333; }
+.doc-content p { font-size: 13px; line-height: 1.9; margin-bottom: var(--space-3); color: #333; }
 .doc-content strong { font-weight: 700; color: #111; }
 
 /* ── Sidebar ── */
-.preview-sidebar { padding-left: 32px; position: sticky; top: 96px; align-self: start; }
+.preview-sidebar { padding-left: var(--space-6); position: sticky; top: var(--space-9); align-self: start; }
 .sidebar-card {
   background: var(--bg2); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 28px;
-  display: flex; flex-direction: column; gap: 16px;
+  display: flex; flex-direction: column; gap: var(--space-4);
 }
-.sidebar-title { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--text); }
-.sidebar-body { font-size: 14px; color: var(--text2); line-height: 1.6; }
+.sidebar-title { font-family: var(--font-display); font-size: var(--text-lg); font-weight: 700; color: var(--text); }
+.sidebar-body { font-size: var(--text-sm); color: var(--text2); line-height: 1.6; }
 
 /* ── Sidebar Currency Toggle ── */
 .sidebar-currency-btn {
@@ -104,8 +104,8 @@
   background: rgba(201, 168, 76, 0.08);
   border: 1px solid var(--gold);
   color: var(--gold);
-  padding: 8px 12px;
-  border-radius: 6px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -116,7 +116,7 @@
   position: absolute;
   top: calc(100% + 4px);
   left: 0; right: 0;
-  background: #1a1a1a;
+  background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 6px;
@@ -130,9 +130,9 @@
   background: none;
   border: none;
   color: var(--text2);
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 12px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
   cursor: pointer;
   text-align: left;
   transition: all 0.15s;
@@ -143,7 +143,7 @@
 .sidebar-currency-option:hover { background: rgba(255,255,255,0.05); color: var(--text); }
 .sidebar-currency-option.active { background: rgba(201, 168, 76, 0.15); color: var(--gold); }
 
-.sidebar-price { display: flex; align-items: baseline; gap: 8px; }
+.sidebar-price { display: flex; align-items: baseline; gap: var(--space-2); }
 .price-big { font-family: var(--font-display); font-size: 36px; font-weight: 700; color: var(--gold); }
 .price-label { font-size: 13px; color: var(--text3); }
 .sidebar-error {
@@ -152,7 +152,7 @@
   color: var(--red); font-size: 13px;
 }
 .btn-pay-full, .btn-download-full {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
+  display: flex; align-items: center; justify-content: center; gap: var(--space-2);
   padding: 14px; border-radius: var(--radius);
   font-size: 15px; font-weight: 600; border: none; cursor: pointer;
   transition: background 0.2s;
@@ -162,17 +162,17 @@
 .btn-pay-full:disabled { opacity: 0.7; cursor: not-allowed; }
 .btn-download-full { background: var(--green); color: #fff; }
 .btn-download-full:hover { background: #3da06b; }
-.sidebar-perks { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.sidebar-perks { list-style: none; display: flex; flex-direction: column; gap: var(--space-2); }
 .sidebar-perks li { font-size: 13px; color: var(--text2); }
 
 .sidebar-need-more {
-  margin-top: 16px; padding: 20px;
+  margin-top: var(--space-4); padding: 20px;
   background: var(--bg3); border: 1px solid var(--border);
   border-radius: var(--radius); text-align: center;
-  display: flex; flex-direction: column; gap: 8px;
+  display: flex; flex-direction: column; gap: var(--space-2);
 }
 .sidebar-need-more p { font-size: 13px; color: var(--text2); }
-.sidebar-need-more strong { font-size: 14px; color: var(--text); }
+.sidebar-need-more strong { font-size: var(--text-sm); color: var(--text); }
 .btn-unlimited {
   background: transparent; border: 1px solid var(--border);
   color: var(--text2); padding: 10px; border-radius: 8px;
@@ -182,7 +182,7 @@
 
 /* ── Companion doc suggestion ── */
 .sidebar-companion {
-  padding: 16px;
+  padding: var(--space-4);
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -195,32 +195,32 @@
 .companion-btn {
   display: flex; align-items: center; gap: 10px;
   background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 8px; padding: 10px 12px; cursor: pointer;
+  border-radius: 8px; padding: 10px var(--space-3); cursor: pointer;
   transition: border-color 0.2s; text-align: left; width: 100%;
 }
 .companion-btn:hover { border-color: var(--gold); }
-.companion-icon { font-size: 20px; flex-shrink: 0; }
+.companion-icon { font-size: var(--text-lg); flex-shrink: 0; }
 .companion-btn strong { display: block; font-size: 13px; color: var(--text); font-weight: 600; }
 .companion-sub { display: block; font-size: 11px; color: var(--text3); margin-top: 2px; }
-.companion-arrow { font-size: 14px; color: var(--text3); margin-left: auto; flex-shrink: 0; }
-.need-more-sub { font-size: 12px; color: var(--text3); margin: -8px 0 0; }
+.companion-arrow { font-size: var(--text-sm); color: var(--text3); margin-left: auto; flex-shrink: 0; }
+.need-more-sub { font-size: var(--text-xs); color: var(--text3); margin: -8px 0 0; }
 
 /* ── WhatsApp Fallback ── */
 .sidebar-whatsapp {
-  margin-top: 4px;
-  padding-top: 16px;
+  margin-top: var(--space-1);
+  padding-top: var(--space-4);
   border-top: 1px solid var(--border);
   display: flex; flex-direction: column; gap: 6px;
   align-items: center; text-align: center;
 }
 .wa-label {
-  font-size: 12px; color: var(--text3); margin: 0;
+  font-size: var(--text-xs); color: var(--text3); margin: 0;
 }
 .btn-whatsapp {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 10px 16px; border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center; gap: var(--space-2);
+  padding: 10px var(--space-4); border-radius: var(--radius);
   background: #25D366; color: #fff;
-  font-size: 14px; font-weight: 600;
+  font-size: var(--text-sm); font-weight: 600;
   text-decoration: none;
   transition: background 0.2s;
   width: 100%;
@@ -248,42 +248,42 @@
 @keyframes spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 900px) {
-  .preview-layout { grid-template-columns: 1fr; padding: 24px 16px; }
-  .preview-sidebar { padding-left: 0; margin-top: 24px; position: static; }
+  .preview-layout { grid-template-columns: 1fr; padding: var(--space-5) var(--space-4); }
+  .preview-sidebar { padding-left: 0; margin-top: var(--space-5); position: static; }
   /* Doc first, payment sidebar below — let user see value before paying */
   .preview-layout { display: flex; flex-direction: column; }
   .preview-doc-wrap { order: 1; }
   .preview-sidebar { order: 2; }
-  .preview-doc { padding: 32px 28px; }
+  .preview-doc { padding: var(--space-6) 28px; }
   .watermark-overlay span { font-size: 40px; }
 }
 
 @media (max-width: 640px) {
-  .preview-nav { padding: 0 12px; gap: 8px; height: 56px; }
+  .preview-nav { padding: 0 var(--space-3); gap: var(--space-2); height: 56px; }
   .logo-text { display: none; } /* hide wordmark on tiny screens, keep logo mark */
   .gen-back { font-size: 13px; }
 
   /* Shrink pay button on small screens */
-  .btn-pay { padding: 8px 14px; font-size: 13px; }
-  .btn-download { padding: 8px 14px; font-size: 13px; }
+  .btn-pay { padding: var(--space-2) 14px; font-size: 13px; }
+  .btn-download { padding: var(--space-2) 14px; font-size: 13px; }
 
   /* Full-width CTAs on mobile — easier tap targets */
-  .btn-pay-full { width: 100%; justify-content: center; font-size: 16px; padding: 16px; min-height: 52px; }
+  .btn-pay-full { width: 100%; justify-content: center; font-size: var(--text-base); padding: var(--space-4); min-height: 52px; }
   .btn-usdt { width: 100%; justify-content: center; font-size: 15px; padding: 14px; min-height: 48px; }
-  .btn-download-full { width: 100%; justify-content: center; font-size: 16px; padding: 16px; min-height: 52px; }
-  .trust-line { font-size: 12px; }
-  .sidebar-card { padding: 20px 16px; }
+  .btn-download-full { width: 100%; justify-content: center; font-size: var(--text-base); padding: var(--space-4); min-height: 52px; }
+  .trust-line { font-size: var(--text-xs); }
+  .sidebar-card { padding: 20px var(--space-4); }
 
-  .preview-layout { padding: 16px 12px; }
-  .preview-doc { padding: 24px 16px; }
-  .doc-content h1 { font-size: 20px; }
+  .preview-layout { padding: var(--space-4) var(--space-3); }
+  .preview-doc { padding: var(--space-5) var(--space-4); }
+  .doc-content h1 { font-size: var(--text-lg); }
   .doc-content h2 { font-size: 15px; }
-  .doc-content p { font-size: 14px; line-height: 1.75; }
+  .doc-content p { font-size: var(--text-sm); line-height: 1.75; }
   .watermark-overlay span { font-size: 28px; letter-spacing: 2px; }
 
-  .sidebar-card { padding: 20px 16px; }
+  .sidebar-card { padding: 20px var(--space-4); }
   .price-big { font-size: 28px; }
-  .btn-pay-full, .btn-download-full { padding: 13px; font-size: 14px; }
+  .btn-pay-full, .btn-download-full { padding: 13px; font-size: var(--text-sm); }
 
   /* Stack watermark bar text on tiny screens */
   .preview-watermark-bar { flex-direction: column; align-items: flex-start; gap: 6px; }
@@ -294,7 +294,7 @@
   background: none;
   border: none;
   color: var(--gold);
-  font-size: 12px;
+  font-size: var(--text-xs);
   cursor: pointer;
   padding: 6px 0 0;
   text-decoration: underline;
@@ -305,13 +305,13 @@
 .bypass-toggle:hover { opacity: 1; }
 
 .bypass-box {
-  margin-top: 12px;
+  margin-top: var(--space-3);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 .bypass-label {
-  font-size: 12px;
+  font-size: var(--text-xs);
   color: var(--text-muted);
   margin: 0;
   letter-spacing: 0.5px;
@@ -321,7 +321,7 @@
   border: 1px solid var(--gold);
   border-radius: 8px;
   color: #fff;
-  font-size: 16px;
+  font-size: var(--text-base);
   font-family: 'Courier New', monospace;
   letter-spacing: 3px;
   padding: 10px 14px;
@@ -334,18 +334,18 @@
 .bypass-input:focus { border-color: #fff; box-shadow: 0 0 0 2px rgba(201,168,76,0.2); }
 
 .bypass-error {
-  font-size: 12px;
+  font-size: var(--text-xs);
   color: #ff6b6b;
   margin: 0;
   line-height: 1.5;
 }
 .bypass-submit {
   background: var(--gold);
-  color: #0e0e0e;
+  color: var(--bg);
   border: none;
   border-radius: 8px;
   padding: 11px;
-  font-size: 14px;
+  font-size: var(--text-sm);
   font-weight: 700;
   cursor: pointer;
   width: 100%;
@@ -353,7 +353,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 .bypass-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 .bypass-submit:not(:disabled):hover { opacity: 0.9; }
@@ -362,7 +362,7 @@
   background: none;
   border: none;
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: var(--text-xs);
   cursor: pointer;
   padding: 2px 0;
   text-align: center;
@@ -373,7 +373,7 @@
 
 /* USDT Payment Section */
 .sidebar-usdt {
-  margin-top: 16px;
+  margin-top: var(--space-4);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -382,9 +382,9 @@
 .usdt-divider {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: var(--text-xs);
 }
 .usdt-divider::before,
 .usdt-divider::after {
@@ -406,7 +406,7 @@
   color: #fff;
   border: none;
   border-radius: 10px;
-  padding: 13px 16px;
+  padding: 13px var(--space-4);
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
@@ -415,7 +415,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--space-2);
   letter-spacing: 0.01em;
 }
 .btn-usdt:not(:disabled):hover { opacity: 0.92; transform: translateY(-1px); }
@@ -432,13 +432,13 @@
 /* Post-purchase email capture */
 .buyer-capture {
   margin-top: 20px;
-  padding: 16px;
+  padding: var(--space-4);
   background: rgba(201, 168, 76, 0.06);
   border: 1px solid rgba(201, 168, 76, 0.2);
   border-radius: 10px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 .buyer-capture-label {
   font-size: 13px;
@@ -447,7 +447,7 @@
   margin: 0;
 }
 .buyer-capture-sub {
-  font-size: 12px;
+  font-size: var(--text-xs);
   color: var(--text-muted);
   margin: 0;
   line-height: 1.5;
@@ -456,7 +456,7 @@
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.15);
   border-radius: 7px;
-  padding: 9px 12px;
+  padding: 9px var(--space-3);
   font-size: 13px;
   color: var(--text);
   width: 100%;
@@ -469,7 +469,7 @@
 }
 .buyer-capture-btn {
   background: var(--gold);
-  color: #0e0e0e;
+  color: var(--bg);
   border: none;
   border-radius: 7px;
   padding: 10px;
@@ -490,7 +490,7 @@
 }
 .buyer-capture-done {
   margin-top: 20px;
-  padding: 12px 16px;
+  padding: var(--space-3) var(--space-4);
   background: rgba(38, 161, 123, 0.1);
   border: 1px solid rgba(38, 161, 123, 0.3);
   border-radius: 10px;
@@ -502,29 +502,29 @@
 
 /* ── Promo Code ── */
 .promo-box { margin-top: 14px; }
-.promo-row { display: flex; gap: 8px; }
+.promo-row { display: flex; gap: var(--space-2); }
 .promo-input {
-  flex: 1; padding: 9px 12px; border-radius: 8px;
+  flex: 1; padding: 9px var(--space-3); border-radius: 8px;
   background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
-  color: var(--text); font-size: 14px; letter-spacing: 0.04em;
+  color: var(--text); font-size: var(--text-sm); letter-spacing: 0.04em;
   outline: none; transition: border 0.2s;
 }
 .promo-input:focus { border-color: var(--gold); }
 .promo-input::placeholder { color: var(--text2); }
 .promo-btn {
-  padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer;
+  padding: 9px var(--space-4); border-radius: 8px; border: none; cursor: pointer;
   background: rgba(255,255,255,0.1); color: var(--text);
-  font-size: 14px; font-weight: 600; transition: background 0.2s;
+  font-size: var(--text-sm); font-weight: 600; transition: background 0.2s;
 }
 .promo-btn:hover:not(:disabled) { background: rgba(255,255,255,0.18); }
 .promo-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .promo-success {
-  margin-top: 8px; padding: 8px 12px; border-radius: 6px;
+  margin-top: var(--space-2); padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm);
   background: rgba(38, 161, 123, 0.15); border: 1px solid rgba(38, 161, 123, 0.3);
   color: #26a17b; font-size: 13px;
 }
 .promo-error {
-  margin-top: 8px; padding: 8px 12px; border-radius: 6px;
+  margin-top: var(--space-2); padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm);
   background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2);
   color: #f87171; font-size: 13px;
 }
@@ -540,7 +540,7 @@
 /* ── Pre-purchase Email Capture ── */
 .pre-capture-box {
   margin-top: 20px;
-  padding: 16px;
+  padding: var(--space-4);
   border-radius: 10px;
   border: 1px solid rgba(255,255,255,0.08);
   background: rgba(255,255,255,0.03);
@@ -554,24 +554,24 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--text2);
-  margin: 0 0 4px;
+  margin: 0 0 var(--space-1);
 }
 .pre-capture-sub {
-  font-size: 12px;
+  font-size: var(--text-xs);
   color: var(--text3);
   line-height: 1.5;
   margin: 0 0 10px;
 }
 .pre-capture-input {
   width: 100%;
-  padding: 9px 12px;
+  padding: 9px var(--space-3);
   border-radius: 8px;
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.1);
   color: var(--text);
   font-size: 13px;
   outline: none;
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
   box-sizing: border-box;
   transition: border-color 0.2s;
 }
@@ -592,21 +592,21 @@
 .pre-capture-btn:hover:not(:disabled) { background: rgba(201,168,76,0.15); }
 .pre-capture-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .promo-email-gate {
-  margin-top: 16px;
-  padding: 16px;
+  margin-top: var(--space-4);
+  padding: var(--space-4);
   border-radius: 10px;
   border: 1px solid rgba(201,168,76,0.3);
   background: rgba(201,168,76,0.05);
   animation: fadeInUp 0.4s ease;
 }
 .promo-email-title {
-  font-size: 14px;
+  font-size: var(--text-sm);
   font-weight: 700;
   color: var(--gold);
   margin: 0 0 6px;
 }
 .promo-email-sub {
-  font-size: 12px;
+  font-size: var(--text-xs);
   color: var(--text3);
   line-height: 1.5;
   margin: 0 0 10px;
@@ -625,12 +625,12 @@
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.07);
 }
-.proof-avatars { display: flex; gap: 2px; font-size: 16px; opacity: 0.6; }
-.proof-text { font-size: 12px; color: var(--text2); margin: 0; }
+.proof-avatars { display: flex; gap: 2px; font-size: var(--text-base); opacity: 0.6; }
+.proof-text { font-size: var(--text-xs); color: var(--text2); margin: 0; }
 
 /* ── Guarantee badge ── */
 .sidebar-guarantee {
-  display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; gap: var(--space-2);
   padding: 10px 14px; border-radius: 8px;
   background: rgba(76,175,125,0.08);
   border: 1px solid rgba(76,175,125,0.2);
@@ -646,7 +646,7 @@
 /* ── Trust Badge ── */
 .trust-badge {
   display: flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 8px 12px; border-radius: 8px;
+  padding: var(--space-2) var(--space-3); border-radius: 8px;
   background: var(--trust-blue-dim);
   border: 1px solid rgba(27,79,196,0.3);
   font-size: 11.5px; color: #7eaaff;
@@ -669,7 +669,7 @@
   padding: 10px 14px;
   font-size: 12.5px;
   color: #86efac;
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
   line-height: 1.5;
 }
 .btn-usdt-primary {
@@ -688,15 +688,15 @@
 .btn-usdt-primary:hover { opacity: 0.9; }
 .btn-pay-secondary {
   opacity: 0.7;
-  font-size: 14px;
+  font-size: var(--text-sm);
 }
 
 /* ── Locked/Blurred Section ── */
 .preview-locked-section {
   position: relative;
-  margin-top: 24px;
+  margin-top: var(--space-5);
   border-top: 1px solid #ddd;
-  padding-top: 24px;
+  padding-top: var(--space-5);
 }
 
 .locked-blur {
@@ -729,24 +729,24 @@
 .locked-content {
   text-align: center;
   max-width: 360px;
-  padding: 0 24px;
+  padding: 0 var(--space-5);
 }
 
 .locked-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
+  font-size: var(--text-3xl);
+  margin-bottom: var(--space-4);
 }
 
 .locked-title {
   font-family: var(--font-display), Georgia, serif;
-  font-size: 20px;
+  font-size: var(--text-lg);
   font-weight: 700;
   color: #111;
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 }
 
 .locked-desc {
-  font-size: 14px;
+  font-size: var(--text-sm);
   color: #555;
   line-height: 1.6;
   margin-bottom: 20px;
@@ -755,13 +755,13 @@
 .locked-cta {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   background: var(--trust-blue, #2563eb);
   color: #fff;
   border: none;
   border-radius: 8px;
   padding: 14px 28px;
-  font-size: 16px;
+  font-size: var(--text-base);
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s, transform 0.1s;
@@ -779,27 +779,27 @@
 }
 
 .locked-guarantee {
-  font-size: 12px;
+  font-size: var(--text-xs);
   color: #888;
-  margin-top: 12px;
+  margin-top: var(--space-3);
 }
 
 @media (max-width: 640px) {
-  .locked-content { padding: 0 16px; }
-  .locked-title { font-size: 18px; }
-  .locked-cta { padding: 12px 24px; font-size: 15px; }
+  .locked-content { padding: 0 var(--space-4); }
+  .locked-title { font-size: var(--text-md); }
+  .locked-cta { padding: var(--space-3) var(--space-5); font-size: 15px; }
 }
 
 /* ── Locked overlay email capture ── */
 .locked-email-alt {
-  margin-top: 16px;
-  padding-top: 16px;
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
   border-top: 1px solid rgba(0,0,0,0.08);
 }
 .locked-email-label {
-  font-size: 12px;
+  font-size: var(--text-xs);
   color: #888;
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
 }
 .locked-email-row {
   display: flex;
@@ -807,7 +807,7 @@
 }
 .locked-email-input {
   flex: 1;
-  padding: 9px 12px;
+  padding: 9px var(--space-3);
   border: 1px solid #ddd;
   border-radius: 7px;
   font-size: 13px;
@@ -835,7 +835,7 @@
 .locked-email-btn:hover:not(:disabled) { background: #eee; }
 .locked-email-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .locked-email-done {
-  font-size: 12px;
+  font-size: var(--text-xs);
   color: #26a17b;
   margin: 0;
   text-align: center;
@@ -844,7 +844,7 @@
 /* ── Sidebar email capture (prominent, before payment) ── */
 .sidebar-email-capture {
   margin: 8px 0 12px;
-  padding: 16px;
+  padding: var(--space-4);
   background: rgba(201,168,76,0.06);
   border: 1px solid rgba(201,168,76,0.15);
   border-radius: var(--radius);
@@ -856,19 +856,19 @@
   margin: 0 0 6px;
 }
 .email-capture-sub {
-  font-size: 12px;
+  font-size: var(--text-xs);
   color: var(--text3);
-  margin: 0 0 12px;
+  margin: 0 0 var(--space-3);
   line-height: 1.5;
 }
 .email-capture-row {
   display: flex;
   gap: 6px;
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
 }
 .email-capture-input {
   flex: 1;
-  padding: 9px 12px;
+  padding: 9px var(--space-3);
   border: 1px solid var(--border);
   border-radius: 7px;
   font-size: 13px;
@@ -885,7 +885,7 @@
   border: 1px solid var(--gold);
   border-radius: 7px;
   background: var(--gold);
-  color: #0e0e0e;
+  color: var(--bg);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;

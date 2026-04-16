@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
+import { Handshake, User } from '@phosphor-icons/react'
 import './Landing.css'
 import './NDALanding.css'
 
@@ -69,7 +70,7 @@ export default function NDALanding() {
       <section className="nda-hero">
         <div className="hero-glow" />
         <div className="nda-hero-inner">
-          <div className="nda-badge">🤝 NDA Generator</div>
+          <div className="nda-badge"><Handshake size={16} weight="duotone" style={{ verticalAlign: '-3px', marginRight: 6 }} />NDA Generator</div>
           <h1 className="nda-h1">
             Create a Non-Disclosure<br />Agreement in Minutes
           </h1>
@@ -134,7 +135,7 @@ export default function NDALanding() {
               <span className="nda-type-cta">Generate →</span>
             </div>
             <div className="nda-type-card" onClick={() => navigate('/generate/nda')}>
-              <div className="nda-type-icon">👤</div>
+              <div className="nda-type-icon"><User size={28} weight="duotone" /></div>
               <h3>Employee NDA</h3>
               <p>Protect proprietary information, client data, and trade secrets when onboarding staff with access to sensitive systems.</p>
               <span className="nda-type-cta">Generate →</span>

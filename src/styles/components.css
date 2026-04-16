@@ -1,0 +1,202 @@
+/* ──────────────────────────────────────────────────────────────────────────
+   Signova — shared component primitives
+   Build pages by composing these classes. Tokens live in index.css.
+   Do NOT duplicate these patterns with raw hex / px in page CSS.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* ── Layout primitives ──────────────────────────────────────────────────── */
+.sg-section {
+  padding: var(--space-8) var(--space-5);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.sg-section--narrow { max-width: 880px; }
+.sg-section--wide   { max-width: 1320px; }
+
+.sg-stack { display: flex; flex-direction: column; gap: var(--space-4); }
+.sg-stack--lg { gap: var(--space-6); }
+.sg-row { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; }
+
+/* ── Headings & text ────────────────────────────────────────────────────── */
+.sg-display {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  line-height: 1.15;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+.sg-title {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  line-height: 1.25;
+  font-weight: 700;
+  color: var(--text);
+}
+.sg-subtitle {
+  font-size: var(--text-md);
+  line-height: 1.55;
+  color: var(--text2);
+}
+.sg-eyebrow {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.sg-muted { color: var(--text3); }
+
+/* ── Card ───────────────────────────────────────────────────────────────── */
+.sg-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-5);
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+.sg-card:hover { border-color: var(--gold-dim); }
+.sg-card--interactive { cursor: pointer; }
+.sg-card--interactive:hover { transform: translateY(-2px); }
+.sg-card--raised { box-shadow: var(--shadow); }
+.sg-card--compact { padding: var(--space-4); border-radius: var(--radius-sm); }
+
+/* ── Button / CTA ───────────────────────────────────────────────────────── */
+.sg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.2;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.sg-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.sg-btn--primary {
+  background: var(--gold);
+  color: var(--bg);
+}
+.sg-btn--primary:hover:not(:disabled) { background: var(--gold-light); transform: translateY(-1px); }
+.sg-btn--secondary {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border);
+}
+.sg-btn--secondary:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+.sg-btn--ghost {
+  background: transparent;
+  color: var(--text2);
+}
+.sg-btn--ghost:hover:not(:disabled) { color: var(--text); }
+.sg-btn--lg { padding: var(--space-4) var(--space-6); font-size: var(--text-base); }
+.sg-btn--sm { padding: var(--space-2) var(--space-3); font-size: var(--text-xs); }
+
+/* ── Badge / pill ───────────────────────────────────────────────────────── */
+.sg-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.sg-badge--gold    { background: var(--gold-dim);       color: var(--gold-light); }
+.sg-badge--trust   { background: var(--trust-blue-dim); color: var(--trust-blue); }
+.sg-badge--success { background: rgba(76,175,125,0.15); color: var(--green); }
+.sg-badge--danger  { background: rgba(224,82,82,0.15);  color: var(--red); }
+.sg-badge--neutral { background: var(--bg3);            color: var(--text2); }
+
+/* ── Icon tile (rounded square behind a Phosphor icon) ──────────────────── */
+.sg-icon-tile {
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--gold-dim);
+  color: var(--gold);
+  flex-shrink: 0;
+}
+.sg-icon-tile--lg { width: 64px; height: 64px; border-radius: var(--radius); }
+.sg-icon-tile--trust { background: var(--trust-blue-dim); color: var(--trust-blue); }
+.sg-icon-tile--neutral { background: var(--bg3); color: var(--text2); }
+
+/* ── Metric tile (dashboard / hero stat) ────────────────────────────────── */
+.sg-metric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.sg-metric-num {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+.sg-metric-label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text3);
+}
+.sg-metric-sub {
+  font-size: var(--text-xs);
+  color: var(--text2);
+}
+
+/* ── Hero scaffolding ───────────────────────────────────────────────────── */
+.sg-hero {
+  text-align: center;
+  padding: var(--space-9) var(--space-5) var(--space-8);
+  max-width: 880px;
+  margin: 0 auto;
+}
+.sg-hero-title {
+  font-family: var(--font-display);
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text);
+  letter-spacing: -0.025em;
+  margin-bottom: var(--space-4);
+}
+.sg-hero-sub {
+  font-size: var(--text-md);
+  line-height: 1.6;
+  color: var(--text2);
+  max-width: 640px;
+  margin: 0 auto var(--space-6);
+}
+
+/* ── Link ───────────────────────────────────────────────────────────────── */
+.sg-link {
+  color: var(--gold);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 160ms ease;
+}
+.sg-link:hover { border-bottom-color: var(--gold); }
+
+/* ── Responsive clamps for hero/display on small screens ────────────────── */
+@media (max-width: 640px) {
+  .sg-display, .sg-hero-title { font-size: var(--text-3xl); }
+  .sg-title { font-size: var(--text-xl); }
+  .sg-hero { padding: var(--space-7) var(--space-4) var(--space-6); }
+  .sg-section { padding: var(--space-7) var(--space-4); }
+}

@@ -39,6 +39,7 @@ export default async function handler(req, res) {
       customer_email: email || undefined,
       metadata: {
         product: 'scope-guard-pro',
+        tier: 'growth',
       },
       allow_promotion_codes: true,
     })

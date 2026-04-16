@@ -12,6 +12,7 @@
 // }
 
 import Stripe from 'stripe'
+import { parseBody } from '../../lib/parse-body.js'
 
 const PRICE_IDS = {
   // Main API plans (ebenova.dev/dashboard)
@@ -35,15 +36,6 @@ const TIER_LABELS = {
 
 const INSIGHTS_TIERS = new Set(['insights_starter', 'insights_growth', 'insights_scale'])
 
-async function parseBody(req) {
-  if (req.body && typeof req.body === 'object') return req.body
-  return new Promise((resolve, reject) => {
-    let data = ''
-    req.on('data', chunk => { data += chunk })
-    req.on('end', () => { try { resolve(data ? JSON.parse(data) : {}) } catch { resolve({}) } })
-    req.on('error', reject)
-  })
-}
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')

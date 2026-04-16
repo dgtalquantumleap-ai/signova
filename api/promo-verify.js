@@ -34,7 +34,7 @@ export default async function handler(req, res) {
     const secret = process.env.PROMO_SECRET
     if (!secret) return res.status(500).json({ valid: false, error: 'Server misconfigured.' })
     const { createHmac } = await import('crypto')
-    const expectedSig = createHmac('sha256', secret).update(payload).digest('hex').slice(0, 16)
+    const expectedSig = createHmac('sha256', secret).update(payload).digest('hex')
 
     if (sig !== expectedSig) {
       return res.status(400).json({ valid: false, error: 'Invalid token.' })

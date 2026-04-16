@@ -1,0 +1,70 @@
+{
+  "src/pages/ApiLanding.css": {
+    "hex": 4,
+    "px": 208
+  },
+  "src/pages/blog/Blog.css": {
+    "hex": 12,
+    "px": 50
+  },
+  "src/pages/Dashboard.css": {
+    "hex": 36,
+    "px": 104
+  },
+  "src/pages/Docs.css": {
+    "hex": 20,
+    "px": 13
+  },
+  "src/pages/Generator.css": {
+    "hex": 45,
+    "px": 121
+  },
+  "src/pages/GetStarted.css": {
+    "hex": 23,
+    "px": 63
+  },
+  "src/pages/Insights.css": {
+    "hex": 98,
+    "px": 211
+  },
+  "src/pages/InsightsDashboard.css": {
+    "hex": 105,
+    "px": 155
+  },
+  "src/pages/Landing.css": {
+    "hex": 37,
+    "px": 553
+  },
+  "src/pages/LegalPage.css": {
+    "hex": 0,
+    "px": 13
+  },
+  "src/pages/NDALanding.css": {
+    "hex": 5,
+    "px": 48
+  },
+  "src/pages/Preview.css": {
+    "hex": 53,
+    "px": 237
+  },
+  "src/pages/ScopeGuard.css": {
+    "hex": 25,
+    "px": 210
+  },
+  "src/pages/TenancyLanding.css": {
+    "hex": 0,
+    "px": 6
+  },
+  "src/pages/Trust.css": {
+    "hex": 0,
+    "px": 48
+  },
+  "src/pages/VigilLanding.css": {
+    "hex": 13,
+    "px": 113
+  },
+  "src/pages/WhatsApp.css": {
+    "hex": 4,
+    "px": 139
+  }
+}
