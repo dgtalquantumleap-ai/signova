@@ -13,7 +13,8 @@
     "test:ui": "vitest --ui",
     "check:css": "node scripts/check-css-tokens.mjs",
     "check:css:update": "node scripts/check-css-tokens.mjs --update",
-    "keygen": "node scripts/generate-keys.mjs"
+    "keygen": "node scripts/generate-keys.mjs",
+    "smoke": "node scripts/smoke.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",

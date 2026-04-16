@@ -1,0 +1,55 @@
+name: Post-deploy smoke
+
+# Vercel sends deployment_status events to GitHub when a deploy finishes.
+# We only run when state == 'success' AND the deploy is for production.
+# Also runs on push to main as a safety net (handles cases where the
+# deployment_status webhook is delayed or dropped).
+
+on:
+  deployment_status:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: 'Base URL to smoke (default https://www.ebenova.dev)'
+        required: false
+        default: 'https://www.ebenova.dev'
+      api_host:
+        description: 'API host to smoke (default https://api.ebenova.dev)'
+        required: false
+        default: 'https://api.ebenova.dev'
+
+jobs:
+  smoke:
+    name: Smoke production endpoints
+    runs-on: ubuntu-latest
+
+    # deployment_status fires for ALL states (pending, in_progress, success, failure, error).
+    # We only want successful production deployments.
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'deployment_status' &&
+       github.event.deployment_status.state == 'success' &&
+       github.event.deployment.environment == 'Production')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22.x
+          cache: 'npm'
+
+      - name: Run smoke
+        run: node scripts/smoke.mjs
+        env:
+          BASE_URL: ${{ github.event.inputs.base_url || github.event.deployment_status.environment_url || 'https://www.ebenova.dev' }}
+          API_HOST: ${{ github.event.inputs.api_host || 'https://api.ebenova.dev' }}
+          SMOKE_TIMEOUT_MS: 20000
+
+      - name: Notify failure
+        if: failure()
+        run: |
+          echo "::error::Smoke test FAILED against ${BASE_URL:-https://www.ebenova.dev} — production may be broken."
+          echo "::error::Investigate immediately. Last green deploy: $(git log -1 --format=%H)"
