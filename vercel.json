@@ -62,6 +62,37 @@
       "has": [{ "type": "host", "value": "www.getsignova.com" }],
       "destination": "https://www.ebenova.dev/api-landing",
       "permanent": true
+    },
+
+    {
+      "source": "/api",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "destination": "https://www.ebenova.dev/api",
+      "permanent": true
+    },
+    {
+      "source": "/pricing",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "destination": "https://www.ebenova.dev/pricing",
+      "permanent": true
+    },
+    {
+      "source": "/get-started",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "destination": "https://www.ebenova.dev/get-started",
+      "permanent": true
+    },
+    {
+      "source": "/admin",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "destination": "https://www.ebenova.dev/admin",
+      "permanent": true
+    },
+    {
+      "source": "/scope-guard",
+      "has": [{ "type": "host", "value": "www.ebenova.dev" }],
+      "destination": "https://www.getsignova.com/scope-guard",
+      "permanent": true
     }
   ],
   "rewrites": [
