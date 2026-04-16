@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
+import SiteFooter from '../components/SiteFooter'
 import './LegalPage.css'
 
 export default function PrivacyPage() {
@@ -45,6 +46,7 @@ export default function PrivacyPage() {
           <span className="email-obfuscated" data-user="info" data-domain="ebenova.net"></span>
         </a>.</p>
       </div>
+      <SiteFooter variant="signova" />
     </div>
   )
 }

@@ -74,7 +74,7 @@ export default async function handler(req, res) {
             <hr style="border: none; border-top: 1px solid #2a2a2a; margin: 32px 0;" />
             <p style="color: #5a5754; font-size: 12px;">
               Signova · Ebenova Solutions<br/>
-              <a href="mailto:hello@getsignova.com" style="color: #5a5754;">hello@getsignova.com</a>
+              <a href="mailto:info@ebenova.net" style="color: #5a5754;">info@ebenova.net</a>
             </p>
           </div>
         `,

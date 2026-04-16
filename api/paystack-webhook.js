@@ -62,7 +62,7 @@ export default async function handler(req, res) {
               </p>
               <hr style="border:none;border-top:1px solid #2a2a2a;margin:24px 0;"/>
               <p style="color:#5a5754;font-size:11px;">
-                Signova · Questions? <a href="mailto:hello@getsignova.com" style="color:#5a5754;">hello@getsignova.com</a>
+                Signova · Questions? <a href="mailto:info@ebenova.net" style="color:#5a5754;">info@ebenova.net</a>
               </p>
             </div>`,
         }),

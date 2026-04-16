@@ -392,7 +392,7 @@ export default function Insights() {
 
           <div className="ins-api-auth-note">
             Base URL: <code>https://api.ebenova.dev</code> &nbsp;·&nbsp; All endpoints require <code>Authorization: Bearer sk_live_your_key</code> with Insights access.
-            {' '}<a href="https://ebenova.dev/dashboard">Get your API key</a> from the dashboard.
+            {' '}<a href="https://www.ebenova.dev/dashboard">Get your API key</a> from the dashboard.
           </div>
         </div>
       </section>

@@ -409,7 +409,7 @@ export default function ScopeGuard() {
           <a href="https://www.getsignova.com">Home</a>
           <a href="https://www.getsignova.com/#documents">Documents</a>
           <a href="https://ebenova.dev/docs">API Docs</a>
-          <a href="mailto:hello@getsignova.com">Contact</a>
+          <a href="mailto:info@ebenova.net">Contact</a>
         </div>
         <p className="sg-footer-copy">© 2026 Ebenova Solutions · Calgary, Alberta</p>
       </footer>

@@ -10,7 +10,7 @@ export default function Docs() {
       <Helmet>
         <title>API Documentation | Ebenova — Legal Document Generation API</title>
         <meta name="description" content="Generate legally compliant contracts, NDAs, and business documents via API. 34 document types, 18 jurisdictions. Simple REST API with JSON responses." />
-        <link rel="canonical" href="https://ebenova.dev/docs" />
+        <link rel="canonical" href="https://www.ebenova.dev/docs" />
       </Helmet>
 
       <nav className="docs-nav">
@@ -30,7 +30,10 @@ export default function Docs() {
             <li><a href="#generate">Generate Document</a></li>
             <li><a href="#invoices">Generate Invoice</a></li>
             <li><a href="#types">List Document Types</a></li>
+            <li><a href="#templates">Templates &amp; Schemas</a></li>
+            <li><a href="#batch">Batch Generation</a></li>
             <li><a href="#extract">Extract from Conversation</a></li>
+            <li><a href="#contract-link">Contract-Payment Linking</a></li>
             <li><a href="#scope-guard">Scope Guard API</a></li>
             <li><a href="#usage">Check Usage</a></li>
             <li><a href="#document-types">Document Type Reference</a></li>
@@ -38,6 +41,7 @@ export default function Docs() {
             <li><a href="#billing">Billing API</a></li>
             <li><a href="#insights">Insights API</a></li>
             <li><a href="#vigil">Vigil API</a></li>
+            <li><a href="#fieldops">FieldOps Agent API</a></li>
             <li><a href="#pricing">Pricing</a></li>
             <li><a href="#errors">Error Codes</a></li>
           </ul>
@@ -90,7 +94,7 @@ export default function Docs() {
             <p>All API requests (except <code>GET /v1/documents/types</code>) require a Bearer token:</p>
             <pre className="code-block">{`Authorization: Bearer sk_live_your_api_key`}</pre>
             <p>
-              Get your API key at <a href="https://ebenova.dev/dashboard" target="_blank" rel="noopener noreferrer">ebenova.dev/dashboard</a>.
+              Get your API key at <a href="https://www.ebenova.dev/dashboard" target="_blank" rel="noopener noreferrer">ebenova.dev/dashboard</a>.
               Keys starting with <code>sk_test_</code> are for development and have limited functionality.
             </p>
           </section>
@@ -287,6 +291,121 @@ export default function Docs() {
   },
   "missing_fields": ["paymentSchedule", "cautionDeposit", "utilities"]
 }`}</pre>
+          </section>
+
+          {/* ── Templates & Schemas ── */}
+          <section id="templates">
+            <h2>Templates &amp; Field Schemas</h2>
+            <p><code>GET /v1/documents/templates</code></p>
+            <p>
+              Returns the field schema for each document type so you can build dynamic forms,
+              validate input, or understand what data each document needs before generating.
+              <strong>Pure data endpoint — no AI call, no quota cost.</strong>
+            </p>
+
+            <h3>Examples</h3>
+            <pre className="code-block">{`# All templates (full catalog)
+curl "https://api.ebenova.dev/v1/documents/templates" \\
+  -H "Authorization: Bearer sk_live_your_api_key"
+
+# Single template by type
+curl "https://api.ebenova.dev/v1/documents/templates?type=nda" \\
+  -H "Authorization: Bearer sk_live_your_api_key"`}</pre>
+
+            <h3>Response shape</h3>
+            <pre className="code-block">{`{
+  "success": true,
+  "type": "nda",
+  "label": "Non-Disclosure Agreement",
+  "category": "Core Legal",
+  "fields": [
+    { "key": "disclosingParty", "label": "Disclosing Party", "type": "text", "required": true, "placeholder": "Acme Inc." },
+    { "key": "receivingParty", "label": "Receiving Party", "type": "text", "required": true },
+    { "key": "purpose",        "label": "Purpose of Disclosure", "type": "text", "required": true },
+    { "key": "duration",       "label": "Confidentiality Duration", "type": "text", "required": true },
+    { "key": "mutual",         "label": "Mutual NDA?", "type": "select", "options": ["Yes","No"], "required": true },
+    { "key": "jurisdiction",   "label": "Governing Law", "type": "text", "required": false }
+  ]
+}`}</pre>
+            <p><strong>Field types:</strong> <code>text</code>, <code>textarea</code>, <code>select</code> (with <code>options</code> array), <code>date</code>.</p>
+          </section>
+
+          {/* ── Batch Generation ── */}
+          <section id="batch">
+            <h2>Batch Generation</h2>
+            <p><code>POST /v1/documents/batch</code></p>
+            <p>
+              Generate up to <strong>10 documents in a single API call</strong>. Each document is generated
+              independently using the same pipeline as <code>POST /v1/documents/generate</code>. Each successfully
+              generated document counts as 1 toward your monthly quota.
+            </p>
+
+            <h3>Request body</h3>
+            <table className="docs-table">
+              <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>documents</code></td><td>array</td><td>Yes</td><td>Array of <code>{`{ type, fields }`}</code> objects (max 10).</td></tr>
+                <tr><td><code>jurisdiction</code></td><td>string</td><td>No</td><td>Default jurisdiction applied to every document (each can override in its own <code>fields</code>).</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Example</h3>
+            <pre className="code-block">{`curl -X POST "https://api.ebenova.dev/v1/documents/batch" \\
+  -H "Authorization: Bearer sk_live_your_api_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "jurisdiction": "Ontario, Canada",
+    "documents": [
+      { "type": "nda", "fields": { "disclosingParty": "Acme", "receivingParty": "Vendor X", "purpose": "Pilot", "duration": "2 years", "mutual": "Yes" } },
+      { "type": "freelance-contract", "fields": { "clientName": "Acme", "freelancerName": "Jane Doe", "totalFee": "$8,000", "deadline": "May 30, 2026" } }
+    ]
+  }'`}</pre>
+
+            <h3>Response shape</h3>
+            <pre className="code-block">{`{
+  "success": true,
+  "results": [
+    { "index": 0, "type": "nda",                "success": true, "text": "..." },
+    { "index": 1, "type": "freelance-contract", "success": true, "text": "..." }
+  ],
+  "generated": 2,
+  "failed": 0,
+  "_usage": { "documents_used": 47, "documents_remaining": 53 }
+}`}</pre>
+            <p><strong>Partial failures:</strong> if one document fails, the rest still generate. Failed entries return <code>{`{ success: false, error: "..." }`}</code> in their slot.</p>
+          </section>
+
+          {/* ── Contract-Payment Linking ── */}
+          <section id="contract-link">
+            <h2>Contract-Payment Linking</h2>
+            <p><code>POST /v1/contracts/link</code> · <code>GET /v1/contracts/link?contract_id=...</code> · <code>GET /v1/contracts/link?payment_ref=...</code></p>
+            <p>
+              Associate a generated contract with a payment reference (Stripe invoice ID, bank transfer ref,
+              OxaPay/Polar order, etc.). Bidirectional lookup — query by either the contract or the payment.
+              Stored in Redis, scoped to your API key.
+            </p>
+
+            <h3>Create a link</h3>
+            <pre className="code-block">{`curl -X POST "https://api.ebenova.dev/v1/contracts/link" \\
+  -H "Authorization: Bearer sk_live_your_api_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "contract_id": "doc_2026_0042",
+    "payment_ref": "stripe_in_1QrXyZ...",
+    "amount":      4999,
+    "currency":    "USD",
+    "status":      "paid",
+    "notes":       "Annual licence — Acme Inc."
+  }'`}</pre>
+
+            <h3>Look up by contract</h3>
+            <pre className="code-block">{`curl "https://api.ebenova.dev/v1/contracts/link?contract_id=doc_2026_0042" \\
+  -H "Authorization: Bearer sk_live_your_api_key"`}</pre>
+
+            <h3>Look up by payment</h3>
+            <pre className="code-block">{`curl "https://api.ebenova.dev/v1/contracts/link?payment_ref=stripe_in_1QrXyZ..." \\
+  -H "Authorization: Bearer sk_live_your_api_key"`}</pre>
+            <p><strong>Use cases:</strong> reconcile bank transfers to contracts, expose paid-or-not status to a CRM, audit which deliverables a customer has actually paid for.</p>
           </section>
 
           {/* ── Scope Guard API ── */}
@@ -820,10 +939,63 @@ console.log(result.document)`}</pre>
             </table>
           </section>
 
+          {/* ── FieldOps Agent API ── */}
+          <section id="fieldops">
+            <h2>FieldOps Agent API</h2>
+            <p>
+              WhatsApp-native booking, revenue recovery, and staff coordination for service businesses
+              (cleaners, mechanics, electricians, salons). FieldOps runs as a separate Railway service that
+              the Ebenova API proxies into — your API key authenticates to Ebenova, Ebenova authenticates
+              to FieldOps with an internal key.
+            </p>
+            <p>
+              <strong>Separate-service deployment.</strong> The FieldOps server is not bundled with the
+              standard Ebenova API. To enable FieldOps on your account, email{' '}
+              <a href="mailto:info@ebenova.net">info@ebenova.net</a> with your business details.
+            </p>
+
+            <h3>Endpoints</h3>
+            <table className="docs-table">
+              <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td>POST</td><td>/v1/bookings</td><td>Create a new booking (sends WhatsApp confirmation to customer + staff briefing)</td></tr>
+                <tr><td>GET</td><td>/v1/bookings/:id</td><td>Get booking status, payment state, and assignment</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Create a booking</h3>
+            <pre className="code-block">{`curl -X POST "https://api.ebenova.dev/v1/bookings" \\
+  -H "Authorization: Bearer sk_live_your_api_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "customer_name":  "Mrs. Adeyemi",
+    "customer_phone": "+2348012345678",
+    "service":        "Deep clean — 3-bedroom apartment",
+    "date":           "2026-05-02",
+    "time":           "10:00",
+    "address":        "Flat 4B, 22 Bourdillon Rd, Ikoyi, Lagos",
+    "amount_cents":   3500000,
+    "currency":       "NGN",
+    "notes":          "Has 2 cats — please use pet-safe products."
+  }'`}</pre>
+
+            <h3>Required fields</h3>
+            <p><code>customer_name</code>, <code>customer_phone</code>, <code>service</code>, <code>date</code>, <code>time</code>, <code>address</code>.</p>
+
+            <h3>What FieldOps does for each booking</h3>
+            <ul>
+              <li>WhatsApp confirmation message to the customer with booking summary + payment link</li>
+              <li>Staff briefing sent to assigned worker (job details, address pin, customer notes)</li>
+              <li>3-step automated invoice recovery (24h, 72h, 7d reminders) if unpaid after job complete</li>
+              <li>Payment via OxaPay (USDT) or Polar (Mastercard) — your choice per region</li>
+            </ul>
+            <p>If the FieldOps server is not configured, this endpoint returns <code>503 FIELDOPS_UNAVAILABLE</code>.</p>
+          </section>
+
           <section id="support">
             <h2>Support</h2>
             <p>
-              Questions? Email <a href="mailto:api@ebenova.dev">api@ebenova.dev</a> or
+              Questions? Email <a href="mailto:info@ebenova.net">info@ebenova.net</a> or
               open an issue on <a href="https://github.com/dgtalquantumleap-ai/signova" target="_blank" rel="noopener noreferrer">GitHub</a>.
             </p>
           </section>

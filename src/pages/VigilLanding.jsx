@@ -342,7 +342,7 @@ export default function VigilLanding() {
             <a href="/privacy">Privacy</a>
             <a href="/terms">Terms</a>
             <a href="/vigil/terms">Vigil Terms</a>
-            <a href="mailto:hello@ebenova.dev">Contact</a>
+            <a href="mailto:info@ebenova.net">Contact</a>
           </div>
           <p className="vigil-footer-copy">© {new Date().getFullYear()} Ebenova Solutions Inc. All rights reserved.</p>
         </div>

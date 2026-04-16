@@ -70,7 +70,7 @@ const API_CARDS = [
     features: ['Bidirectional lookup', 'Payment status tracking', 'Redis-backed storage'],
     endpoint: 'POST /v1/contracts/link',
     cta: 'View Docs',
-    link: '/docs',
+    link: '/docs#contract-link',
   },
   {
     id: 'batch',
@@ -80,7 +80,7 @@ const API_CARDS = [
     features: ['Up to 10 docs per call', 'Independent processing', 'Detailed results'],
     endpoint: 'POST /v1/documents/batch',
     cta: 'View Docs',
-    link: '/docs',
+    link: '/docs#batch',
   },
   {
     id: 'templates',
@@ -90,17 +90,17 @@ const API_CARDS = [
     features: ['34 document schemas', 'Field types & validation', 'Zero AI cost'],
     endpoint: 'GET /v1/documents/templates',
     cta: 'View Templates',
-    link: '/docs#document-types',
+    link: '/docs#templates',
   },
   {
     id: 'fieldops',
     icon: <Robot size={24} weight="duotone" color="currentColor" />,
     title: 'FieldOps Agent API',
-    desc: 'WhatsApp-native booking, revenue recovery, and staff coordination for service businesses. Proxied through the Ebenova API — requires a FieldOps server deployment. Contact api@ebenova.dev to get started.',
+    desc: 'WhatsApp-native booking, revenue recovery, and staff coordination for service businesses. Proxied through the Ebenova API — requires a FieldOps server deployment. Contact info@ebenova.net to get started.',
     features: ['WhatsApp booking + confirmation', '3-step invoice recovery', 'Staff job briefings', '5-tool MCP server', 'OxaPay + Polar payments'],
     endpoint: 'POST /v1/bookings',
-    cta: 'Contact Sales',
-    link: '/contact',
+    cta: 'View Docs',
+    link: '/docs#fieldops',
     highlight: true,
     badge: 'Separate Service',
   },
@@ -334,7 +334,7 @@ export default function ApiLanding() {
                 "@type": "Organization",
                 "name": "Ebenova Solutions",
                 "url": "https://www.ebenova.dev",
-                "email": "api@ebenova.dev"
+                "email": "info@ebenova.net"
               }
             })}</script>
           </>
@@ -468,7 +468,7 @@ export default function ApiLanding() {
             </div>
           </div>
           <div className="not-for" role="note">
-            <p><strong>Not the right fit if:</strong> You only need one-off documents as a non-developer (try <a href="https://getsignova.com" target="_blank" rel="noopener noreferrer">Signova.com</a>) · You need a full e-signature platform (DocuSign is better) · You need US-only card payment processing (Stripe is better)</p>
+            <p><strong>Not the right fit if:</strong> You only need one-off documents as a non-developer (try <a href="https://www.getsignova.com" target="_blank" rel="noopener noreferrer">Signova.com</a>) · You need a full e-signature platform (DocuSign is better) · You need US-only card payment processing (Stripe is better)</p>
           </div>
         </div>
       </section>
@@ -783,7 +783,7 @@ export default function ApiLanding() {
                 Ebenova is that infrastructure."
               </blockquote>
               <p className="founder-contact">
-                Questions? <a href="mailto:olumide@ebenova.dev">Email me directly</a>
+                Questions? <a href="mailto:info@ebenova.net">Email me directly</a>
               </p>
             </div>
           </div>
@@ -817,7 +817,7 @@ export default function ApiLanding() {
               <h4>Company</h4>
               <a href="/about">About</a>
               <a href="/contact">Contact</a>
-              <a href="https://getsignova.com" target="_blank" rel="noopener noreferrer">Signova</a>
+              <a href="https://www.getsignova.com" target="_blank" rel="noopener noreferrer">Signova</a>
             </div>
             <div className="footer-col">
               <h4>Legal</h4>
@@ -827,7 +827,7 @@ export default function ApiLanding() {
             <div className="footer-col">
               <h4>Connect</h4>
               <a href="https://github.com/dgtalquantumleap-ai" target="_blank" rel="noopener noreferrer">GitHub</a>
-              <a href="mailto:olumide@ebenova.net">olumide@ebenova.net</a>
+              <a href="mailto:info@ebenova.net">info@ebenova.net</a>
             </div>
           </div>
         </div>

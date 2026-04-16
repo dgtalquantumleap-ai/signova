@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { House, Buildings, Handshake, DeviceMobile } from '@phosphor-icons/react'
+import SiteFooter from '../components/SiteFooter'
 import './Landing.css'
 import './NDALanding.css'
 import './TenancyLanding.css'
@@ -232,24 +233,7 @@ export default function TenancyLanding() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="footer">
-        <div className="footer-inner">
-          <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            <div className="logo-mark">S</div>
-            <span className="logo-text">Signova</span>
-          </div>
-          <div className="footer-links">
-            <a href="/privacy">Privacy Policy</a>
-            <a href="/terms">Terms of Service</a>
-            <a href="/about">Contact</a>
-          </div>
-          <p className="footer-disc">
-            Signova is a document generation tool, not a law firm. Documents are AI-generated starting points — not legal advice. Consult a qualified attorney for high-stakes matters.
-          </p>
-          <p className="footer-copy">© 2026 Signova · Ebenova Solutions</p>
-        </div>
-      </footer>
+      <SiteFooter variant="signova" />
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
+import SiteFooter from '../components/SiteFooter'
 
 export default function AboutPage() {
   const navigate = useNavigate()
@@ -217,17 +218,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer style={{
-        borderTop: '1px solid var(--border)',
-        padding: '28px 24px', textAlign: 'center'
-      }}>
-        <p style={{ fontSize: '12px', color: 'var(--text3)', margin: 0 }}>
-          © 2026 Signova™ · Ebenova Solutions ·{' '}
-          <a href="/privacy" style={{ color: 'var(--text3)' }}>Privacy</a> ·{' '}
-          <a href="/terms" style={{ color: 'var(--text3)' }}>Terms</a>
-        </p>
-      </footer>
+      <SiteFooter variant="signova" />
     </div>
   )
 }
