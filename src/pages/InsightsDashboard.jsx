@@ -62,10 +62,10 @@ function LoginScreen({ onLogin }) {
         setRequestSuccess(true)
         setRequestEmail('')
       } else {
-        setRequestError('Something went wrong. Email akin@ebenova.dev directly.')
+        setRequestError('Something went wrong. Email info@ebenova.net directly.')
       }
     } catch {
-      setRequestError('Something went wrong. Email akin@ebenova.dev directly.')
+      setRequestError('Something went wrong. Email info@ebenova.net directly.')
     }
     finally { setRequestLoading(false) }
   }

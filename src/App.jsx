@@ -25,6 +25,7 @@ const PricingPage = lazy(() => import('./pages/PricingPage'))
 const ScopeGuard  = lazy(() => import('./pages/ScopeGuard'))
 const Trust       = lazy(() => import('./pages/Trust'))
 const Vigil             = lazy(() => import('./pages/VigilLanding'))
+const VigilTerms        = lazy(() => import('./pages/VigilTerms'))
 const Insights          = lazy(() => import('./pages/Insights'))
 const InsightsDashboard = lazy(() => import('./pages/InsightsDashboard'))
 
@@ -117,6 +118,7 @@ export default function App() {
         <Route path="/get-started" element={<GetStarted />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/vigil" element={<Vigil />} />
+        <Route path="/vigil/terms" element={<VigilTerms />} />
         <Route path="/scope-guard" element={<ScopeGuard />} />
         <Route path="/trust" element={<Trust />} />
         <Route path="/insights" element={<InsightsPage />} />

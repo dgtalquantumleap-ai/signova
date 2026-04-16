@@ -22,6 +22,12 @@ export default function TermsPage() {
         <h1>Terms of Use</h1>
         <p className="legal-date">Last updated: March 2026</p>
 
+        <p style={{ background: '#1a1a1a', border: '1px solid #333', borderRadius: '8px', padding: '14px 18px', fontSize: '14px', color: '#c8c4bc' }}>
+          <strong>Using the Vigil Fraud Alert API?</strong> Vigil has additional terms
+          covering card data, GPS consent, AI decisioning, and acceptable use. See the
+          <a href="/vigil/terms" style={{ color: '#c9a84c', marginLeft: 4 }}>Vigil Terms Addendum</a>.
+        </p>
+
         <h2>1. Acceptance</h2>
         <p>By using Signova ("the Service"), you agree to these Terms. If you do not agree, do not use the Service.</p>
 

@@ -12,17 +12,20 @@
 // }
 
 import Stripe from 'stripe'
-import { parseBody } from '../../lib/parse-body.js'
+import { parseBody } from '../../../lib/parse-body.js'
+
+// Trim to defend against env values accidentally saved with trailing \n or spaces
+const envTrim = (v) => (typeof v === 'string' ? v.trim() : v)
 
 const PRICE_IDS = {
   // Main API plans (ebenova.dev/dashboard)
-  starter:           process.env.STRIPE_PRICE_STARTER,            // $29/mo
-  growth:            process.env.STRIPE_PRICE_GROWTH,             // $79/mo
-  scale:             process.env.STRIPE_PRICE_SCALE,              // $199/mo
+  starter:           envTrim(process.env.STRIPE_PRICE_STARTER),            // $29/mo
+  growth:            envTrim(process.env.STRIPE_PRICE_GROWTH),             // $79/mo
+  scale:             envTrim(process.env.STRIPE_PRICE_SCALE),              // $199/mo
   // Insights plans (ebenova.dev/insights)
-  insights_starter:  process.env.STRIPE_PRICE_INSIGHTS_STARTER,   // $49/mo
-  insights_growth:   process.env.STRIPE_PRICE_INSIGHTS_GROWTH,    // $99/mo
-  insights_scale:    process.env.STRIPE_PRICE_INSIGHTS_SCALE,     // $249/mo
+  insights_starter:  envTrim(process.env.STRIPE_PRICE_INSIGHTS_STARTER),   // $49/mo
+  insights_growth:   envTrim(process.env.STRIPE_PRICE_INSIGHTS_GROWTH),    // $99/mo
+  insights_scale:    envTrim(process.env.STRIPE_PRICE_INSIGHTS_SCALE),     // $249/mo
 }
 
 const TIER_LABELS = {

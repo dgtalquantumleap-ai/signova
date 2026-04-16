@@ -361,7 +361,7 @@ async function sendPaymentFailedAlert(invoice, redis) {
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${resendKey}` },
       body: JSON.stringify({
         from: 'Ebenova Billing <billing@ebenova.dev>',
-        to: 'akin@ebenova.dev',
+        to: 'info@ebenova.net',
         subject: `⚠️ Payment failed — ${email || invoice.customer} (attempt ${attemptCount}/3)`,
         html: `<div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;">
           <h2 style="color:#c0392b;margin-bottom:8px">⚠️ Payment failed</h2>
@@ -416,8 +416,9 @@ async function sendInsightsWelcomeEmail(email, apiKey, insightsPlan) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${resendKey}` },
       body: JSON.stringify({
-        from: 'Akin at Ebenova <akin@ebenova.dev>',
+        from: 'Ebenova Insights <insights@ebenova.dev>',
         to: email,
+        reply_to: 'info@ebenova.net',
         subject: `Your Ebenova Insights key — ${planLabels[insightsPlan] || insightsPlan}`,
         html: `
           <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:40px 24px;">

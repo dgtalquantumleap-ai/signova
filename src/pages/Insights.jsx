@@ -10,8 +10,11 @@ import { Broadcast, Warning, PenNib, EnvelopeSimple, Target, ShieldCheck, Globe,
 const INS_ICON = { size: 24, weight: 'duotone', color: 'currentColor' }
 import './Insights.css'
 
-const API_BASE   = import.meta.env.VITE_API_BASE   || 'https://api.ebenova.dev'
-const BILLING_BASE = import.meta.env.VITE_API_BASE || 'https://api.ebenova.dev'
+// Use same-origin relative URLs in production so requests work from any host
+// (ebenova.dev, www.ebenova.dev, api.ebenova.dev, getsignova.com — all the same
+// Vercel deployment) and don't trigger cross-origin CSP blocks.
+const API_BASE     = import.meta.env.VITE_API_BASE || ''
+const BILLING_BASE = import.meta.env.VITE_API_BASE || ''
 
 // ── Email preview mock data ───────────────────────────────────────────────────
 const PREVIEW_MATCHES = [
@@ -458,7 +461,7 @@ export default function Insights() {
           <span>·</span>
           <a href="https://getsignova.com">Signova</a>
           <span>·</span>
-          <a href="mailto:akin@ebenova.dev">akin@ebenova.dev</a>
+          <a href="mailto:info@ebenova.net">info@ebenova.net</a>
           <span>·</span>
           <Link to="/privacy">Privacy</Link>
           <span>·</span>

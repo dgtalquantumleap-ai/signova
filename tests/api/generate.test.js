@@ -212,7 +212,9 @@ describe('api/generate.js', () => {
     const res = mockRes()
     await handler(req, res)
     expect(res.statusCode).toBe(200)
-    expect(res.body.text).toBe('Here is your NDA document.')
+    // Premium docs are stamped with a Provenance block appended to the raw text.
+    expect(res.body.text).toContain('Here is your NDA document.')
+    expect(res.body.text).toContain('Document Provenance')
     expect(res.body.isPremium).toBe(true)
   })
 
