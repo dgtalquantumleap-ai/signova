@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import {
   MapPin, Lightning, Robot, Lock, CheckCircle, XCircle, Warning,
 } from '@phosphor-icons/react'
+import SiteFooter from '../components/SiteFooter'
+import SiteNav from '../components/SiteNav'
 import './VigilLanding.css'
 
 const HIW_ICON = { size: 24, weight: 'duotone', color: 'currentColor' }
@@ -49,7 +51,7 @@ export default function VigilLanding() {
     setResult(null)
     setLoading(true)
     try {
-      const res = await fetch('/api/v1/vigil/authorize', {
+      const res = await fetch('/v1/vigil/authorize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -111,20 +113,10 @@ export default function VigilLanding() {
         <meta name="twitter:image" content="https://www.ebenova.dev/og-image.png" />
       </Helmet>
 
-      {/* Nav */}
-      <nav className="vigil-nav">
-        <div className="vigil-nav-inner">
-          <div className="vigil-logo" onClick={() => navigate('/')}>
-            <span className="vigil-logo-mark">E</span>
-            <span className="vigil-logo-text">ebenova.dev</span>
-          </div>
-          <div className="vigil-nav-links">
-            <a href="/">APIs</a>
-            <a href="/docs">Docs</a>
-            <a href="/dashboard" className="vigil-nav-cta">Get API Key — Free →</a>
-          </div>
-        </div>
-      </nav>
+      <SiteNav
+        variant="ebenova"
+        cta={{ label: 'Get API Key — Free →', href: '/dashboard' }}
+      />
 
       {/* Hero */}
       <section className="vigil-hero">
@@ -330,23 +322,7 @@ export default function VigilLanding() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="vigil-footer">
-        <div className="vigil-footer-inner">
-          <div className="vigil-footer-brand">
-            <span className="vigil-logo-mark">E</span>
-            <span>ebenova.dev</span>
-          </div>
-          <div className="vigil-footer-links">
-            <a href="/docs">Docs</a>
-            <a href="/privacy">Privacy</a>
-            <a href="/terms">Terms</a>
-            <a href="/vigil/terms">Vigil Terms</a>
-            <a href="mailto:info@ebenova.net">Contact</a>
-          </div>
-          <p className="vigil-footer-copy">© {new Date().getFullYear()} Ebenova Solutions Inc. All rights reserved.</p>
-        </div>
-      </footer>
+      <SiteFooter variant="ebenova" />
 
     </div>
   )

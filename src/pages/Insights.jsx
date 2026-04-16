@@ -3,12 +3,12 @@
 // Full product page: hero, live preview, how it works, features, API docs, pricing, waitlist
 
 import { useState, useRef } from 'react'
-import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { Broadcast, Warning, PenNib, EnvelopeSimple, Target, ShieldCheck, Globe, Plugs, MagnifyingGlass } from '@phosphor-icons/react'
+import SiteFooter from '../components/SiteFooter'
+import './Insights.css'
 
 const INS_ICON = { size: 24, weight: 'duotone', color: 'currentColor' }
-import './Insights.css'
 
 // Use same-origin relative URLs in production so requests work from any host
 // (ebenova.dev, www.ebenova.dev, api.ebenova.dev, getsignova.com — all the same
@@ -454,21 +454,7 @@ export default function Insights() {
         <CheckoutButton tier="insights_starter" className="ins-btn-gold">Get Starter — $49/mo →</CheckoutButton>
       </section>
 
-      {/* ── Footer ── */}
-      <footer className="ins-footer">
-        <div className="ins-footer-links">
-          <a href="https://ebenova.dev">Ebenova API Platform</a>
-          <span>·</span>
-          <a href="https://getsignova.com">Signova</a>
-          <span>·</span>
-          <a href="mailto:info@ebenova.net">info@ebenova.net</a>
-          <span>·</span>
-          <Link to="/privacy">Privacy</Link>
-          <span>·</span>
-          <Link to="/terms">Terms</Link>
-        </div>
-        <div className="ins-footer-copy">© {new Date().getFullYear()} Ebenova Solutions · Built in Canada</div>
-      </footer>
+      <SiteFooter variant="ebenova" />
 
     </div>
   )

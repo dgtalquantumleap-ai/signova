@@ -1,0 +1,251 @@
+/* src/components/SiteNav.css
+ * Self-contained styling for <SiteNav>. Uses the global brand palette
+ * (#0e0e0e dark bg, #c9a84c gold, #f0ece4 cream text).
+ */
+
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(14, 14, 14, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+}
+
+.site-nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* ── Logo ─────────────────────────────────────────────────────────────── */
+.sn-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #f0ece4;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+.sn-logo:focus-visible {
+  outline: 2px solid #c9a84c;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.sn-logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #c9a84c, #b09238);
+  color: #0e0e0e;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.sn-logo-mark--ebenova {
+  background: linear-gradient(135deg, #c9a84c, #8b6e1a);
+}
+
+.sn-logo-text {
+  color: #f0ece4;
+}
+
+/* ── Right side: links + actions + CTA ────────────────────────────────── */
+.site-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.site-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-nav-links a {
+  color: #c8c4bc;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 120ms ease;
+  padding: 6px 2px;
+}
+
+.site-nav-links a:hover {
+  color: #f0ece4;
+}
+
+.site-nav-links a:focus-visible {
+  outline: 2px solid #c9a84c;
+  outline-offset: 2px;
+  border-radius: 2px;
+  color: #f0ece4;
+}
+
+.site-nav-actions {
+  display: flex;
+  align-items: center;
+}
+
+.site-nav-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #c9a84c;
+  color: #0e0e0e;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 120ms ease, transform 120ms ease;
+}
+
+.site-nav-cta:hover {
+  background: #d6b55a;
+  transform: translateY(-1px);
+}
+
+.site-nav-cta:focus-visible {
+  outline: 2px solid #f0ece4;
+  outline-offset: 2px;
+}
+
+/* ── Burger (mobile) ──────────────────────────────────────────────────── */
+.site-nav-burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.site-nav-burger:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.site-nav-burger:focus-visible {
+  outline: 2px solid #c9a84c;
+  outline-offset: 2px;
+}
+
+.site-nav-burger-bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #f0ece4;
+  transition: transform 180ms ease, opacity 180ms ease;
+  transform-origin: center;
+}
+
+.site-nav-burger-bar.open:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.site-nav-burger-bar.open:nth-child(2) { opacity: 0; }
+.site-nav-burger-bar.open:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+/* ── Mobile menu ──────────────────────────────────────────────────────── */
+.site-nav-mobile {
+  display: none;
+  position: fixed;
+  top: 65px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #0a0a0a;
+  z-index: 99;
+  padding: 24px;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 240ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.site-nav-mobile.open {
+  transform: translateX(0);
+}
+
+.site-nav-mobile ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.site-nav-mobile a {
+  display: block;
+  color: #c8c4bc;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 500;
+  padding: 16px 12px;
+  border-radius: 8px;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.site-nav-mobile a:hover,
+.site-nav-mobile a:focus-visible {
+  color: #f0ece4;
+  background: rgba(201, 168, 76, 0.08);
+  outline: none;
+}
+
+.site-nav-mobile-cta {
+  margin-top: 12px;
+  background: #c9a84c !important;
+  color: #0e0e0e !important;
+  text-align: center;
+  font-weight: 700 !important;
+  font-size: 16px !important;
+}
+
+.site-nav-mobile-cta:hover {
+  background: #d6b55a !important;
+}
+
+/* ── Responsive breakpoints ───────────────────────────────────────────── */
+@media (max-width: 820px) {
+  .site-nav-links { gap: 18px; }
+  .site-nav-links a { font-size: 13px; }
+}
+
+@media (max-width: 720px) {
+  .site-nav-inner { padding: 12px 18px; }
+  .site-nav-links,
+  .site-nav-cta {
+    display: none;
+  }
+  .site-nav-burger {
+    display: flex;
+  }
+  .site-nav-mobile {
+    display: block;
+  }
+  /* Keep actions visible on mobile for things like currency toggle */
+  .site-nav-actions {
+    margin-right: 4px;
+  }
+}

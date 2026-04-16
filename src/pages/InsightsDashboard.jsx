@@ -21,6 +21,11 @@ async function apiFetch(path, apiKey, opts = {}) {
   return res.json()
 }
 
+// Distinguish abort errors (user navigated away mid-fetch) from real errors
+function isAbortError(e) {
+  return e?.name === 'AbortError' || e?.code === 'ERR_ABORTED' || e?.message === 'The operation was aborted'
+}
+
 // ── Login Screen ──────────────────────────────────────────────────────────────
 function LoginScreen({ onLogin }) {
   const [key, setKey]       = useState('')
@@ -222,24 +227,37 @@ function MonitorPanel({ monitor, apiKey, onDeactivate }) {
   const [filter, setFilter]     = useState('all')
   const LIMIT = 10
 
-  const loadMatches = useCallback(async (reset = false) => {
+  const loadMatches = useCallback(async (reset = false, signal) => {
     setLoading(true)
     const off = reset ? 0 : offset
-    const data = await apiFetch(
-      `/v1/insights/matches?monitor_id=${monitor.id}&limit=${LIMIT}&offset=${off}`,
-      apiKey
-    )
-    if (data.success) {
-      const newMatches = data.matches || []
-      setMatches(prev => reset ? newMatches : [...prev, ...newMatches])
-      setOffset(off + newMatches.length)
-      setHasMore(newMatches.length === LIMIT)
-      setLoaded(true)
+    try {
+      const res = await fetch(
+        `${API_BASE}/v1/insights/matches?monitor_id=${monitor.id}&limit=${LIMIT}&offset=${off}`,
+        { headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' }, signal },
+      )
+      const data = await res.json()
+      if (data.success) {
+        const newMatches = data.matches || []
+        setMatches(prev => reset ? newMatches : [...prev, ...newMatches])
+        setOffset(off + newMatches.length)
+        setHasMore(newMatches.length === LIMIT)
+        setLoaded(true)
+      }
+    } catch (e) {
+      if (!isAbortError(e)) throw e
+      // swallow — user navigated away mid-fetch, another effect will refetch
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }, [monitor.id, apiKey, offset])
 
-  useEffect(() => { loadMatches(true) }, [monitor.id])
+  // Refetch on monitor change; abort in-flight request if monitor switches again
+  useEffect(() => {
+    const ctrl = new AbortController()
+    loadMatches(true, ctrl.signal)
+    return () => ctrl.abort()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [monitor.id])
 
   async function handleDeactivate() {
     if (!confirm(`Deactivate "${monitor.name}"?`)) return

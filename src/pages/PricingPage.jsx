@@ -1,26 +1,10 @@
 import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { track } from '../lib/analytics'
+import SiteFooter from '../components/SiteFooter'
+import SiteNav from '../components/SiteNav'
 
 // ─── Plan data ───────────────────────────────────────────────────────────────
-
-const FREE_PLAN = {
-  tier:        'free',
-  name:        'Free',
-  price:       0,
-  limit:       '5 docs/month',
-  description: 'Try the API at no cost.',
-  features: [
-    '5 API calls per month',
-    'All 34 document types',
-    '18 jurisdictions',
-    'JSON + HTML output',
-    'Community support',
-  ],
-  cta:        'Get Free Key',
-  ctaHref:    '/docs#quickstart',
-  highlight:  false,
-}
 
 const PLANS = [
   {
@@ -501,31 +485,10 @@ export default function PricingPage() {
 
       <div style={{ background: '#0e0e0e', minHeight: '100vh', color: '#f0ece4' }}>
 
-        {/* Nav strip */}
-        <nav style={{
-          borderBottom: '1px solid #1a1a1a',
-          padding:      '16px 24px',
-          display:      'flex',
-          alignItems:   'center',
-          justifyContent:'space-between',
-          maxWidth:     '1100px',
-          margin:       '0 auto',
-        }}>
-          <a href="/" style={{ color: '#c9a84c', fontWeight: 800, fontSize: '17px', textDecoration: 'none', letterSpacing: '0.5px' }}>
-            Ebenova
-          </a>
-          <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-            <a href="/docs"      style={{ color: '#888', fontSize: '14px', textDecoration: 'none' }}>Docs</a>
-            <a href="/dashboard" style={{ color: '#888', fontSize: '14px', textDecoration: 'none' }}>Dashboard</a>
-            <a href="/docs#quickstart" style={{
-              background: '#c9a84c', color: '#0e0e0e',
-              padding: '8px 18px', borderRadius: '6px',
-              fontSize: '13px', fontWeight: 700, textDecoration: 'none',
-            }}>
-              Get API key
-            </a>
-          </div>
-        </nav>
+        <SiteNav
+          variant="ebenova"
+          cta={{ label: 'Get API key', href: '/docs#quickstart' }}
+        />
 
         {/* Hero */}
         <div style={{ textAlign: 'center', padding: '80px 24px 56px' }}>
@@ -603,22 +566,9 @@ export default function PricingPage() {
           <FAQ items={FAQS} />
         </div>
 
-        {/* Footer */}
-        <div style={{
-          borderTop:  '1px solid #111',
-          padding:    '28px 24px',
-          textAlign:  'center',
-        }}>
-          <p style={{ color: '#333', fontSize: '13px', margin: 0 }}>
-            &copy; {new Date().getFullYear()} Ebenova &mdash;{' '}
-            <a href="/privacy" style={{ color: '#444', textDecoration: 'none' }}>Privacy</a>
-            {' · '}
-            <a href="/terms"   style={{ color: '#444', textDecoration: 'none' }}>Terms</a>
-            {' · '}
-            <a href="mailto:info@ebenova.net" style={{ color: '#444', textDecoration: 'none' }}>info@ebenova.net</a>
-          </p>
-        </div>
       </div>
+
+      <SiteFooter variant="ebenova" />
 
       {/* Email modal */}
       {selectedPlan && (

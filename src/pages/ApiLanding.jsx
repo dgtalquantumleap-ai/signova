@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { track } from '../lib/analytics'
+import SiteFooter from '../components/SiteFooter'
 import {
   FileText, Receipt, Shield, Lock, ChatCircle, Link,
   Package, ClipboardText, Robot, Broadcast, ArrowsLeftRight,
@@ -790,51 +791,7 @@ export default function ApiLanding() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="api-footer">
-        <div className="api-footer-inner">
-          <div className="api-footer-brand">
-            <div className="api-logo">
-              <span className="api-logo-mark">E</span>
-              <span className="api-logo-text">ebenova.dev</span>
-            </div>
-            <p className="api-footer-desc">
-              Developer-first APIs for legal documents, invoices, and African business workflows.
-            </p>
-          </div>
-
-          <div className="api-footer-links">
-            <div className="footer-col">
-              <h4>Product</h4>
-              <a href="#apis">APIs</a>
-              <a href="/docs#scope-guard">Scope Guard API</a>
-              <a href="/insights">Insights</a>
-              <a href="/pricing">Pricing</a>
-              <a href="#mcp">MCP Servers</a>
-              <a href="/docs">Documentation</a>
-            </div>
-            <div className="footer-col">
-              <h4>Company</h4>
-              <a href="/about">About</a>
-              <a href="/contact">Contact</a>
-              <a href="https://www.getsignova.com" target="_blank" rel="noopener noreferrer">Signova</a>
-            </div>
-            <div className="footer-col">
-              <h4>Legal</h4>
-              <a href="/privacy">Privacy</a>
-              <a href="/terms">Terms</a>
-            </div>
-            <div className="footer-col">
-              <h4>Connect</h4>
-              <a href="https://github.com/dgtalquantumleap-ai" target="_blank" rel="noopener noreferrer">GitHub</a>
-              <a href="mailto:info@ebenova.net">info@ebenova.net</a>
-            </div>
-          </div>
-        </div>
-        <div className="api-footer-copy">
-          © 2026 Ebenova Solutions · Built in Canada · API v1 · Updated April 2026
-        </div>
-      </footer>
+      <SiteFooter variant="ebenova" />
     </div>
   )
 }
