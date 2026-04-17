@@ -161,14 +161,25 @@ export default async function handler(req, res) {
   const isDpa = lower.includes('data processing agreement') || lower.includes('dpa')
 
   // ── Jurisdiction detection ────────────────────────────────────────────────
-  const isNigeria = lower.includes('nigeria')
-  const isQuebec = /\bqu[eé]bec\b/.test(lower) || lower.includes('law 25') || lower.includes('bill 64')
+  // Note: "USA"/"U.S."/"U.S.A." checked against ORIGINAL case (not lowered) to
+  // avoid matching the pronoun "us" (e.g. "send us the draft").
+  const isNigeria = lower.includes('nigeria') || lower.includes('ndpa') || lower.includes('ndpc')
+  const isQuebec = /\bqu[eé]bec\b/.test(lower) || lower.includes('law 25') || lower.includes('bill 64') ||
+    /\b(montr[eé]al|quebec city)\b/.test(lower)
   const isCanada = !isQuebec && (lower.includes('canada') || lower.includes('canadian') ||
-    /\b(ontario|british columbia|\balberta\b|manitoba|saskatchewan|nova scotia|new brunswick|newfoundland|prince edward island|yukon|nunavut|northwest territories)\b/.test(lower) ||
-    lower.includes('pipeda'))
-  const isCalifornia = lower.includes('california') || lower.includes('ccpa') || lower.includes('cpra')
-  const isUSA = !isCalifornia && (lower.includes('united states') || /\bu\.?s\.?a?\.?\b/.test(lower) ||
-    /\b(new york|texas|florida|illinois|washington|massachusetts|pennsylvania|georgia|virginia|colorado|connecticut|utah)\b/.test(lower))
+    /\b(ontario|british columbia|alberta|manitoba|saskatchewan|nova scotia|new brunswick|newfoundland|prince edward island|yukon|nunavut|northwest territories)\b/.test(lower) ||
+    /\b(toronto|vancouver|calgary|edmonton|ottawa|mississauga|winnipeg|halifax|victoria|saskatoon|regina|hamilton)\b/.test(lower) ||
+    /\b(o\.n\.|bc|b\.c\.|ab|mb|sk|ns|nb|pei|yt|nt|nu)\b/.test(lower) ||
+    lower.includes('pipeda') || lower.includes('casl'))
+  const isCalifornia = lower.includes('california') || lower.includes('ccpa') || lower.includes('cpra') ||
+    /\b(san francisco|los angeles|san diego|san jose|sacramento|oakland|santa clara|palo alto|silicon valley)\b/.test(lower)
+  const isUSA = !isCalifornia && (
+    lower.includes('united states') ||
+    /\b(USA|U\.S\.A\.|U\.S\.)\b/.test(prompt) ||  // original case — avoids pronoun "us"
+    lower.includes('ucc ') || lower.includes('can-spam') ||
+    /\b(alabama|alaska|arizona|arkansas|colorado|connecticut|delaware|florida|georgia|hawaii|idaho|illinois|indiana|iowa|kansas|kentucky|louisiana|maine|maryland|massachusetts|michigan|minnesota|mississippi|missouri|montana|nebraska|nevada|new hampshire|new jersey|new mexico|new york|north carolina|north dakota|ohio|oklahoma|oregon|pennsylvania|rhode island|south carolina|south dakota|tennessee|texas|utah|vermont|virginia|washington|west virginia|wisconsin|wyoming)\b/.test(lower) ||
+    /\b(nyc|new york city|chicago|houston|phoenix|philadelphia|dallas|austin|seattle|boston|miami|atlanta|denver|detroit|minneapolis|las vegas)\b/.test(lower)
+  )
 
   // ── Jurisdiction-specific enhancement clauses (for non-DPA docs) ──────────
   const nigeriaClause = isNigeria && !isDpa

@@ -124,13 +124,18 @@ export default async function handler(req, res) {
     const timeoutId = setTimeout(() => controller.abort(), 90000)
 
     // ── Jurisdiction-aware enhancement (non-DPA docs) ─────────────────────
-    const jurLower = String(fields.jurisdiction || jurisdiction || '').toLowerCase()
-    const isCanadaJur = jurLower.includes('canada') || jurLower.includes('pipeda') ||
-      /\b(ontario|british columbia|alberta|manitoba|saskatchewan|nova scotia|new brunswick|newfoundland|prince edward island)\b/.test(jurLower)
+    // jurisdiction comes from a validated field, so matching is safe without pronoun worries.
+    const jurRaw = String(fields.jurisdiction || jurisdiction || '')
+    const jurLower = jurRaw.toLowerCase()
     const isQuebecJur = jurLower.includes('quebec') || jurLower.includes('québec') || jurLower.includes('law 25')
+    const isCanadaJur = !isQuebecJur && (jurLower.includes('canada') || jurLower.includes('pipeda') ||
+      /\b(ontario|british columbia|alberta|manitoba|saskatchewan|nova scotia|new brunswick|newfoundland|prince edward island|yukon|nunavut|northwest territories)\b/.test(jurLower))
     const isCaliforniaJur = jurLower.includes('california') || jurLower.includes('ccpa') || jurLower.includes('cpra')
-    const isUSAJur = !isCaliforniaJur && (jurLower.includes('united states') || /\busa?\b/.test(jurLower) ||
-      /\b(new york|texas|florida|illinois|washington|massachusetts|pennsylvania|georgia|virginia|colorado|connecticut|utah)\b/.test(jurLower))
+    const isUSAJur = !isCaliforniaJur && (
+      jurLower.includes('united states') ||
+      /\b(USA|U\.S\.A\.|U\.S\.)\b/.test(jurRaw) ||
+      /\b(alabama|alaska|arizona|arkansas|colorado|connecticut|delaware|florida|georgia|hawaii|idaho|illinois|indiana|iowa|kansas|kentucky|louisiana|maine|maryland|massachusetts|michigan|minnesota|mississippi|missouri|montana|nebraska|nevada|new hampshire|new jersey|new mexico|new york|north carolina|north dakota|ohio|oklahoma|oregon|pennsylvania|rhode island|south carolina|south dakota|tennessee|texas|utah|vermont|virginia|washington|west virginia|wisconsin|wyoming)\b/.test(jurLower)
+    )
 
     let jurisdictionEnhancement = ''
     if (isQuebecJur) {

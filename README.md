@@ -14,7 +14,7 @@ Signova ships three surfaces from a single codebase:
 - **Developer platform** at `ebenova.dev` + `api.ebenova.dev` — subscription API with keys, usage tracking, and Stripe billing
 - **MCP servers** — Model Context Protocol servers that expose the same legal/insights/scope tooling to AI agents (Claude Desktop, Cursor, etc.)
 
-The platform generates 27+ document types (NDAs, contracts, offer letters, privacy policies, invoices, change orders, etc.) across 18 jurisdictions, with geo-aware currency detection and locale-specific drafting via Anthropic Claude.
+The platform generates 34 document types (NDAs, contracts, offer letters, privacy policies, invoices, change orders, etc.) with jurisdiction-aware drafting for Canada (PIPEDA + Quebec Law 25), the United States (CCPA/CPRA + state privacy laws), the United Kingdom (UK GDPR), the European Union (GDPR), Nigeria (NDPA 2023), South Africa (POPIA), Kenya (DPA 2019), and Ghana (DPA 2012) — all with geo-aware currency detection and locale-specific drafting via Anthropic Claude.
 
 ---
 
@@ -73,8 +73,8 @@ Deployed on **Vercel** (project `signova`, owner `ebenovasolu-5755s-projects`). 
 ## Features
 
 ### Document generation
-- 27+ document types: NDA, freelance/service/consulting agreements, employment offer letters, privacy policy, terms of service, invoices, change orders, scope analysis, and more
-- 18 jurisdictions with locale-aware drafting
+- 34 document types: NDA, freelance/service/consulting agreements, employment offer letters, privacy policy, terms of service, invoices, change orders, scope analysis, and more
+- Jurisdiction-aware drafting across Canada, USA (with state-level awareness), UK, EU, Nigeria, South Africa, Kenya, and Ghana
 - Free Groq-powered preview (`api/generate-preview.js`), premium Claude output on payment verification (`api/generate.js`, `api/v1/documents/generate.js`)
 - Conversation-to-document extraction (`api/v1/extract/conversation.js`)
 

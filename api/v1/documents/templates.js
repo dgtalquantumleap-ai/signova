@@ -110,7 +110,7 @@ const TEMPLATES = {
       { key: 'subProcessors', label: 'Sub-Processors Authorised?', type: 'select', options: ['Yes — with prior written authorisation', 'No — not permitted', 'Yes — specific list attached'], required: true },
       { key: 'securityMeasures', label: 'Technical & Organisational Security Measures', type: 'textarea', required: false, placeholder: 'Encryption at rest, role-based access, 2FA, regular audits, incident response plan' },
       { key: 'dataTransfers', label: 'Cross-Border Data Transfers?', type: 'select', options: ['No — data stays in-country', 'Yes — to specific countries (list them)', 'Yes — globally with adequate safeguards'], required: true },
-      { key: 'jurisdiction', label: 'Governing Law / Data Protection Regime', type: 'select', options: ['Nigeria — NDPA 2023', 'United Kingdom — UK GDPR / DPA 2018', 'European Union — GDPR', 'South Africa — POPIA', 'Kenya — Data Protection Act 2019', 'Ghana — Data Protection Act 2012', 'Other'], required: true },
+      { key: 'jurisdiction', label: 'Governing Law / Data Protection Regime', type: 'select', options: ['Canada — PIPEDA', 'Canada — Quebec Law 25', 'United States — CCPA/CPRA', 'United Kingdom — UK GDPR / DPA 2018', 'European Union — GDPR', 'Nigeria — NDPA 2023', 'South Africa — POPIA', 'Kenya — Data Protection Act 2019', 'Ghana — Data Protection Act 2012', 'Other'], required: true },
       { key: 'dpoContact', label: 'Data Protection Officer / Contact Person', type: 'text', required: false, placeholder: 'dpo@acme.com or Legal Department' },
       { key: 'breachNotificationHours', label: 'Breach Notification Timeline', type: 'text', required: false, placeholder: '24 hours (internal) / 72 hours (to regulator)' },
     ],

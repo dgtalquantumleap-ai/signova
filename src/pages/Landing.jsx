@@ -434,7 +434,7 @@ export default function Landing() {
     <div className="landing">
       <Helmet>
         <title>Signova — Professional Legal Documents for Freelancers, Landlords & Businesses | Free Preview</title>
-        <meta name="description" content="Generate legal contracts in 3 minutes. NDAs, freelance contracts, tenancy agreements and 31 more. Free preview, $4.99 to download. No lawyer needed." />
+        <meta name="description" content="Generate legal contracts in 3 minutes — 34 document types across Canada, US, UK, EU, and Africa. NDAs, freelance contracts, tenancy agreements, privacy policies, DPAs. Free preview, $4.99 to download. No lawyer needed." />
         <meta name="keywords" content="legal document generator Nigeria, tenancy agreement Nigeria, NDA template, freelance contract, deed of assignment Nigeria, loan agreement template, business proposal template, MOU template, hire purchase agreement Nigeria, power of attorney Nigeria, employment offer letter, shareholder agreement, joint venture agreement, service agreement, distribution agreement, quit notice Nigeria, privacy policy generator, terms of service generator" />
         <link rel="canonical" href="https://www.getsignova.com/" />
         <link rel="alternate" hreflang="en" href="https://www.getsignova.com/" />
@@ -797,7 +797,7 @@ export default function Landing() {
             <div className="wa-banner-badge">✉️ WhatsApp, iMessage, Telegram, email — paste any negotiation</div>
             <h2 className="wa-banner-title">Agreed terms in a chat or email? Paste it.</h2>
             <p className="wa-banner-body">
-              We extract the agreed terms — names, amounts, dates, restrictions — and auto-fill your document in seconds. Works for tenancy agreements, loan agreements, freelance contracts and 31 more document types.
+              We extract the agreed terms — names, amounts, dates, restrictions — and auto-fill your document in seconds. Works for tenancy agreements, loan agreements, freelance contracts and 31 more document types (34 total).
             </p>
             <button className="wa-banner-btn" onClick={() => navigate('/whatsapp')}>
               Turn your chat into a contract →
