@@ -177,6 +177,129 @@ const GHANA_DPA_CLAUSES = {
   },
 }
 
+// ── Canada PIPEDA (Personal Information Protection and Electronic Documents Act) ──
+// Federal private-sector privacy law applying to commercial activities across Canada
+// (except where substantially similar provincial legislation applies — e.g. Alberta PIPA,
+// BC PIPA, Quebec Law 25). Enforced by the Office of the Privacy Commissioner of Canada (OPC).
+const PIPEDA_CLAUSES = {
+  dataSubjectRights: {
+    title: 'Individual Rights under PIPEDA (Principles 4.9 & 4.10)',
+    text: `The Processor shall assist the Controller in fulfilling individual rights under the Personal Information Protection and Electronic Documents Act (PIPEDA), including:
+(a) Right of Access (Principle 4.9): Upon written request, an individual shall be informed of the existence, use, and disclosure of their personal information and shall be given access to that information within 30 days, subject to limited exceptions.
+(b) Right of Correction (Principle 4.9.5): Individuals may challenge the accuracy and completeness of their personal information and have it amended as appropriate.
+(c) Right to Withdraw Consent (Principle 4.3.8): Individuals may withdraw consent at any time, subject to legal or contractual restrictions and reasonable notice.
+(d) Right to Challenge Compliance (Principle 4.10): Individuals may challenge an organisation's compliance with PIPEDA by directing complaints to the designated privacy officer.
+
+The Processor shall implement technical and organisational measures to enable the Controller to respond to such requests within the statutory 30-day timeframe.`,
+  },
+  breachNotification: {
+    title: 'Breach of Security Safeguards — Reporting & Notification (PIPEDA s.10.1)',
+    text: `In the event of a breach of security safeguards involving personal information under the Processor's control that creates a real risk of significant harm (RROSH) to an individual, the Processor shall:
+(a) Notify the Controller without undue delay and in any case within 24 hours of becoming aware of the breach, to enable the Controller to meet its statutory obligations under section 10.1 of PIPEDA.
+(b) Provide sufficient information for the Controller to report the breach to the Office of the Privacy Commissioner of Canada (OPC) "as soon as feasible" using the OPC's prescribed form.
+(c) Assist the Controller in notifying affected individuals "as soon as feasible" where there is a real risk of significant harm, and in notifying any other organisation or government institution that may be able to reduce the risk of harm.
+(d) Maintain a record of every breach of security safeguards for a minimum of 24 months from the date the organisation determined the breach occurred, as required by section 10.3 of PIPEDA.`,
+  },
+  crossBorderTransfers: {
+    title: 'Cross-Border Transfers & Accountability (PIPEDA Principle 4.1.3)',
+    text: `Where personal information is transferred to a third party (including a sub-processor) for processing — whether inside or outside Canada — the Processor remains accountable under Principle 4.1.3 of PIPEDA. The Processor shall:
+(a) Use contractual or other means to provide a comparable level of protection while the information is being processed by a third party.
+(b) Inform the Controller in writing of all jurisdictions in which personal information may be stored, processed, or accessed, so the Controller can provide appropriate notice to individuals.
+(c) Where information is transferred outside Canada, notify individuals (via the Controller) that their information may be accessible to foreign governments pursuant to lawful access requests, in accordance with OPC guidance on trans-border data flows.
+(d) For transfers involving Quebec residents, comply with the additional impact-assessment requirements under Quebec Law 25 (see separate clause if applicable).`,
+  },
+  consentAccountability: {
+    title: 'Meaningful Consent & Accountability (PIPEDA Principles 4.1 & 4.3)',
+    text: `The Controller shall obtain meaningful consent from individuals in accordance with PIPEDA Principle 4.3 and the OPC's Guidelines for Obtaining Meaningful Consent, ensuring individuals understand (i) what personal information is being collected, (ii) with whom it is being shared, (iii) for what purposes, and (iv) the risk of harm and other consequences.
+
+The Processor shall process personal information only on documented instructions from the Controller and only for purposes consistent with the consent obtained. The Controller shall designate an individual accountable for compliance (Chief Privacy Officer or equivalent) pursuant to Principle 4.1.`,
+  },
+}
+
+// ── Quebec Law 25 (Act to modernize legislative provisions as regards the protection
+// of personal information, formerly Bill 64) — applies to organisations operating in Quebec.
+// Significantly stricter than PIPEDA; often described as Canada's GDPR.
+const QUEBEC_LAW25_CLAUSES = {
+  dataSubjectRights: {
+    title: 'Rights of Data Subjects under Quebec Law 25',
+    text: `The Processor shall assist the Controller in fulfilling the enhanced individual rights under the Act respecting the protection of personal information in the private sector (as amended by Law 25), including:
+(a) Right to Access and Rectification (ss. 27, 28): Response within 30 days of receipt of a written request, free of charge.
+(b) Right to Data Portability (s. 27, in force since September 22, 2024): Individuals may obtain their computerised personal information in a structured, commonly used technological format, and may require its transfer to any person or body authorised to receive it.
+(c) Right to De-indexing / Right to be Forgotten (s. 28.1): Individuals may require that a hyperlink giving access to their personal information be de-indexed where dissemination causes serious prejudice that outweighs the public interest.
+(d) Right Regarding Automated Decision-Making (s. 12.1): Where a decision is based exclusively on automated processing, individuals must be informed and may submit observations to have the decision reviewed by a natural person.
+(e) Right to be Informed (s. 8): Individuals must be informed of the purposes, categories of persons having access, retention period, and rights of access and rectification at the time of collection.`,
+  },
+  breachNotification: {
+    title: 'Confidentiality Incident Notification (Quebec Law 25, s. 3.5–3.8)',
+    text: `In the event of a "confidentiality incident" (any unauthorised access, use, communication, loss, or other breach of personal information), the Processor shall:
+(a) Notify the Controller without undue delay and in any case within 24 hours of becoming aware of the incident.
+(b) Assist the Controller in assessing whether the incident presents a "risk of serious injury" taking into account the sensitivity of the information, anticipated consequences of its use, and the likelihood that it will be used for injurious purposes.
+(c) Where a risk of serious injury exists, enable the Controller to notify (i) the Commission d'accès à l'information du Québec (CAI) and (ii) the affected individuals with "diligence."
+(d) Maintain a register of confidentiality incidents and provide it to the CAI upon request, pursuant to section 3.8 of the Act.`,
+  },
+  crossBorderTransfers: {
+    title: 'Communication Outside Quebec — Privacy Impact Assessment (s. 17)',
+    text: `Before communicating personal information outside the Province of Quebec (including to other Canadian provinces and to foreign jurisdictions), the Controller must conduct a Privacy Impact Assessment (PIA) pursuant to section 17 of Quebec Law 25. The Processor shall assist the Controller by providing:
+(a) The name and location of all recipients and sub-processors that will access the information outside Quebec.
+(b) The legal regime applicable in each destination, including adequacy assessments.
+(c) Technical, contractual, and organisational safeguards in place to protect the information during and after transfer.
+(d) The means by which individuals may exercise their rights from outside Quebec.
+
+The communication outside Quebec is permitted only if the PIA concludes that the information would receive adequate protection, in particular having regard to generally accepted data protection principles.`,
+  },
+  privacyByDesign: {
+    title: 'Privacy by Default & Technological Product Configuration (s. 9.1)',
+    text: `Where the Processor provides a technological product or service to the Controller that involves the collection of personal information, the Processor shall ensure that the default parameters provide the highest level of confidentiality, without any intervention by the individual (Privacy by Default — section 9.1 of Law 25). Any deviation from this default requires express, informed, and granular opt-in consent from the individual.`,
+  },
+}
+
+// ── USA — CCPA/CPRA (California Consumer Privacy Act as amended by the California
+// Privacy Rights Act) — the de facto baseline for US commercial privacy practice.
+// Includes references to aligned state laws (Virginia VCDPA, Colorado CPA, Connecticut CTDPA,
+// Utah UCPA, Texas TDPSA) where applicable. Enforced by the California Privacy Protection Agency (CPPA).
+const CCPA_CPRA_CLAUSES = {
+  dataSubjectRights: {
+    title: 'Consumer Rights under the CCPA/CPRA (Cal. Civ. Code §§ 1798.100–1798.199.100)',
+    text: `The Processor (acting as a "Service Provider" or "Contractor" as defined at Cal. Civ. Code § 1798.140) shall assist the Business (Controller) in fulfilling consumer rights under the CCPA as amended by the CPRA, including:
+(a) Right to Know (§ 1798.100 / § 1798.110): The categories and specific pieces of personal information collected, categories of sources, business or commercial purpose, and categories of third parties with whom information is shared, for the preceding 12 months (and upon request, beyond 12 months where collected on or after January 1, 2022).
+(b) Right to Delete (§ 1798.105): Deletion of personal information within 45 days of a verifiable consumer request, subject to statutory exceptions.
+(c) Right to Correct (§ 1798.106, added by CPRA): Correction of inaccurate personal information maintained about the consumer.
+(d) Right to Opt Out of Sale or Sharing (§ 1798.120): Including a conspicuous "Do Not Sell or Share My Personal Information" link and honouring the Global Privacy Control (GPC) signal.
+(e) Right to Limit Use of Sensitive Personal Information (§ 1798.121): Including a "Limit the Use of My Sensitive Personal Information" link.
+(f) Right to Non-Discrimination (§ 1798.125): The Business shall not discriminate against consumers for exercising their rights.
+(g) Right to Data Portability (§ 1798.100(d)): Personal information provided in a portable and, to the extent technically feasible, readily usable format.
+
+The Processor shall respond to Business-forwarded requests within 15 business days and shall not sell, share, or retain personal information outside the scope of the written contract required under § 1798.140(ag)(1).`,
+  },
+  breachNotification: {
+    title: 'Security Breach Notification (Cal. Civ. Code § 1798.82; aligned state statutes)',
+    text: `In the event of a breach of the security of the system involving unauthorised acquisition of unencrypted personal information (or encrypted personal information together with the encryption key), the Processor shall:
+(a) Notify the Business (Controller) without undue delay and in any case within 24 hours of discovery to enable the Business to meet its obligation under Cal. Civ. Code § 1798.82 to notify affected California residents "in the most expedient time possible and without unreasonable delay."
+(b) Provide all information required for the Business to satisfy the content requirements of § 1798.82(d), including: the date or estimated date of the breach, the types of personal information involved, toll-free telephone numbers and addresses of the major consumer credit reporting agencies (where Social Security numbers, driver's license numbers, or California identification card numbers are involved), and advice to report suspected identity theft.
+(c) Where the breach affects more than 500 California residents, provide the Business with information necessary to submit the required electronic sample notification to the California Attorney General.
+(d) Provide analogous cooperation for breaches affecting residents of other states with aligned breach-notification statutes (e.g., N.Y. Gen. Bus. Law § 899-aa, Tex. Bus. & Com. Code § 521.053, Va. Code § 18.2-186.6, Fla. Stat. § 501.171), which generally require notification within 30–60 days.`,
+  },
+  crossBorderAndVendor: {
+    title: 'Service Provider / Contractor Obligations (Cal. Civ. Code § 1798.140 & CCPA Regs. § 7051)',
+    text: `The Processor is engaged as a "Service Provider" (or "Contractor") within the meaning of Cal. Civ. Code § 1798.140 and California Code of Regulations § 7051. The Processor shall:
+(a) Process personal information only for the limited and specified business purposes set out in this Agreement.
+(b) NOT sell or share personal information (as those terms are defined by the CCPA/CPRA).
+(c) NOT retain, use, or disclose personal information for any purpose other than the business purposes specified in the Agreement, including NOT retaining, using, or disclosing personal information for a "commercial purpose" outside the direct business relationship.
+(d) NOT combine personal information received from the Business with personal information received from other sources, except as permitted by regulation.
+(e) Comply with applicable CCPA/CPRA obligations and provide the same level of privacy protection as required of the Business.
+(f) Notify the Business within 5 business days if it determines it can no longer meet its obligations under the CCPA/CPRA.
+(g) Grant the Business the right, upon notice, to take reasonable and appropriate steps to stop and remediate unauthorised use of personal information.
+(h) Certify in writing that it understands and will comply with the restrictions in this clause.`,
+  },
+  sensitiveInformation: {
+    title: 'Sensitive Personal Information — Heightened Restrictions (§ 1798.121)',
+    text: `Where the Processor handles "Sensitive Personal Information" as defined at Cal. Civ. Code § 1798.140(ae) — including Social Security numbers, driver's license numbers, financial account credentials, precise geolocation, racial or ethnic origin, religious or philosophical beliefs, union membership, contents of private communications, genetic data, biometric information for identification, health information, and sexual orientation/sex life information — the Processor shall:
+(a) Process such information only for the purposes enumerated in § 1798.121(a) and CCPA Regulations § 7027 (providing the requested goods/services, preventing fraud, ensuring security and integrity, short-term transient use, performing services, verifying/maintaining quality, or as otherwise expressly permitted).
+(b) Honour any consumer "Limit the Use of My Sensitive Personal Information" request forwarded by the Business.
+(c) Apply heightened technical safeguards including encryption at rest and in transit, strict access controls, and audit logging.`,
+  },
+}
+
 // ── Clause registry ────────────────────────────────────────────────────────
 const CLAUSE_REGISTRY = {
   'Nigeria — NDPA 2023': {
@@ -231,6 +354,36 @@ const CLAUSE_REGISTRY = {
     regulator: 'Data Protection Commission (Ghana)',
     clauses: [
       GHANA_DPA_CLAUSES.dataSubjectRights,
+    ],
+  },
+  'Canada — PIPEDA': {
+    regime: 'PIPEDA (Personal Information Protection and Electronic Documents Act)',
+    regulator: 'Office of the Privacy Commissioner of Canada (OPC)',
+    clauses: [
+      PIPEDA_CLAUSES.consentAccountability,
+      PIPEDA_CLAUSES.dataSubjectRights,
+      PIPEDA_CLAUSES.breachNotification,
+      PIPEDA_CLAUSES.crossBorderTransfers,
+    ],
+  },
+  'Canada — Quebec Law 25': {
+    regime: 'Quebec Law 25 (Act respecting the protection of personal information in the private sector, as amended)',
+    regulator: "Commission d'accès à l'information du Québec (CAI)",
+    clauses: [
+      QUEBEC_LAW25_CLAUSES.dataSubjectRights,
+      QUEBEC_LAW25_CLAUSES.breachNotification,
+      QUEBEC_LAW25_CLAUSES.crossBorderTransfers,
+      QUEBEC_LAW25_CLAUSES.privacyByDesign,
+    ],
+  },
+  'United States — CCPA/CPRA': {
+    regime: 'CCPA/CPRA (California Consumer Privacy Act, as amended by the California Privacy Rights Act)',
+    regulator: 'California Privacy Protection Agency (CPPA) & California Attorney General',
+    clauses: [
+      CCPA_CPRA_CLAUSES.crossBorderAndVendor,
+      CCPA_CPRA_CLAUSES.dataSubjectRights,
+      CCPA_CPRA_CLAUSES.sensitiveInformation,
+      CCPA_CPRA_CLAUSES.breachNotification,
     ],
   },
 }

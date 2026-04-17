@@ -123,9 +123,29 @@ export default async function handler(req, res) {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 90000)
 
+    // ── Jurisdiction-aware enhancement (non-DPA docs) ─────────────────────
+    const jurLower = String(fields.jurisdiction || jurisdiction || '').toLowerCase()
+    const isCanadaJur = jurLower.includes('canada') || jurLower.includes('pipeda') ||
+      /\b(ontario|british columbia|alberta|manitoba|saskatchewan|nova scotia|new brunswick|newfoundland|prince edward island)\b/.test(jurLower)
+    const isQuebecJur = jurLower.includes('quebec') || jurLower.includes('québec') || jurLower.includes('law 25')
+    const isCaliforniaJur = jurLower.includes('california') || jurLower.includes('ccpa') || jurLower.includes('cpra')
+    const isUSAJur = !isCaliforniaJur && (jurLower.includes('united states') || /\busa?\b/.test(jurLower) ||
+      /\b(new york|texas|florida|illinois|washington|massachusetts|pennsylvania|georgia|virginia|colorado|connecticut|utah)\b/.test(jurLower))
+
+    let jurisdictionEnhancement = ''
+    if (isQuebecJur) {
+      jurisdictionEnhancement = '\n\nQUEBEC JURISDICTION: Apply Quebec Law 25, the Civil Code of Québec (reference CCQ articles, not common-law doctrine), and the Charter of the French Language. Use CAD currency. Include a language-choice clause.'
+    } else if (isCanadaJur) {
+      jurisdictionEnhancement = '\n\nCANADIAN JURISDICTION: Apply PIPEDA (privacy), CASL (commercial electronic messages), the applicable provincial Employment Standards Act for employment clauses, the Competition Act and provincial Consumer Protection Acts for B2C matters, and the Sale of Goods Act for commercial dealings. Use Canadian spelling and CAD currency. Name the specific province and its courts in governing-law/venue clauses.'
+    } else if (isCaliforniaJur) {
+      jurisdictionEnhancement = '\n\nCALIFORNIA JURISDICTION: Apply CCPA/CPRA for personal-information handling, California Labor Code for employment (note: post-employment non-competes are void under Bus. & Prof. Code §16600 — do not include), the CLRA for consumer terms, and the California Commercial Code for goods. Name a specific California county for venue. Use USD.'
+    } else if (isUSAJur) {
+      jurisdictionEnhancement = '\n\nUS JURISDICTION: Apply the UCC as adopted in the specified state for goods, the Restatement (Second) of Contracts for common-law doctrine, the applicable state data-breach notification statute, state comprehensive privacy laws (VCDPA, CPA, CTDPA, UCPA, TDPSA) where applicable, CAN-SPAM for commercial email, and the Federal Arbitration Act for arbitration clauses. Draft non-competes narrowly (duration, geography, legitimate protectable interest) and note states where they are restricted or void (CA, ND, OK). Name specific state and federal judicial district. Use USD.'
+    }
+
     const systemPrompt = document_type === 'data-processing-agreement'
-      ? buildDpaSystemPrompt(fields.jurisdiction)
-      : 'You are an expert legal document drafter with deep knowledge of international law. Generate comprehensive, professional legal documents tailored precisely to the details provided. Use formal legal language, clear numbered sections, and include all standard clauses. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.'
+      ? buildDpaSystemPrompt(fields.jurisdiction) + '\n\nThis is a premium paid document — make it exceptional.'
+      : 'You are an expert legal document drafter with deep knowledge of international law, including common-law (Canada, US, UK, Commonwealth), civil-law (Quebec), and the North American statutory privacy regimes (PIPEDA, Quebec Law 25, CCPA/CPRA). Generate comprehensive, professional legal documents tailored precisely to the details provided. Use formal legal language, clear numbered sections, and include all standard clauses. Use the spelling conventions of the governing jurisdiction. This is a premium paid document — make it exceptional. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.' + jurisdictionEnhancement
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
