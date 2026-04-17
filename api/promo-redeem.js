@@ -101,6 +101,11 @@ SIGNOVA10: {
     maxUses: 1200,
     description: 'Taryl African Founders Community — 1 free document per member',
   },
+  KATE: {
+    expiresAt: new Date('2026-12-31T23:59:59Z'),
+    maxUses: 50,
+    description: 'KATE promo — 1 free document per use',
+  },
   KREDO: {
     expiresAt: new Date('2026-12-31T23:59:59Z'),
     maxUses: 20,
