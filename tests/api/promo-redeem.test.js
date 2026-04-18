@@ -93,7 +93,7 @@ describe('api/promo-redeem.js', () => {
       .mockResolvedValueOnce({ json: () => Promise.resolve({ result: 1 }) }) // INCR
       .mockResolvedValueOnce({ json: () => Promise.resolve({ result: 1 }) }) // EXPIRE
 
-    const req = mockReq({ code: 'SIGNOVA10' })
+    const req = mockReq({ code: 'AFRICA' })
     const res = mockRes()
     await handler(req, res)
     expect(res.statusCode).toBe(400)
@@ -124,7 +124,7 @@ describe('api/promo-redeem.js', () => {
       .mockResolvedValueOnce({ json: () => Promise.resolve({ result: 1 }) }) // promo-uses INCR
       .mockResolvedValueOnce(resendResponse()) // Resend email
 
-    const req = mockReq({ code: 'SIGNOVA10', docType: 'NDA', docName: 'NDA' })
+    const req = mockReq({ code: 'AFRICA', docType: 'NDA', docName: 'NDA' })
     const res = mockRes()
     await handler(req, res)
     // Should NOT be 400 with "expired" message for a valid, non-expired code
@@ -155,7 +155,7 @@ describe('api/promo-redeem.js', () => {
       .mockResolvedValueOnce({ json: () => Promise.resolve({ result: 1 }) }) // promo-uses INCR
       .mockResolvedValueOnce(resendResponse()) // Resend email
 
-    const req = mockReq({ code: 'SIGNOVA10', docType: 'NDA', docName: 'NDA' })
+    const req = mockReq({ code: 'AFRICA', docType: 'NDA', docName: 'NDA' })
     const res = mockRes()
     await handler(req, res)
     expect(res.statusCode).toBe(200)
@@ -168,7 +168,7 @@ describe('api/promo-redeem.js', () => {
     // INCR returns 6 → count > 5 → rate limited
     mockFetch.mockResolvedValueOnce({ json: () => Promise.resolve({ result: 6 }) }) // rate-limit INCR
 
-    const req = mockReq({ code: 'SIGNOVA10', docType: 'NDA' })
+    const req = mockReq({ code: 'AFRICA', docType: 'NDA' })
     const res = mockRes()
     await handler(req, res)
     expect(res.statusCode).toBe(429)
