@@ -106,6 +106,11 @@ SIGNOVA10: {
     maxUses: 50,
     description: 'KATE promo — 1 free document per use',
   },
+  IRENE: {
+    expiresAt: new Date('2026-12-31T23:59:59Z'),
+    maxUses: 20,
+    description: 'IRENE promo — 1 free document per use',
+  },
   KREDO: {
     expiresAt: new Date('2026-12-31T23:59:59Z'),
     maxUses: 20,
