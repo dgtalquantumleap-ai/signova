@@ -86,15 +86,10 @@ async function atomicIncrementUseCount(code, maxUses) {
 }
 
 const VALID_CODES = {
-SIGNOVA10: {
-    expiresAt: new Date('2026-12-31T23:59:59Z'),
-    maxUses: 500,
-    description: 'General discount — 1 free document',
-  },
   OLUMIDE: {
     expiresAt: new Date('2027-12-31T23:59:59Z'),
-    maxUses: 9999,
-    description: 'Founder access — unlimited testing',
+    maxUses: 50,
+    description: 'Founder access — internal testing only',
   },
   AFRICA: {
     expiresAt: new Date('2026-12-31T23:59:59Z'),
@@ -117,16 +112,6 @@ SIGNOVA10: {
     description: 'Kredo partnership — 1 free document for Kredo early users',
   },
   // ── Accelerator cohort codes ──────────────────────────────────────────────
-  MEST2026: {
-    expiresAt: new Date('2026-12-31T23:59:59Z'),
-    maxUses: 100,
-    description: 'MEST cohort — 1 free document per founder',
-  },
-  CCHUBNIG: {
-    expiresAt: new Date('2026-12-31T23:59:59Z'),
-    maxUses: 200,
-    description: 'CcHUB Nigeria — 1 free document per member',
-  },
   BAOBAB26: {
     expiresAt: new Date('2026-12-31T23:59:59Z'),
     maxUses: 80,
@@ -136,11 +121,6 @@ SIGNOVA10: {
     expiresAt: new Date('2026-12-31T23:59:59Z'),
     maxUses: 50,
     description: 'Accelerate Africa cohort — 1 free document per founder',
-  },
-  TEF2026: {
-    expiresAt: new Date('2026-12-31T23:59:59Z'),
-    maxUses: 1000,
-    description: 'Tony Elumelu Foundation — 1 free document per entrepreneur',
   },
   ROSEMARY: {
     expiresAt: new Date('2026-12-31T23:59:59Z'),
