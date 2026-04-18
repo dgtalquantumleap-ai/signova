@@ -235,11 +235,6 @@ const VALID_CODES = {
     maxUses: 80,
     description: 'Baobab Network cohort — 1 free document per founder',
   },
-  ACCLAFRICA: {
-    expiresAt: new Date('2026-12-31T23:59:59Z'),
-    maxUses: 50,
-    description: 'Accelerate Africa cohort — 1 free document per founder',
-  },
   ROSEMARY: {
     expiresAt: new Date('2026-12-31T23:59:59Z'),
     maxUses: 10,
