@@ -88,6 +88,7 @@ export default async function handler(req, res) {
     'hire-purchase': ['seller', 'buyer', 'asset', 'assetValue', 'deposit', 'installments', 'interestRate', 'country', 'ownershipTransfer', 'defaultClause'],
     'purchase-agreement': ['seller', 'buyer', 'goods', 'purchasePrice', 'paymentMethod', 'deliveryTerms', 'condition', 'warranty', 'country'],
     'data-processing-agreement': ['controllerName', 'processorName', 'dataSubjects', 'dataCategories', 'specialCategoryData', 'processingPurpose', 'processingActivities', 'retentionPeriod', 'subProcessors', 'securityMeasures', 'dataTransfers', 'jurisdiction', 'dpoContact', 'breachNotificationHours'],
+    'safe-agreement': ['companyName', 'companyRegistrationNumber', 'jurisdiction', 'investorName', 'investmentAmount', 'currency', 'valuationCap', 'discountRate', 'mostFavoredNation', 'proRataRights', 'conversionTrigger', 'safeType', 'disputeResolution', 'country'],
   }
 
   const fields = FIELD_MAPS[docType]

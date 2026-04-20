@@ -160,23 +160,50 @@ export default async function handler(req, res) {
   const lower = prompt.toLowerCase()
   const isDpa = lower.includes('data processing agreement') || lower.includes('dpa')
 
+  // Equity-instrument detector. Fires for SAFE, term sheet, shareholder,
+  // founders', vesting, IP assignment, and advisory-board agreements — i.e.
+  // documents where the applicable COMPANY LAW (CAMA, Companies Act, DGCL,
+  // CBCA, etc.) materially changes the drafting, not just data-protection
+  // statutes. Keeps the equity-law clauses below scoped to relevant docs so
+  // e.g. a Nigerian NDA doesn't get spammed with SAFE-specific instructions.
+  const isEquityDoc = lower.includes('safe agreement') || lower.includes('simple agreement for future equity')
+    || lower.includes('term sheet') || lower.includes('shareholder agreement')
+    || lower.includes('shareholders agreement') || lower.includes("shareholders' agreement")
+    || lower.includes('vesting agreement') || lower.includes("founders' agreement")
+    || lower.includes('founders agreement') || lower.includes('ip assignment')
+    || lower.includes('advisory board agreement') || lower.includes('convertible note')
+
   // ── Jurisdiction detection ────────────────────────────────────────────────
   // Note: "USA"/"U.S."/"U.S.A." checked against ORIGINAL case (not lowered) to
   // avoid matching the pronoun "us" (e.g. "send us the draft").
   const isNigeria = lower.includes('nigeria') || lower.includes('ndpa') || lower.includes('ndpc')
+    || lower.includes('cama 2020') || lower.includes('isa 2025') || /\b(lagos|abuja|kano|ibadan|port harcourt)\b/.test(lower)
+  const isKenya = lower.includes('kenya') || lower.includes('kenyan') ||
+    /\b(nairobi|mombasa|kisumu|nakuru)\b/.test(lower) ||
+    lower.includes('companies act 2015') || lower.includes('kenya data protection act')
+  const isGhana = lower.includes('ghana') || lower.includes('ghanaian') ||
+    /\b(accra|kumasi|tema|takoradi)\b/.test(lower) ||
+    lower.includes('companies act 2019') || lower.includes('act 992')
+  const isSouthAfrica = lower.includes('south africa') || lower.includes('south african') ||
+    /\b(johannesburg|cape town|durban|pretoria|sandton)\b/.test(lower) ||
+    lower.includes('popia') || lower.includes('companies act 71 of 2008')
+  const isUK = lower.includes('united kingdom') || lower.includes('england and wales') || lower.includes('england & wales')
+    || /\b(uk|u\.k\.)\b/.test(lower) || lower.includes('british')
+    || /\b(london|manchester|birmingham|edinburgh|glasgow|cardiff|belfast)\b/.test(lower)
+    || lower.includes('companies act 2006')
   const isQuebec = /\bqu[eé]bec\b/.test(lower) || lower.includes('law 25') || lower.includes('bill 64') ||
     /\b(montr[eé]al|quebec city)\b/.test(lower)
   const isCanada = !isQuebec && (lower.includes('canada') || lower.includes('canadian') ||
     /\b(ontario|british columbia|alberta|manitoba|saskatchewan|nova scotia|new brunswick|newfoundland|prince edward island|yukon|nunavut|northwest territories)\b/.test(lower) ||
     /\b(toronto|vancouver|calgary|edmonton|ottawa|mississauga|winnipeg|halifax|victoria|saskatoon|regina|hamilton)\b/.test(lower) ||
     /\b(o\.n\.|bc|b\.c\.|ab|mb|sk|ns|nb|pei|yt|nt|nu)\b/.test(lower) ||
-    lower.includes('pipeda') || lower.includes('casl'))
+    lower.includes('pipeda') || lower.includes('casl') || lower.includes('cbca'))
   const isCalifornia = lower.includes('california') || lower.includes('ccpa') || lower.includes('cpra') ||
     /\b(san francisco|los angeles|san diego|san jose|sacramento|oakland|santa clara|palo alto|silicon valley)\b/.test(lower)
   const isUSA = !isCalifornia && (
     lower.includes('united states') ||
     /\b(USA|U\.S\.A\.|U\.S\.)\b/.test(prompt) ||  // original case — avoids pronoun "us"
-    lower.includes('ucc ') || lower.includes('can-spam') ||
+    lower.includes('ucc ') || lower.includes('can-spam') || lower.includes('delaware') || lower.includes('dgcl') ||
     /\b(alabama|alaska|arizona|arkansas|colorado|connecticut|delaware|florida|georgia|hawaii|idaho|illinois|indiana|iowa|kansas|kentucky|louisiana|maine|maryland|massachusetts|michigan|minnesota|mississippi|missouri|montana|nebraska|nevada|new hampshire|new jersey|new mexico|new york|north carolina|north dakota|ohio|oklahoma|oregon|pennsylvania|rhode island|south carolina|south dakota|tennessee|texas|utah|vermont|virginia|washington|west virginia|wisconsin|wyoming)\b/.test(lower) ||
     /\b(nyc|new york city|chicago|houston|phoenix|philadelphia|dallas|austin|seattle|boston|miami|atlanta|denver|detroit|minneapolis|las vegas)\b/.test(lower)
   )
@@ -202,6 +229,40 @@ export default async function handler(req, res) {
     ? '\n\nIMPORTANT — UNITED STATES JURISDICTION: Apply (i) the Uniform Commercial Code (UCC) as adopted in the specified state for any sale-of-goods, secured transactions, or negotiable instruments clauses; (ii) the Restatement (Second) of Contracts for common-law contract doctrine; (iii) the applicable state data-breach notification statute (N.Y. Gen. Bus. Law §899-aa for New York, Tex. Bus. & Com. Code §521.053 for Texas, Fla. Stat. §501.171 for Florida, etc.) with typical 30–60 day notification windows; (iv) comprehensive state privacy laws where the counterparty handles resident data (Virginia VCDPA, Colorado CPA, Connecticut CTDPA, Utah UCPA, Texas TDPSA — each has distinct consumer rights and sensitive-data handling requirements); (v) CAN-SPAM Act for commercial electronic messages; (vi) the Federal Arbitration Act (9 U.S.C. §§1–16) for arbitration clauses. Non-compete enforceability varies by state — draft narrowly (limited duration, geography, and legitimate protectable interest) and note states where non-competes are void or restricted (CA, ND, OK; narrowed in WA, IL, OR, CO, MA, etc.). Governing-law and forum-selection clauses should name the specific state and federal judicial district. Denominate currency in USD. Include federal arbitration and class-action waiver language where appropriate and permitted.'
     : ''
 
+  // ── Equity / company-law jurisdiction clauses ──────────────────────────────
+  // These fire only for equity instruments (SAFE, term sheet, shareholder,
+  // founders', vesting, IP assignment, advisory board, convertible note) and
+  // reference the applicable COMPANY LAW for each jurisdiction. Data-protection
+  // clauses above handle privacy statutes; these handle share structures,
+  // conversion mechanics, registration of allotment, and the right regulator.
+  const nigeriaEquityClause = isEquityDoc && isNigeria
+    ? '\n\nIMPORTANT — NIGERIAN COMPANY LAW FOR EQUITY INSTRUMENTS: This document concerns issuance of shares / equity rights in a Nigerian-incorporated entity. Strictly apply: (i) the Companies and Allied Matters Act (CAMA) 2020 — use CAMA terminology ("ordinary shares" and "preference shares" — NEVER US-style "common stock" or "preferred stock"). Reference sections 124 (allotment of shares), 125 (return of allotment, filed with the Corporate Affairs Commission (CAC) within 15 days of allotment), 128 (pre-emption rights), 141 (share capital increases), 165 (register of members). For conversion mechanics on the next equity round, require a board resolution, shareholders\' resolution where an increase in share capital is needed, and CAC filing within 15 days. (ii) the Investments and Securities Act (ISA) 2025 for private-placement exemptions — the Agreement should represent that the issuance is a private placement exempt from full SEC registration under ISA 2025, that the investor is a sophisticated or qualified investor, and that no public offering or advertisement has occurred. Reference the relevant SEC Rules on Private Placement. (iii) For governing law default to the Laws of the Federal Republic of Nigeria when Nigeria is the company\'s jurisdiction (NOT Delaware — explicitly reject US defaults). (iv) Dispute resolution: either courts of the Federal Republic of Nigeria (Lagos or Abuja Judicial Division of the Federal High Court / High Court) or arbitration under the Arbitration and Mediation Act 2023, seat in Lagos, administered by LCA / NCIA / ICC as specified. (v) Denominate amounts in Naira (NGN / ₦) or the currency specified, include a clause on CBN foreign-exchange controls if the investment is in USD and conversion or repatriation is contemplated. (vi) Certificate of Incorporation / CAC Registration Number must be stated in the parties block. (vii) Stamping: note that the Agreement is dutiable under the Stamp Duties Act and should be stamped at the FIRS within 30 days of execution.'
+    : ''
+
+  const kenyaEquityClause = isEquityDoc && isKenya
+    ? '\n\nIMPORTANT — KENYAN COMPANY LAW FOR EQUITY INSTRUMENTS: Apply the Companies Act 2015 (Cap. 486) — reference sections 327 (allotment of shares), 334 (return of allotment filed with the Registrar of Companies within 1 month), 338 (pre-emption rights), 344 (alteration of share capital), and Part XXIII for disclosure obligations. Use Kenyan terminology: "ordinary shares" and "preference shares" (not US "common/preferred stock"). For securities law, apply the Capital Markets Act (Cap. 485A) and Capital Markets (Securities) (Public Offers, Listing and Disclosures) Regulations — private placements to accredited investors are exempt under Regulation 21 of the 2002 Regulations. Default governing law to the Laws of Kenya, dispute resolution to the High Court of Kenya at Nairobi or arbitration under the Arbitration Act 1995 with NCIA seat. Reference Business Registration Service (BRS) registration number in parties block. Denominate in KES unless specified.'
+    : ''
+
+  const ghanaEquityClause = isEquityDoc && isGhana
+    ? '\n\nIMPORTANT — GHANAIAN COMPANY LAW FOR EQUITY INSTRUMENTS: Apply the Companies Act 2019 (Act 992) — reference sections 43 (power to issue shares), 45 (allotment of shares), 46 (return of allotment filed with the Registrar of Companies within 28 days), 50 (pre-emption rights), 75 (alteration of stated capital). Use Ghanaian terminology: Ghana abolished par value — shares are "no par value" and the Agreement references "stated capital" rather than authorised capital. For securities regulation apply the Securities Industry Act 2016 (Act 929) and SEC Ghana rules — private placements to qualified investors are exempt under section 109. Default governing law to the Laws of the Republic of Ghana, dispute resolution to the High Court at Accra (Commercial Division) or arbitration under the Alternative Dispute Resolution Act 2010 (Act 798), seat in Accra (GAAC). Reference Registrar-General\'s Department company registration number in parties block. Denominate in GHS unless specified.'
+    : ''
+
+  const ukEquityClause = isEquityDoc && isUK
+    ? '\n\nIMPORTANT — UK COMPANY LAW FOR EQUITY INSTRUMENTS: Apply the Companies Act 2006 — reference sections 549–551 (authority to allot), 561 (pre-emption rights), 617 (alteration of share capital), 561–577 (disapplication of pre-emption), and Part 17 generally. Use UK terminology: "ordinary shares" and "preference shares" (not US "common/preferred stock"). For securities regulation apply FSMA 2000 and the Prospectus Regulation — small-scale private placements to qualified / sophisticated / HNW investors are exempt from prospectus requirements under Article 1(4) of the UK Prospectus Regulation. File SH01 (return of allotment) with Companies House within 1 month. Default governing law to the laws of England and Wales (or Scotland / Northern Ireland if specified), dispute resolution to the courts of England and Wales or arbitration under the Arbitration Act 1996 with LCIA or London seat. Reference Companies House number in parties block. Denominate in GBP unless specified. Note HMRC Stamp Duty / SDRT obligations on share transfers.'
+    : ''
+
+  const southAfricaEquityClause = isEquityDoc && isSouthAfrica
+    ? '\n\nIMPORTANT — SOUTH AFRICAN COMPANY LAW FOR EQUITY INSTRUMENTS: Apply the Companies Act 71 of 2008 — reference sections 38 (allotment), 39 (subscription for shares), 40 (consideration for shares), 41 (shareholder approval for issue of shares to directors or at a discount), 95 (securities register). Use South African terminology: "ordinary shares" / "preference shares", and note that "par value" shares were abolished for new companies — use "no par value" shares and CTC (contributed tax capital). For securities regulation apply the Financial Markets Act 19 of 2012 and the FSCA requirements — private placements to qualified investors under section 96 of the Companies Act are exempt from prospectus. Default governing law to the laws of the Republic of South Africa, dispute resolution to the High Court of South Africa (Gauteng or Western Cape Division) or arbitration under the Arbitration Act 42 of 1965 / AFSA rules, seat in Johannesburg. Reference CIPC registration number in parties block. Denominate in ZAR unless specified. Note SARB exchange-control considerations for cross-border investments.'
+    : ''
+
+  const usEquityClause = isEquityDoc && (isUSA || isCalifornia) && !isNigeria && !isKenya && !isGhana && !isSouthAfrica && !isUK
+    ? '\n\nIMPORTANT — US COMPANY LAW FOR EQUITY INSTRUMENTS: Default incorporation state is Delaware for SAFE and startup documents unless the user specifies otherwise. Apply the Delaware General Corporation Law (DGCL) — reference §151 (classes and series of stock), §152 (issuance of capital stock), §153 (consideration for stock), §157 (rights and options), §161 (issuance of additional stock). Use US terminology: "common stock" and "preferred stock" (NOT UK/Commonwealth "ordinary/preference shares"). Use the most current Y Combinator post-money SAFE v1.2 template structure (September 2022) as a baseline unless a pre-money SAFE is explicitly selected. For federal securities law, claim Regulation D Rule 506(b) (or 506(c) if general solicitation is used) exemption from Securities Act registration, with a Form D filed with the SEC within 15 days of first sale. State Blue Sky notice filings may be required in each state where investors reside. Default governing law to Delaware (SAFE), jurisdiction and venue to state and federal courts in Delaware. Denominate in USD. For California companies, note that California may apply its own corporate-governance rules under Cal. Corp. Code §2115 for "quasi-California" corporations.'
+    : ''
+
+  const canadaEquityClause = isEquityDoc && isCanada && !isQuebec
+    ? '\n\nIMPORTANT — CANADIAN COMPANY LAW FOR EQUITY INSTRUMENTS: Apply the Canada Business Corporations Act (CBCA) or the corresponding provincial Business Corporations Act (OBCA for Ontario, BCBCA for BC, ABCA for Alberta) — reference CBCA §25 (issue of shares), §27 (continuous disclosure of shares), §42 (solvency test for share issuance), §49 (share certificates). Use Canadian terminology: "common shares" and "preferred shares". For securities regulation apply the applicable provincial Securities Act (Ontario Securities Act, BC Securities Act, etc.) and National Instrument 45-106 — claim the "accredited investor" exemption (NI 45-106 §2.3), the "private issuer" exemption (§2.4), or the "offering memorandum" exemption (§2.9) as applicable. File Form 45-106F1 report of exempt distribution within 10 days. Default governing law to the laws of the specified Canadian province and the federal laws of Canada applicable therein, jurisdiction to that province\'s Superior Court of Justice. Use Canadian spelling (cheque, labour, organisation). Denominate in CAD unless specified.'
+    : ''
+
   const systemPrompt = isDpa
     ? buildDpaSystemPrompt(
         isCalifornia ? 'United States — CCPA/CPRA'
@@ -210,7 +271,7 @@ export default async function handler(req, res) {
         : isUSA ? 'United States — CCPA/CPRA'
         : 'Nigeria — NDPA 2023'
       ) + '\n\nThis is a premium paid document — make it exceptional.'
-    : 'You are an expert legal document drafter with deep knowledge of international law, including the common-law traditions of Canada, the United States, the United Kingdom, and Commonwealth jurisdictions, as well as the civil-law tradition of Quebec and the statutory privacy regimes of North America (PIPEDA, Quebec Law 25, CCPA/CPRA, and aligned US state laws). Generate comprehensive, professional legal documents tailored precisely to the user details provided. Use formal legal language, clear numbered sections, and include all standard clauses. Use the spelling conventions of the governing jurisdiction (US English for US documents, Canadian English for Canadian documents). This is a premium paid document — make it exceptional. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.' + nigeriaClause + canadaClause + quebecClause + californiaClause + usaClause
+    : 'You are an expert legal document drafter with deep knowledge of international law, including the common-law traditions of Canada, the United States, the United Kingdom, and Commonwealth jurisdictions, as well as the civil-law tradition of Quebec and the statutory privacy regimes of North America (PIPEDA, Quebec Law 25, CCPA/CPRA, and aligned US state laws). Generate comprehensive, professional legal documents tailored precisely to the user details provided. Use formal legal language, clear numbered sections, and include all standard clauses. Use the spelling conventions of the governing jurisdiction (US English for US documents, Canadian English for Canadian documents). This is a premium paid document — make it exceptional. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.' + nigeriaClause + canadaClause + quebecClause + californiaClause + usaClause + nigeriaEquityClause + kenyaEquityClause + ghanaEquityClause + ukEquityClause + southAfricaEquityClause + usEquityClause + canadaEquityClause
 
   try {
     const controller = new AbortController()
