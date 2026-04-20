@@ -532,13 +532,20 @@
 }
 .promo-input:focus { border-color: var(--gold); }
 .promo-input::placeholder { color: var(--text2); }
+/* Apply button — solid gold CTA, matches the brand accent of the promo
+   container. Previous styling was rgba(255,255,255,0.1) which looked
+   ghostly and "out of the box" against the dark page — users couldn't
+   tell it was clickable and dismissed it as decoration. */
 .promo-btn {
   padding: 9px var(--space-4); border-radius: 8px; border: none; cursor: pointer;
-  background: rgba(255,255,255,0.1); color: var(--text);
-  font-size: var(--text-sm); font-weight: 600; transition: background 0.2s;
+  background: var(--gold); color: var(--bg);
+  font-size: var(--text-sm); font-weight: 700;
+  transition: background 0.15s, transform 0.1s;
+  white-space: nowrap;
 }
-.promo-btn:hover:not(:disabled) { background: rgba(255,255,255,0.18); }
-.promo-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.promo-btn:hover:not(:disabled) { background: var(--gold-bright, #d4b25a); }
+.promo-btn:active:not(:disabled) { transform: translateY(1px); }
+.promo-btn:disabled { opacity: 0.5; cursor: not-allowed; background: rgba(201,168,76,0.4); }
 .promo-success {
   margin-top: var(--space-2); padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm);
   background: rgba(38, 161, 123, 0.15); border: 1px solid rgba(38, 161, 123, 0.3);
