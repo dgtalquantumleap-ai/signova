@@ -61,6 +61,22 @@ export default async function handler(req, res) {
     || lower.includes('founders agreement') || lower.includes('ip assignment')
     || lower.includes('advisory board agreement') || lower.includes('convertible note')
 
+  // Doc-type detectors (parity with generate.js — short preview uses the
+  // same triggers but emits shorter clauses since Groq/Llama cap is tighter).
+  const isTenancyDoc = lower.includes('tenancy agreement') || lower.includes('rental agreement') || lower.includes('lease agreement')
+  const isQuitNoticeDoc = lower.includes('quit notice') || lower.includes('notice to vacate') || lower.includes('notice to quit')
+  const isDeedOfAssignmentDoc = lower.includes('deed of assignment')
+  const isPowerOfAttorneyDoc = lower.includes('power of attorney')
+  const isLandlordAgentDoc = lower.includes('landlord and agent') || lower.includes('landlord & agent') || lower.includes("landlord's agent")
+  const isEmploymentDoc = lower.includes('employment offer') || lower.includes('offer letter')
+    || lower.includes('independent contractor') || lower.includes('freelance contract')
+    || lower.includes('consulting agreement') || lower.includes('contract of employment')
+  const isNonCompeteDoc = lower.includes('non-compete') || lower.includes('non compete') || lower.includes('noncompete')
+  const isLoanDoc = lower.includes('loan agreement')
+  const isHirePurchaseDoc = lower.includes('hire purchase') || lower.includes('hire-purchase')
+  const isCommercialDoc = lower.includes('distribution agreement') || lower.includes('distribution / reseller')
+    || lower.includes('supply agreement') || lower.includes('reseller agreement')
+
   // ── Jurisdiction detection (parity with paid generate.js) ─────────────────
   const isNigeria = lower.includes('nigeria') || lower.includes('ndpa') || lower.includes('ndpc')
     || lower.includes('cama 2020') || lower.includes('isa 2025') || /\b(lagos|abuja|kano|ibadan|port harcourt)\b/.test(lower)
@@ -132,6 +148,71 @@ export default async function handler(req, res) {
     ? '\n\nCANADIAN COMPANY LAW: Apply CBCA (or OBCA / BCBCA depending on province) — reference CBCA s.25, 27, 42 (solvency test). Use "common shares"/"preferred shares". Apply NI 45-106 accredited-investor or private-issuer exemption; file Form 45-106F1 within 10 days. Default governing law to the specified province, dispute resolution to that province\'s Superior Court. Use Canadian spelling. Denominate in CAD.'
     : ''
 
+  // ── Tier 1: Nigerian property / tenancy / land ────────────────────────────
+  const nigeriaTenancyClause = (isTenancyDoc || isQuitNoticeDoc || isLandlordAgentDoc) && isNigeria
+    ? '\n\nNIGERIAN TENANCY LAW: Apply Lagos State Tenancy Law 2011 (except Apapa, Ikeja GRA, Ikoyi, Victoria Island — those under Recovery of Premises Act). Statutory notice periods (§13 LSTL): weekly=1 week, monthly=1 month, quarterly=3 months, half-yearly=3 months, yearly=6 months. After expiry, serve 7-day owner\'s notice of intention to recover possession before court. Stamp Duty on tenancies: 0.78% up to 7 yrs; tenancies over 3 yrs must be registered at state Lands Registry. LSTL s.4 caps advance rent at 1 yr (new tenant) / 6 months (sitting tenant). Caution deposit refundable net of itemised deductions. Jurisdiction: Magistrate\'s Court (small claims) / State High Court.'
+    : ''
+  const nigeriaDeedClause = isDeedOfAssignmentDoc && isNigeria
+    ? '\n\nNIGERIAN DEED OF ASSIGNMENT: Apply Land Use Act 1978 — Governor\'s consent required under s.22 for alienation. Reference C of O number in parties / property block. Stamp Duty 3% of consideration (Stamp Duties Act Sch. 1); register at state Lands Registry within 60 days. CGT Act s.2(1) applies at 10%. Lagos Form 1C for Governor\'s consent. Execute under seal with 2 witnesses (attestation: names, addresses, occupations).'
+    : ''
+  const nigeriaQuitNoticeClause = isQuitNoticeDoc && isNigeria
+    ? '\n\nNIGERIAN QUIT NOTICE: State landlord, tenant, property, tenancy type, statutory period (LSTL s.13: weekly=1 wk, monthly=1 mo, quarterly=3 mo, half-yearly=3 mo, yearly=6 mo), expiry date, ground for determination. Warn user a 7-day owner\'s notice of intention to recover possession (Form E LSTL) is required before court action.'
+    : ''
+  const nigeriaPowerOfAttorneyClause = isPowerOfAttorneyDoc && isNigeria
+    ? '\n\nNIGERIAN POWER OF ATTORNEY: Conveyancing Act 1881 s.8 — irrevocable only if given for valuable consideration AND expressed irrevocable, or coupled with interest. Illiterates Protection Act jurat required for unlettered donors. Register at state Lands/Probate Registry for real property. Stamp Duties Act dutiable. Execute before 2 witnesses. Enumerate authorised acts precisely.'
+    : ''
+  const nigeriaLandlordAgentClause = isLandlordAgentDoc && isNigeria
+    ? '\n\nNIGERIAN LANDLORD/AGENT LAW: Estate Surveyors and Valuers (Registration) Act — only ESVARBON-registered surveyors may professionally manage property for reward. Reference ESVARBON number. Commission typically 5–10% of annual rent. LASRERA rules in Lagos. Lagos State Real Estate Transaction (Anti-Land Grabbing) Law 2016 — no self-help recovery. Rents held in designated client account.'
+    : ''
+
+  // ── Tier 1: Nigerian employment / labour ──────────────────────────────────
+  const nigeriaEmploymentClause = isEmploymentDoc && isNigeria
+    ? '\n\nNIGERIAN EMPLOYMENT LAW: Labour Act applies only to "workers" (manual/clerical/operational) per s.91 — not to managerial / professional staff who are governed by common-law contract. Labour Act s.7: written particulars within 3 months. s.11 minimum notice: <3 mo=1 day; 3 mo–2 yr=1 wk; 2–5 yr=2 wk; 5+ yr=1 mo. National Minimum Wage Act 2024: ₦70,000/month. Pension Reform Act 2014: 10% employer + 8% employee to RSA with PFA. NSITF 1% of payroll (Employee Compensation Act 2010). NHIA Act 2022 mandatory health insurance. NHF 2.5% of basic salary. PAYE graduated 7–24% with CRA. ITF 1% of payroll (5+ employees). Jurisdiction: National Industrial Court of Nigeria (exclusive — Const. s.254C).'
+    : ''
+  const nigeriaNonCompeteClause = isNonCompeteDoc && isNigeria
+    ? '\n\nNIGERIAN NON-COMPETE LAW: Nordenfelt doctrine — restraints prima facie void unless reasonable scope, duration, geography. Legitimate protectable interest required: trade secrets, customer connection, goodwill. Typical enforceable: 6–12 months; 2+ years rarely upheld. Authorities: Koumoulis v Leventis Motors [1973] 9 NSCC 252; Awolowo-Dosunmu v Ogundipe [1988] 1 NWLR (Pt.71) 483. Prefer garden leave (paid). Include blue-pencil severance clause. Distinguish non-compete vs non-solicitation. Jurisdiction: NIC.'
+    : ''
+
+  // ── Tier 2: Nigerian financial / commercial ───────────────────────────────
+  const nigeriaLoanClause = isLoanDoc && isNigeria
+    ? '\n\nNIGERIAN LOAN LAW: Interest benchmark CBN MPR; non-bank lenders need Moneylender\'s Licence under state Moneylenders Laws. Stamp Duty 0.125% ad valorem (Stamp Duties Act Sch. 1). Secured: CAMA 2020 s.222 register charge at CAC within 90 days; movable property register under Secured Transactions in Movable Assets Act 2017. Penal-interest doctrine (Dunlop v New Garage) — distinguish compensatory vs penalty. Arbitration and Mediation Act 2023 (Lagos seat) for commercial.'
+    : ''
+  const nigeriaHirePurchaseClause = isHirePurchaseDoc && isNigeria
+    ? '\n\nNIGERIAN HIRE PURCHASE: Hire Purchase Act 1965 + FCCPA 2018. s.3: written agreement with prescribed contents (cash price, HP price, instalments). s.7: hirer\'s right to terminate. s.9: owner cannot repossess without court order after hirer pays ≥½ HP price. Implied conditions (ss.4–5) cannot be excluded. FCCPA s.127 prohibits unfair contract terms. Jurisdiction: State High Court / FCCPT.'
+    : ''
+  const nigeriaCommercialClause = isCommercialDoc && isNigeria
+    ? '\n\nNIGERIAN COMMERCIAL LAW (Distribution/Supply): State Sale of Goods Laws (implied terms ss.14–17). FCCPA 2018: unfair terms (s.127), anti-competitive agreements (ss.59–60), FCCPC review. Product liability under common law + FCCPA. SON MANCAP / SONCAP for regulated goods; NAFDAC for food/drugs/cosmetics. VAT 7.5% (Finance Act 2020). Nigeria not a CISG party. Jurisdiction: Federal High Court (IP/customs) or State High Court; arbitration under AMA 2023 Lagos seat.'
+    : ''
+
+  // ── Tier 2: UK general (non-equity, non-DPA) ──────────────────────────────
+  const ukGeneralClause = isUK && !isDpa && !isEquityDoc
+    ? '\n\nUK JURISDICTION: UK GDPR + Data Protection Act 2018. Employment Rights Act 1996: unfair dismissal after 2 yrs, s.86 notice (1 wk for 1mo–2yr; +1 wk per yr up to 12 wk), s.1 written particulars. National Minimum Wage Act 1998. Working Time Regulations 1998. Consumer Rights Act 2015 for B2C. Sale of Goods Act 1979 + Supply of Goods and Services Act 1982. Unfair Contract Terms Act 1977. Misrepresentation Act 1967. Arbitration Act 1996 (LCIA / London). Courts of England and Wales. GBP. British spelling.'
+    : ''
+
+  // ── Tier 3: Other jurisdictions general ──────────────────────────────────
+  const kenyaGeneralClause = isKenya && !isDpa && !isEquityDoc
+    ? '\n\nKENYAN JURISDICTION: Law of Contract Act Cap. 23 (English common law via Judicature Act Cap. 8). Employment Act 2007: written contract >3 mo, s.35 notice, unfair termination protection. Consumer Protection Act 2012. Data Protection Act 2019 (ODPC). Arbitration Act 1995 / NCIA. Employment and Labour Relations Court for employment. High Court Nairobi. KES.'
+    : ''
+  const ghanaGeneralClause = isGhana && !isDpa && !isEquityDoc
+    ? '\n\nGHANAIAN JURISDICTION: Contracts Act 1960 (Act 25). Labour Act 2003 (Act 651): written contract >6 mo, s.17 notice (2 wk / 1 mo), s.20 15-day annual leave. Hire Purchase Act 1974 (NRCD 292). Sale of Goods Act 1962 (Act 137). Data Protection Act 2012 (Act 843). ADR Act 2010 (Act 798) / GAAC. High Court Accra Commercial Division. GHS.'
+    : ''
+  const southAfricaGeneralClause = isSouthAfrica && !isDpa && !isEquityDoc
+    ? '\n\nSOUTH AFRICAN JURISDICTION: Roman-Dutch common law (no codified contract statute). Labour Relations Act 66/1995 + Basic Conditions of Employment Act 75/1997 + Employment Equity Act 55/1998. Consumer Protection Act 68/2008 (implied warranties s.56, unfair terms ss.48–52, 5-day cooling-off s.16). National Credit Act 34/2005. POPIA (Act 4/2013) for personal information. High Court divisions; Labour Court; CCMA; AFSA. ZAR.'
+    : ''
+  const canadaGeneralClause = isCanada && !isQuebec && !isDpa && !isEquityDoc
+    ? '\n\nCANADIAN JURISDICTION (general): PIPEDA + provincial privacy (AB/BC/QC). Provincial ESAs (Ontario ESA 2000 / BC ESA / Alberta ESC) — specify province; notice typically 1 wk for 3 mo–1 yr, 2 wk for 1–3 yr, +1 wk/yr up to 8 wk (ON); severance pay ss.64–66 ESA for 5+ yr. Federally regulated: Canada Labour Code. Provincial Consumer Protection Acts. Provincial Sale of Goods Acts. CASL. Competition Act. Canadian spelling. CAD.'
+    : ''
+  const usGeneralClause = (isUSA || isCalifornia) && !isDpa && !isEquityDoc
+    ? '\n\nUS JURISDICTION (general): UCC Article 2 goods; Restatement (Second) of Contracts. At-will employment (except Montana WDEA 1987). FLSA + state minimum wage. FTC Act §5 unfair/deceptive. State data-breach statutes (30–60 day notification). State privacy laws (CA CCPA/CPRA, VA, CO, CT, UT, TX + others). CAN-SPAM + TCPA. Non-competes void in CA/ND/OK/MN; narrow elsewhere. FAA (9 USC §§1–16). Name specific state. USD.'
+    : ''
+
+  // ── Tier 3: generic fallback for unmapped jurisdictions ──────────────────
+  const hasKnownJurisdiction = isNigeria || isKenya || isGhana || isSouthAfrica || isUK
+    || isQuebec || isCanada || isCalifornia || isUSA
+  const genericFallbackClause = !hasKnownJurisdiction && !isDpa
+    ? '\n\nJURISDICTION FALLBACK: No dedicated statute library for this jurisdiction — apply Commonwealth common-law contract principles (offer, acceptance, consideration, intention, capacity, legality). Use local currency. Reference the most senior commercial court in the capital for forum selection. Reference specific local statutes conservatively or generically (e.g. "applicable labour law of [country]"). Include a cover note recommending local legal review.'
+    : ''
+
   const dpaJurisdiction = isCalifornia ? 'United States — CCPA/CPRA'
     : isQuebec ? 'Canada — Quebec Law 25'
     : isCanada ? 'Canada — PIPEDA'
@@ -140,7 +221,14 @@ export default async function handler(req, res) {
 
   const systemContent = isDpa
     ? buildDpaSystemPrompt(dpaJurisdiction)
-    : 'You are a legal document drafting assistant with deep knowledge of common-law (Canada, US, UK), civil-law (Quebec), and the statutory privacy regimes of North America. Generate professional, comprehensive legal documents based on the user details provided. Use formal legal language with clear numbered sections. Use the spelling conventions of the governing jurisdiction. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.' + nigeriaClause + canadaClause + quebecClause + californiaClause + usaClause + nigeriaEquityClause + kenyaEquityClause + ghanaEquityClause + ukEquityClause + southAfricaEquityClause + usEquityClause + canadaEquityClause
+    : 'You are a legal document drafting assistant with deep knowledge of common-law (Nigeria, Kenya, Ghana, South Africa, Canada, US, UK), civil-law (Quebec), and the statutory regimes of each. Generate professional, comprehensive legal documents based on the user details provided. Use formal legal language with clear numbered sections. Use the spelling conventions of the governing jurisdiction. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.'
+      + nigeriaClause + canadaClause + quebecClause + californiaClause + usaClause
+      + nigeriaEquityClause + kenyaEquityClause + ghanaEquityClause + ukEquityClause + southAfricaEquityClause + usEquityClause + canadaEquityClause
+      + nigeriaTenancyClause + nigeriaDeedClause + nigeriaQuitNoticeClause + nigeriaPowerOfAttorneyClause + nigeriaLandlordAgentClause
+      + nigeriaEmploymentClause + nigeriaNonCompeteClause
+      + nigeriaLoanClause + nigeriaHirePurchaseClause + nigeriaCommercialClause
+      + ukGeneralClause + kenyaGeneralClause + ghanaGeneralClause + southAfricaGeneralClause + canadaGeneralClause + usGeneralClause
+      + genericFallbackClause
 
   try {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
