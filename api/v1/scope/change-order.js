@@ -5,6 +5,8 @@
 
 import { authenticate, recordUsage, buildUsageBlock } from '../../../lib/api-auth.js'
 import { getRedis } from '../../../lib/redis.js'
+import { ScopeGuardChangeOrderSchema, formatValidationError } from '../../../lib/validators.js'
+import { buildJurisdictionContext, jurisdictionDisplayName } from '../../../lib/jurisdiction-context.js'
 
 const PRO_TIERS = ['growth', 'scale', 'enterprise']
 
@@ -28,11 +30,22 @@ function buildChangeOrderPrompt(params) {
   const {
     original_contract_summary, freelancer_name, client_name,
     original_scope, additional_work, additional_cost,
-    currency = 'USD', timeline_extension_days, jurisdiction = 'International',
+    currency = 'USD', timeline_extension_days, jurisdiction,
     contract_date, change_order_number = 1,
   } = params
 
-  return `Generate a formal, professional Change Order document with the following details.
+  // Jurisdiction context — same source of truth as the analyze endpoint.
+  // When jurisdiction is undefined / unrecognised, the helper returns the
+  // Commonwealth-baseline + anti-US-default block, so the change order won't
+  // silently drift to California / AAA arbitration.
+  const jurisdictionContext = buildJurisdictionContext(jurisdiction)
+  const jurisdictionLabel = jurisdictionDisplayName(jurisdiction)
+
+  return `${jurisdictionContext}
+
+Use legal language per the jurisdiction-specific statute context above. Cite specific statutes from that context where they bear on the change-order terms (governing law, dispute resolution, currency, statute of frauds for amendment formality, etc.). Do not invoke statutes from other jurisdictions.
+
+Generate a formal, professional Change Order document with the following details.
 
 CHANGE ORDER DETAILS:
 - Change Order Number: #${change_order_number}
@@ -43,7 +56,7 @@ CHANGE ORDER DETAILS:
 - Additional Work Requested: ${additional_work}
 - Additional Cost: ${currency} ${additional_cost}
 - Timeline Extension: ${timeline_extension_days ? `${timeline_extension_days} business days` : 'To be mutually agreed'}
-- Governing Law: ${jurisdiction}
+- Governing Law: ${jurisdictionLabel}
 
 Generate a complete, professional change order document that:
 1. References the original agreement
@@ -51,8 +64,8 @@ Generate a complete, professional change order document that:
 3. States the additional compensation
 4. Includes payment terms for the additional work (due upon approval or milestone)
 5. States the revised timeline
-6. Includes signature blocks for both parties
-7. Uses appropriate legal language for ${jurisdiction}
+6. Includes signature blocks for both parties (with witness lines where the jurisdiction context above requires them — e.g. two witnesses per party for Nigeria / Commonwealth standard)
+7. Names the governing law as ${jurisdictionLabel}
 
 Format as a complete document ready to send. Use professional formatting with clear sections.`
 }
@@ -80,26 +93,24 @@ export default async function handler(req, res) {
   }
 
   const body = await parseBody(req)
-  const { additional_work, additional_cost, freelancer_name, client_name } = body
-
-  if (!additional_work || typeof additional_work !== 'string') {
+  // Validate via Zod — gives consistent VALIDATION_ERROR shape and
+  // jurisdiction enum enforcement matching the analyze endpoint.
+  let validated
+  try {
+    validated = ScopeGuardChangeOrderSchema.parse(body)
+  } catch (err) {
     return res.status(400).json({
       success: false,
-      error: { code: 'MISSING_FIELD', message: 'additional_work is required' },
+      error: formatValidationError(err),
     })
   }
-  if (!additional_cost || isNaN(Number(additional_cost))) {
-    return res.status(400).json({
-      success: false,
-      error: { code: 'MISSING_FIELD', message: 'additional_cost is required (number)' },
-    })
-  }
+  const { additional_work, additional_cost, freelancer_name, client_name } = validated
 
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR' } })
 
   try {
-    const prompt = buildChangeOrderPrompt(body)
+    const prompt = buildChangeOrderPrompt(validated)
 
     const aiRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -139,9 +150,10 @@ export default async function handler(req, res) {
         client_name: client_name || 'Client',
         additional_work,
         additional_cost: Number(additional_cost),
-        currency: body.currency || 'USD',
-        timeline_extension_days: body.timeline_extension_days || null,
-        jurisdiction: body.jurisdiction || 'International',
+        currency: validated.currency || 'USD',
+        timeline_extension_days: validated.timeline_extension_days || null,
+        jurisdiction: validated.jurisdiction || null,
+        jurisdiction_label: jurisdictionDisplayName(validated.jurisdiction),
         generated_at: new Date().toISOString(),
       },
       usage: buildUsageBlock(auth),

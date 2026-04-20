@@ -19,6 +19,20 @@ import { z } from 'zod'
 
 const API_BASE = 'https://api.ebenova.dev'
 
+// Jurisdiction enum — must stay in lockstep with lib/jurisdiction-context.js
+// JURISDICTION_KEYS on the server. Duplicated here (not imported) because this
+// folder is a standalone npm package (@ebenova/scope-guard-mcp) and cannot
+// reach into the monorepo's lib/. If you add a jurisdiction on the server,
+// add it here too.
+const JURISDICTION_KEYS = [
+  'nigeria', 'kenya', 'ghana', 'south_africa',
+  'uk',
+  'usa_federal', 'usa_california', 'usa_new_york', 'usa_texas', 'usa_florida',
+  'canada_federal', 'canada_ontario', 'canada_bc', 'canada_quebec',
+  'eu', 'india', 'uae', 'singapore',
+]
+const JURISDICTION_DESCRIPTION = 'Governing-law jurisdiction. Determines which statute block the server injects into the analysis prompt (CAMA/NDPA for Nigeria, ERA 1996/UK GDPR for UK, BCEA/LRA for South Africa, etc.). Omit to use the Commonwealth common-law baseline — the server will NOT default to California.'
+
 // ── Server factory ─────────────────────────────────────────────────────────────
 function createServer(config = {}) {
   const API_KEY = config.EBENOVA_API_KEY || process.env.EBENOVA_API_KEY || ''
@@ -50,7 +64,7 @@ function createServer(config = {}) {
     return res.json()
   }
 
-  const server = new McpServer({ name: 'scope-guard', version: '1.0.0' })
+  const server = new McpServer({ name: 'scope-guard', version: '1.1.0' })
 
   // ── Tool: analyze_scope_violation ────────────────────────────────────────────
   server.tool(
@@ -68,12 +82,18 @@ When to use:
         contract_text: z.string().min(50).describe('Your full contract text (minimum 50 characters)'),
         client_message: z.string().describe('The client message to analyze for scope violations'),
         communication_channel: z.enum(['email', 'whatsapp', 'slack', 'sms', 'other']).optional().default('email').describe('Channel where the message was received'),
+        jurisdiction: z.enum(JURISDICTION_KEYS).optional().describe(JURISDICTION_DESCRIPTION),
       }),
     },
-    async ({ contract_text, client_message, communication_channel }) => {
+    async ({ contract_text, client_message, communication_channel, jurisdiction }) => {
       if (!API_KEY) return noKeyError()
 
-      const data = await apiPost('/v1/scope/analyze', { contract_text, client_message, communication_channel })
+      const data = await apiPost('/v1/scope/analyze', {
+        contract_text,
+        client_message,
+        communication_channel,
+        ...(jurisdiction ? { jurisdiction } : {}),
+      })
 
       if (!data.success) {
         return {
@@ -137,7 +157,11 @@ When to use:
         client_name: z.string().optional().describe('Client name'),
         currency: z.string().optional().default('USD').describe('Currency code (e.g. USD, NGN, GBP, EUR)'),
         timeline_extension_days: z.number().int().optional().describe('Additional days needed for the work'),
-        jurisdiction: z.string().optional().default('International').describe('Governing law jurisdiction'),
+        // Tightened from freeform `z.string().default('International')` to the
+        // same enum the server validates. Optional — when omitted, the server
+        // uses the Commonwealth common-law baseline and will NOT default to
+        // California / Delaware.
+        jurisdiction: z.enum(JURISDICTION_KEYS).optional().describe(JURISDICTION_DESCRIPTION),
       }),
     },
     async ({ additional_work, additional_cost, freelancer_name, client_name, currency, timeline_extension_days, jurisdiction }) => {
@@ -145,7 +169,8 @@ When to use:
 
       const data = await apiPost('/v1/scope/change-order', {
         additional_work, additional_cost, freelancer_name, client_name,
-        currency, timeline_extension_days, jurisdiction,
+        currency, timeline_extension_days,
+        ...(jurisdiction ? { jurisdiction } : {}),
       })
 
       if (!data.success) {
@@ -163,7 +188,7 @@ When to use:
         `- **Additional Work:** ${co.additional_work}`,
         `- **Cost:** ${co.currency} ${Number(co.additional_cost).toLocaleString()}`,
         co.timeline_extension_days ? `- **Timeline Extension:** +${co.timeline_extension_days} days` : '',
-        `- **Jurisdiction:** ${co.jurisdiction}`,
+        `- **Jurisdiction:** ${co.jurisdiction_label || co.jurisdiction || 'Commonwealth baseline'}`,
         co.generated_at ? `- **Generated:** ${co.generated_at}` : '',
         '',
         '---',

@@ -1,7 +1,7 @@
 {
   "name": "@ebenova/scope-guard-mcp",
-  "version": "1.0.0",
-  "description": "MCP server for Scope Guard — AI-powered contract enforcement and scope violation detection. Detects scope creep in client messages and generates formal change orders.",
+  "version": "1.1.0",
+  "description": "MCP server for Scope Guard — AI-powered contract enforcement and scope violation detection. Jurisdiction-aware across 18 jurisdictions (Nigeria, Kenya, Ghana, South Africa, UK, US federal + CA/NY/TX/FL, Canada federal + ON/BC/Quebec, EU, India, UAE, Singapore). Detects scope creep in client messages and generates formal change orders.",
   "type": "module",
   "main": "index.js",
   "bin": {
