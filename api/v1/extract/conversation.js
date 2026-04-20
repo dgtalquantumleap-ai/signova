@@ -263,7 +263,11 @@ ${conversation}
 
   try {
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 90000) // 90s timeout
+    // 280s timeout — was 90s. Haiku is fast (typical <15s) but rare
+    // long-conversation edge cases can stretch the call; matches the
+    // timeout pattern used on the other Claude-calling endpoints so that
+    // API Market proxy test calls don't 504 in the tail.
+    const timeoutId = setTimeout(() => controller.abort(), 280000)
 
     const genRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
