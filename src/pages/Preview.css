@@ -162,6 +162,27 @@
 .btn-pay-full:disabled { opacity: 0.7; cursor: not-allowed; }
 .btn-download-full { background: var(--green); color: #fff; }
 .btn-download-full:hover { background: #3da06b; }
+
+/* Regenerate premium (Claude Sonnet) retry button. Only shown when the post-
+   redeem regen call failed — gives the user an explicit way to recover
+   instead of silently leaving them with the Llama preview. Styled as a
+   subtle secondary action so it doesn't compete with Download PDF. */
+.btn-regen-retry {
+  display: flex; align-items: center; justify-content: center; gap: var(--space-2);
+  padding: var(--space-3); border-radius: var(--radius);
+  font-size: 13px; font-weight: 600;
+  background: rgba(201,168,76,0.08);
+  border: 1px solid rgba(201,168,76,0.3);
+  color: var(--gold);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.btn-regen-retry:hover:not(:disabled) {
+  background: rgba(201,168,76,0.15);
+  border-color: var(--gold);
+}
+.btn-regen-retry:disabled { opacity: 0.7; cursor: not-allowed; }
+
 .sidebar-perks { list-style: none; display: flex; flex-direction: column; gap: var(--space-2); }
 .sidebar-perks li { font-size: 13px; color: var(--text2); }
 

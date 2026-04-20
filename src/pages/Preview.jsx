@@ -113,17 +113,16 @@ export default function Preview() {
   const [lockedEmailLoading, setLockedEmailLoading] = useState(false)
   const [showPreCapture, setShowPreCapture] = useState(false)
   const [promoCode, setPromoCode] = useState('')
-  const [promoToken, setPromoToken] = useState(null)
   const [promoLoading, setPromoLoading] = useState(false)
   const [promoMsg, setPromoMsg] = useState('')
   const [promoError, setPromoError] = useState('')
   const [promoOpen, setPromoOpen] = useState(false)
-  // eslint-disable-next-line no-unused-vars
-  const [promoEmail, setPromoEmail] = useState('')
-  // eslint-disable-next-line no-unused-vars
-  const [promoEmailSubmitted, setPromoEmailSubmitted] = useState(false)
-  const [promoEmailLoading, setPromoEmailLoading] = useState(false)
-  const [pendingPromoUnlock, setPendingPromoUnlock] = useState(false)
+  // Held across the full promo-redeem → /api/generate regen cycle so the
+  // "Regenerate premium version" retry button can re-submit with the same
+  // verified HMAC token without asking the user to enter the code again.
+  const [premiumRegenFailed, setPremiumRegenFailed] = useState(false)
+  const [premiumRegenLoading, setPremiumRegenLoading] = useState(false)
+  const [lastPromoTokenForRegen, setLastPromoTokenForRegen] = useState(null)
   const contentRef = useRef(null)
 
   useEffect(() => {
@@ -278,24 +277,71 @@ export default function Preview() {
 </body>
 </html>`
 
-    // Mobile browsers (iOS Safari) often block window.open in async context
-    const printWindow = window.open('', '_blank')
-    if (!printWindow) {
-      // Fallback: download as HTML file
-      const blob = new Blob([fullHtml], { type: 'text/html' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `${doc.docName.replace(/\s+/g, '_')}_Signova.html`
-      a.click()
-      URL.revokeObjectURL(url)
-      return
+    // Use a hidden iframe instead of window.open:
+    //   1. Avoids mobile popup blockers (iOS Safari / Chrome Android block
+    //      async window.open — the old fallback handed the user a .html FILE
+    //      instead of a print dialog, which mobile users routinely interpreted
+    //      as "download failed").
+    //   2. Uses the iframe's load event so we only call print() once styles
+    //      AND fonts are fully applied — fixes the 500ms race on slow mobile
+    //      connections where the print preview opened unstyled.
+    // Fire-and-forget download analytics so support can verify that a user
+    // who redeemed / paid actually reached the download step.
+    try {
+      fetch('/api/track-download', {
+        method: 'POST',
+        keepalive: true,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ docType: doc.docType, docName: doc.docName }),
+      }).catch(() => {})
+    } catch { /* never block the download on telemetry */ }
+
+    const iframe = document.createElement('iframe')
+    iframe.style.position = 'fixed'
+    iframe.style.right = '0'
+    iframe.style.bottom = '0'
+    iframe.style.width = '0'
+    iframe.style.height = '0'
+    iframe.style.border = '0'
+    iframe.setAttribute('aria-hidden', 'true')
+    iframe.setAttribute('title', 'Print preview')
+
+    // Clean up the iframe after printing — give the OS print dialog time to
+    // consume the document before we tear it down.
+    const cleanup = () => {
+      setTimeout(() => {
+        if (iframe.parentNode) iframe.parentNode.removeChild(iframe)
+      }, 1000)
     }
 
-    printWindow.document.write(fullHtml)
-    printWindow.document.close()
-    // Small delay to ensure styles are applied before print dialog opens
-    setTimeout(() => printWindow.print(), 500)
+    iframe.onload = () => {
+      const win = iframe.contentWindow
+      if (!win) { cleanup(); return }
+      try {
+        // afterprint fires after the user confirms / dismisses the dialog
+        win.addEventListener('afterprint', cleanup, { once: true })
+        win.focus()
+        win.print()
+      } catch (err) {
+        if (DEV) console.error('Print failed:', err)
+        // Last-ditch fallback — download as HTML so the user has SOMETHING.
+        // Mobile users can open the file and use their browser's "Share →
+        // Print → Save to PDF" flow.
+        const blob = new Blob([fullHtml], { type: 'text/html' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${doc.docName.replace(/\s+/g, '_')}_Signova.html`
+        a.click()
+        URL.revokeObjectURL(url)
+        cleanup()
+      }
+    }
+
+    document.body.appendChild(iframe)
+    // Write via srcdoc so onload fires reliably after DOM+CSS parse (unlike
+    // document.write, which is deprecated and race-prone on mobile).
+    iframe.srcdoc = fullHtml
   }
 
   const handleEmailCapture = async () => {
@@ -377,6 +423,48 @@ export default function Preview() {
     }
   }
 
+  // Runs the "regenerate premium version with Claude Sonnet" step. Split out
+  // of handlePromoApply so the manual retry button can reuse the same token
+  // without asking the user to re-enter the promo code.
+  // Returns true on success, false on failure. Never throws.
+  const runPremiumRegen = async (token) => {
+    setPremiumRegenLoading(true)
+    try {
+      const storedDoc = sessionStorage.getItem('signova_doc')
+      if (!storedDoc) return false
+      const parsed = JSON.parse(storedDoc)
+      if (!parsed.prompt) return false
+
+      setPromoMsg('Unlocked! Regenerating premium version…')
+      const regenRes = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: parsed.prompt, promoToken: token }),
+      })
+      if (!regenRes.ok) {
+        if (DEV) console.error('Promo regeneration failed:', regenRes.status)
+        return false
+      }
+      const regenData = await regenRes.json()
+      if (!regenData.text) return false
+
+      setDoc(prev => ({ ...prev, content: regenData.text }))
+      sessionStorage.setItem('signova_doc', JSON.stringify({
+        ...parsed,
+        content: regenData.text,
+        isPremium: true,
+      }))
+      setPromoMsg('✓ Premium document ready — powered by Claude Sonnet')
+      setPremiumRegenFailed(false)
+      return true
+    } catch (regenErr) {
+      if (DEV) console.error('Promo regeneration error:', regenErr)
+      return false
+    } finally {
+      setPremiumRegenLoading(false)
+    }
+  }
+
   const handlePromoApply = async () => {
     // Normalize at the input boundary one more time — belt-and-suspenders
     // against browser autofill / paste events that can bypass the onChange
@@ -388,6 +476,13 @@ export default function Preview() {
       setPromoError('Please enter a promo code.')
       return
     }
+    if (!doc) {
+      // Race on first mount / cleared sessionStorage — server would have
+      // returned "Missing docType" with an opaque error. Surface a useful
+      // message instead of letting the user stare at "Invalid promo code."
+      setPromoError('Document not loaded yet. Please reload the page and try again.')
+      return
+    }
     setPromoLoading(true)
     setPromoError('')
     setPromoMsg('')
@@ -395,103 +490,84 @@ export default function Preview() {
       const res = await fetch('/api/promo-redeem', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: normalized, docType: doc?.docType, docName: doc?.docName }),
+        body: JSON.stringify({ code: normalized, docType: doc.docType, docName: doc.docName }),
       })
-      const data = await res.json()
+      const data = await res.json().catch(() => ({}))
       if (!res.ok || !data.valid) {
-        setPromoError(data.error || 'Invalid promo code.')
-      } else {
-        // Verify the token server-side before unlocking — prevents client-side bypass
-        const verifyRes = await fetch('/api/promo-verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: data.token }),
-        })
-        const verifyData = await verifyRes.json()
-        if (!verifyRes.ok || !verifyData.valid) {
-          setPromoError(verifyData.error || 'Code could not be verified. Please try again.')
-        } else {
-          setPromoToken(data.token)
-          setPromoMsg(data.message)
-          trackPromoApplied(doc?.docType, normalized)
-          setPaid(true)
-
-          // ── Trigger Claude Sonnet regeneration for premium quality ──
-          // The user unlocked via promo — regenerate with Anthropic instead of Llama preview
-          try {
-            const storedDoc = sessionStorage.getItem('signova_doc')
-            if (storedDoc) {
-              const parsed = JSON.parse(storedDoc)
-              if (parsed.prompt) {
-                setPromoMsg('Unlocked! Regenerating premium version…')
-                const regenRes = await fetch('/api/generate', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    prompt: parsed.prompt,
-                    promoToken: data.token,
-                  }),
-                })
-                if (regenRes.ok) {
-                  const regenData = await regenRes.json()
-                  if (regenData.text) {
-                    setDoc(prev => ({ ...prev, content: regenData.text }))
-                    // Update sessionStorage with premium content
-                    sessionStorage.setItem('signova_doc', JSON.stringify({
-                      ...parsed,
-                      content: regenData.text,
-                      isPremium: true,
-                    }))
-                    setPromoMsg('✓ Premium document ready — powered by Claude Sonnet')
-                  }
-                } else {
-                  // Regeneration failed — user still has unlocked preview, don't revert
-                  if (DEV) console.error('Promo regeneration failed:', regenRes.status)
-                  setPromoMsg(data.message + ' (preview version — regeneration unavailable)')
-                }
-              }
-            }
-          } catch (regenErr) {
-            // Graceful fallback: user keeps unlocked preview, log the error
-            if (DEV) console.error('Promo regeneration error:', regenErr)
-            setPromoMsg(data.message + ' (preview version)')
-          }
-        }
+        setPromoError(data.error || `Could not apply code (status ${res.status}).`)
+        return
       }
-    } catch {
-      setPromoError('Could not apply code. Please try again.')
+      // Verify the token server-side before unlocking — prevents client-side bypass
+      const verifyRes = await fetch('/api/promo-verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: data.token }),
+      })
+      const verifyData = await verifyRes.json().catch(() => ({}))
+      if (!verifyRes.ok || !verifyData.valid) {
+        setPromoError(verifyData.error || 'Code could not be verified. Please try again.')
+        return
+      }
+
+      setLastPromoTokenForRegen(data.token)
+      setPromoMsg(data.message)
+      trackPromoApplied(doc.docType, normalized)
+      setPaid(true)
+
+      // Regenerate premium Claude Sonnet version. If it fails, auto-retry
+      // ONCE before surfacing the manual "Regenerate premium version →"
+      // button — handles transient Anthropic 5xx / Railway restart blips
+      // that used to leave the user with a Llama preview download.
+      let ok = await runPremiumRegen(data.token)
+      if (!ok) {
+        if (DEV) console.warn('Premium regen failed on first attempt; auto-retrying once')
+        // Brief backoff — give the upstream a moment to recover before retry
+        await new Promise(resolve => setTimeout(resolve, 1500))
+        ok = await runPremiumRegen(data.token)
+      }
+      if (!ok) {
+        setPremiumRegenFailed(true)
+        setPromoMsg(`${data.message} (preview version — tap Regenerate below for the premium Claude Sonnet version)`)
+        // Refund the promo counter slot so another user can still claim
+        // the code — previously every failed regen permanently burned a
+        // maxUses slot. Rollback is single-use per token server-side, so
+        // if the user successfully manual-retries later, they still get
+        // the doc (counter stays at its refunded value — small accounting
+        // give, worth it for the refund-on-failure UX).
+        try {
+          fetch('/api/promo-rollback', {
+            method: 'POST',
+            keepalive: true,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: data.token }),
+          }).catch(() => {})
+        } catch { /* never block on rollback */ }
+      }
+    } catch (err) {
+      if (DEV) console.error('Promo apply failed:', err)
+      // Previously: generic "Could not apply code. Please try again." —
+      // hid every distinct error (network, parse, 5xx) behind one message.
+      // Now we tell the user whether it's a network issue vs a server issue
+      // so they (and support) know what to try next.
+      const offline = typeof navigator !== 'undefined' && navigator && navigator.onLine === false
+      setPromoError(offline
+        ? 'You appear to be offline. Check your connection and try again.'
+        : 'We couldn\u2019t reach the promo server. Please try again, or email info@ebenova.net if this keeps happening.')
     } finally {
       setPromoLoading(false)
     }
   }
 
-  const handlePromoEmailCapture = async () => {
-    if (!promoEmail || !promoEmail.includes('@')) return
-    setPromoEmailLoading(true)
-    try {
-      await fetch('/api/capture-buyer', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: promoEmail,
-          docName: doc?.docName,
-          source: 'promo',
-          promoCode: promoCode,
-        }),
-      })
-    } catch {
-      // Ignore capture errors
+  const handleRegenRetry = async () => {
+    if (!lastPromoTokenForRegen) return
+    setPromoError('')
+    const ok = await runPremiumRegen(lastPromoTokenForRegen)
+    if (!ok) {
+      setPremiumRegenFailed(true)
+      setPromoMsg(prev => prev.includes('Regenerate')
+        ? prev
+        : 'Couldn\u2019t regenerate. You can try again, or download the preview version now — email info@ebenova.net if you need the premium version.')
     }
-    setPromoEmailSubmitted(true)
-    setPromoEmailLoading(false)
-    setPendingPromoUnlock(false)
-    setPaid(true)
-  }
-
-  const handlePromoSkipEmail = () => {
-    // Allow skip but still unlock — we tried to capture
-    setPendingPromoUnlock(false)
-    setPaid(true)
   }
 
   // Check if returning from Polar payment success
@@ -1006,6 +1082,21 @@ export default function Preview() {
                 <button className="btn-download-full" onClick={() => { trackDownloadClicked(doc.docType); downloadPDF() }}>
                   ⬇ Download clean PDF — ready now
                 </button>
+                {/* Regen retry — shown only when the Claude Sonnet upgrade
+                    failed after a promo unlock. Previously the user silently
+                    got the Llama preview version and downloaded it thinking
+                    it was the premium document. */}
+                {premiumRegenFailed && lastPromoTokenForRegen && (
+                  <button
+                    className="btn-regen-retry"
+                    onClick={handleRegenRetry}
+                    disabled={premiumRegenLoading}
+                  >
+                    {premiumRegenLoading
+                      ? <><span className="spinner-sm" /> Regenerating premium version…</>
+                      : <>✨ Regenerate premium version →</>}
+                  </button>
+                )}
                 {/* Post-purchase email capture */}
                 {!emailSubmitted ? (
                   <div className="buyer-capture">
