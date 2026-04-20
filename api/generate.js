@@ -845,7 +845,11 @@ export default async function handler(req, res) {
 
   try {
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 90000) // 90s timeout
+    // 280s timeout (5s headroom under Vercel's 300s function ceiling on Fluid
+    // Compute). Previously 90s, which produced 504s on the Signova UI and on
+    // the API Market proxy when Claude Sonnet 4.6 took >90s on complex docs
+    // with the full 46-clause jurisdiction-aware system prompt.
+    const timeoutId = setTimeout(() => controller.abort(), 280000)
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
