@@ -34,7 +34,10 @@ async function generateOneDocument(docType, fields, jurisdiction) {
   if (!anthropicKey) throw new Error('ANTHROPIC_API_KEY not set')
   const enrichedFields = { ...fields, jurisdiction }
   const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), 90000)
+  // 280s timeout — was 90s, caused 504s on API Market when Sonnet took >90s
+  // on complex docs. batch.js runs N× Claude calls so per-call budget needs
+  // headroom; the outer Vercel maxDuration is bumped to 300s to match.
+  const timeoutId = setTimeout(() => controller.abort(), 280000)
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {

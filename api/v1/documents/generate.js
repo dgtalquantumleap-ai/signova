@@ -121,7 +121,11 @@ export default async function handler(req, res) {
 
   try {
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 90000)
+    // 280s timeout (5s headroom under Vercel's 300s function ceiling on Fluid
+    // Compute). Previously 90s, which started producing 504s on API Market
+    // after the jurisdiction-aware prompt expanded to 46 clauses — Claude
+    // Sonnet 4.6 for a full Nigerian tenancy / SAFE can easily run 100-180s.
+    const timeoutId = setTimeout(() => controller.abort(), 280000)
 
     // ── Jurisdiction-aware enhancement (non-DPA docs) ─────────────────────
     // jurisdiction comes from a validated field, so matching is safe without pronoun worries.
