@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
+import SiteNav from '../components/SiteNav'
 import SiteFooter from '../components/SiteFooter'
 import './Landing.css'
 import './NDALanding.css'
@@ -50,20 +51,7 @@ export default function DocLanding() {
         <link rel="canonical" href={`https://www.getsignova.com/${slug}`} />
       </Helmet>
 
-      {/* Nav */}
-      <nav className="nav">
-        <div className="nav-inner">
-          <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            <div className="logo-mark">S</div>
-            <span className="logo-text">Signova</span>
-          </div>
-          <div className="nav-links">
-            <a href="/#how">How it works</a>
-            <a href="/#documents">Documents</a>
-            <a href="/blog">Blog</a>
-          </div>
-        </div>
-      </nav>
+      <SiteNav variant="signova" />
 
       {/* Hero */}
       <section className="nda-hero">

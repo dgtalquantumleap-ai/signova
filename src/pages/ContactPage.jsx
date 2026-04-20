@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { useState } from 'react'
+import SiteNav from '../components/SiteNav'
 import SiteFooter from '../components/SiteFooter'
 
 const gold = '#c9a84c'
@@ -56,28 +57,7 @@ export default function ContactPage() {
         <link rel="canonical" href="https://www.getsignova.com/contact" />
       </Helmet>
 
-      {/* Nav */}
-      <nav style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 24px', height: '64px',
-        borderBottom: '1px solid var(--border)',
-        position: 'sticky', top: 0,
-        background: 'rgba(14,14,14,0.95)',
-        backdropFilter: 'blur(12px)', zIndex: 10,
-      }}>
-        <button onClick={() => navigate(-1)}
-          style={{ background: 'none', border: 'none', color: 'var(--text2)', fontSize: '14px', cursor: 'pointer' }}>
-          ← Back
-        </button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => navigate('/')}>
-          <span style={{ width: '32px', height: '32px', borderRadius: '8px', background: gold, color: '#0e0e0e', fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>S</span>
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 600 }}>Signova</span>
-        </div>
-        <button onClick={() => navigate('/')}
-          style={{ background: gold, color: '#0e0e0e', border: 'none', borderRadius: '8px', padding: '8px 18px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>
-          Try it free →
-        </button>
-      </nav>
+      <SiteNav variant="signova" />
 
       {/* Content */}
       <section style={{ maxWidth: '560px', margin: '0 auto', padding: '64px 24px 80px' }}>
