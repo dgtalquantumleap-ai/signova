@@ -386,6 +386,41 @@ const CLAUSE_REGISTRY = {
       CCPA_CPRA_CLAUSES.breachNotification,
     ],
   },
+  // FIX 2 — Commonwealth fallback for jurisdictions without a dedicated
+  // privacy statute library. Used when none of the explicit jurisdictions
+  // above match. Generic baseline acknowledging there is no specific named
+  // statute, with the universal data-protection principles every modern
+  // regime shares.
+  'Commonwealth common-law privacy baseline': {
+    regime: 'Commonwealth common-law privacy baseline (no dedicated statute library)',
+    regulator: 'the data-protection authority of the specified jurisdiction',
+    clauses: [
+      {
+        title: 'Lawful basis for processing',
+        text: 'The Processor shall only process Personal Data on the documented instructions of the Controller, and only on a lawful basis under the applicable data protection law of the governing jurisdiction (typically: consent, contract performance, legal obligation, vital interest, public task, or legitimate interest, subject to balancing against data-subject rights).',
+      },
+      {
+        title: 'Security obligations',
+        text: 'The Processor shall implement appropriate technical and organisational measures to ensure a level of security appropriate to the risk, including encryption of Personal Data in transit and at rest, regular testing of security controls, and personnel training. The measures shall meet at minimum the recognised standards of the data-protection authority of the jurisdiction (typically aligned with ISO 27001 / NIST controls).',
+      },
+      {
+        title: 'Breach notification',
+        text: 'The Processor shall notify the Controller without undue delay (and in any case within 72 hours where the relevant law so requires, e.g. UK GDPR Art. 33 or NDPA 2023 s.41) after becoming aware of a Personal Data breach. The notification shall include the nature of the breach, categories and approximate number of data subjects and records affected, likely consequences, and measures taken or proposed to address the breach.',
+      },
+      {
+        title: 'Cross-border transfers',
+        text: 'The Processor shall not transfer Personal Data to any country or international organisation outside the originating jurisdiction without ensuring adequate safeguards, including (a) an adequacy determination by the data-protection authority where available, (b) appropriate transfer mechanisms (Standard Contractual Clauses, Binding Corporate Rules, or equivalent), (c) the data subject\'s explicit consent after being informed of the risks, or (d) other lawful exceptions narrowly construed.',
+      },
+      {
+        title: 'Data subject rights',
+        text: 'The Processor shall assist the Controller in fulfilling data subject requests for access, rectification, erasure, restriction, portability, and objection, as recognised by the applicable law of the governing jurisdiction. The Processor shall implement appropriate technical measures to enable the Controller to respond to such requests within statutory deadlines (typically 30 days, extendable to 60 or 90 in complex cases).',
+      },
+      {
+        title: 'Sub-processors',
+        text: 'The Processor shall not engage any sub-processor without the prior written authorisation of the Controller (general or specific). Where general authorisation is given, the Processor shall inform the Controller of intended changes and provide opportunity to object. Sub-processors shall be bound by written agreement to the same data-protection obligations.',
+      },
+    ],
+  },
 }
 
 // ── Public API ───────────────────────────────────────────────────────────────

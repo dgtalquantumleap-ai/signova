@@ -235,6 +235,29 @@ export default function Preview() {
   }
 
   const downloadPDF = async () => {
+    // FIX 4 — Blank/partial download guard.
+    // Two checks before we open the print window:
+    //   (a) Hard guard: doc must exist and have substantive content (>500 chars).
+    //       Catches the silent-regen-fail path where setPaid(true) fires but the
+    //       Anthropic call returned 5xx / empty / aborted — without this check,
+    //       the user clicked Download and got a blank PDF (the previous tenancy
+    //       demo bug).
+    //   (b) Soft warning: doc must contain a recognised execution-block marker
+    //       ("IN WITNESS WHEREOF", "EXECUTED AS A DEED", or "SIGNED by"). If
+    //       none present, Claude likely truncated mid-document — warn the user
+    //       but allow the download (they may want to inspect what's there).
+    if (!doc || !doc.content || doc.content.length < 500) {
+      setError('Document not ready — please retry or regenerate.')
+      return
+    }
+    const hasExecutionMarker = /IN WITNESS WHEREOF|EXECUTED AS A DEED|SIGNED by/i.test(doc.content)
+    if (!hasExecutionMarker) {
+      setError('Document may be incomplete — review before signing.')
+      // Continue with download — user may still want to inspect what we have.
+    } else if (error && error.startsWith('Document may be incomplete')) {
+      setError('') // clear stale warning if a previous incomplete download is now complete
+    }
+
     const content = doc.content
     const htmlBody = markdownToHtml(content)
 
