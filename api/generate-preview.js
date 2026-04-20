@@ -206,6 +206,85 @@ export default async function handler(req, res) {
     ? '\n\nUS JURISDICTION (general): UCC Article 2 goods; Restatement (Second) of Contracts. At-will employment (except Montana WDEA 1987). FLSA + state minimum wage. FTC Act §5 unfair/deceptive. State data-breach statutes (30–60 day notification). State privacy laws (CA CCPA/CPRA, VA, CO, CT, UT, TX + others). CAN-SPAM + TCPA. Non-competes void in CA/ND/OK/MN; narrow elsewhere. FAA (9 USC §§1–16). Name specific state. USD.'
     : ''
 
+  // ── Tier 4: Kenya doc-type-specific (short) ──────────────────────────────
+  const kenyaTenancyClause = (isTenancyDoc || isQuitNoticeDoc) && isKenya
+    ? '\n\nKENYAN TENANCY LAW: Landlord and Tenant (Shops, Hotels and Catering Establishments) Act Cap. 301 for controlled business premises (Business Premises Rent Tribunal). Rent Restriction Act Cap. 296 for controlled residential. Land Registration Act 2012 s.38(d) — leases >5 years must be registered. Distress for Rent Act Cap. 293. Stamp Duty Act Cap. 480: 1% ad valorem. Controlled tenancies require 2 months notice (Cap. 301 Form A/B). Jurisdiction: BPRT or Environment and Land Court.'
+    : ''
+  const kenyaEmploymentClause = isEmploymentDoc && isKenya
+    ? '\n\nKENYAN EMPLOYMENT LAW: Employment Act 2007 §9 written contract (illiterate employee: explain in known language). §10 written particulars within 2 months (NOT §35 — that is termination). §35 termination notice: daily=no notice / close of day; weekly=1 wk; bi-weekly=2 wk; monthly=28 days. Probation §42: ≤6 mo extendable once; 7 days probation notice. §36 pay in lieu. §28 annual leave: 21 working days. §30 sick leave: 7 full + 7 half after 2 months. §29 maternity: 3 months full pay. §45 unfair dismissal: valid reason + procedural fairness (s.41); remedies s.49 (up to 12 months gross). WIBA 2007 employer strict liability (96-month earnings basis for permanent disability). NSSF 2013: 6% + 6%. NHIF / SHIF 2023 mandatory health. Min wage via Wages Order (Labour Institutions Act). PAYE bands 10/25/30/32.5/35% + KES 2,400/mo relief. Jurisdiction: ELRC (exclusive).'
+    : ''
+  const kenyaNonCompeteClause = isNonCompeteDoc && isKenya
+    ? '\n\nKENYAN NON-COMPETE: English common-law restraint-of-trade doctrine (Nordenfelt v Maxim Nordenfelt). Employment Act 2007 §5 prohibits post-termination restrictions except reasonable restraints. Must show legitimate protectable interest (trade secrets, customer connection); reasonable scope/duration/geography. Typical enforceable: 6–12 months. Blue-pencil severance clause recommended. Jurisdiction: ELRC.'
+    : ''
+  const kenyaPropertyClause = (isDeedOfAssignmentDoc || isPowerOfAttorneyDoc) && isKenya
+    ? '\n\nKENYAN PROPERTY: Land Registration Act 2012 — all registered-land dispositions registered (LRA Form 3). Land Act 2012 + Land Control Act Cap. 302 consent for agricultural land. Stamp Duty Act Cap. 480: 4% in municipalities, 2% rural (30 days). CGT 15% (Income Tax Cap. 470 Sch. 8). PoA under Registration of Documents Act Cap. 285 — attested and registered. Article 65 Constitution: non-citizen leaseholds capped at 99 years. Jurisdiction: Environment and Land Court.'
+    : ''
+  const kenyaLoanClause = isLoanDoc && isKenya
+    ? '\n\nKENYAN LOAN LAW: Banking Act Cap. 488 (banking business reserved to CBK-licensed); Microfinance Act 2006; Digital Credit Providers register with CBK. CBR benchmark (MPC monthly). IN DUPLUM RULE: Banking Act s.44A — interest + charges in default cannot exceed principal. Movable Property Security Rights Act 2017 + Registry. Land charges under LRA 2012. Interest rate cap (2016) repealed by Finance Act 2019. Stamp Duty nominal on loan; 0.1% on secured. Jurisdiction: High Court Commercial Division.'
+    : ''
+  const kenyaCommercialClause = isCommercialDoc && isKenya
+    ? '\n\nKENYAN COMMERCIAL LAW: Sale of Goods Act Cap. 31 (implied ss.14–17 from SGA 1893). Consumer Protection Act 2012 (unfair practices, 5-day cooling-off s.10). Competition Act 2010 (CAK: restrictive practices, merger control, dominance). KEBS Act: KS standards, PVoC for imports. Kenya NOT a CISG state. VAT 16%. Jurisdiction: High Court Nairobi; arbitration NCIA.'
+    : ''
+
+  // ── Tier 4: Ghana doc-type-specific (short) ──────────────────────────────
+  const ghanaTenancyClause = (isTenancyDoc || isQuitNoticeDoc) && isGhana
+    ? '\n\nGHANAIAN TENANCY LAW: Rent Act 1963 (Act 220) for controlled recoverable premises; Rent Control Department. Land Act 2020 (Act 1036) consolidates land law. Stamp Duty Act 2005 (Act 689): 0.5% of rent. Rent Act §25A advance-rent cap: max 6 months residential. Notice periods §17 Rent Act: weekly=1 wk, monthly=1 mo, yearly=3 mo. Jurisdiction: Rent Control Department / District Court / High Court.'
+    : ''
+  const ghanaEmploymentClause = isEmploymentDoc && isGhana
+    ? '\n\nGHANAIAN EMPLOYMENT LAW: Labour Act 2003 (Act 651) §12 WRITTEN CONTRACT for employment 6+ months. §13 WRITTEN PARTICULARS (Schedule 1) within 2 months. §17 notice: 3+ yrs = 1 month (or 1 mo in lieu); under 3 yrs = 2 weeks; week-to-week = 7 days. §20 annual leave: 15 working days. §24 sick leave (medical cert.). §57 maternity: 12 weeks paid. §68 National Daily Minimum Wage via National Tripartite Committee (current gazette). §63 ordinary termination with notice; summary dismissal for serious misconduct + fair hearing. §65 redundancy: 4 weeks/yr customary minimum. National Pensions Act 2008 (Act 766): Tier 1 13.5% emp + 5.5% ee to SSNIT (inc. 2.5% NHIS); Tier 2 5% emp mandatory; Tier 3 voluntary. NHIA Act 2012 (Act 852). PAYE via GRA. Jurisdiction: National Labour Commission (§§140–142); High Court.'
+    : ''
+  const ghanaPropertyClause = (isDeedOfAssignmentDoc || isPowerOfAttorneyDoc) && isGhana
+    ? '\n\nGHANAIAN PROPERTY: Land Act 2020 (Act 1036) — comprehensive reform replacing Conveyancing Act 1973, Land Registry Act 1962, Land Title Registration Law 1986. Registration at Lands Commission (Lands Commission Act 2008 Act 767). Stamp Duty Act 2005 (Act 689): 0.5% of consideration (30 days). CGT 15% (Income Tax Act 2015 Act 896 Sch. 3; primary-residence exemption). Customary land: stool/skin consent. PoA registered + stamped. Execution under seal + 2 witnesses. Jurisdiction: High Court Land Division Accra / Kumasi.'
+    : ''
+  const ghanaLoanClause = isLoanDoc && isGhana
+    ? '\n\nGHANAIAN LOAN LAW: Borrowers and Lenders Act 2020 (Act 1052) — register at Collateral Registry (BoG) within 28 days; unregistered = unenforceable against 3rd parties (s.18). Banks and SDI Act 2016 (Act 930). Non-Bank FI Act 2008 (Act 774). BoG Policy Rate benchmark. Stamp Duty nominal / ad valorem (secured). Priority under Insolvency Act 2020 (Act 1015). Courts may strike unconscionable rates. Jurisdiction: High Court Commercial Division Accra; GAAC arbitration.'
+    : ''
+
+  // ── Tier 4: South Africa doc-type-specific (short) ───────────────────────
+  const southAfricaTenancyClause = (isTenancyDoc || isQuitNoticeDoc) && isSouthAfrica
+    ? '\n\nSA TENANCY LAW: Rental Housing Act 50/1999 — RHT jurisdiction. Rental Housing Regulations 2001 — deposit in interest-bearing account, refund within 14 days (21 if disputed) with itemised damages. CPA 68/2008 s.14: fixed-term 20-business-day cancellation notice + cancellation penalty; renewal notice 40–80 business days. PIE Act 19/1998: court order required for eviction (self-help criminal). NO stamp duty (abolished 2009). Deeds Registries Act 47/1937 s.77: long leases (>10 yrs) may be registered. Notice: CPA 20 bus days; commercial "reasonable in circumstances"; month-to-month = 1 month. Jurisdiction: RHT / Magistrate / High Court.'
+    : ''
+  const southAfricaEmploymentClause = isEmploymentDoc && isSouthAfrica
+    ? '\n\nSA EMPLOYMENT LAW: BCEA 75/1997 §29 written particulars at commencement. §37 notice: 1 wk (≤6 mo); 2 wk (6 mo–1 yr); 4 wk (1+ yr or farm/domestic 6+ mo); must be same for both parties. Collective agreement may reduce 4 wk to min 2 wk. §38 payment in lieu. §20 annual leave: 21 consecutive days / 1 day per 17 days. §§22–23 sick leave: 30 days paid per 36-month cycle. §25 maternity: 4 months unpaid (UIF paid). §27 family responsibility: 3 days/cycle. LRA 66/1995 unfair dismissal; CCMA referral 30 days. UIF 1%/1% (ceiling R17,712/mo). Skills Development Levies 1%. COIDA workplace-injury. NMWA 9/2018 (current rate R27.58/hr 2024). EEA 55/1998 affirmative action for designated employers. POPIA for employee personal data. Jurisdiction: CCMA / Labour Court / Bargaining Council.'
+    : ''
+  const southAfricaNonCompeteClause = isNonCompeteDoc && isSouthAfrica
+    ? '\n\nSA NON-COMPETE: DIFFERS from Commonwealth — restraint prima facie VALID (Magna Alloys v Ellis [1984] 4 SA 874 (A)); employee bears onus to prove unreasonableness. Basson v Chilwan [1993] 3 SA 742 (A) reasonableness test. Constitutional s.22 (right to trade) considered. Typical enforceable duration 12–24 months (longer than NG/KE because of pro-enforcement presumption). Courts READ DOWN unreasonable portions (Sasfin v Beukes). Jurisdiction: Labour Court / High Court.'
+    : ''
+  const southAfricaPropertyClause = (isDeedOfAssignmentDoc || isPowerOfAttorneyDoc) && isSouthAfrica
+    ? '\n\nSA PROPERTY: Deeds Registries Act 47/1937 — all transfers registered at Deeds Office. Only admitted CONVEYANCERS may lodge. Transfer Duty Act 40/1949 sliding scale (first R1.1m nil, up to 13% above R11m); 6 months. VAT 15% replaces transfer duty where vendor is registered. FICA 38/2001 for accountable institutions. Alienation of Land Act 68/1981 s.2: sale of land must be in writing signed by parties. CGT (Income Tax Act 58/1962 Eighth Schedule; R2m primary-residence exclusion). Jurisdiction: High Court / Deeds Office.'
+    : ''
+  const southAfricaLoanClause = isLoanDoc && isSouthAfrica
+    ? '\n\nSA LOAN LAW: NCA 34/2005 — credit provider registration with NCR; applies to natural persons + small juristic persons. s.81 affordability assessment (reckless credit = void). s.121 cooling-off 5 business days. s.103(5) IN DUPLUM RULE — accrued unpaid interest/fees cannot exceed principal balance. NCR Regulations set max interest rates per category over SARB Repo Rate. Usury Act 73/1968 largely superseded. FSRA 9/2017 twin peaks. Debt review Part D NCA. Mortgage bonds (Deeds Registries Act); notarial bonds (Act 57/1956). Jurisdiction: Magistrate\'s Court (NCA); High Court; NCT.'
+    : ''
+
+  // ── Tier 4: Nigeria commercial hygiene (NDA + general commercial) ────────
+  const isNdaDoc = lower.includes('non-disclosure agreement') || lower.includes(' nda ') || /^nda\b/.test(lower) || lower.endsWith('nda')
+  const isGeneralCommercialDoc = lower.includes('terms of service') || lower.includes('memorandum of understanding')
+    || lower.includes(' mou') || lower.includes('letter of intent') || lower.includes(' loi ')
+    || lower.includes('business partnership') || lower.includes('joint venture')
+    || lower.includes('payment terms') || lower.includes('purchase agreement')
+
+  const nigeriaNDAClause = isNdaDoc && isNigeria
+    ? '\n\nNG NDA / CONFIDENTIALITY: NO standalone trade-secret statute in Nigeria. Protection via (a) contract, (b) equitable breach of confidence (Coco v Clark applied by NG courts), (c) implied duty in fiduciary/employment. NDPA 2023 applies where confidential info includes 3rd-party personal data (lawful basis s.25, subject rights s.34, cross-border s.43). NG authorities: Adetoun Oladeji v N.B. Plc [2007] 5 NWLR (Pt.1027) 415. Typical duration: 3–5 yrs general info; indefinite trade secrets. Non-solicitation subject to Nordenfelt reasonableness. Remedies: injunction / damages / account of profits / delivery-up. AMA 2023 (Lagos seat) for commercial NDAs. Stamp Duty nominal. Jurisdiction: Federal High Court (IP) or State High Court.'
+    : ''
+  const nigeriaCommercialGeneralClause = isGeneralCommercialDoc && isNigeria
+    ? '\n\nNG COMMERCIAL/TRANSACTIONAL: CAMA 2020 s.746+ partnerships; business-name registration required (Part B Ch.2); JVs incorporated under CAMA 2020. NIPC Act for foreign JVs; Foreign Exchange (Monitoring and Miscellaneous Provisions) Act. Tax: CITA 30%/20%/0% by size (Finance Act 2020), VAT 7.5%, Withholding Tax 5–10%. FCCPA 2018 s.127 unfair terms + s.116 misleading conduct for consumer-facing. AMA 2023 for ADR (Lagos seat typical). Stamp Duties Act: agreements under hand nominal; ad valorem where consideration quantified. "Subject to contract" carve-out for non-binding LOI/MOU. Bills of Exchange Act for payment instruments. Jurisdiction: FHC (corporate/tax/IP/FX) or State HC; AMA 2023 arbitration.'
+    : ''
+
+  // ── Tier 4: US / Canada doc-type-specific (short) ────────────────────────
+  const usEmploymentClause = isEmploymentDoc && (isUSA || isCalifornia)
+    ? '\n\nUS EMPLOYMENT LAW: AT-WILL doctrine (exc. Montana WDEA 1987). FLSA min wage $7.25 (many states higher); OT 1.5x >40 hrs for non-exempt. Worker classification: IRS 20-factor / ABC test (CA/MA/NJ). W-2 vs 1099-NEC ≥$600/yr. State-specific: CA (Labor Code §2802 reimbursement, WARN, CalWARN, meal/rest, PAGA, SB 1162, §16600 non-compete void); NY (NYLL, NYSHRL, pay-transparency); TX (payday law); IL (BIPA); WA (non-compete restrictions); MA (non-compete garden-leave required §24L). COBRA 18 mo (20+ emp). FMLA 12 wk (50+ emp). ERISA for plans. Workers\' comp state-specific. I-9 within 3 days; E-Verify in some states. Jurisdiction: federal or state; EEOC.'
+    : ''
+  const canadaEmploymentClause = isEmploymentDoc && isCanada && !isQuebec
+    ? '\n\nCANADIAN EMPLOYMENT LAW: Federal vs provincial split — federally regulated (banks/telcos/inter-provincial) under Canada Labour Code; else provincial ESA. ON ESA 2000 s.57 notice (1 wk for 3 mo–1 yr; 2 wk for 1–3 yr; +1 wk/yr to 8 wk); s.64 severance pay ($2.5M+ payroll + 5+ yr = 1 wk/yr to 26 wk). BC ESA s.63. COMMON-LAW REASONABLE NOTICE (Bardal factors: age, service, character of employment, availability of similar work) — typically ~1 mo/yr, capped ~24 mo. Waksdale [2020] ONCA 391: non-compliant for-cause clause voids without-cause clause. CPP 5.95% each to YMPE ($71,300); CPP2 4% to YAMPE ($81,200). EI 1.64% emp + 1.4x employer. Provincial health tax (ON/MB/BC). Stat holidays per province. Min wage per province (ON $17.20, BC $17.40, AB $15, federal $17.30). Human rights codes. Just cause high bar (McKinley v BC Tel). Jurisdiction: province Superior Court.'
+    : ''
+  const usCanadaPropertyClause = (isTenancyDoc || isQuitNoticeDoc) && (isUSA || isCalifornia || (isCanada && !isQuebec))
+    ? '\n\nUS/CANADA TENANCY LAW: ' +
+      (isCanada ? 'CANADA: Provincial RTA — ON RTA 2006 (LTB), BC RTA 2002 (RTB), AB RTA 2004. ON N12/N13 forms (60 days). Deposits: ON = last month rent only (no damage deposit); BC ≤ ½ first month + pet; AB ≤ 1 month. Human Rights Codes apply. PIPEDA for tenant data. ' : '') +
+      (isUSA || isCalifornia ? 'US: State landlord-tenant law — CA Civ. Code §§1940–1954.05 + AB 1482 (CPI+5% rent cap, just-cause after 12 mo); NY RPL §220+ + NYC Rent Stab; TX Prop. Code Tit. 8; FL Fla. Stat. 83. Security deposits state-specific (CA 1 month unfurnished / 2 furnished post-AB 12 2024; NY 1 month). Implied warranty of habitability (Javins v First National Realty). Fair Housing Act 42 USC §3601+ + Bostock extensions. CA notice: 60 days if 1+ yr, else 30. Eviction via state court (unlawful detainer/FED); self-help illegal. ' : '') +
+      'Jurisdiction: state L-T court or provincial RTB/LTB.'
+    : ''
+
   // ── Tier 3: generic fallback for unmapped jurisdictions ──────────────────
   const hasKnownJurisdiction = isNigeria || isKenya || isGhana || isSouthAfrica || isUK
     || isQuebec || isCanada || isCalifornia || isUSA
@@ -228,6 +307,11 @@ export default async function handler(req, res) {
       + nigeriaEmploymentClause + nigeriaNonCompeteClause
       + nigeriaLoanClause + nigeriaHirePurchaseClause + nigeriaCommercialClause
       + ukGeneralClause + kenyaGeneralClause + ghanaGeneralClause + southAfricaGeneralClause + canadaGeneralClause + usGeneralClause
+      + kenyaTenancyClause + kenyaEmploymentClause + kenyaNonCompeteClause + kenyaPropertyClause + kenyaLoanClause + kenyaCommercialClause
+      + ghanaTenancyClause + ghanaEmploymentClause + ghanaPropertyClause + ghanaLoanClause
+      + southAfricaTenancyClause + southAfricaEmploymentClause + southAfricaNonCompeteClause + southAfricaPropertyClause + southAfricaLoanClause
+      + nigeriaNDAClause + nigeriaCommercialGeneralClause
+      + usEmploymentClause + canadaEmploymentClause + usCanadaPropertyClause
       + genericFallbackClause
 
   try {
