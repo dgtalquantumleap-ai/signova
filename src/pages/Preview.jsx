@@ -278,14 +278,6 @@ export default function Preview() {
 </body>
 </html>`
 
-    // Use a hidden iframe instead of window.open:
-    //   1. Avoids mobile popup blockers (iOS Safari / Chrome Android block
-    //      async window.open — the old fallback handed the user a .html FILE
-    //      instead of a print dialog, which mobile users routinely interpreted
-    //      as "download failed").
-    //   2. Uses the iframe's load event so we only call print() once styles
-    //      AND fonts are fully applied — fixes the 500ms race on slow mobile
-    //      connections where the print preview opened unstyled.
     // Fire-and-forget download analytics so support can verify that a user
     // who redeemed / paid actually reached the download step.
     try {
@@ -297,52 +289,68 @@ export default function Preview() {
       }).catch(() => {})
     } catch { /* never block the download on telemetry */ }
 
-    const iframe = document.createElement('iframe')
-    iframe.style.position = 'fixed'
-    iframe.style.right = '0'
-    iframe.style.bottom = '0'
-    iframe.style.width = '0'
-    iframe.style.height = '0'
-    iframe.style.border = '0'
-    iframe.setAttribute('aria-hidden', 'true')
-    iframe.setAttribute('title', 'Print preview')
+    // Download strategy (replaces the hidden-iframe approach from PR #17):
+    //
+    // PR #17 attempted to use a hidden iframe + iframe.contentWindow.print()
+    // to avoid mobile popup blockers. Problem discovered post-ship: most
+    // browsers, when print() is called on a 0x0 iframe, fall back to
+    // printing the PARENT WINDOW (the entire Signova Preview page, with its
+    // React shell and sidebar) instead of the iframe's content. Users got
+    // a PDF of the page, not the document — even the content was missing
+    // from the save because the doc-content div renders empty while regen
+    // is in flight.
+    //
+    // This version: use window.open (works reliably on desktop because this
+    // call happens synchronously inside the onClick handler — user-gesture
+    // origin means the popup is not blocked). If window.open returns null
+    // (mobile popup blocker actually fires, or pop-ups disabled), fall back
+    // to downloading the full HTML as a .html file the user can open +
+    // Share → Print → Save as PDF. That fallback is uglier UX but at least
+    // gives the user the actual document content, not the Signova page.
+    const printWindow = window.open('', '_blank', 'noopener=no,noreferrer=no')
 
-    // Clean up the iframe after printing — give the OS print dialog time to
-    // consume the document before we tear it down.
-    const cleanup = () => {
-      setTimeout(() => {
-        if (iframe.parentNode) iframe.parentNode.removeChild(iframe)
-      }, 1000)
+    if (!printWindow) {
+      // Popup was blocked (mobile Safari / strict desktop settings).
+      // Download as HTML so the user keeps the actual document content.
+      const blob = new Blob([fullHtml], { type: 'text/html' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${doc.docName.replace(/\s+/g, '_')}_Signova.html`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      return
     }
 
-    iframe.onload = () => {
-      const win = iframe.contentWindow
-      if (!win) { cleanup(); return }
+    // Write the full HTML into the new tab and trigger print once loaded.
+    // Using document.write + close is the standard pattern here; srcdoc is
+    // not available on window.open (that's an iframe-only attribute).
+    printWindow.document.open()
+    printWindow.document.write(fullHtml)
+    printWindow.document.close()
+
+    // Wait for the new window to finish parsing + font loading before
+    // firing print(). Using onload (fires once DOM is ready) + a small
+    // setTimeout cushion (so webfonts land before print preview captures
+    // the page) is the pragmatic pattern that works across Chrome/Safari/
+    // Firefox. The cushion was previously 500ms (too tight for slow mobile
+    // connections); bumped to 1000ms.
+    const triggerPrint = () => {
       try {
-        // afterprint fires after the user confirms / dismisses the dialog
-        win.addEventListener('afterprint', cleanup, { once: true })
-        win.focus()
-        win.print()
+        printWindow.focus()
+        printWindow.print()
       } catch (err) {
         if (DEV) console.error('Print failed:', err)
-        // Last-ditch fallback — download as HTML so the user has SOMETHING.
-        // Mobile users can open the file and use their browser's "Share →
-        // Print → Save to PDF" flow.
-        const blob = new Blob([fullHtml], { type: 'text/html' })
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `${doc.docName.replace(/\s+/g, '_')}_Signova.html`
-        a.click()
-        URL.revokeObjectURL(url)
-        cleanup()
       }
     }
 
-    document.body.appendChild(iframe)
-    // Write via srcdoc so onload fires reliably after DOM+CSS parse (unlike
-    // document.write, which is deprecated and race-prone on mobile).
-    iframe.srcdoc = fullHtml
+    if (printWindow.document.readyState === 'complete') {
+      setTimeout(triggerPrint, 1000)
+    } else {
+      printWindow.onload = () => setTimeout(triggerPrint, 1000)
+    }
   }
 
   const handleEmailCapture = async () => {
