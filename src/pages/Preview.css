@@ -537,6 +537,19 @@
 }
 .promo-toggle:hover { color: var(--text2); }
 
+/* International card disclosure — tertiary payment option for Nigerian
+   users. Hidden behind a subtle text link so it doesn't compete with the
+   primary Paystack CTA, but findable for anyone whose Nigerian card is
+   rejected (common for virtual cards). */
+.intl-card-toggle {
+  background: none; border: none; padding: var(--space-2) 0 0;
+  font-size: 13px; color: var(--text3);
+  text-decoration: underline; text-underline-offset: 2px;
+  cursor: pointer; transition: color 0.2s;
+  display: block; margin: 0 auto; text-align: center; width: 100%;
+}
+.intl-card-toggle:hover { color: var(--text2); }
+
 /* When promo box is always-visible (no toggle), add a subtle label and
    a bit of breathing room so it's noticeable without dominating the
    payment buttons below it. */

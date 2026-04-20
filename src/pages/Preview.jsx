@@ -103,6 +103,7 @@ export default function Preview() {
   const [buyerEmail, setBuyerEmail] = useState('')
   // Shown inline when Paystack checkout needs an email we don't have yet
   const [showEmailPrompt, setShowEmailPrompt] = useState(false)
+  const [showIntlCard, setShowIntlCard] = useState(false)
   const [emailSubmitted, setEmailSubmitted] = useState(false)
   const [emailLoading, setEmailLoading] = useState(false)
   const [preEmail, setPreEmail] = useState('')
@@ -1065,8 +1066,12 @@ export default function Preview() {
                         />
                       </div>
                     )}
+                    {/* PRIMARY — Paystack Nigerian card. Gold CTA, can't miss.
+                        Nigerian users are here to pay with their Nigerian card
+                        the overwhelming majority of the time; give it the biggest
+                        visual weight. */}
                     <button
-                      className="btn-pay-full btn-pay-secondary"
+                      className="btn-pay-full"
                       onClick={handlePaystackCheckout}
                       disabled={paying}
                     >
@@ -1075,27 +1080,46 @@ export default function Preview() {
                         : <><CreditCard size={16} weight="regular" style={{ verticalAlign: '-3px', marginRight: 6 }} />Pay {effectiveCurrency.symbol}{effectiveCurrency.amount.toLocaleString()} with Nigerian Card →</>
                       }
                     </button>
-                    <p className="usdt-sub">GTBank · Access · FirstBank · UBA · Kuda · All Nigerian debit cards</p>
-                    <div className="usdt-divider"><span>or pay with crypto</span></div>
-                    <button
-                      className="btn-usdt btn-usdt-primary"
-                      onClick={handleUsdtCheckout}
-                      disabled={payingUsdt}
-                    >
-                      {payingUsdt
-                        ? <><span className="spinner-sm" /> Preparing invoice…</>
-                        : <>⬡ Pay {effectiveCurrency.symbol}{effectiveCurrency.amount.toLocaleString()} in USDT / Crypto →</>}
-                    </button>
-                    <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Works with Binance, Myaza & all African crypto wallets</p>
-                    <div className="usdt-divider"><span>or try international card</span></div>
-                    <button className="btn-pay-full btn-pay-secondary" onClick={handleDownload} disabled={paying}>
-                      {paying
-                        ? <><span className="spinner-sm" /> Processing…</>
-                        : <><Globe size={16} weight="regular" style={{ verticalAlign: '-3px', marginRight: 6 }} />Pay $4.99 USD by Card →</>
-                      }
-                    </button>
-                    <div className="trust-badge"><Lock size={12} weight="regular" style={{ verticalAlign: '-1px', marginRight: 4 }} />SSL encrypted · Secure checkout · Instant delivery</div>
-                    <p className="trust-line"><Lock size={12} weight="regular" style={{ verticalAlign: '-1px', marginRight: 4 }} />Secure checkout · Instant delivery · No account needed</p>
+                    <p className="trust-line"><Lock size={12} weight="regular" style={{ verticalAlign: '-1px', marginRight: 4 }} />GTBank · Access · FirstBank · UBA · Kuda · All Nigerian debit cards · Instant delivery</p>
+
+                    {/* SECONDARY — USDT/crypto. Subtle button, same weight as the
+                        non-Nigerian USDT option for consistency. */}
+                    <div className="sidebar-usdt">
+                      <div className="usdt-divider"><span>or pay with crypto</span></div>
+                      <button
+                        className="btn-usdt"
+                        onClick={handleUsdtCheckout}
+                        disabled={payingUsdt}
+                      >
+                        {payingUsdt
+                          ? <><span className="spinner-sm" /> Preparing invoice…</>
+                          : <>⬡ Pay {effectiveCurrency.symbol}{effectiveCurrency.amount.toLocaleString()} in USDT / Crypto →</>}
+                      </button>
+                      <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Binance, Myaza & all African crypto wallets</p>
+                    </div>
+
+                    {/* TERTIARY — International card, hidden behind a disclosure.
+                        Useful fallback when Paystack rejects a virtual card etc.,
+                        but adds decision paralysis if shown by default. */}
+                    {!showIntlCard ? (
+                      <button
+                        type="button"
+                        className="intl-card-toggle"
+                        onClick={() => setShowIntlCard(true)}
+                      >
+                        Having trouble? Try international card →
+                      </button>
+                    ) : (
+                      <>
+                        <button className="btn-pay-full btn-pay-secondary" onClick={handleDownload} disabled={paying}>
+                          {paying
+                            ? <><span className="spinner-sm" /> Processing…</>
+                            : <><Globe size={16} weight="regular" style={{ verticalAlign: '-3px', marginRight: 6 }} />Pay $4.99 USD by International Card →</>
+                          }
+                        </button>
+                        <p className="trust-line">Charged in USD · Works with Visa, Mastercard, Amex</p>
+                      </>
+                    )}
                   </>
                 ) : (
                   // Everyone else: card first, crypto below
