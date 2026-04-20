@@ -632,6 +632,34 @@ export const DOC_LANDING_DATA = {
       { q: 'What happens if the facility manager underperforms?', a: 'The agreement should include performance KPIs, a process for raising service complaints, remediation timelines, and termination rights for persistent underperformance. Signova includes a performance and termination clause.' },
     ],
   },
+
+  'safe-agreement': {
+    docId: 'safe-agreement',
+    slug: 'safe-agreement-generator',
+    icon: '📈',
+    name: 'SAFE Agreement',
+    headline: 'Generate a SAFE Agreement in Minutes',
+    subheadline: 'Simple Agreement for Future Equity — adapted for Nigerian law (CAMA 2020 + ISA 2025), Kenya, Ghana, UK, US, Canada, and South Africa. Valuation cap, discount, pro-rata rights. Free preview — $4.99 to download.',
+    titleTag: 'Free SAFE Agreement Generator — Simple Agreement for Future Equity | Signova',
+    metaDesc: 'Generate a jurisdiction-aware SAFE agreement (Simple Agreement for Future Equity) for startup fundraising. CAMA 2020 and ISA 2025 compliant for Nigeria; covers Kenya, Ghana, UK, US, Canada, South Africa. Free preview, $4.99 to download.',
+    badge: '📈 SAFE Agreement Generator',
+    whatIs: 'A SAFE (Simple Agreement for Future Equity) is an investment instrument popularised by Y Combinator. The investor provides capital now in exchange for the right to receive shares in a future equity financing round, acquisition, or other liquidity event — without setting a valuation today. In Nigeria the SAFE converts into shares under CAMA 2020 share-issuance rules and, where the investor is sophisticated, under ISA 2025 private placement exemptions.',
+    whenYouNeedIt: 'Use a SAFE when raising pre-seed or seed capital and you want to avoid the complexity and cost of a priced equity round. SAFEs are faster to close than convertible notes (no interest, no maturity date), standard across the startup ecosystem, and founders keep control while deferring the valuation conversation to the next priced round.',
+    useCases: [
+      { icon: '🚀', title: 'Pre-seed Fundraising', desc: 'Early-stage startups raising from angels and micro-VCs before product-market fit, deferring valuation to the seed round.' },
+      { icon: '🌍', title: 'Cross-Border Investment', desc: 'Nigerian, Kenyan, Ghanaian, or South African startups raising from international investors under local company law with international governing law.' },
+      { icon: '👥', title: 'Friends & Family Rounds', desc: 'Founders raising the first $25k–$250k from their network with a clean, founder-friendly instrument — no interest, no maturity, no board seat.' },
+    ],
+    faqs: [
+      { q: 'Is a SAFE legally valid in Nigeria?', a: 'Yes — a SAFE is a valid contract under Nigerian law. The conversion into shares at the next financing round is governed by CAMA 2020 share-issuance procedures (board resolution, CAC filing of return of allotment within 15 days). Where the investor is a sophisticated investor or the raise qualifies as a private placement, ISA 2025 exemptions from full SEC registration apply.' },
+      { q: 'What is the difference between a SAFE and a convertible note?', a: 'A convertible note is debt (has interest, a maturity date, and the right to be repaid). A SAFE is not debt — no interest, no maturity date. SAFEs convert into shares only on specific triggers (equity round, liquidity event, or dissolution). SAFEs are simpler, faster to close, and more founder-friendly, but investors take more risk.' },
+      { q: 'What is a valuation cap?', a: 'The valuation cap is the maximum pre-money valuation at which the SAFE will convert into shares at the next priced round. It protects the investor — if the company raises at a higher valuation, the SAFE investor still gets shares at the cap. Typical early-stage caps range from $1M–$10M.' },
+      { q: 'What is a discount rate?', a: 'The discount gives the SAFE investor a percentage discount (typically 10–25%) on the share price at the next priced round. If both a valuation cap and discount are included, the investor gets whichever gives them more shares (lower effective price).' },
+      { q: 'Do I need SEC approval to issue a SAFE in Nigeria?', a: 'Not for most private rounds. Under ISA 2025, private placements to sophisticated investors (institutional, HNW, or limited-number private offerings) are exempt from full SEC registration. Public offerings and large retail raises require SEC clearance. Signova\'s SAFE includes the standard private-placement representations.' },
+      { q: 'Can I use this SAFE for a Kenyan, Ghanaian, or South African company?', a: 'Yes. Select the country of incorporation and the SAFE will be adapted to the relevant company law: Kenya (Companies Act 2015), Ghana (Companies Act 2019 / Act 992), South Africa (Companies Act 71 of 2008), UK (Companies Act 2006), Canada (CBCA). The AI engine references the specific statutes and uses the correct share-class terminology for each jurisdiction.' },
+      { q: 'How much does it cost?', a: 'Previewing your SAFE is completely free — no account or credit card required. You pay $4.99 (or ₦7,400) once to download the clean, watermark-free PDF.' },
+    ],
+  },
 }
 
 // All slugs for sitemap generation and routing
