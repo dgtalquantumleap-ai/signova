@@ -737,14 +737,26 @@ export default function Generator() {
   }, [docType])
 
   // Read URL params on mount — lets developers pre-fill via ?company=Acme&website=acme.com etc.
+  // ?promo=XXX / ?code=XXX is also captured and stashed in sessionStorage so
+  // Preview.jsx can auto-populate the promo input after generation. Targeted
+  // share-links like /nda-generator?promo=ROSEMARY thus carry the code all
+  // the way through to the payment step without the user having to remember.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.toString()) {
       const prefilled = {}
       for (const [key, val] of params.entries()) {
+        if (key === 'promo' || key === 'code') {
+          try {
+            sessionStorage.setItem('signova_promo', (val || '').toUpperCase().trim())
+          } catch { /* sessionStorage may be unavailable */ }
+          continue  // don't pollute form fields with the promo
+        }
         prefilled[key] = val
       }
-      setAnswers(prev => ({ ...prev, ...prefilled }))
+      if (Object.keys(prefilled).length) {
+        setAnswers(prev => ({ ...prev, ...prefilled }))
+      }
     }
   }, [])
 

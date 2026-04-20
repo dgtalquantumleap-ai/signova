@@ -101,6 +101,8 @@ export default function Preview() {
   const [error, setError] = useState('')
   const [payingUsdt, setPayingUsdt] = useState(false)
   const [buyerEmail, setBuyerEmail] = useState('')
+  // Shown inline when Paystack checkout needs an email we don't have yet
+  const [showEmailPrompt, setShowEmailPrompt] = useState(false)
   const [emailSubmitted, setEmailSubmitted] = useState(false)
   const [emailLoading, setEmailLoading] = useState(false)
   const [preEmail, setPreEmail] = useState('')
@@ -131,14 +133,28 @@ export default function Preview() {
     setDoc(parsed)
     trackPreviewLoaded(parsed.docType)
     window.scrollTo(0, 0)
+
+    // Promo code carry-through: accept ?promo=XXX in the URL (or picked up
+    // from sessionStorage if the upstream /generate step saved it) so
+    // targeted share-links like getsignova.com/nda-generator?promo=ROSEMARY
+    // auto-populate the promo field. User can still edit / remove before
+    // clicking Apply — we don't auto-apply, to keep the action explicit.
+    try {
+      const params = new URLSearchParams(window.location.search)
+      const urlPromo = params.get('promo') || params.get('code')
+      const storedPromo = sessionStorage.getItem('signova_promo')
+      const pre = (urlPromo || storedPromo || '').toUpperCase().trim()
+      if (pre) {
+        setPromoCode(pre)
+        sessionStorage.setItem('signova_promo', pre)
+      }
+    } catch { /* ignore malformed URL */ }
   }, [])
 
-  // Show pre-purchase capture after 20 seconds — user is warm but hasn't paid
-  useEffect(() => {
-    if (paid) return
-    const t = setTimeout(() => setShowPreCapture(true), 20000)
-    return () => clearTimeout(t)
-  }, [paid])
+  // Pre-purchase email popup removed — it interrupted users mid-decision
+  // (20s after landing on Preview) and measurably increased bounce.
+  // The state + JSX is retained (referenced by setShowPreCapture below)
+  // but never activates, so the popup never renders.
 
   const handlePreCapture = async () => {
     if (!preEmail || !preEmail.includes('@')) return
@@ -322,6 +338,16 @@ export default function Preview() {
   }
 
   const handlePaystackCheckout = async () => {
+    // Collect email before redirect. Paystack pre-fills its checkout with
+    // whatever we send; if we send a placeholder the user sees a confusing
+    // 'invalid' page they can't fix. Show the inline buyer-email input
+    // (same box used post-purchase) and wait for the user to fill it.
+    const trimmedEmail = (buyerEmail || '').trim()
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setError('Please enter your email below first — Paystack sends your receipt there.')
+      setShowEmailPrompt(true)
+      return
+    }
     setPaying(true)
     setError('')
     trackPaymentAttempted(doc?.docType, 'paystack')
@@ -333,7 +359,7 @@ export default function Preview() {
         body: JSON.stringify({
           docType: doc.docType,
           docName: doc.docName,
-          email: buyerEmail || '',
+          email: trimmedEmail,
         }),
       })
       if (!res.ok) {
@@ -1017,6 +1043,28 @@ export default function Preview() {
                 {isNigeria ? (
                   // Nigeria: Paystack (local card) first, then crypto, then international card
                   <>
+                    {/* Inline email prompt — Paystack requires a real email for the receipt.
+                        Only shown when user clicks Paystack without having entered email yet. */}
+                    {showEmailPrompt && (
+                      <div className="email-prompt-inline">
+                        <label className="email-prompt-label">Enter your email for the receipt:</label>
+                        <input
+                          className="email-prompt-input"
+                          type="email"
+                          placeholder="your@email.com"
+                          value={buyerEmail}
+                          onChange={e => setBuyerEmail(e.target.value)}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(buyerEmail.trim())) {
+                              setShowEmailPrompt(false)
+                              setError('')
+                              handlePaystackCheckout()
+                            }
+                          }}
+                          autoFocus
+                        />
+                      </div>
+                    )}
                     <button
                       className="btn-pay-full btn-pay-secondary"
                       onClick={handlePaystackCheckout}
