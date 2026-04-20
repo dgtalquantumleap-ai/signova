@@ -140,7 +140,10 @@ async function claimEmailForCode(email, code) {
 
 // Compensating action if a later check fails after we already incremented
 // the main use counter. Keeps the total accurate.
-async function rollbackUseCount(code) {
+// Exported so /api/promo-rollback can also call it when a post-redeem step
+// (e.g. Claude Sonnet regeneration) fails terminally, freeing the counter
+// slot so another user can still claim the code.
+export async function rollbackUseCount(code) {
   const url = process.env.UPSTASH_REDIS_REST_URL
   const token = process.env.UPSTASH_REDIS_REST_TOKEN
   if (!url || !token) {
