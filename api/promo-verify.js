@@ -25,9 +25,17 @@ export default async function handler(req, res) {
     const timestamp = parseInt(timestampStr, 10)
     if (isNaN(timestamp)) throw new Error('Invalid timestamp')
 
-    // Token expires after 2 hours
+    // Token lifetime: 24 hours.
+    // Previous value was 2h, which broke a real UX: user applies code,
+    // gets interrupted (kids, work, commute), returns next morning, and
+    // the regen / rollback endpoints reject the token. 24h is long enough
+    // to span an interrupted session without being abused — the token is
+    // bound to a specific code, the rollback is single-use per token, and
+    // /api/generate idempotently issues the same premium doc for the same
+    // prompt, so extended lifetime doesn't widen any attack surface.
+    const TOKEN_LIFETIME_MS = 24 * 60 * 60 * 1000
     const age = Date.now() - timestamp
-    if (age > 2 * 60 * 60 * 1000) {
+    if (age > TOKEN_LIFETIME_MS) {
       return res.status(400).json({ valid: false, error: 'Token expired. Please apply your code again.' })
     }
 
