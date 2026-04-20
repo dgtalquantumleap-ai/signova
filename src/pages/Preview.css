@@ -537,6 +537,19 @@
 }
 .promo-toggle:hover { color: var(--text2); }
 
+/* When promo box is always-visible (no toggle), add a subtle label and
+   a bit of breathing room so it's noticeable without dominating the
+   payment buttons below it. */
+.promo-box-visible {
+  margin-top: var(--space-3); padding: var(--space-2) var(--space-3);
+  background: var(--gold-dim); border: 1px solid rgba(201,168,76,0.3);
+  border-radius: var(--radius-sm);
+}
+.promo-label {
+  display: block; font-size: var(--text-xs); color: var(--text2);
+  margin-bottom: var(--space-1); font-weight: 500;
+}
+
 /* ── Pre-purchase Email Capture ── */
 .pre-capture-box {
   margin-top: 20px;

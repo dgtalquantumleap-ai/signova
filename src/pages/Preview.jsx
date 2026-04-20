@@ -908,33 +908,33 @@ export default function Preview() {
               <span>30-day money-back guarantee — no questions asked</span>
             </div>
             {error && <div className="sidebar-error">{error}</div>}
-            {/* Promo code — hidden behind toggle so it doesn't distract the pay button */}
+            {/* Promo code — always visible, above payment buttons, so users
+                who arrive with a code can't miss it. Real customer (ROSEMARY
+                code) clicked the payment button instead of finding the
+                hidden toggle, then got confused by Paystack's 'invalid
+                link' / 'incomplete email' errors on the wrong flow.
+                Showing the input by default adds minor visual weight for
+                non-promo users but eliminates the miss-the-toggle failure. */}
             {!paid && (
-              <div className="promo-box">
-                {!promoOpen ? (
-                  <button className="promo-toggle" onClick={() => setPromoOpen(true)}>
-                    Have a promo code?
+              <div className="promo-box promo-box-visible">
+                <label className="promo-label">
+                  Have a promo code?
+                </label>
+                <div className="promo-row">
+                  <input
+                    className="promo-input"
+                    type="text"
+                    placeholder="Enter code"
+                    value={promoCode}
+                    onChange={e => { setPromoCode(e.target.value.toUpperCase().trimStart()); setPromoError(''); setPromoMsg('') }}
+                    onKeyDown={e => e.key === 'Enter' && handlePromoApply()}
+                  />
+                  <button className="promo-btn" onClick={handlePromoApply} disabled={promoLoading}>
+                    {promoLoading ? '…' : 'Apply'}
                   </button>
-                ) : (
-                  <>
-                    <div className="promo-row">
-                      <input
-                        className="promo-input"
-                        type="text"
-                        placeholder="Promo code"
-                        value={promoCode}
-                        autoFocus
-                        onChange={e => { setPromoCode(e.target.value.toUpperCase().trimStart()); setPromoError(''); setPromoMsg('') }}
-                        onKeyDown={e => e.key === 'Enter' && handlePromoApply()}
-                      />
-                      <button className="promo-btn" onClick={handlePromoApply} disabled={promoLoading}>
-                        {promoLoading ? '…' : 'Apply'}
-                      </button>
-                    </div>
-                    {promoMsg && <div className="promo-success">{promoMsg}</div>}
-                    {promoError && <div className="promo-error">{promoError}</div>}
-                  </>
-                )}
+                </div>
+                {promoMsg && <div className="promo-success">{promoMsg}</div>}
+                {promoError && <div className="promo-error">{promoError}</div>}
               </div>
             )}
             {/* Promo success message — shown briefly before paid state takes over */}
