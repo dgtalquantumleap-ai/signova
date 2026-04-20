@@ -198,6 +198,30 @@ export default async function handler(req, res) {
   // avoid matching the pronoun "us" (e.g. "send us the draft").
   const isNigeria = lower.includes('nigeria') || lower.includes('ndpa') || lower.includes('ndpc')
     || lower.includes('cama 2020') || lower.includes('isa 2025') || /\b(lagos|abuja|kano|ibadan|port harcourt)\b/.test(lower)
+
+  // Lagos State Tenancy Law 2011 s.1(3) excludes four high-value areas from
+  // its coverage — those fall back to the Recovery of Premises Act (Cap. R7
+  // LFN 2004). Claude needs to know unambiguously which regime applies so
+  // the governing-law clause cites the correct statute. We detect either:
+  //   - explicit user selection ("Recovery of Premises Act" in fieldSummary), or
+  //   - address / state mentions the excluded-area name (Apapa / Ikeja GRA /
+  //     Ikoyi / Victoria Island) without also claiming LSTL 2011.
+  const isExcludedLagosArea = isNigeria && (
+    lower.includes('recovery of premises act') ||
+    /\bikeja\s+gra\b/.test(lower) ||
+    (/\bikoyi\b/.test(lower) && !lower.includes('lstl 2011')) ||
+    (/\bvictoria\s+island\b/.test(lower) && !lower.includes('lstl 2011')) ||
+    (/\bapapa\b/.test(lower) && !lower.includes('lstl 2011'))
+  )
+  // Explicit LSTL 2011 coverage — user selected "Lagos (covered by LSTL 2011)"
+  // from the state dropdown, OR the address clearly names a non-excluded
+  // Lagos area (Lekki, Surulere, Yaba, Ajah, etc.) AND no excluded-area
+  // keyword appears.
+  const isLstlLagos = isNigeria && !isExcludedLagosArea && (
+    lower.includes('lstl 2011') ||
+    lower.includes('lagos state tenancy law') ||
+    /\b(lekki|surulere|yaba|ajah|ikorodu|magodo|gbagada|ogudu|ojodu|ikate|agege|mushin|badagry|epe)\b/.test(lower)
+  )
   const isKenya = lower.includes('kenya') || lower.includes('kenyan') ||
     /\b(nairobi|mombasa|kisumu|nakuru)\b/.test(lower) ||
     lower.includes('companies act 2015') || lower.includes('kenya data protection act')
@@ -292,7 +316,11 @@ export default async function handler(req, res) {
   // agreements that cite NDPA §25 but never mention Lagos State Tenancy Law.
   const nigeriaTenancyClause = (isTenancyDoc || isQuitNoticeDoc || isLandlordAgentDoc) && isNigeria
     ? '\n\nIMPORTANT — NIGERIAN TENANCY LAW: Apply the following statutes and principles for Nigerian residential and commercial tenancies:\n' +
-      '(i) LAGOS STATE TENANCY LAW 2011 applies to properties in Lagos State EXCEPT the high-value areas excluded by s.1(3): Apapa, Ikeja GRA (Government Reservation Area), Ikoyi, and Victoria Island — those excluded areas are governed by the Recovery of Premises Act (Cap. R7 LFN 2004) and the High Court rules. If the property is in Lagos but not in those excluded areas, reference the LSTL 2011 by name in the governing-law clause.\n' +
+      (isExcludedLagosArea
+        ? '(i) *** MANDATORY STATUTE CITATION — DO NOT DEVIATE ***: This property is in an EXCLUDED LAGOS AREA (Apapa / Ikeja GRA / Ikoyi / Victoria Island) under s.1(3) of the Lagos State Tenancy Law 2011. You MUST cite "the Recovery of Premises Act (Cap. R7 LFN 2004) and the Rules of the High Court of Lagos State" as the governing statute in the Governing Law clause. DO NOT cite the Lagos State Tenancy Law 2011 for this property — the LSTL 2011 does not apply. Jurisdiction: the High Court of Lagos State (the Magistrate\'s Court has no jurisdiction for excluded areas). Notice periods follow the common-law periodic-tenancy rules (at least one full period of the tenancy) and any specific notice provisions in the tenancy agreement itself.\n'
+        : isLstlLagos
+          ? '(i) *** MANDATORY STATUTE CITATION — DO NOT DEVIATE ***: This property is in Lagos State (outside the s.1(3) excluded areas). You MUST cite "the Lagos State Tenancy Law 2011 (Law No. 8 of 2011)" by name in the Governing Law clause. Jurisdiction: Magistrate\'s Court for tenancy recovery where annual rent is below the jurisdictional limit (s.47 LSTL); High Court of Lagos State otherwise. The statutory notice periods in paragraph (ii) below are MANDATORY — do not contract out of them to the tenant\'s disadvantage.\n'
+          : '(i) LAGOS STATE TENANCY LAW 2011 applies to properties in Lagos State EXCEPT the high-value areas excluded by s.1(3): Apapa, Ikeja GRA (Government Reservation Area), Ikoyi, and Victoria Island — those excluded areas are governed by the Recovery of Premises Act (Cap. R7 LFN 2004) and the High Court rules. If the property is in Lagos but not in those excluded areas, reference the LSTL 2011 by name in the governing-law clause. For other Nigerian states, cite the equivalent state Tenancy Law or the Recovery of Premises Act as the residual common-law statute.\n') +
       '(ii) STATUTORY NOTICE PERIODS — Section 13 of the Lagos State Tenancy Law 2011 (and equivalent state Tenancy Laws) sets the MINIMUM notice periods which the parties cannot contract out of to the tenant\'s disadvantage:\n' +
       '     • Weekly tenancy — 1 week\'s notice\n' +
       '     • Monthly tenancy — 1 month\'s notice\n' +
@@ -812,13 +840,54 @@ export default async function handler(req, res) {
     || isQuebec || isCanada || isCalifornia || isUSA
   const genericFallbackClause = !hasKnownJurisdiction && !isDpa
     ? '\n\nJURISDICTION FALLBACK: The user has specified a jurisdiction for which this system does not maintain a dedicated statute library. Apply the following general approach:\n' +
-      '(i) COMMONWEALTH COMMON-LAW CONTRACT PRINCIPLES — for jurisdictions whose law is based on English common law (most African, Caribbean, South Asian, and Pacific jurisdictions): offer, acceptance, consideration, intention to create legal relations, capacity, legality. Draft the document in line with these universal requirements.\n' +
-      '(ii) CISG — for cross-border sale of goods, note the United Nations Convention on Contracts for the International Sale of Goods (Vienna 1980) applies if both parties\' jurisdictions are contracting states, unless expressly excluded.\n' +
-      '(iii) LOCAL CURRENCY — denominate amounts in the local currency of the specified jurisdiction (or USD if the user has expressly so specified).\n' +
-      '(iv) FORUM SELECTION — name the most senior commercial court in the capital city of the specified jurisdiction (e.g. "the High Court sitting in [capital city]") for exclusive jurisdiction. For arbitration, suggest the most proximate institutional arbitration centre.\n' +
-      '(v) CAUTIONARY TONE — because the system does not have a verified statute library for this jurisdiction, reference specific local statutes conservatively or by generic description (e.g. "the applicable labour law of [jurisdiction]"), rather than naming specific statutes that may not exist or have been repealed.\n' +
-      '(vi) DATA PROTECTION — where the document touches personal data, reference "the applicable data-protection law of [jurisdiction]" and list the UNIVERSAL baseline rights (notice, consent, access, rectification, erasure, breach notification).\n' +
-      '(vii) INVITATION TO VERIFY — the drafted document should include a cover note inviting the user to have a locally qualified legal practitioner review the governing-law and dispute-resolution clauses, since local statutory specifics may displace general principles.'
+      '(i) *** DO NOT DEFAULT TO CALIFORNIA, DELAWARE, OR U.S. LAW ***: A frequent LLM failure mode is falling back to U.S. jurisdictions when no specific country is referenced in the prompt. NEVER do this. Use the jurisdiction the user explicitly specified; if the user specified no jurisdiction at all, cite "the applicable laws of the governing jurisdiction as selected by the parties" and defer to English common-law principles as a neutral baseline — NOT U.S. law.\n' +
+      '(ii) COMMONWEALTH COMMON-LAW CONTRACT PRINCIPLES — for jurisdictions whose law is based on English common law (most African, Caribbean, South Asian, and Pacific jurisdictions): offer, acceptance, consideration, intention to create legal relations, capacity, legality. Draft the document in line with these universal requirements.\n' +
+      '(iii) CISG — for cross-border sale of goods, note the United Nations Convention on Contracts for the International Sale of Goods (Vienna 1980) applies if both parties\' jurisdictions are contracting states, unless expressly excluded.\n' +
+      '(iv) LOCAL CURRENCY — denominate amounts in the local currency of the specified jurisdiction (or USD if the user has expressly so specified).\n' +
+      '(v) FORUM SELECTION — name the most senior commercial court in the capital city of the specified jurisdiction (e.g. "the High Court sitting in [capital city]") for exclusive jurisdiction. For arbitration, suggest the most proximate institutional arbitration centre.\n' +
+      '(vi) CAUTIONARY TONE — because the system does not have a verified statute library for this jurisdiction, reference specific local statutes conservatively or by generic description (e.g. "the applicable labour law of [jurisdiction]"), rather than naming specific statutes that may not exist or have been repealed.\n' +
+      '(vii) DATA PROTECTION — where the document touches personal data, reference "the applicable data-protection law of [jurisdiction]" and list the UNIVERSAL baseline rights (notice, consent, access, rectification, erasure, breach notification).\n' +
+      '(viii) INVITATION TO VERIFY — the drafted document should include a cover note inviting the user to have a locally qualified legal practitioner review the governing-law and dispute-resolution clauses, since local statutory specifics may displace general principles.'
+    : ''
+
+  // ────────────────────────────────────────────────────────────────────────
+  // EXECUTION FORMALITIES — applies to ALL non-DPA documents
+  // ────────────────────────────────────────────────────────────────────────
+  // The default prompt used to say "End with a signature block" with zero
+  // specificity — Claude would often produce a single signature line per
+  // party with no witnesses, no "IN WITNESS WHEREOF" preamble, no execution
+  // formalities. For a document that's meant to be presented to a
+  // counterparty (or enforced in court), that's professionally embarrassing.
+  // This clause forces a consistent legal-grade execution section.
+  const executionFormalitiesClause = !isDpa
+    ? '\n\nMANDATORY EXECUTION / SIGNATURE BLOCK (non-negotiable — include this EXACTLY as described at the END of every document):\n' +
+      '1. IN WITNESS WHEREOF preamble — begin the execution section with: "IN WITNESS WHEREOF, the Parties have hereunto set their hands and seals the day and year first above written." (adapt phrasing slightly if the governing-law jurisdiction uses a different convention, but keep an equivalent formal preamble).\n' +
+      '2. PER-PARTY EXECUTION BLOCK — for EACH signatory party, provide:\n' +
+      '     • A block titled with the party\'s full legal name and role (e.g., "SIGNED by the Landlord" / "SIGNED by the Tenant" / "SIGNED on behalf of [Company Name]")\n' +
+      '     • A signature line: "Signature: _____________________________"\n' +
+      '     • Printed-name line: "Name: _____________________________"\n' +
+      '     • Role/title line if applicable (for corporate parties): "Title: _____________________________"\n' +
+      '     • Date line: "Date: _____________________________"\n' +
+      '     • Place of execution line: "Place: _____________________________"\n' +
+      '3. TWO WITNESSES PER PARTY (Nigerian / Commonwealth standard) — immediately after each party\'s signature block, add TWO attesting-witness blocks formatted:\n' +
+      '     • "WITNESS 1 (to the [Party role]):"  then Signature / Name / Address / Occupation / Date lines (same format as above with one Address line and one Occupation line added)\n' +
+      '     • "WITNESS 2 (to the [Party role]):"  same format\n' +
+      '   Do this for every party. Two witnesses per party is mandatory for Nigerian deeds and strongly customary for other Nigerian / Commonwealth instruments. For purely U.S. documents (Delaware corporate docs, California consumer agreements) one witness or a notary block is acceptable — use jurisdictional judgement.\n' +
+      '4. DEED-OF-ASSIGNMENT + POWER-OF-ATTORNEY UPGRADE — if the document is a Deed of Assignment or Power of Attorney, REPLACE the "IN WITNESS WHEREOF" preamble with "EXECUTED AS A DEED" and require the signature to be delivered under seal. Add a "DELIVERED by the [party] in the presence of:" phrasing before each witness block.\n' +
+      '5. TENANCY SCHEDULE — for a Tenancy Agreement, add a final section titled "SCHEDULE 1 — DESCRIPTION OF THE PREMISES" at the very end (after the execution blocks) containing: full property address; description of the demised premises (house / flat / shop number, floors, rooms, any common areas demised); a reference to any attached floor plan ("Annexure A"); and any fixtures and fittings included (furniture, appliances, air-conditioning units). Keep this purely descriptive — not legal language.\n' +
+      '6. DEFINITIONS BEFORE EXECUTION — do NOT put signature lines ahead of any substantive clause. The execution section is strictly the LAST section of the document (before any schedules). Keep schedules after the execution blocks.\n' +
+      '7. NO POST-SIGNATURE COMMENTARY — the document ends with the last witness line (or end of Schedule 1, whichever is later). Do not append "Note:", "This document was generated by...", "For legal advice, consult...", or any footer commentary. The client wrapper adds any required footer.'
+    : ''
+
+  // ────────────────────────────────────────────────────────────────────────
+  // EXPLICIT ANTI-CALIFORNIA GUARD — prevents Claude from defaulting to
+  // California / Delaware / U.S. law when the user has provided any other
+  // jurisdiction. This fires even when a known jurisdiction is detected, to
+  // reinforce the instruction that has been failing in practice.
+  // ────────────────────────────────────────────────────────────────────────
+  const isUsDocumentExplicit = isUSA || isCalifornia
+  const antiUsDefaultClause = !isDpa && !isUsDocumentExplicit
+    ? '\n\n*** CRITICAL — DO NOT DEFAULT TO US / CALIFORNIA / DELAWARE LAW ***: The user has NOT selected a U.S. jurisdiction for this document. Do not under any circumstances default the governing law, venue, arbitration rules, or statute references to California, Delaware, New York, the Uniform Commercial Code, the American Arbitration Association, or any U.S. court. Use the jurisdiction explicitly selected by the user. If the user\'s selection is ambiguous or missing, use English common-law principles and name "the courts of [user\'s stated jurisdiction]" or, as a last resort, "the courts of the Federal Republic of Nigeria" (the default upstream jurisdiction for this service). A California-default output will be treated as an error.'
     : ''
 
   const systemPrompt = isDpa
@@ -842,6 +911,7 @@ export default async function handler(req, res) {
       + nigeriaNDAClause + nigeriaCommercialGeneralClause
       + usEmploymentClause + canadaEmploymentClause + usCanadaPropertyClause
       + genericFallbackClause
+      + antiUsDefaultClause + executionFormalitiesClause
 
   try {
     const controller = new AbortController()
