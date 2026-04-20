@@ -209,7 +209,7 @@ const VALID_CODES = {
   },
   AFRICA: {
     expiresAt: new Date('2026-12-31T23:59:59Z'),
-    maxUses: 300,
+    maxUses: 1200,
     description: 'Taryl African Founders Community — 1 free document per member',
   },
   FUTUREAFRICA: {
@@ -226,6 +226,11 @@ const VALID_CODES = {
     expiresAt: new Date('2026-12-31T23:59:59Z'),
     maxUses: 20,
     description: 'IRENE promo — 1 free document per use',
+  },
+  AGNES: {
+    expiresAt: new Date('2026-12-31T23:59:59Z'),
+    maxUses: 20,
+    description: 'AGNES promo — 1 free document per use',
   },
   KREDO: {
     expiresAt: new Date('2026-12-31T23:59:59Z'),
