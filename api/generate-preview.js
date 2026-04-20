@@ -80,6 +80,18 @@ export default async function handler(req, res) {
   // ── Jurisdiction detection (parity with paid generate.js) ─────────────────
   const isNigeria = lower.includes('nigeria') || lower.includes('ndpa') || lower.includes('ndpc')
     || lower.includes('cama 2020') || lower.includes('isa 2025') || /\b(lagos|abuja|kano|ibadan|port harcourt)\b/.test(lower)
+  const isExcludedLagosArea = isNigeria && (
+    lower.includes('recovery of premises act') ||
+    /\bikeja\s+gra\b/.test(lower) ||
+    (/\bikoyi\b/.test(lower) && !lower.includes('lstl 2011')) ||
+    (/\bvictoria\s+island\b/.test(lower) && !lower.includes('lstl 2011')) ||
+    (/\bapapa\b/.test(lower) && !lower.includes('lstl 2011'))
+  )
+  const isLstlLagos = isNigeria && !isExcludedLagosArea && (
+    lower.includes('lstl 2011') ||
+    lower.includes('lagos state tenancy law') ||
+    /\b(lekki|surulere|yaba|ajah|ikorodu|magodo|gbagada|ogudu|ojodu|ikate|agege|mushin|badagry|epe)\b/.test(lower)
+  )
   const isKenya = lower.includes('kenya') || lower.includes('kenyan') ||
     /\b(nairobi|mombasa|kisumu|nakuru)\b/.test(lower) ||
     lower.includes('companies act 2015') || lower.includes('kenya data protection act')
@@ -150,7 +162,13 @@ export default async function handler(req, res) {
 
   // ── Tier 1: Nigerian property / tenancy / land ────────────────────────────
   const nigeriaTenancyClause = (isTenancyDoc || isQuitNoticeDoc || isLandlordAgentDoc) && isNigeria
-    ? '\n\nNIGERIAN TENANCY LAW: Apply Lagos State Tenancy Law 2011 (except Apapa, Ikeja GRA, Ikoyi, Victoria Island — those under Recovery of Premises Act). Statutory notice periods (§13 LSTL): weekly=1 week, monthly=1 month, quarterly=3 months, half-yearly=3 months, yearly=6 months. After expiry, serve 7-day owner\'s notice of intention to recover possession before court. Stamp Duty on tenancies: 0.78% up to 7 yrs; tenancies over 3 yrs must be registered at state Lands Registry. LSTL s.4 caps advance rent at 1 yr (new tenant) / 6 months (sitting tenant). Caution deposit refundable net of itemised deductions. Jurisdiction: Magistrate\'s Court (small claims) / State High Court.'
+    ? '\n\nNIGERIAN TENANCY LAW: ' +
+      (isExcludedLagosArea
+        ? '*** EXCLUDED LAGOS AREA *** — Property is in Apapa / Ikeja GRA / Ikoyi / Victoria Island (LSTL 2011 s.1(3) excluded). MUST cite Recovery of Premises Act (Cap. R7 LFN 2004) as governing statute — NOT LSTL 2011. Jurisdiction: High Court of Lagos State. Common-law periodic-tenancy notice periods apply (one full period).'
+        : isLstlLagos
+          ? '*** LSTL 2011 APPLIES *** — Property is in Lagos outside the excluded areas. MUST cite "Lagos State Tenancy Law 2011 (Law No. 8 of 2011)" in the governing-law clause. Jurisdiction: Magistrate\'s Court (low rent) / High Court.'
+          : 'Apply Lagos State Tenancy Law 2011 (except Apapa, Ikeja GRA, Ikoyi, Victoria Island — those under Recovery of Premises Act). For other states, use the equivalent state Tenancy Law or Recovery of Premises Act.') +
+      ' Statutory notice periods (s.13 LSTL): weekly=1 week, monthly=1 month, quarterly=3 months, half-yearly=3 months, yearly=6 months. After expiry, serve 7-day owner\'s notice of intention to recover possession before court. Stamp Duty: 0.78% up to 7 yrs; tenancies over 3 yrs must be registered at state Lands Registry. LSTL s.4 caps advance rent at 1 yr (new tenant) / 6 months (sitting tenant). Caution deposit refundable net of itemised deductions.'
     : ''
   const nigeriaDeedClause = isDeedOfAssignmentDoc && isNigeria
     ? '\n\nNIGERIAN DEED OF ASSIGNMENT: Apply Land Use Act 1978 — Governor\'s consent required under s.22 for alienation. Reference C of O number in parties / property block. Stamp Duty 3% of consideration (Stamp Duties Act Sch. 1); register at state Lands Registry within 60 days. CGT Act s.2(1) applies at 10%. Lagos Form 1C for Governor\'s consent. Execute under seal with 2 witnesses (attestation: names, addresses, occupations).'
@@ -289,7 +307,22 @@ export default async function handler(req, res) {
   const hasKnownJurisdiction = isNigeria || isKenya || isGhana || isSouthAfrica || isUK
     || isQuebec || isCanada || isCalifornia || isUSA
   const genericFallbackClause = !hasKnownJurisdiction && !isDpa
-    ? '\n\nJURISDICTION FALLBACK: No dedicated statute library for this jurisdiction — apply Commonwealth common-law contract principles (offer, acceptance, consideration, intention, capacity, legality). Use local currency. Reference the most senior commercial court in the capital for forum selection. Reference specific local statutes conservatively or generically (e.g. "applicable labour law of [country]"). Include a cover note recommending local legal review.'
+    ? '\n\nJURISDICTION FALLBACK: No dedicated statute library. *** DO NOT DEFAULT TO CALIFORNIA / DELAWARE / U.S. LAW ***. Apply Commonwealth common-law contract principles (offer, acceptance, consideration, intention, capacity, legality). Use local currency. Name the most senior commercial court in the capital city for forum selection. Reference specific local statutes conservatively (e.g. "applicable labour law of [country]"). Include a cover note recommending local legal review.'
+    : ''
+
+  const isUsDocumentExplicit = isUSA || isCalifornia
+  const antiUsDefaultClause = !isDpa && !isUsDocumentExplicit
+    ? '\n\n*** DO NOT DEFAULT TO US / CALIFORNIA / DELAWARE LAW. *** The user has NOT selected a U.S. jurisdiction. Do not default governing law, venue, arbitration rules, or statute references to California, Delaware, New York, UCC, American Arbitration Association, or any U.S. court. Use only the user\'s selected jurisdiction, or English common-law principles + the user\'s country\'s highest court as a neutral baseline.'
+    : ''
+
+  const executionFormalitiesClause = !isDpa
+    ? '\n\nMANDATORY EXECUTION BLOCK (include at the END of every document):\n' +
+      '1. "IN WITNESS WHEREOF, the Parties have hereunto set their hands and seals the day and year first above written." (or equivalent jurisdictional formula).\n' +
+      '2. For EACH party: a labelled block ("SIGNED by [party name/role]") with lines for Signature, Name, Title (if corporate), Date, Place.\n' +
+      '3. For EACH party: TWO attesting witnesses (Nigerian / Commonwealth standard), each with Signature / Name / Address / Occupation / Date lines. US-only documents may use one witness or notary block.\n' +
+      '4. For Deed of Assignment + Power of Attorney: REPLACE "IN WITNESS WHEREOF" with "EXECUTED AS A DEED" and precede each witness block with "DELIVERED by the [party] in the presence of:".\n' +
+      '5. For Tenancy Agreement: add "SCHEDULE 1 — DESCRIPTION OF THE PREMISES" at the end (after execution blocks) with full address, description, fixtures, any Annexure A floor plan reference.\n' +
+      '6. Execution section is the LAST section (schedules after). DO NOT append any "Note:", "Generated by...", or "For legal advice..." footer — the client wrapper adds required footers.'
     : ''
 
   const dpaJurisdiction = isCalifornia ? 'United States — CCPA/CPRA'
@@ -313,6 +346,7 @@ export default async function handler(req, res) {
       + nigeriaNDAClause + nigeriaCommercialGeneralClause
       + usEmploymentClause + canadaEmploymentClause + usCanadaPropertyClause
       + genericFallbackClause
+      + antiUsDefaultClause + executionFormalitiesClause
 
   try {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {

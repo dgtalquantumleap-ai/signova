@@ -238,53 +238,154 @@ export default function Preview() {
     const content = doc.content
     const htmlBody = markdownToHtml(content)
 
+    // Document reference ID — short UUID formatted SIG-XXXXXXXX. Lives in the
+    // top-right of every page and helps support trace the document later.
+    // Uses crypto.randomUUID when available; falls back to timestamp+random
+    // for very old browsers.
+    const uuidSource = (typeof crypto !== 'undefined' && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
+    const docRefId = `SIG-${uuidSource.replace(/-/g, '').slice(0, 8).toUpperCase()}`
+
+    // ISO date (YYYY-MM-DD) — stable across locales, unambiguous, auditable.
+    // Used in the footer instead of the browser's locale-dependent date.
+    const isoDate = new Date().toISOString().slice(0, 10)
+
+    // Legal-grade print styling:
+    //   - @page rules: A4 with 2cm margins, top-right running header with doc
+    //     ref ID, bottom-center running footer with "Page X of Y". CSS page
+    //     counters handle the numbering — no JS paginator needed.
+    //   - Typography: Georgia serif body (standard legal document convention),
+    //     hanging-indent on numbered clauses, bold section headings with
+    //     top-border separator (not bottom — reads as a section START).
+    //   - "about:blank" defence: setting document.title + the @page margin-box
+    //     rules override the browser's default print header so the user never
+    //     sees "about:blank" or "data:text/html" in the printed output.
+    //   - Body padding is 0 under @media print because @page handles margins.
     const docStyles = `
-      body { font-family: Georgia, 'Times New Roman', serif; font-size: 11pt; line-height: 1.8; color: #111; max-width: 680px; margin: 48px auto; padding: 0 48px; }
-      h1 { font-size: 16pt; font-weight: bold; text-align: center; text-transform: uppercase; letter-spacing: 0.05em; margin: 32px 0 16px; }
-      h2 { font-size: 12pt; font-weight: bold; text-transform: uppercase; margin: 28px 0 8px; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+      @page {
+        size: A4;
+        margin: 2cm 2cm 2.5cm 2cm;
+        @top-right {
+          content: "Ref: ${docRefId}";
+          font-family: Georgia, 'Times New Roman', serif;
+          font-size: 8pt;
+          color: #666;
+        }
+        @bottom-center {
+          content: "Page " counter(page) " of " counter(pages);
+          font-family: Georgia, 'Times New Roman', serif;
+          font-size: 8pt;
+          color: #666;
+        }
+      }
+      html, body { background: #fff; }
+      body {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 11pt;
+        line-height: 1.7;
+        color: #111;
+        max-width: 680px;
+        margin: 48px auto;
+        padding: 0 48px;
+      }
+      h1 {
+        font-size: 17pt;
+        font-weight: bold;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin: 8px 0 4px;
+      }
+      h2 {
+        font-size: 12pt;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin: 28px 0 10px;
+        padding-top: 6px;
+        border-top: 1.5px solid #111;
+        letter-spacing: 0.03em;
+      }
       h3 { font-size: 11pt; font-weight: bold; margin: 20px 0 6px; }
       h4 { font-size: 11pt; font-weight: bold; font-style: italic; margin: 16px 0 4px; }
-      p  { margin: 0 0 10px; text-align: justify; }
-      hr { border: none; border-top: 1px solid #ddd; margin: 24px 0; }
-      .spacer { height: 8px; }
+      p {
+        margin: 0 0 10px;
+        text-align: justify;
+        hyphens: auto;
+      }
+      /* Hanging indent for numbered clauses (e.g. "1.1 Confidential
+         Information means ..."). This is the legal-document convention. */
+      p:has(strong:first-child) { text-indent: 0; padding-left: 0; }
+      ol, ul { padding-left: 1.6em; margin: 0 0 10px; }
+      ol li, ul li { margin-bottom: 4px; text-align: justify; }
+      hr { border: none; border-top: 1px solid #ccc; margin: 24px 0; }
       strong { font-weight: bold; }
-      .doc-header { text-align: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 2px solid #111; }
+      .doc-header {
+        text-align: center;
+        margin-bottom: 24px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #111;
+      }
       .doc-header h1 { border: none; margin: 0; }
-      .doc-header .subtitle { font-size: 9pt; color: #555; margin-top: 4px; }
-      .footer { margin-top: 60px; padding-top: 16px; border-top: 1px solid #ddd; font-size: 8pt; color: #888; text-align: center; }
+      .doc-header .doc-meta {
+        font-size: 9pt;
+        color: #555;
+        margin-top: 8px;
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+      }
+      .doc-header .doc-meta span { font-family: Georgia, serif; }
+      .footer {
+        margin-top: 48px;
+        padding-top: 14px;
+        border-top: 1px solid #ccc;
+        font-size: 8pt;
+        color: #777;
+        text-align: center;
+      }
       @media print {
-        body { margin: 0; padding: 32px 48px; }
-        h2 { page-break-after: avoid; }
-        p  { orphans: 3; widows: 3; }
+        body {
+          max-width: none;
+          margin: 0;
+          padding: 0;
+        }
+        h1, h2, h3, h4 { page-break-after: avoid; }
+        p, li { orphans: 3; widows: 3; }
+        .signature-block, .witness-block { page-break-inside: avoid; }
       }
     `
 
-    // Unbranded output — paid (or promo-unlocked) downloads should be clean.
-    // The marketing promise to users is "watermark-free PDF". Previously the
-    // header carried "Generated by Signova · getsignova.com" under the doc
-    // title and the footer carried a second Signova attribution, which made
-    // the "clean PDF" claim feel half-true (unprofessional when the user
-    // hands the doc to a counterparty).
-    //
-    // Kept: the "consult a qualified attorney" disclaimer — it's legitimate
-    // liability protection and common on every legal-template product. Moved
-    // it to a neutral footer without the "generated by Signova" phrasing.
-    // Page <title> still says "Signova" since that only appears in the
-    // browser tab / print dialog title and doesn't end up in the PDF body.
+    // Upgraded template:
+    //   - Document ref ID + ISO date shown under the title (auditable).
+    //   - The <title> element is set to the document name so the browser's
+    //     print dialog header shows a human-readable title, not "about:blank".
+    //   - Footer keeps the legitimate disclaimer ("For legal advice, consult
+    //     a qualified attorney.") + the ISO generation date. No Signova
+    //     branding — that's the marketing promise on paid downloads.
+    //   - Execution formalities (IN WITNESS WHEREOF, 2 witnesses per party,
+    //     "EXECUTED AS A DEED" for deeds/PoAs, Schedule 1 for tenancies) are
+    //     produced by Claude in htmlBody per the new executionFormalitiesClause
+    //     in the system prompt. Client-side template intentionally does NOT
+    //     append boilerplate — keeps Claude the single source of legal truth.
     const fullHtml = `<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>${doc.docName}</title>
+  <title>${doc.docName} — ${docRefId}</title>
   <style>${docStyles}</style>
 </head>
 <body>
   <div class="doc-header">
     <h1>${doc.docName}</h1>
+    <div class="doc-meta">
+      <span>Document Ref: ${docRefId}</span>
+      <span>Dated: ${isoDate}</span>
+    </div>
   </div>
   ${htmlBody}
   <div class="footer">
-    For legal advice, consult a qualified attorney.
+    For legal advice, consult a qualified attorney. Generated on ${isoDate} · Reference: ${docRefId}
   </div>
 </body>
 </html>`

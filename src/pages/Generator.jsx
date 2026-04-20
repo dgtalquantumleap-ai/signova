@@ -767,6 +767,51 @@ export default function Generator() {
     }
   }, [])
 
+  // Geo-prefill: if the doc has a "country" field (governing law / jurisdiction)
+  // and the user hasn't picked one yet, map the visitor's geo-detected country
+  // (stored in sessionStorage 'sig_geo' by Landing.jsx / Preview.jsx) to the
+  // closest matching option in the select. Prevents the silent "California
+  // default" fallback when a Nigerian user lands on the NDA form and doesn't
+  // touch the governing-law select.
+  //
+  // Maps the 2-letter ISO country code to the doc-config select label used
+  // across the forms. Only pre-fills when the field exists, options include
+  // the mapped value, and the user hasn't manually set it yet.
+  useEffect(() => {
+    if (!config) return
+    const countryField = config.fields.find(f => f.id === 'country')
+    if (!countryField || countryField.type !== 'select') return
+    if (answers.country) return // already set (by user or URL param)
+
+    let countryCode = null
+    try {
+      const raw = sessionStorage.getItem('sig_geo')
+      if (raw) countryCode = JSON.parse(raw).countryCode
+    } catch { /* ignore */ }
+    if (!countryCode) return
+
+    // Minimal code→label mapping. Prefer exact option label match; fall back
+    // to keyword-match against the option strings (so "United States — California"
+    // still maps correctly for US visitors without a state preference).
+    const CODE_TO_LABEL = {
+      NG: 'Nigeria', KE: 'Kenya', GH: 'Ghana', ZA: 'South Africa',
+      GB: 'United Kingdom', UK: 'United Kingdom',
+      CA: 'Canada — Ontario',
+      US: 'United States — California', // US visitors land on CA by default
+      IN: 'India', AE: 'UAE', SG: 'Singapore',
+    }
+    const target = CODE_TO_LABEL[countryCode]
+    if (!target) return
+
+    // Find exact match first; fall back to partial match on the country name.
+    const options = countryField.options || []
+    const match = options.find(opt => opt === target)
+      || options.find(opt => opt.toLowerCase().includes(target.toLowerCase().split(' — ')[0]))
+    if (match) {
+      setAnswers(prev => prev.country ? prev : { ...prev, country: match })
+    }
+  }, [config, answers.country])
+
   if (!config) return null
 
   const update = (id, val) => setAnswers(p => ({ ...p, [id]: val }))
