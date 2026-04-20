@@ -550,6 +550,24 @@
   margin-bottom: var(--space-1); font-weight: 500;
 }
 
+/* Inline email prompt shown above Paystack button when we need an email */
+.email-prompt-inline {
+  margin-bottom: var(--space-3); padding: var(--space-3);
+  background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25);
+  border-radius: var(--radius-sm);
+}
+.email-prompt-label {
+  display: block; font-size: var(--text-xs); color: var(--text);
+  margin-bottom: var(--space-1); font-weight: 500;
+}
+.email-prompt-input {
+  width: 100%; box-sizing: border-box;
+  padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);
+  color: var(--text); font-size: var(--text-sm); outline: none;
+}
+.email-prompt-input:focus { border-color: var(--gold); }
+
 /* ── Pre-purchase Email Capture ── */
 .pre-capture-box {
   margin-top: 20px;

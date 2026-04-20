@@ -15,6 +15,19 @@ export default async function handler(req, res) {
   const { docType, docName, email } = await parseBody(req)
   const origin = req.headers.origin || 'https://getsignova.com'
 
+  // Require a real email. Paystack pre-fills its checkout page with whatever
+  // we send here, and shows the user a confusing 'link invalid / email
+  // incomplete' error if it's our placeholder. Previously we silently
+  // substituted 'customer@getsignova.com' which (a) landed users on a broken
+  // Paystack page they couldn't fix, and (b) meant receipts went to an
+  // address none of our customers own. 400-ing here forces the client to
+  // collect a real email up front.
+  const trimmedEmail = typeof email === 'string' ? email.trim() : ''
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)
+  if (!isValidEmail) {
+    return res.status(400).json({ error: 'Please enter your email to continue with Paystack.' })
+  }
+
   // Price in kobo (NGN smallest unit) — ₦6,900 = 690000 kobo
   const amountKobo = 690000
 
@@ -26,7 +39,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        email: email || 'customer@getsignova.com', // Fallback — ideally from user input
+        email: trimmedEmail,
         amount: amountKobo,
         currency: 'NGN',
         callback_url: `${origin}/preview?payment=paystack_success`,
