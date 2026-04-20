@@ -174,4 +174,34 @@ describe('api/promo-redeem.js', () => {
     expect(res.statusCode).toBe(429)
     expect(res.body.error).toMatch(/Too many attempts/i)
   })
+
+  it('accepts ROSEMARY in any casing — rosemary, Rosemary, ROSEMARY resolve to same discount', async () => {
+    // Regression test for customer-reported bug where a promo code supposedly
+    // "didn't respond" when entered in mixed case. Server must normalize to
+    // uppercase before lookup so all three casings map to the same VALID_CODES
+    // entry and issue equivalent tokens.
+    const tokens = []
+    for (const variant of ['rosemary', 'Rosemary', 'ROSEMARY']) {
+      mockFetch.mockReset()
+      mockFetch
+        .mockResolvedValueOnce({ json: () => Promise.resolve({ result: 1 }) }) // rate-limit INCR
+        .mockResolvedValueOnce({ json: () => Promise.resolve({ result: 1 }) }) // rate-limit EXPIRE
+        .mockResolvedValueOnce({ json: () => Promise.resolve({ result: 1 }) }) // promo-uses INCR
+        .mockResolvedValueOnce(resendResponse())                                // Resend email
+      const req = mockReq({ code: variant, docType: 'NDA', docName: 'NDA' })
+      const res = mockRes()
+      await handler(req, res)
+      expect(res.statusCode).toBe(200)
+      expect(res.body.valid).toBe(true)
+      expect(typeof res.body.token).toBe('string')
+      // Decode the token payload to confirm the canonical ROSEMARY code is
+      // what got signed — not the raw user input
+      const decoded = Buffer.from(res.body.token, 'base64url').toString()
+      expect(decoded.startsWith('ROSEMARY::')).toBe(true)
+      tokens.push(res.body.token)
+    }
+    // Three distinct tokens (different timestamps) but all signed against
+    // the same canonical code — confirms case-insensitive resolution
+    expect(new Set(tokens).size).toBe(3)
+  })
 })

@@ -352,7 +352,16 @@ export default function Preview() {
   }
 
   const handlePromoApply = async () => {
-    if (!promoCode.trim()) return
+    // Normalize at the input boundary one more time — belt-and-suspenders
+    // against browser autofill / paste events that can bypass the onChange
+    // handler and leave React state out of sync with the DOM input.
+    const normalized = promoCode.trim().toUpperCase()
+    if (!normalized) {
+      // Previously returned silently — customer reported 'not responding'
+      // when the input appeared empty (autofill, premature Apply click, etc.)
+      setPromoError('Please enter a promo code.')
+      return
+    }
     setPromoLoading(true)
     setPromoError('')
     setPromoMsg('')
@@ -360,7 +369,7 @@ export default function Preview() {
       const res = await fetch('/api/promo-redeem', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: promoCode, docType: doc?.docType, docName: doc?.docName }),
+        body: JSON.stringify({ code: normalized, docType: doc?.docType, docName: doc?.docName }),
       })
       const data = await res.json()
       if (!res.ok || !data.valid) {
@@ -378,7 +387,7 @@ export default function Preview() {
         } else {
           setPromoToken(data.token)
           setPromoMsg(data.message)
-          trackPromoApplied(doc?.docType, promoCode)
+          trackPromoApplied(doc?.docType, normalized)
           setPaid(true)
 
           // ── Trigger Claude Sonnet regeneration for premium quality ──
@@ -915,7 +924,7 @@ export default function Preview() {
                         placeholder="Promo code"
                         value={promoCode}
                         autoFocus
-                        onChange={e => { setPromoCode(e.target.value.toUpperCase()); setPromoError(''); setPromoMsg('') }}
+                        onChange={e => { setPromoCode(e.target.value.toUpperCase().trimStart()); setPromoError(''); setPromoMsg('') }}
                         onKeyDown={e => e.key === 'Enter' && handlePromoApply()}
                       />
                       <button className="promo-btn" onClick={handlePromoApply} disabled={promoLoading}>
