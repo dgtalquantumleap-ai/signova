@@ -7,6 +7,7 @@ import { authenticate, recordUsage, buildUsageBlock } from '../../../lib/api-aut
 import { getRedis } from '../../../lib/redis.js'
 import { ScopeGuardAnalyzeSchema, formatValidationError } from '../../../lib/validators.js'
 import { logError, logRequest, logDetailedError } from '../../../lib/logger.js'
+import { buildJurisdictionContext, jurisdictionDisplayName } from '../../../lib/jurisdiction-context.js'
 
 const PRO_TIERS = ['growth', 'scale', 'enterprise']
 
@@ -26,8 +27,19 @@ async function parseBody(req) {
   })
 }
 
-function buildAnalysisPrompt(contractText, clientMessage, channel) {
-  return `You are a contract enforcement AI. Analyze the client's message against the original contract and identify any scope violations.
+function buildAnalysisPrompt(contractText, clientMessage, channel, jurisdiction) {
+  // Jurisdiction-aware prompt assembly. The context block (CAMA / ERA 1996 /
+  // BCEA / Employment Act 2007 / etc.) is prepended BEFORE the generic
+  // analyst persona so Claude reads it as the authoritative legal
+  // grounding for the analysis. When jurisdiction is undefined, the helper
+  // returns a Commonwealth-baseline + anti-US-default block.
+  const jurisdictionContext = buildJurisdictionContext(jurisdiction)
+  const jurisdictionLabel = jurisdictionDisplayName(jurisdiction)
+  return `${jurisdictionContext}
+
+When identifying breaches, cite specific statutory provisions from the jurisdiction context above where they bear on the dispute. When drafting responses, reference the governing law named above and any relevant case authority you can support. Do not invoke statutes from other jurisdictions.
+
+You are a contract enforcement AI advising a service provider whose contract is governed by ${jurisdictionLabel}. Analyze the client's message against the original contract and identify any scope violations.
 
 ## ORIGINAL CONTRACT:
 ${contractText}
@@ -37,8 +49,8 @@ ${clientMessage}
 
 ## YOUR TASK:
 1. Identify all violations (SCOPE, REVISION, TIMELINE, PAYMENT, IP, TERMINATION)
-2. For each violation, cite the specific contract section if possible
-3. Generate 3 professional response options (PUSHBACK, CHANGE_ORDER, FIRM)
+2. For each violation, cite the specific contract section if possible AND any applicable statute from the jurisdiction context above
+3. Generate 3 professional response options (PUSHBACK, CHANGE_ORDER, FIRM) — use formal correspondence appropriate to ${jurisdictionLabel}
 4. If a change order is appropriate, suggest pricing/timeline estimates
 
 Respond ONLY with valid JSON in this exact format:
@@ -131,7 +143,7 @@ export default async function handler(req, res) {
     })
   }
 
-  const { contract_text, client_message, channel } = validated
+  const { contract_text, client_message, channel, jurisdiction } = validated
 
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) {
@@ -143,7 +155,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const prompt = buildAnalysisPrompt(contract_text, client_message, channel)
+    const prompt = buildAnalysisPrompt(contract_text, client_message, channel, jurisdiction)
 
     const aiRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',

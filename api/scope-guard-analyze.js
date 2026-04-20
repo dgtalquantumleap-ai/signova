@@ -6,6 +6,7 @@
 // Separate from /api/v1/scope/analyze which requires API key auth
 
 import { getRedis } from '../lib/redis.js'
+import { buildJurisdictionContext, jurisdictionDisplayName, JURISDICTION_KEYS } from '../lib/jurisdiction-context.js'
 
 const MAX_PER_WINDOW = 3
 const WINDOW_SECS = 24 * 60 * 60  // 24 hours
@@ -45,8 +46,17 @@ async function parseBody(req) {
   })
 }
 
-function buildAnalysisPrompt(contractText, clientMessage, channel) {
-  return `You are a contract enforcement AI. Analyze the client's message against the original contract and identify any scope violations.
+function buildAnalysisPrompt(contractText, clientMessage, channel, jurisdiction) {
+  // Same jurisdiction context as the Pro endpoint. Groq's Llama 3.3 70B has
+  // ample context budget (128k tokens) so the full block fits even with the
+  // longest contract; no truncation needed.
+  const jurisdictionContext = buildJurisdictionContext(jurisdiction)
+  const jurisdictionLabel = jurisdictionDisplayName(jurisdiction)
+  return `${jurisdictionContext}
+
+When identifying breaches, cite specific statutory provisions from the jurisdiction context above where they apply. When drafting responses, reference the governing law named above. Do not invoke statutes from other jurisdictions.
+
+You are a contract enforcement AI advising a service provider whose contract is governed by ${jurisdictionLabel}. Analyze the client's message against the original contract and identify any scope violations.
 
 ## ORIGINAL CONTRACT:
 ${contractText}
@@ -131,6 +141,13 @@ export default async function handler(req, res) {
 
   const body = await parseBody(req)
   const { contract_text, client_message, communication_channel = 'email' } = body
+  // Optional jurisdiction parameter — accepts the same enum as the Pro
+  // endpoint. Anything outside the enum is ignored (treated as "not
+  // selected"), so the Commonwealth fallback fires. Free tier doesn't
+  // surface a hard validation error here to keep the consumer-facing UX
+  // forgiving; the prompt-side fallback is correct either way.
+  const jurisdictionRaw = typeof body.jurisdiction === 'string' ? body.jurisdiction.trim().toLowerCase() : ''
+  const jurisdiction = JURISDICTION_KEYS.includes(jurisdictionRaw) ? jurisdictionRaw : undefined
 
   if (!contract_text || typeof contract_text !== 'string' || contract_text.trim().length < 50) {
     return res.status(400).json({
@@ -157,7 +174,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const prompt = buildAnalysisPrompt(contract_text, client_message, communication_channel)
+    const prompt = buildAnalysisPrompt(contract_text, client_message, communication_channel, jurisdiction)
 
     const aiRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
