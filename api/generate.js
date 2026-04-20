@@ -503,6 +503,305 @@ export default async function handler(req, res) {
     : ''
 
   // ────────────────────────────────────────────────────────────────────────
+  // TIER 4 — KENYA doc-type-specific clauses
+  // ────────────────────────────────────────────────────────────────────────
+  const kenyaTenancyClause = (isTenancyDoc || isQuitNoticeDoc) && isKenya
+    ? '\n\nIMPORTANT — KENYAN TENANCY LAW: Apply:\n' +
+      '(i) LANDLORD AND TENANT (SHOPS, HOTELS AND CATERING ESTABLISHMENTS) ACT (Cap. 301) — governs "controlled tenancies" of business premises. Termination only on statutory grounds (s.7). Business Premises Rent Tribunal has jurisdiction.\n' +
+      '(ii) RENT RESTRICTION ACT (Cap. 296) — governs residential "controlled tenancies" (monthly rent below statutory ceiling, set periodically). Rent increases and eviction require Rent Restriction Tribunal approval.\n' +
+      '(iii) LAND REGISTRATION ACT 2012 (No. 3 of 2012) — leases exceeding 5 years must be registered at the Land Registry to bind third parties (s.38(d)).\n' +
+      '(iv) DISTRESS FOR RENT ACT (Cap. 293) — landlord\'s remedy of distress for arrears; strict procedure (certified court broker, 14-day notice).\n' +
+      '(v) STAMP DUTY ACT (Cap. 480) — leases are dutiable: 1% of rent (urban), 1% (rural) — unstamped instruments inadmissible until penalty paid.\n' +
+      '(vi) NOTICE PERIODS — for uncontrolled tenancies: periodic tenancy requires notice equal to the length of the period (weekly=1 wk, monthly=1 month). Controlled tenancies under Cap. 301 require 2 months\' notice by either party, in prescribed Form A / Form B.\n' +
+      '(vii) DEPOSIT — no statutory cap, but industry practice is 1–2 months\' rent, refundable at end minus itemised deductions.\n' +
+      'Governing law: Laws of Kenya. Jurisdiction: Business Premises Rent Tribunal (Cap. 301) or Environment and Land Court (land issues) or Chief Magistrate\'s Court (general tenancy claims below jurisdictional limit).'
+    : ''
+
+  const kenyaEmploymentClause = isEmploymentDoc && isKenya
+    ? '\n\nIMPORTANT — KENYAN EMPLOYMENT / LABOUR LAW: Apply:\n' +
+      '(i) EMPLOYMENT ACT 2007 (No. 11 of 2007) §9 — WRITTEN CONTRACT must be drawn up by the employer and consented to by the employee; where the employee is illiterate, the contract must be EXPLAINED to the employee in a language they understand before signature (employer bears the onus).\n' +
+      '(ii) WRITTEN PARTICULARS — Employment Act §10 (NOT §35): written particulars of employment must be given within 2 months of commencement, covering name and address of employer, name/age/occupation/ID of employee, job description, hours of work, wages, leave, probation, termination, etc.\n' +
+      '(iii) TERMINATION NOTICE — Employment Act §35: daily-wage contract = no prior notice (terminate at close of any day); weekly contract = 1 week; bi-weekly = 2 weeks; monthly contract = 28 days written notice (or payment in lieu). During probation (max 6 months extendable once under §42), minimum notice is 7 days or payment in lieu.\n' +
+      '(iv) PAYMENT IN LIEU — Employment Act §36: payment in lieu equals wages the employee would have received during the notice period.\n' +
+      '(v) ANNUAL LEAVE — §28: 21 working days minimum after 12 consecutive months of service, paid at normal rate. Pro-rata entitlement for part-year.\n' +
+      '(vi) SICK LEAVE — §30: 7 days full pay + 7 days half pay after 2 months\' continuous service, per 12-month cycle.\n' +
+      '(vii) MATERNITY LEAVE — §29: 3 months fully paid; no dismissal / disadvantage by reason of pregnancy.\n' +
+      '(viii) TERMINATION VALIDITY & FAIRNESS — §45: dismissal is unfair unless employer proves a valid reason related to conduct, capacity, compatibility, or operational requirements, AND the employer observed the procedural fairness requirements (notice of reasons, hearing with representation per §41). Remedies (§49): reinstatement, re-engagement, or compensation up to 12 months\' gross salary.\n' +
+      '(ix) WORK INJURY BENEFITS ACT 2007 (WIBA) — employer strictly liable for work-related injuries; must obtain and maintain insurance cover. Permanent total incapacity compensation based on 96 months\' earnings. Claims to Director of Occupational Safety and Health Services (DOSHS).\n' +
+      '(x) NSSF ACT 2013 (No. 45 of 2013) — mandatory contributions: 6% employer + 6% employee of pensionable pay, capped at Tier I / Tier II per the statutory schedule.\n' +
+      '(xi) NHIF ACT (Cap. 255) / SHIF under Social Health Insurance Act 2023 — mandatory health cover contributions, graduated per gross salary; employer remits monthly.\n' +
+      '(xii) MINIMUM WAGE — Regulation of Wages (General) Order under Labour Institutions Act 2007; rates set periodically by the Cabinet Secretary (Labour) per sector and geography. Reference the current Gazette notice.\n' +
+      '(xiii) PAYE — Income Tax Act (Cap. 470): graduated bands (10% / 25% / 30% / 32.5% / 35%); personal relief KES 2,400/month; employer withholds and remits monthly via iTax.\n' +
+      '(xiv) GOVERNING LAW — Laws of Kenya. Jurisdiction: Employment and Labour Relations Court (exclusive under ELRC Act 2011 §12). Arbitration under Arbitration Act 1995 permitted for non-rights disputes.'
+    : ''
+
+  const kenyaNonCompeteClause = isNonCompeteDoc && isKenya
+    ? '\n\nIMPORTANT — KENYAN NON-COMPETE LAW: Kenya inherited the English common-law doctrine of restraint of trade (via the Judicature Act Cap. 8). Apply:\n' +
+      '(i) PRIMA FACIE VOID — all restraints on trade are prima facie void as against public policy. Enforceable only if the party seeking to enforce proves the restraint is reasonable between the parties AND reasonable in the public interest (Nordenfelt v Maxim Nordenfelt [1894] AC 535 applied).\n' +
+      '(ii) EMPLOYMENT ACT 2007 §5 — prohibits restrictions on employee freedom after termination of employment EXCEPT reasonable restraints protecting legitimate interests. Codifies the common-law position.\n' +
+      '(iii) LEGITIMATE PROTECTABLE INTEREST — employer must show a protectable interest (trade secrets, confidential information, customer connection, goodwill). Mere protection from competition is insufficient.\n' +
+      '(iv) REASONABLENESS TEST — assessed on (a) scope of activity, (b) duration, (c) geography. Narrow drafting favoured. Typical enforceable duration: 6–12 months; 2+ years rarely upheld.\n' +
+      '(v) KENYAN AUTHORITY — Kenya courts have applied Nordenfelt principles; see Attorney-General v Eastern and Southern African Trade & Development Bank (where restraint was read down); consult recent ELRC/ High Court decisions.\n' +
+      '(vi) GARDEN LEAVE — paid garden leave is more readily enforceable than an unpaid post-termination restraint.\n' +
+      '(vii) SEVERANCE / BLUE PENCIL — include a severance clause permitting the court to strike unreasonable portions without voiding the whole.\n' +
+      'Jurisdiction: Employment and Labour Relations Court.'
+    : ''
+
+  const kenyaPropertyClause = (isDeedOfAssignmentDoc || isPowerOfAttorneyDoc) && isKenya
+    ? '\n\nIMPORTANT — KENYAN LAND / PROPERTY LAW: Apply:\n' +
+      '(i) LAND REGISTRATION ACT 2012 (No. 3 of 2012) — all dispositions of registered land (transfers, charges, leases >2 years) must be registered at the Land Registry in the prescribed form (typically LRA Form 3 for transfer). Registration confers indefeasibility of title (s.25).\n' +
+      '(ii) LAND ACT 2012 (No. 6 of 2012) — consent requirements: transfers of agricultural land subject to Land Control Board consent under the Land Control Act (Cap. 302); County Government approvals for sub-divisions.\n' +
+      '(iii) STAMP DUTY ACT (Cap. 480) — on transfers of immovable property: 4% of value for property in municipalities; 2% for property elsewhere. Stamping within 30 days of execution. Unstamped = inadmissible until penalty paid.\n' +
+      '(iv) CAPITAL GAINS TAX — Income Tax Act (Cap. 470) Eighth Schedule: 15% CGT on gains from disposal of immovable property (rate increased from 5% effective 1 January 2023).\n' +
+      '(v) POWER OF ATTORNEY — REGISTRATION OF DOCUMENTS ACT (Cap. 285): a Power of Attorney affecting interests in land or which the holder intends to use publicly must be registered at the Registrar-General (within 4 months of execution). Attested by a Commissioner for Oaths, Notary Public, or Judge/Magistrate.\n' +
+      '(vi) CONSENTS — Land Control Act Cap. 302 for agricultural land; National Land Commission consent where applicable.\n' +
+      '(vii) SESSIONAL LEASEHOLD — note constitutional cap on non-citizen leaseholds at 99 years (Article 65, Constitution of Kenya 2010).\n' +
+      'Governing law: Laws of Kenya. Jurisdiction: Environment and Land Court.'
+    : ''
+
+  const kenyaLoanClause = isLoanDoc && isKenya
+    ? '\n\nIMPORTANT — KENYAN LOAN / CREDIT LAW: Apply:\n' +
+      '(i) BANKING ACT (Cap. 488) — banking business (deposit-taking, lending against deposits) reserved to CBK-licensed banks. Non-bank lenders must operate under Microfinance Act 2006, SACCO Societies Act 2008, or register as Digital Credit Providers with CBK.\n' +
+      '(ii) CENTRAL BANK RATE (CBR) — benchmark rate published monthly by the CBK Monetary Policy Committee. Commercial interest typically stated as CBR + margin.\n' +
+      '(iii) IN DUPLUM RULE — under Banking Act s.44A (as amended by the Finance Act 2006), interest plus ancillary charges in default CANNOT exceed the principal sum outstanding at the time of default. This is a statutory cap — any draft exceeding the rule is unenforceable to the extent of the excess.\n' +
+      '(iv) SECURED TRANSACTIONS — Movable Property Security Rights Act 2017 + Movable Property Security Rights Regulations 2017: creation and registration of security interests in movable property with the Movable Property Security Rights Registry. Land charges under the Land Registration Act 2012.\n' +
+      '(v) INSOLVENCY ACT 2015 — priority of secured creditors; preferential claims rank above unsecured in liquidation.\n' +
+      '(vi) INTEREST RATE CAP HISTORY — note that the Banking (Amendment) Act 2016 capped interest at CBR + 4% and a floor of 70% of CBR for deposits. This cap was REPEALED by the Finance Act 2019 (effective November 2019) — interest rates are now contractually free subject to the In Duplum Rule.\n' +
+      '(vii) STAMP DUTY — Stamp Duty Act Cap. 480: loan agreements dutiable at a nominal rate; secured loans dutiable at 0.1% of secured sum.\n' +
+      'Governing law: Laws of Kenya. Jurisdiction: High Court of Kenya (Commercial and Tax Division) or Commercial Court.'
+    : ''
+
+  const kenyaCommercialClause = isCommercialDoc && isKenya
+    ? '\n\nIMPORTANT — KENYAN COMMERCIAL LAW (Distribution / Supply): Apply:\n' +
+      '(i) SALE OF GOODS ACT (Cap. 31) — based on English SGA 1893: implied conditions of title (s.14), description (s.15), merchantable quality and fitness for purpose (s.16), sample (s.17). These may be excluded by agreement subject to Consumer Protection Act and common-law unfairness limits.\n' +
+      '(ii) CONSUMER PROTECTION ACT 2012 (No. 46 of 2012) — prohibits unfair practices (Part II), unconscionable contracts (s.7), mandates cooling-off for direct sales (s.10, 5 business days).\n' +
+      '(iii) COMPETITION ACT 2010 (No. 12 of 2010) — Competition Authority of Kenya: prohibits restrictive trade practices (Part III, ss.21–24), merger control, abuse of dominance. Review exclusivity, territory, and RPM clauses accordingly.\n' +
+      '(iv) KENYA BUREAU OF STANDARDS ACT (Cap. 496) — product standards (KS), pre-export verification of conformity (PVoC) for imports, mandatory standards compliance for regulated goods.\n' +
+      '(v) CISG — Kenya is NOT a CISG contracting state; CISG applies only if expressly adopted.\n' +
+      '(vi) VAT — VAT Act 2013 (No. 35 of 2013): standard rate 16%.\n' +
+      'Governing law: Laws of Kenya. Jurisdiction: High Court (Commercial Division) Nairobi; arbitration under Arbitration Act 1995 / NCIA.'
+    : ''
+
+  // ────────────────────────────────────────────────────────────────────────
+  // TIER 4 — GHANA doc-type-specific clauses
+  // ────────────────────────────────────────────────────────────────────────
+  const ghanaTenancyClause = (isTenancyDoc || isQuitNoticeDoc) && isGhana
+    ? '\n\nIMPORTANT — GHANAIAN TENANCY LAW: Apply:\n' +
+      '(i) RENT ACT 1963 (Act 220) and RENT REGULATIONS 1964 (LI 369) — govern "recoverable premises" (residential and most commercial). Rent Control Department has primary jurisdiction over rent disputes.\n' +
+      '(ii) RENT CONTROL (CALCULATION OF RENT) REGULATIONS — rents for covered premises set by the Rent Control Department based on a prescribed formula; landlord cannot unilaterally exceed controlled rent.\n' +
+      '(iii) LAND ACT 2020 (Act 1036) — consolidates and repeals Conveyancing Act 1973, Land Registry Act 1962, Land Title Registration Law 1986. All land dispositions registered at the Lands Commission (s.12 LA 2020). Leases >3 years must be registered.\n' +
+      '(iv) STAMP DUTY ACT 2005 (Act 689) — leases dutiable at 0.5% of total rent (ad valorem); unstamped = inadmissible until penalty paid.\n' +
+      '(v) NOTICE PERIODS — Rent Act s.17: weekly tenancy = 1 week; monthly tenancy = 1 month; yearly or greater = 3 months by either party for recoverable premises. For uncontrolled premises, common-law periodic-tenancy rules apply.\n' +
+      '(vi) RENT ADVANCE CAP — Rent Act s.25A (as amended): landlord cannot demand more than 6 months\' rent in advance for residential premises. Contravention is an offence + refundable.\n' +
+      '(vii) GROUNDS FOR RECOVERY — Rent Act s.17 and Schedule: non-payment, breach of covenant, landlord\'s personal use (with 3 months\' notice and tribunal consent for controlled tenancies), premises required for alteration.\n' +
+      'Governing law: Laws of the Republic of Ghana. Jurisdiction: Rent Control Department (rent + possession for controlled tenancies); District Court / High Court otherwise.'
+    : ''
+
+  const ghanaEmploymentClause = isEmploymentDoc && isGhana
+    ? '\n\nIMPORTANT — GHANAIAN EMPLOYMENT / LABOUR LAW: Apply:\n' +
+      '(i) LABOUR ACT 2003 (Act 651) §12 — WRITTEN CONTRACT required for employment of 6 months or more (or the equivalent number of working days within the year). Must be signed by both employer and employee.\n' +
+      '(ii) WRITTEN PARTICULARS — Labour Act §13: within 2 months of commencement, employer must give a WRITTEN STATEMENT in the form set out in Schedule 1 to the Act covering: name of employer and employee; place of work; nature of work; date of commencement; rate and method of payment; hours of work; overtime; holidays; sick-leave; notice periods; and any applicable collective agreement.\n' +
+      '(iii) NOTICE OF TERMINATION — Labour Act §17: (a) contracts of 3 years or more require 1 month written notice OR 1 month pay in lieu; (b) contracts of less than 3 years require 2 weeks written notice OR 2 weeks pay in lieu; (c) week-to-week contracts require 7 days notice. Notice can be improved but not reduced.\n' +
+      '(iv) ANNUAL LEAVE — §20 Labour Act: 15 working days minimum after 12 continuous months.\n' +
+      '(v) SICK LEAVE — §24 Labour Act: reasonable paid sick leave on production of a medical certificate from a registered medical practitioner.\n' +
+      '(vi) MATERNITY — §57 Labour Act: 12 weeks\' paid maternity leave on medical certification (extendable for complications or multiple births). No dismissal on grounds of pregnancy.\n' +
+      '(vii) NATIONAL PENSIONS ACT 2008 (Act 766) — 3-tier pension scheme. Tier 1 (Basic National Social Security Scheme, managed by SSNIT): 13.5% employer + 5.5% employee of basic salary = 18.5%; Tier 2 (mandatory occupational scheme): 5% employer to a privately managed fund; Tier 3 (voluntary provident fund): optional.\n' +
+      '(viii) NATIONAL HEALTH INSURANCE ACT 2012 (Act 852) — mandatory NHIS; 2.5% component of the 18.5% Tier 1 goes to NHIS via SSNIT.\n' +
+      '(ix) MINIMUM WAGE — §68 Labour Act: Daily National Minimum Wage set annually by the National Tripartite Committee and gazetted. Reference the current gazette before drafting.\n' +
+      '(x) PAYE — Income Tax Act 2015 (Act 896): graduated rates; employer withholds and remits monthly via the Ghana Revenue Authority.\n' +
+      '(xi) REDUNDANCY — §65 Labour Act: redundancy pay negotiated with the worker or union; minimum 4 weeks\' salary per year served is customary practice.\n' +
+      '(xii) TERMINATION — §63 Labour Act: notice (or pay in lieu) for ordinary termination; summary dismissal only for serious misconduct after fair hearing. National Labour Commission hears unfair termination claims.\n' +
+      'Governing law: Laws of the Republic of Ghana. Jurisdiction: National Labour Commission (unfair termination, §§140–142); High Court (contractual claims and statutory rights).'
+    : ''
+
+  const ghanaPropertyClause = (isDeedOfAssignmentDoc || isPowerOfAttorneyDoc) && isGhana
+    ? '\n\nIMPORTANT — GHANAIAN LAND / PROPERTY LAW: Apply:\n' +
+      '(i) LAND ACT 2020 (Act 1036) — comprehensive land law reform. s.12 — registration at the Lands Commission. s.31 — allodial title; s.37 — usufructuary interest; s.41 — leasehold. Consolidates and replaces the Conveyancing Act 1973, Land Registry Act 1962, and Land Title Registration Law 1986.\n' +
+      '(ii) LANDS COMMISSION ACT 2008 (Act 767) — Lands Commission comprises the Survey and Mapping, Land Registration, Land Valuation, and Public and Vested Lands Management divisions. All instruments affecting land registered at the Land Registration Division.\n' +
+      '(iii) STAMP DUTY ACT 2005 (Act 689) — transfers dutiable at 0.5% of consideration or open-market value (whichever higher). Stamping at the Ghana Revenue Authority within 30 days; unstamped = inadmissible until penalty paid.\n' +
+      '(iv) CAPITAL GAINS TAX — Income Tax Act 2015 (Act 896) Schedule 3: 15% CGT on gains from disposal of chargeable assets including land (subject to principal-residence and other exemptions).\n' +
+      '(v) CUSTOMARY LAW — where the assignor holds a customary or stool / skin interest, customary law principles and the consent of the stool / skin / family head may be required. Chieftaincy Act 2008 governs resolution of chieftaincy disputes over land.\n' +
+      '(vi) POWER OF ATTORNEY — registered at the Land Registration Division if it affects immovable property; attested and stamped.\n' +
+      '(vii) EXECUTION — under seal with attestation by two witnesses with names and addresses; corporate donors execute per the Companies Act 2019 (Act 992).\n' +
+      'Governing law: Laws of the Republic of Ghana. Jurisdiction: High Court (Land Division) Accra or Kumasi, or Circuit Court for lower-value claims.'
+    : ''
+
+  const ghanaLoanClause = isLoanDoc && isGhana
+    ? '\n\nIMPORTANT — GHANAIAN LOAN / CREDIT LAW: Apply:\n' +
+      '(i) BORROWERS AND LENDERS ACT 2020 (Act 1052) — comprehensive borrower-lender framework. Requires registration of credit agreements at the Collateral Registry (Bank of Ghana) within 28 days of execution. Unregistered security interests are not enforceable against third parties (s.18).\n' +
+      '(ii) BANKS AND SPECIALISED DEPOSIT-TAKING INSTITUTIONS ACT 2016 (Act 930) — banking business reserved to BoG-licensed institutions; capital adequacy, prudential norms, resolution regime.\n' +
+      '(iii) NON-BANK FINANCIAL INSTITUTIONS ACT 2008 (Act 774) — governs finance houses, savings and loans companies, micro-credit institutions; all require BoG licence.\n' +
+      '(iv) BANK OF GHANA POLICY RATE — benchmark rate set by the Monetary Policy Committee, published periodically; commercial interest typically MPR + margin.\n' +
+      '(v) STAMP DUTY — Stamp Duty Act 2005 (Act 689): nominal on the loan agreement; ad valorem on secured instruments.\n' +
+      '(vi) COLLATERAL REGISTRY — register all security interests (movable and certain immovable) to establish priority under the Borrowers and Lenders Act 2020. Priority runs from date of registration.\n' +
+      '(vii) PRIORITY — Insolvency Act 2020 (Act 1015): secured creditors rank first in realisation of charged assets.\n' +
+      '(viii) USURY — no specific usury statute, but courts may strike down unconscionable rates under common-law unfairness or the Contracts Act 1960 (Act 25) s.4 (illegal contracts).\n' +
+      'Governing law: Laws of the Republic of Ghana. Jurisdiction: High Court (Commercial Division) Accra; arbitration under Act 798 with GAAC seat.'
+    : ''
+
+  // ────────────────────────────────────────────────────────────────────────
+  // TIER 4 — SOUTH AFRICA doc-type-specific clauses
+  // ────────────────────────────────────────────────────────────────────────
+  const southAfricaTenancyClause = (isTenancyDoc || isQuitNoticeDoc) && isSouthAfrica
+    ? '\n\nIMPORTANT — SOUTH AFRICAN TENANCY LAW: Apply:\n' +
+      '(i) RENTAL HOUSING ACT 50 of 1999 (as amended by the Rental Housing Amendment Act 35 of 2014) — primary residential-tenancy statute. Rental Housing Tribunal has jurisdiction over "unfair practices" disputes.\n' +
+      '(ii) RENTAL HOUSING REGULATIONS 2001 — deposit MUST be held in an interest-bearing account; interest accrues to the tenant; deposit refundable within 14 days of termination (or 21 days where disputed), minus itemised damages.\n' +
+      '(iii) CONSUMER PROTECTION ACT 68 of 2008 — applies to residential lettings except where landlord and tenant are both juristic persons of specified turnover. s.14 CPA: fixed-term agreement may be cancelled early by tenant on 20 business days\' notice, subject to a "reasonable cancellation penalty" (often capped by regulation). Tenant\'s right to renew: landlord must give 40–80 business days\' written notice of changes before expiry.\n' +
+      '(iv) PIE ACT — PREVENTION OF ILLEGAL EVICTION FROM AND UNLAWFUL OCCUPATION OF LAND ACT 19 of 1998 — court order required before ANY eviction of an unlawful occupier. Self-help eviction is a criminal offence. Procedure: application to Magistrate\'s Court (or High Court for commercial) with notice to the occupier.\n' +
+      '(v) STAMP DUTY — STAMP DUTIES ACT was repealed in 2009; NO stamp duty on leases in South Africa.\n' +
+      '(vi) DEEDS REGISTRIES ACT 47 of 1937 s.77 — long leases (>10 years) may be registered against the title deed at the Deeds Office.\n' +
+      '(vii) TERMINATION — s.14 CPA 20-business-day notice period for consumer leases; common-law notice "reasonable in the circumstances" for commercial leases; month-to-month lease typically 1-month notice.\n' +
+      '(viii) SECTIONAL TITLES SCHEMES MANAGEMENT ACT 8 of 2011 — where the let property is in a sectional title scheme, body corporate rules bind the tenant.\n' +
+      'Governing law: Laws of the Republic of South Africa. Jurisdiction: Rental Housing Tribunal (residential unfair-practice disputes); Magistrates\' Court (possession, monetary claims below jurisdictional limit); High Court (higher-value, commercial).'
+    : ''
+
+  const southAfricaEmploymentClause = isEmploymentDoc && isSouthAfrica
+    ? '\n\nIMPORTANT — SOUTH AFRICAN EMPLOYMENT / LABOUR LAW: Apply:\n' +
+      '(i) BASIC CONDITIONS OF EMPLOYMENT ACT 75 of 1997 (BCEA) — s.29: written particulars of employment on commencement (name, description, place, remuneration, hours, leave, notice, etc.).\n' +
+      '(ii) NOTICE PERIODS — BCEA s.37: 1 week for service up to 6 months; 2 weeks for 6 months to 1 year; 4 weeks for 1+ years or if farm/domestic worker with 6+ months. Notice cannot be less than the BCEA minimum; may be improved.\n' +
+      '(iii) ANNUAL LEAVE — BCEA s.20: 21 consecutive days per annual leave cycle (or 1 day per 17 days worked, or 1 hour per 17 hours worked). Paid at normal remuneration.\n' +
+      '(iv) SICK LEAVE — BCEA ss.22–23: 30 days paid sick leave per 36-month cycle (after first 6 months\' service, in which the employee gets 1 day\'s sick leave per 26 days worked).\n' +
+      '(v) FAMILY RESPONSIBILITY LEAVE — BCEA s.27: 3 days per annual leave cycle.\n' +
+      '(vi) MATERNITY — BCEA s.25: 4 consecutive months\' unpaid maternity leave (paid via UIF per the Unemployment Insurance Act).\n' +
+      '(vii) LABOUR RELATIONS ACT 66 of 1995 (LRA) — unfair dismissal (Chapter VIII), automatically unfair dismissals (s.187), procedural and substantive fairness. CCMA (Commission for Conciliation, Mediation and Arbitration) for referral within 30 days.\n' +
+      '(viii) UIF (Unemployment Insurance Fund) — Unemployment Insurance Act 63 of 2001 + Unemployment Insurance Contributions Act 4 of 2002: 1% employer + 1% employee of monthly remuneration capped at the annual earnings ceiling (currently R17,712/month as of 2024, verify current).\n' +
+      '(ix) SKILLS DEVELOPMENT LEVIES ACT 9 of 1999 — 1% of payroll payable by employers with payroll above threshold, remitted to SARS; recoverable from SETAs for training.\n' +
+      '(x) COMPENSATION FOR OCCUPATIONAL INJURIES AND DISEASES ACT 130 of 1993 (COIDA) — employer\'s contribution based on industry risk rating; replaces civil claims for workplace injury.\n' +
+      '(xi) NATIONAL MINIMUM WAGE ACT 9 of 2018 — national minimum wage set annually by the Minister (current 2024 rate R27.58/hour; verify current gazette).\n' +
+      '(xii) PAYE — Income Tax Act 58 of 1962: graduated rates; employer deducts and remits monthly via SARS EMP201.\n' +
+      '(xiii) EMPLOYMENT EQUITY ACT 55 of 1998 (EEA) — prohibits unfair discrimination (s.6); designated employers (50+ employees or specified turnover) must implement affirmative action and submit Employment Equity Report annually.\n' +
+      '(xiv) PROTECTION OF PERSONAL INFORMATION ACT 4 of 2013 (POPIA) — applies to employee personal data; lawful basis, minimality, retention, security, cross-border transfer restrictions under s.72.\n' +
+      'Governing law: Laws of the Republic of South Africa. Jurisdiction: CCMA (unfair dismissal within 30 days), Labour Court (strikes, review of CCMA awards), Bargaining Council where applicable, or Magistrate\'s Court / High Court for contractual claims.'
+    : ''
+
+  const southAfricaNonCompeteClause = isNonCompeteDoc && isSouthAfrica
+    ? '\n\nIMPORTANT — SOUTH AFRICAN NON-COMPETE LAW: South Africa DIFFERS from Commonwealth positioning — restraints of trade are PRIMA FACIE VALID and ENFORCEABLE. Apply:\n' +
+      '(i) CONSTITUTIONAL RIGHT TO TRADE — s.22 of the Constitution of the Republic of South Africa 1996: "Every citizen has the right to choose their trade, occupation or profession freely." Restraints are tested against this right.\n' +
+      '(ii) MAGNA ALLOYS v ELLIS [1984] 4 SA 874 (A) — Appellate Division reversed the common-law position: restraint of trade is prima facie valid; the EMPLOYEE bears the onus to prove unreasonableness. This is the opposite of the English / Nigerian / Kenyan position.\n' +
+      '(iii) REASONABLENESS TEST — applied by the Court in Basson v Chilwan [1993] 3 SA 742 (A): (a) is there an interest that deserves protection? (b) is such interest prejudiced by the restraint? (c) if so, how does that interest weigh up against the employee\'s interest in economic activity? (d) is there another facet of public policy that requires enforcement / non-enforcement?\n' +
+      '(iv) LEGITIMATE PROTECTABLE INTEREST — trade secrets, confidential information, customer/goodwill connection. Mere competition is NOT protectable.\n' +
+      '(v) DURATION — typical enforceable duration in SA is 12–24 months (longer than in Nigeria / Kenya because of the pro-enforcement presumption). 3+ years possible but fact-specific.\n' +
+      '(vi) GEOGRAPHY — must correspond to the area of actual business / customer connection.\n' +
+      '(vii) SEVERANCE / READ-DOWN — South African courts will READ DOWN unreasonable portions rather than strike the whole clause (Sasfin v Beukes [1989] 1 SA 1 (A) principle).\n' +
+      '(viii) PUBLIC POLICY — NCA / CPA do not directly regulate non-compete clauses, but unconscionability jurisprudence under s.48 CPA 68 of 2008 may apply in consumer-facing restraints.\n' +
+      'Governing law: Laws of the Republic of South Africa. Jurisdiction: Labour Court or High Court.'
+    : ''
+
+  const southAfricaPropertyClause = (isDeedOfAssignmentDoc || isPowerOfAttorneyDoc) && isSouthAfrica
+    ? '\n\nIMPORTANT — SOUTH AFRICAN LAND / PROPERTY LAW: Apply:\n' +
+      '(i) DEEDS REGISTRIES ACT 47 of 1937 — all transfers of immovable property must be registered at the Deeds Office. Registration is essential for the passing of dominium.\n' +
+      '(ii) CONVEYANCING — only a CONVEYANCER (attorney admitted as a conveyancer under the Legal Practice Act 28 of 2014) may lodge a Deed of Transfer at the Deeds Office. The draft assignment / transfer must be prepared and executed in the conveyancer\'s presence.\n' +
+      '(iii) TRANSFER DUTY ACT 40 of 1949 — sliding scale on the value of the property above the threshold (currently first R1,100,000 nil; then graduated up to 13% on value above R11m — verify current SARS tables). Transfer duty payable within 6 months of acquisition.\n' +
+      '(iv) VAT — where the seller is a registered VAT vendor and the transaction is in the course of an enterprise, VAT (15%) applies INSTEAD of transfer duty.\n' +
+      '(v) FICA — FINANCIAL INTELLIGENCE CENTRE ACT 38 of 2001 — estate agents and conveyancers are "accountable institutions" subject to KYC, record-keeping, and suspicious-transaction reporting obligations.\n' +
+      '(vi) POWER OF ATTORNEY TO PASS TRANSFER — standard form required by the Deeds Office; executed by the seller before two witnesses and the conveyancer.\n' +
+      '(vii) ALIENATION OF LAND ACT 68 of 1981 — sale of land must be in writing and signed by the parties (s.2). Agreements not in writing are of no force or effect.\n' +
+      '(viii) CAPITAL GAINS TAX — Eighth Schedule to the Income Tax Act 58 of 1962: CGT on disposal of immovable property (primary-residence exclusion first R2m of gain).\n' +
+      'Governing law: Laws of the Republic of South Africa. Jurisdiction: High Court (Land / Commercial Division); Deeds Office for registration.'
+    : ''
+
+  const southAfricaLoanClause = isLoanDoc && isSouthAfrica
+    ? '\n\nIMPORTANT — SOUTH AFRICAN LOAN / CREDIT LAW: Apply:\n' +
+      '(i) NATIONAL CREDIT ACT 34 of 2005 (NCA) — primary statute. Applies to ALL credit agreements where the borrower is a natural person (and small juristic persons below specified turnover). Requires credit provider REGISTRATION with the National Credit Regulator (NCR).\n' +
+      '(ii) AFFORDABILITY ASSESSMENT — NCA s.81 read with the NCR\'s Affordability Assessment Regulations: credit provider must assess the consumer\'s ability to repay; reckless credit claims void the credit agreement.\n' +
+      '(iii) COOLING-OFF — NCA s.121: 5 business days for consumers to rescind certain credit agreements (typically those entered into at a location other than the credit provider\'s registered business).\n' +
+      '(iv) IN DUPLUM RULE — NCA s.103(5) (codifying common-law doctrine): total interest, fees, and charges that have ACCRUED but not been paid may not at any time exceed the unpaid balance of the principal debt at the time of default. Contracts breaching this rule are unenforceable to the extent of the excess.\n' +
+      '(v) INTEREST RATE CAPS — NCA Regulations set maximum prescribed interest rates per credit category (mortgage, unsecured, short-term, etc.), calculated as a margin over the Repo Rate. Rates above cap = usurious and unenforceable.\n' +
+      '(vi) SARB REPO RATE — benchmark set by the SARB Monetary Policy Committee; published on the SARB website and in the Gazette.\n' +
+      '(vii) USURY ACT 73 of 1968 — LARGELY SUPERSEDED by the NCA; applies only to the limited residual agreements not covered by the NCA.\n' +
+      '(viii) FINANCIAL SECTOR REGULATION ACT 9 of 2017 — twin-peaks regulation: PA (Prudential Authority, SARB) + FSCA (Financial Sector Conduct Authority).\n' +
+      '(ix) DEBT REVIEW — NCA Part D: over-indebted consumers can apply for debt review; credit provider suspends enforcement.\n' +
+      '(x) SECURITIES — General Law Amendment Act 50 of 1956; Deeds Registries Act for mortgage bonds; notarial bonds for movable property (General and Special Notarial Bonds Act 57 of 1956).\n' +
+      'Governing law: Laws of the Republic of South Africa. Jurisdiction: Magistrates\' Court (NCA disputes within jurisdictional limit); High Court (higher-value); National Consumer Tribunal (NCR-related); arbitration under Arbitration Act 42 of 1965 / AFSA.'
+    : ''
+
+  // ────────────────────────────────────────────────────────────────────────
+  // TIER 4 — NIGERIA COMMERCIAL HYGIENE clauses (NDA + general commercial)
+  // ────────────────────────────────────────────────────────────────────────
+  const isNdaDoc = lower.includes('non-disclosure agreement') || lower.includes(' nda ') || lower.includes('\nnda\n')
+    || /^nda\b/.test(lower) || lower.endsWith('nda')
+  const isGeneralCommercialDoc = lower.includes('terms of service') || lower.includes('memorandum of understanding')
+    || lower.includes(' mou') || lower.includes('letter of intent') || lower.includes(' loi ')
+    || lower.includes('business partnership') || lower.includes('joint venture')
+    || lower.includes('payment terms') || lower.includes('purchase agreement')
+
+  const nigeriaNDAClause = isNdaDoc && isNigeria
+    ? '\n\nIMPORTANT — NIGERIAN NDA / CONFIDENTIALITY LAW: Apply:\n' +
+      '(i) NO STANDALONE TRADE-SECRET STATUTE — Nigeria does not have a dedicated trade-secrets act. Protection flows from (a) CONTRACT (the NDA itself), (b) EQUITABLE DOCTRINE OF BREACH OF CONFIDENCE (Coco v A.N. Clark (Engineers) [1969] RPC 41 applied by Nigerian courts), and (c) the implied equitable duty of confidence in fiduciary and employment relationships.\n' +
+      '(ii) NDPA 2023 OVERLAY — where "Confidential Information" includes personal data of third parties, the NDPA 2023 applies concurrently: lawful basis (s.25), data-subject rights (s.34), cross-border transfer restrictions (s.43). The NDA should NOT purport to override data-subject rights by contract.\n' +
+      '(iii) NIGERIAN AUTHORITIES — Adetoun Oladeji (Nig.) Ltd v N.B. Plc [2007] 5 NWLR (Pt.1027) 415 (Supreme Court on breach of confidence); Rabiu v AG Kaduna [1980] 8–11 SC 130; Microfeed Nigeria v Gov. of Kano State for confidential-information principles in commercial context.\n' +
+      '(iv) REASONABLE DURATION — perpetual confidentiality obligations are enforceable where the information genuinely remains a trade secret; but where the information enters the public domain, the obligation falls away (absent contract to the contrary). Typical drafted duration: 3–5 years for ordinary business info; indefinite for trade secrets.\n' +
+      '(v) NON-SOLICITATION / NON-DEALING — clauses restraining post-NDA solicitation of employees or customers are subject to the restraint-of-trade doctrine — must be reasonable in scope and duration (see Koumoulis v Leventis Motors).\n' +
+      '(vi) REMEDIES — injunction (prohibitory and mandatory), damages (measured as loss of business / account of profits / unjust enrichment), delivery-up of materials.\n' +
+      '(vii) DISPUTE RESOLUTION — Arbitration and Mediation Act 2023 is the current framework (repealed the Arbitration and Conciliation Act 2004). Reference AMA 2023 with Lagos seat for most commercial NDAs.\n' +
+      '(viii) STAMP DUTY — NDAs are dutiable at a nominal rate as "agreements under hand" per Stamp Duties Act Sch.1.\n' +
+      'Governing law: Laws of the Federal Republic of Nigeria. Jurisdiction: Federal High Court (IP / confidential-information disputes relating to patents/copyright) or State High Court (pure contract / equity).'
+    : ''
+
+  const nigeriaCommercialGeneralClause = isGeneralCommercialDoc && isNigeria
+    ? '\n\nIMPORTANT — NIGERIAN COMMERCIAL / TRANSACTIONAL LAW (general): Apply:\n' +
+      '(i) CAMA 2020 — Companies and Allied Matters Act: s.746+ (partnerships); Part B / Chapter 2 (registration of business names); s.862+ (incorporated trustees). For partnerships >20 persons OR carrying on business jointly for profit with legal personality, registration with CAC is required.\n' +
+      '(ii) JOINT VENTURES — contractual JVs do not require incorporation; corporate JVs are incorporated as limited liability companies under CAMA 2020. Nigerian Investment Promotion Commission Act (Cap. N117) — foreign investment vehicles register with NIPC; may require approvals under the Foreign Exchange (Monitoring and Miscellaneous Provisions) Act.\n' +
+      '(iii) TAX — Federal Inland Revenue Service: Companies Income Tax Act (30% for large, 20% for medium, 0% for small companies per Finance Act 2020); Value Added Tax Act (7.5% standard rate since Finance Act 2020); Personal Income Tax Act; Withholding Tax regulations (various rates 5–10% depending on transaction).\n' +
+      '(iv) FCCPA 2018 (Federal Competition and Consumer Protection Act) — for consumer-facing terms: prohibits unfair terms (s.127), misleading conduct (s.116), product liability (s.136). FCCPC + FCCPT enforce.\n' +
+      '(v) ARBITRATION AND MEDIATION ACT 2023 — primary ADR framework for commercial disputes. Seat: Lagos (typical), Abuja, or institutional (LCA / NCIA / ICC). Emergency-arbitrator provisions (s.16), third-party funding recognised (s.61).\n' +
+      '(vi) STAMP DUTY — Stamp Duties Act (Cap. S8 LFN 2004): agreements under hand (nominal), instruments with quantifiable consideration (ad valorem 0.78% / other rates). MOU / LOI / binding instruments dutiable; non-binding LOI / MOU may be treated as nominal.\n' +
+      '(vii) TERMS OF SERVICE — where serving Nigerian consumers, apply FCCPA 2018 s.127 unfair-terms prohibition + NDPA 2023 data-protection obligations + NCC regulations (telecom) if applicable.\n' +
+      '(viii) BUSINESS PROPOSALS / LOI — typically non-binding memoranda; include an express "subject to contract" / "non-binding except for exclusivity, confidentiality, costs" carve-out to avoid unintended binding effect.\n' +
+      '(ix) PAYMENT TERMS — Bills of Exchange Act (Cap. B8); Factors Act; letter-of-credit practice under UCP 600 as commonly adopted.\n' +
+      'Governing law: Laws of the Federal Republic of Nigeria (specify state). Jurisdiction: Federal High Court (corporate, tax, IP, foreign-exchange) or State High Court (general contract); arbitration under AMA 2023.'
+    : ''
+
+  // ────────────────────────────────────────────────────────────────────────
+  // TIER 4 — US / CANADA doc-type-specific clauses
+  // ────────────────────────────────────────────────────────────────────────
+  const usEmploymentClause = isEmploymentDoc && (isUSA || isCalifornia)
+    ? '\n\nIMPORTANT — US EMPLOYMENT LAW: Apply:\n' +
+      '(i) AT-WILL EMPLOYMENT DOCTRINE — employment may be terminated by either party at any time, for any reason or no reason, without notice, UNLESS (a) contract specifies otherwise, (b) employment is in Montana (Wrongful Discharge from Employment Act 1987 — just cause required after probationary period), (c) termination is for a reason prohibited by federal law (Title VII Civil Rights Act 1964, ADEA, ADA, FMLA retaliation, NLRA concerted activity, OSHA whistleblower, etc.) or state law, or (d) implied-contract or public-policy exceptions apply.\n' +
+      '(ii) FLSA — FAIR LABOR STANDARDS ACT (29 U.S.C. §§201+): federal minimum wage $7.25/hour (many states higher); overtime at 1.5x for non-exempt employees over 40 hours/week; exemption categories (executive, administrative, professional, outside sales, computer) have specific duties tests and salary thresholds.\n' +
+      '(iii) WORKER CLASSIFICATION — IRS 20-Factor / Common Law Test for employees; ABC Test in California, Massachusetts, New Jersey, others (worker is independent contractor ONLY if A: free from control, B: work outside usual course of hiring entity\'s business, C: engaged in independently established trade/occupation). Misclassification triggers back-wages, taxes, penalties.\n' +
+      '(iv) TAX FORMS — Employees: Form W-2 (year-end), I-9 (employment verification), W-4 (withholding). Independent contractors: Form 1099-NEC (if ≥$600/year) or 1099-MISC; no withholding; contractor self-pays self-employment tax (15.3%).\n' +
+      '(v) STATE-SPECIFIC — reference user\'s state: CALIFORNIA (Labor Code §2802 expense reimbursement, WARN Act 75+ employees 60-day notice, CalWARN 75+, meal/rest breaks, PAGA class actions, SB 1162 pay transparency, non-compete void under Bus. & Prof. Code §16600); NEW YORK (NYLL frequency of pay by classification, NYSHRL anti-discrimination, pay-transparency amendments 2023); TEXAS (at-will, payday law Tex. Lab. Code §61); ILLINOIS (BIPA for biometric data); WASHINGTON (non-compete restrictions RCW 49.62); MASSACHUSETTS (non-compete requires garden leave / mutually agreed consideration, M.G.L. c.149 §24L).\n' +
+      '(vi) COBRA — Consolidated Omnibus Budget Reconciliation Act (29 U.S.C. §1161+): continuation of group health coverage for 18 months post-termination (36 months for certain qualifying events) at employee expense for employers with 20+ employees.\n' +
+      '(vii) FMLA — Family and Medical Leave Act (29 U.S.C. §2601+): 12 weeks unpaid leave with job protection for covered employers (50+ employees within 75 miles) and eligible employees (12+ months, 1,250+ hours).\n' +
+      '(viii) ERISA — Employee Retirement Income Security Act: governs employer-sponsored pension and health plans; fiduciary duties.\n' +
+      '(ix) WORKERS\' COMP — state-specific; typically mandatory; bars most civil claims for workplace injury.\n' +
+      '(x) IMMIGRATION — I-9 within 3 business days; E-Verify mandatory in certain states and for federal contractors.\n' +
+      'Governing law: specified US state law (federal law overrides where applicable). Jurisdiction: federal court (federal-question, diversity, or FLSA collective); state court or agency (EEOC, state FEP agency) per claim.'
+    : ''
+
+  const canadaEmploymentClause = isEmploymentDoc && isCanada && !isQuebec
+    ? '\n\nIMPORTANT — CANADIAN EMPLOYMENT LAW: Apply:\n' +
+      '(i) JURISDICTION SPLIT — Canada is a federation; most employment is provincially regulated UNLESS the employer is in a federally regulated industry (banks, telcos, inter-provincial transport, federal agencies). Federally regulated: Canada Labour Code (R.S.C. 1985, c. L-2). Provincially regulated: Employment Standards Act/Code of the specific province.\n' +
+      '(ii) PROVINCIAL ESAs — ONTARIO Employment Standards Act 2000 (S.O. 2000, c. 41): s.57 notice 1 wk (3 mo–1 yr service), 2 wk (1–3 yr), +1 wk/yr up to 8 wk; s.64 severance pay where employer has ≥$2.5M payroll AND employee has 5+ yr service = 1 wk per year served, capped at 26 wk. BC Employment Standards Act: s.63 length-of-service compensation. Alberta Employment Standards Code: s.55–56 termination notice. NAME the specific province in the contract.\n' +
+      '(iii) COMMON-LAW REASONABLE NOTICE — statutory minimums are a FLOOR, not a ceiling. Common-law reasonable notice calculated per the BARDAL FACTORS (Bardal v Globe & Mail Ltd [1960] OR 1102): (a) age of employee, (b) length of service, (c) character of employment (nature of role, level of responsibility), (d) availability of similar employment considering the employee\'s experience, training, and qualifications. Typical common-law notice: 1 month per year of service, but varies widely (more for older / senior / longer-tenured employees; capped informally around 24 months).\n' +
+      '(iv) ENFORCEABLE LIMITATION — to displace common-law notice with a contractual term, the contract must CLEARLY and UNAMBIGUOUSLY limit notice to the statutory minimum (or any other figure), AND the clause must COMPLY with the ESA at ALL possible future points of termination (Waksdale v Swegon North America Inc [2020] ONCA 391 — if the "for cause" clause violates the ESA, the "without cause" clause is also void).\n' +
+      '(v) CPP — Canada Pension Plan (R.S.C. 1985, c. C-8): employer + employee contributions on earnings up to the Year\'s Maximum Pensionable Earnings (YMPE; 2025: $71,300). Standard rate: 5.95% each. Additional CPP (CPP2): 4% each on earnings between YMPE and YAMPE (2025: $81,200).\n' +
+      '(vi) EI — Employment Insurance Act: employee 1.64% up to $65,700 (2025); employer 1.4x employee rate. Lower in Quebec (separate QPIP).\n' +
+      '(vii) INCOME TAX — Income Tax Act: federal tax + provincial tax. Employer withholds via payroll (TD1 / TD1ON / etc.); remits to CRA monthly.\n' +
+      '(viii) PROVINCIAL HEALTH — Ontario Health Premium (Ontario Taxation Act 2007); Manitoba Health and Post-Secondary Education Tax Levy (1.95% / 4.3% of payroll); BC Employer Health Tax (1.95% / 2.925%).\n' +
+      '(ix) STATUTORY HOLIDAYS — province-specific. Ontario: 9 paid public holidays under ESA. BC: 10. Quebec: 8 + Fête nationale.\n' +
+      '(x) MINIMUM WAGE — provincial; ON: $17.20/hr (as of Oct 2024, verify current); BC: $17.40/hr; AB: $15/hr; QC: $15.75/hr; federal min wage for federally regulated: $17.30/hr (April 2024).\n' +
+      '(xi) HUMAN RIGHTS — provincial Human Rights Codes + Canadian Human Rights Act (federally regulated): prohibited grounds (race, sex, age, disability, religion, gender identity, etc.).\n' +
+      '(xii) TERMINATION AT COMMON LAW — just cause is a high bar (McKinley v BC Tel [2001] 2 SCR 161). Without cause = statutory minimums + common-law reasonable notice unless effectively contracted out.\n' +
+      'Governing law: Laws of the specified Canadian province and the federal laws of Canada applicable therein. Jurisdiction: that province\'s Superior Court of Justice / Supreme Court / Court of King\'s Bench. Use Canadian spelling (labour, organisation, cheque).'
+    : ''
+
+  const usCanadaPropertyClause = (isTenancyDoc || isQuitNoticeDoc) && (isUSA || isCalifornia || (isCanada && !isQuebec))
+    ? '\n\nIMPORTANT — US / CANADA RESIDENTIAL TENANCY LAW: Apply:\n' +
+      (isCanada ? '(i) CANADA — PROVINCIAL RESIDENTIAL TENANCIES STATUTES govern residential tenancies; NAME the specific province: ONTARIO Residential Tenancies Act 2006 (S.O. 2006, c. 17) — Landlord and Tenant Board has exclusive jurisdiction; rent-increase-guideline applies annually (exception: newly built units after 15 November 2018). BRITISH COLUMBIA Residential Tenancy Act SBC 2002, c. 78 — Residential Tenancy Branch. ALBERTA Residential Tenancies Act SA 2004, c. R-17.1. Notice periods: Ontario N12 / N13 for landlord\'s own use / demolition with 60 days\' notice. Security deposits: Ontario = last month\'s rent (no damage deposit allowed); BC ≤ half of first month\'s rent + pet deposit; Alberta ≤ 1 month\'s rent.\n' +
+      '(ii) CANADA — HUMAN RIGHTS CODE protections apply to residential leasing (race, family status, disability, source of income in some provinces, etc.). Illegal to refuse on prohibited ground.\n' +
+      '(iii) PIPEDA + provincial privacy apply to tenant personal data.\n' : '') +
+      (isUSA || isCalifornia ? '(i) US — STATE LANDLORD-TENANT LAW governs residential tenancies; NAME the specific state: CALIFORNIA Civ. Code §§1940–1954.05 + Tenant Protection Act of 2019 (AB 1482) — rent cap CPI + 5% up to 10%, just-cause eviction after 12 months. NEW YORK Real Property Law §§220+ + RPAPL + NYC Rent Stabilization. TEXAS Property Code Title 8. FLORIDA Fla. Stat. ch. 83.\n' +
+      '(ii) US — SECURITY DEPOSIT LIMITS: varies by state (CA 1 month unfurnished / 2 months furnished post-2024 AB 12; NY 1 month Real Prop. Law §7-108; FL no cap but holding requirements; TX no cap).\n' +
+      '(iii) US — IMPLIED WARRANTY OF HABITABILITY: common-law in most states (Javins v First National Realty [1970] for DC doctrine); codified in many state codes (CA Civ. Code §1941).\n' +
+      '(iv) US — FAIR HOUSING ACT (42 U.S.C. §3601+): prohibits discrimination on race, colour, national origin, religion, sex (including gender identity / sexual orientation per Bostock), familial status, disability. State / local laws may add protected classes (source of income, age, lawful source of income).\n' +
+      '(v) US — NOTICE PERIODS: tenancy-at-will = at least the rent period (e.g., monthly = 30 days); fixed-term = end of term (no notice required unless state law otherwise). Specific state rules vary (CA requires 60 days for tenancies of 1+ year; 30 days otherwise).\n' +
+      '(vi) US — EVICTION: must be via state court process (unlawful detainer / FED / summary ejectment); SELF-HELP EVICTION is illegal in virtually all states.\n' : '') +
+      'Governing law: the specified state / province. Jurisdiction: state landlord-tenant court or provincial RTB / LTB.'
+    : ''
+
+  // ────────────────────────────────────────────────────────────────────────
   // TIER 3 — GRACEFUL FALLBACK for unmapped jurisdictions
   // ────────────────────────────────────────────────────────────────────────
   // Fires when NO jurisdiction-specific detector matched — e.g. user picks
@@ -537,6 +836,11 @@ export default async function handler(req, res) {
       + nigeriaEmploymentClause + nigeriaNonCompeteClause
       + nigeriaLoanClause + nigeriaHirePurchaseClause + nigeriaCommercialClause
       + ukGeneralClause + kenyaGeneralClause + ghanaGeneralClause + southAfricaGeneralClause + canadaGeneralClause + usGeneralClause
+      + kenyaTenancyClause + kenyaEmploymentClause + kenyaNonCompeteClause + kenyaPropertyClause + kenyaLoanClause + kenyaCommercialClause
+      + ghanaTenancyClause + ghanaEmploymentClause + ghanaPropertyClause + ghanaLoanClause
+      + southAfricaTenancyClause + southAfricaEmploymentClause + southAfricaNonCompeteClause + southAfricaPropertyClause + southAfricaLoanClause
+      + nigeriaNDAClause + nigeriaCommercialGeneralClause
+      + usEmploymentClause + canadaEmploymentClause + usCanadaPropertyClause
       + genericFallbackClause
 
   try {
