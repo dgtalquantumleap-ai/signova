@@ -188,24 +188,57 @@ export default async function handler(req, res) {
     || lower.includes('independent contractor') || lower.includes('freelance contract')
     || lower.includes('consulting agreement') || lower.includes('contract of employment')
   const isNonCompeteDoc = lower.includes('non-compete') || lower.includes('non compete') || lower.includes('noncompete')
-  const isLoanDoc = lower.includes('loan agreement')
+  // FIX 7: broadened to catch credit/personal/business/contract phrasings,
+  // word-boundary scoped so partial matches don't false-positive (e.g. "loan
+  // application" still doesn't match because we require the noun phrase).
+  const isLoanDoc = /\b(loan agreement|credit agreement|personal loan|business loan|loan contract)\b/.test(lower)
   const isHirePurchaseDoc = lower.includes('hire purchase') || lower.includes('hire-purchase')
   const isCommercialDoc = lower.includes('distribution agreement') || lower.includes('distribution / reseller')
     || lower.includes('supply agreement') || lower.includes('reseller agreement')
 
   // ── Jurisdiction detection ────────────────────────────────────────────────
-  // Note: "USA"/"U.S."/"U.S.A." checked against ORIGINAL case (not lowered) to
-  // avoid matching the pronoun "us" (e.g. "send us the draft").
+  // FIX 3 — scoped jurisdiction detection.
+  //
+  // Previous version checked the ENTIRE prompt for jurisdiction keywords like
+  // "California" / "London" / "Toronto". Result: a Nigerian NDA where one
+  // party was headquartered in Los Angeles triggered isCalifornia=true and
+  // injected California CCPA language into a Nigerian document.
+  //
+  // Fix: extract the labelled jurisdiction lines from the fieldSummary
+  // ("Governing law:" / "Country:" / "State:" / "Jurisdiction:" /
+  // "Country of incorporation:") and run the keyword detection ONLY against
+  // those scoped lines. Non-jurisdiction labels in the form (Property /
+  // Address / Company HQ / Workplace / etc.) no longer pollute detection.
+  //
+  // Exception per spec: isNigeria stays in full-prompt scope because Nigerian
+  // state-name addresses ("12 Adeyemi Street, Ikeja GRA, Lagos") are the
+  // primary way Nigerian users indicate their jurisdiction — they often skip
+  // the explicit dropdown.
+  const govLawLine = (lower.match(/governing law:\s*([^\n]+)/) || [])[1] || ''
+  const countryLine = (lower.match(/country:\s*([^\n]+)/) || [])[1] || ''
+  const stateLine = (lower.match(/state:\s*([^\n]+)/) || [])[1] || ''
+  const jurisdictionLine = (lower.match(/jurisdiction:\s*([^\n]+)/) || [])[1] || ''
+  const incorpLine = (lower.match(/country of incorporation[^:]*:\s*([^\n]+)/) || [])[1] || ''
+  const jurisdictionScope = `${govLawLine} ${countryLine} ${stateLine} ${jurisdictionLine} ${incorpLine}`
+  // Same scoping applied to the original-case prompt for the "USA"/"U.S."/
+  // "U.S.A." check (case-sensitive to avoid the pronoun "us"). Pull the
+  // labelled lines out of the original-case prompt with a flagless regex.
+  const promptScopeRaw = (() => {
+    const lines = prompt.split('\n')
+    return lines.filter(l =>
+      /^(Governing law|Country|State|Jurisdiction|Country of incorporation)/i.test(l)
+    ).join(' ')
+  })()
+
+  // isNigeria — kept in full-prompt scope per spec.
   const isNigeria = lower.includes('nigeria') || lower.includes('ndpa') || lower.includes('ndpc')
     || lower.includes('cama 2020') || lower.includes('isa 2025') || /\b(lagos|abuja|kano|ibadan|port harcourt)\b/.test(lower)
 
   // Lagos State Tenancy Law 2011 s.1(3) excludes four high-value areas from
   // its coverage — those fall back to the Recovery of Premises Act (Cap. R7
-  // LFN 2004). Claude needs to know unambiguously which regime applies so
-  // the governing-law clause cites the correct statute. We detect either:
-  //   - explicit user selection ("Recovery of Premises Act" in fieldSummary), or
-  //   - address / state mentions the excluded-area name (Apapa / Ikeja GRA /
-  //     Ikoyi / Victoria Island) without also claiming LSTL 2011.
+  // LFN 2004). Detection here checks the property address line and the state
+  // dropdown selection. Nigerian property routing stays full-prompt because
+  // the address contains the routing signal.
   const isExcludedLagosArea = isNigeria && (
     lower.includes('recovery of premises act') ||
     /\bikeja\s+gra\b/.test(lower) ||
@@ -213,43 +246,68 @@ export default async function handler(req, res) {
     (/\bvictoria\s+island\b/.test(lower) && !lower.includes('lstl 2011')) ||
     (/\bapapa\b/.test(lower) && !lower.includes('lstl 2011'))
   )
-  // Explicit LSTL 2011 coverage — user selected "Lagos (covered by LSTL 2011)"
-  // from the state dropdown, OR the address clearly names a non-excluded
-  // Lagos area (Lekki, Surulere, Yaba, Ajah, etc.) AND no excluded-area
-  // keyword appears.
   const isLstlLagos = isNigeria && !isExcludedLagosArea && (
     lower.includes('lstl 2011') ||
     lower.includes('lagos state tenancy law') ||
     /\b(lekki|surulere|yaba|ajah|ikorodu|magodo|gbagada|ogudu|ojodu|ikate|agege|mushin|badagry|epe)\b/.test(lower)
   )
-  const isKenya = lower.includes('kenya') || lower.includes('kenyan') ||
-    /\b(nairobi|mombasa|kisumu|nakuru)\b/.test(lower) ||
-    lower.includes('companies act 2015') || lower.includes('kenya data protection act')
-  const isGhana = lower.includes('ghana') || lower.includes('ghanaian') ||
-    /\b(accra|kumasi|tema|takoradi)\b/.test(lower) ||
-    lower.includes('companies act 2019') || lower.includes('act 992')
-  const isSouthAfrica = lower.includes('south africa') || lower.includes('south african') ||
-    /\b(johannesburg|cape town|durban|pretoria|sandton)\b/.test(lower) ||
-    lower.includes('popia') || lower.includes('companies act 71 of 2008')
-  const isUK = lower.includes('united kingdom') || lower.includes('england and wales') || lower.includes('england & wales')
-    || /\b(uk|u\.k\.)\b/.test(lower) || lower.includes('british')
-    || /\b(london|manchester|birmingham|edinburgh|glasgow|cardiff|belfast)\b/.test(lower)
-    || lower.includes('companies act 2006')
-  const isQuebec = /\bqu[eé]bec\b/.test(lower) || lower.includes('law 25') || lower.includes('bill 64') ||
-    /\b(montr[eé]al|quebec city)\b/.test(lower)
-  const isCanada = !isQuebec && (lower.includes('canada') || lower.includes('canadian') ||
-    /\b(ontario|british columbia|alberta|manitoba|saskatchewan|nova scotia|new brunswick|newfoundland|prince edward island|yukon|nunavut|northwest territories)\b/.test(lower) ||
-    /\b(toronto|vancouver|calgary|edmonton|ottawa|mississauga|winnipeg|halifax|victoria|saskatoon|regina|hamilton)\b/.test(lower) ||
-    /\b(o\.n\.|bc|b\.c\.|ab|mb|sk|ns|nb|pei|yt|nt|nu)\b/.test(lower) ||
-    lower.includes('pipeda') || lower.includes('casl') || lower.includes('cbca'))
-  const isCalifornia = lower.includes('california') || lower.includes('ccpa') || lower.includes('cpra') ||
-    /\b(san francisco|los angeles|san diego|san jose|sacramento|oakland|santa clara|palo alto|silicon valley)\b/.test(lower)
+
+  // FIX 6 — Other Nigerian state detection. Each Nigerian state has its own
+  // tenancy / recovery-of-premises statute (or relies on the federal Recovery
+  // of Premises Act in the FCT). Naming the correct state statute in the
+  // governing-law clause is what a litigation lawyer will check first.
+  // Detects from address / state field. Only one fires at a time (most
+  // common state wins by listing order). isLagos* (above) takes precedence.
+  const ngStateRivers = isNigeria && /\b(rivers state|port harcourt|obio[\s-]akpor|eleme|okrika|onne|bonny)\b/.test(lower)
+  const ngStateAnambra = isNigeria && /\b(anambra|awka|onitsha|nnewi|ekwulobia)\b/.test(lower)
+  const ngStateOyo = isNigeria && !isExcludedLagosArea && !isLstlLagos && /\b(oyo state|ibadan|ogbomoso|oyo town|saki)\b/.test(lower)
+  const ngStateKano = isNigeria && /\b(kano state|kano municipal|fagge|nasarawa gwo)\b/.test(lower)
+  const ngStateEnugu = isNigeria && /\b(enugu|nsukka|udi)\b/.test(lower)
+  const ngStateAbia = isNigeria && /\b(abia|umuahia|aba)\b/.test(lower)
+  const ngStateImo = isNigeria && /\b(imo state|owerri|orlu|okigwe)\b/.test(lower)
+  const ngStateFCT = isNigeria && !isExcludedLagosArea && !isLstlLagos && /\b(fct|abuja|federal capital territory|garki|wuse|maitama|asokoro|gwarinpa|kuje)\b/.test(lower)
+
+  // FIX 3 — every other jurisdiction is detected ONLY against the scoped
+  // jurisdiction lines, not the full prompt. Statute keywords (e.g. "POPIA",
+  // "Companies Act 2006") that appear in jurisdiction lines still match.
+  const isKenya = /\bkenya|kenyan\b/.test(jurisdictionScope) ||
+    /\b(nairobi|mombasa|kisumu|nakuru)\b/.test(jurisdictionScope) ||
+    /\bcompanies act 2015|kenya data protection act\b/.test(jurisdictionScope)
+  const isGhana = /\bghana|ghanaian\b/.test(jurisdictionScope) ||
+    /\b(accra|kumasi|tema|takoradi)\b/.test(jurisdictionScope) ||
+    /\bcompanies act 2019|act 992\b/.test(jurisdictionScope)
+  const isSouthAfrica = /\bsouth africa|south african\b/.test(jurisdictionScope) ||
+    /\b(johannesburg|cape town|durban|pretoria|sandton)\b/.test(jurisdictionScope) ||
+    /\bpopia|companies act 71 of 2008\b/.test(jurisdictionScope)
+  const isUK = /\bunited kingdom|england and wales|england & wales\b/.test(jurisdictionScope)
+    || /\b(uk|u\.k\.)\b/.test(jurisdictionScope) || /\bbritish\b/.test(jurisdictionScope)
+    || /\b(london|manchester|birmingham|edinburgh|glasgow|cardiff|belfast)\b/.test(jurisdictionScope)
+    || /\bcompanies act 2006\b/.test(jurisdictionScope)
+  const isQuebec = /\bqu[eé]bec\b/.test(jurisdictionScope) || /\blaw 25|bill 64\b/.test(jurisdictionScope) ||
+    /\b(montr[eé]al|quebec city)\b/.test(jurisdictionScope)
+  const isCanada = !isQuebec && (/\bcanada|canadian\b/.test(jurisdictionScope) ||
+    /\b(ontario|british columbia|alberta|manitoba|saskatchewan|nova scotia|new brunswick|newfoundland|prince edward island|yukon|nunavut|northwest territories)\b/.test(jurisdictionScope) ||
+    /\b(toronto|vancouver|calgary|edmonton|ottawa|mississauga|winnipeg|halifax|victoria|saskatoon|regina|hamilton)\b/.test(jurisdictionScope) ||
+    /\b(o\.n\.|bc|b\.c\.|ab|mb|sk|ns|nb|pei|yt|nt|nu)\b/.test(jurisdictionScope) ||
+    /\bpipeda|casl|cbca\b/.test(jurisdictionScope))
+  const isCalifornia = /\bcalifornia\b/.test(jurisdictionScope) || /\bccpa|cpra\b/.test(jurisdictionScope) ||
+    /\b(san francisco|los angeles|san diego|san jose|sacramento|oakland|santa clara|palo alto|silicon valley)\b/.test(jurisdictionScope)
+  // FIX 8 — US state detectors. Top-6 states get dedicated sub-clauses below
+  // (CA already has californiaClause). Detection scoped to jurisdiction lines
+  // so a Florida-based party in a Nigerian doc doesn't flip Florida law on.
+  const isUsStateNY = /\b(new york|nyc|new york city|nyll|nyshrl)\b/.test(jurisdictionScope) && !isCalifornia
+  const isUsStateTX = /\b(texas|houston|dallas|austin|san antonio|tex\.\s*lab\.\s*code)\b/.test(jurisdictionScope) && !isCalifornia
+  const isUsStateFL = /\b(florida|miami|orlando|tampa|jacksonville|fla\.\s*stat\.)\b/.test(jurisdictionScope) && !isCalifornia
+  const isUsStateIL = /\b(illinois|chicago|bipa|freedom to work act)\b/.test(jurisdictionScope) && !isCalifornia
+  const isUsStateWA = /\b(washington state|seattle|spokane|tacoma|rcw 49\.62|rcw\s*49\.62)\b/.test(jurisdictionScope) && !isCalifornia
+
   const isUSA = !isCalifornia && (
-    lower.includes('united states') ||
-    /\b(USA|U\.S\.A\.|U\.S\.)\b/.test(prompt) ||  // original case — avoids pronoun "us"
-    lower.includes('ucc ') || lower.includes('can-spam') || lower.includes('delaware') || lower.includes('dgcl') ||
-    /\b(alabama|alaska|arizona|arkansas|colorado|connecticut|delaware|florida|georgia|hawaii|idaho|illinois|indiana|iowa|kansas|kentucky|louisiana|maine|maryland|massachusetts|michigan|minnesota|mississippi|missouri|montana|nebraska|nevada|new hampshire|new jersey|new mexico|new york|north carolina|north dakota|ohio|oklahoma|oregon|pennsylvania|rhode island|south carolina|south dakota|tennessee|texas|utah|vermont|virginia|washington|west virginia|wisconsin|wyoming)\b/.test(lower) ||
-    /\b(nyc|new york city|chicago|houston|phoenix|philadelphia|dallas|austin|seattle|boston|miami|atlanta|denver|detroit|minneapolis|las vegas)\b/.test(lower)
+    /\bunited states\b/.test(jurisdictionScope) ||
+    /\b(USA|U\.S\.A\.|U\.S\.)\b/.test(promptScopeRaw) ||  // original case — avoids pronoun "us"
+    /\bdelaware|dgcl\b/.test(jurisdictionScope) ||
+    isUsStateNY || isUsStateTX || isUsStateFL || isUsStateIL || isUsStateWA ||
+    /\b(alabama|alaska|arizona|arkansas|colorado|connecticut|delaware|florida|georgia|hawaii|idaho|illinois|indiana|iowa|kansas|kentucky|louisiana|maine|maryland|massachusetts|michigan|minnesota|mississippi|missouri|montana|nebraska|nevada|new hampshire|new jersey|new mexico|new york|north carolina|north dakota|ohio|oklahoma|oregon|pennsylvania|rhode island|south carolina|south dakota|tennessee|texas|utah|vermont|virginia|washington|west virginia|wisconsin|wyoming)\b/.test(jurisdictionScope) ||
+    /\b(nyc|new york city|chicago|houston|phoenix|philadelphia|dallas|austin|seattle|boston|miami|atlanta|denver|detroit|minneapolis|las vegas)\b/.test(jurisdictionScope)
   )
 
   // ── Jurisdiction-specific enhancement clauses (for non-DPA docs) ──────────
@@ -274,36 +332,95 @@ export default async function handler(req, res) {
     : ''
 
   // ── Equity / company-law jurisdiction clauses ──────────────────────────────
-  // These fire only for equity instruments (SAFE, term sheet, shareholder,
-  // founders', vesting, IP assignment, advisory board, convertible note) and
-  // reference the applicable COMPANY LAW for each jurisdiction. Data-protection
-  // clauses above handle privacy statutes; these handle share structures,
-  // conversion mechanics, registration of allotment, and the right regulator.
-  const nigeriaEquityClause = isEquityDoc && isNigeria
+  // FIX 5 — Two-field model for cross-border equity transactions.
+  //
+  // The COMPANY LAW (CAMA / Companies Act 2006 / DGCL / etc.) is determined
+  // by the ENTITY'S INCORPORATION JURISDICTION, not by the contract's
+  // governing-law clause. A common pattern: a Nigerian-incorporated company
+  // raises a SAFE under New York governing law — the SAFE must use CAMA's
+  // "ordinary shares / preference shares" (not US "common/preferred stock"),
+  // even though disputes go to NY courts. Previously usEquityClause blocked
+  // when any non-US jurisdiction was detected, dropping the NY governing-law
+  // signal entirely.
+  //
+  // Resolution: derive separate incorporation-jurisdiction detectors. If the
+  // user provided a "Country of incorporation:" field, use it. Otherwise
+  // fall back to the governing-law-based detectors above (single-jurisdiction
+  // case — most common).
+  const incorpScope = incorpLine
+  const hasExplicitIncorp = incorpScope.trim().length > 0
+  const isIncorpNigeria = hasExplicitIncorp
+    ? /\bnigeria|nigerian|cama 2020\b/.test(incorpScope)
+    : isNigeria
+  const isIncorpKenya = hasExplicitIncorp
+    ? /\bkenya|kenyan|companies act 2015\b/.test(incorpScope)
+    : isKenya
+  const isIncorpGhana = hasExplicitIncorp
+    ? /\bghana|ghanaian|act 992|companies act 2019\b/.test(incorpScope)
+    : isGhana
+  const isIncorpSouthAfrica = hasExplicitIncorp
+    ? /\bsouth africa|south african|companies act 71 of 2008\b/.test(incorpScope)
+    : isSouthAfrica
+  const isIncorpUK = hasExplicitIncorp
+    ? /\bunited kingdom|england|companies act 2006|british\b/.test(incorpScope)
+    : isUK
+  const isIncorpCanada = hasExplicitIncorp
+    ? /\bcanada|canadian|cbca|obca|bcbca\b/.test(incorpScope)
+    : isCanada
+  const isIncorpUS = hasExplicitIncorp
+    ? /\bunited states|delaware|dgcl|usa|u\.s\./i.test(incorpScope) ||
+      /\b(alabama|alaska|arizona|arkansas|colorado|connecticut|florida|georgia|hawaii|idaho|illinois|indiana|iowa|kansas|kentucky|louisiana|maine|maryland|massachusetts|michigan|minnesota|mississippi|missouri|montana|nebraska|nevada|new hampshire|new jersey|new mexico|new york|north carolina|north dakota|ohio|oklahoma|oregon|pennsylvania|rhode island|south carolina|south dakota|tennessee|texas|utah|vermont|virginia|washington|west virginia|wisconsin|wyoming|california)\b/i.test(incorpScope)
+    : (isUSA || isCalifornia)
+
+  // Cross-border note appended when incorporation jurisdiction differs from
+  // the contract's governing law (e.g. NG-incorporated company under English
+  // governing law). Tells Claude to apply incorporation-jurisdiction company
+  // law for share-structure language but governing-law jurisdiction for
+  // dispute resolution / forum selection.
+  const equityCrossBorderNote = isEquityDoc && hasExplicitIncorp ? (() => {
+    const govLawJurisdiction =
+      isCalifornia ? 'California' : isUSA ? 'United States' :
+      isUK ? 'England and Wales' : isCanada ? 'Canada' :
+      isQuebec ? 'Quebec' : isNigeria ? 'Nigeria' :
+      isKenya ? 'Kenya' : isGhana ? 'Ghana' :
+      isSouthAfrica ? 'South Africa' : ''
+    const incorpJurisdiction =
+      isIncorpUS ? 'United States' :
+      isIncorpUK ? 'United Kingdom' :
+      isIncorpCanada ? 'Canada' :
+      isIncorpNigeria ? 'Nigeria' :
+      isIncorpKenya ? 'Kenya' :
+      isIncorpGhana ? 'Ghana' :
+      isIncorpSouthAfrica ? 'South Africa' : ''
+    if (!govLawJurisdiction || !incorpJurisdiction || govLawJurisdiction === incorpJurisdiction) return ''
+    return `\n\nCROSS-BORDER EQUITY DOCUMENT NOTE: The company is incorporated in ${incorpJurisdiction} but the contract's governing law is ${govLawJurisdiction}. Apply ${incorpJurisdiction} company law for ALL share-structure language (share class names, conversion mechanics, allotment / return-of-allotment filings with the appropriate registrar). Apply ${govLawJurisdiction} law for dispute-resolution / forum-selection / general contract interpretation. Do NOT mix terminology — never use US "common/preferred stock" wording for a Nigerian or UK company even if NY/Delaware governing law is selected.`
+  })() : ''
+
+  const nigeriaEquityClause = isEquityDoc && isIncorpNigeria
     ? '\n\nIMPORTANT — NIGERIAN COMPANY LAW FOR EQUITY INSTRUMENTS: This document concerns issuance of shares / equity rights in a Nigerian-incorporated entity. Strictly apply: (i) the Companies and Allied Matters Act (CAMA) 2020 — use CAMA terminology ("ordinary shares" and "preference shares" — NEVER US-style "common stock" or "preferred stock"). Reference sections 124 (allotment of shares), 125 (return of allotment, filed with the Corporate Affairs Commission (CAC) within 15 days of allotment), 128 (pre-emption rights), 141 (share capital increases), 165 (register of members). For conversion mechanics on the next equity round, require a board resolution, shareholders\' resolution where an increase in share capital is needed, and CAC filing within 15 days. (ii) the Investments and Securities Act (ISA) 2025 for private-placement exemptions — the Agreement should represent that the issuance is a private placement exempt from full SEC registration under ISA 2025, that the investor is a sophisticated or qualified investor, and that no public offering or advertisement has occurred. Reference the relevant SEC Rules on Private Placement. (iii) For governing law default to the Laws of the Federal Republic of Nigeria when Nigeria is the company\'s jurisdiction (NOT Delaware — explicitly reject US defaults). (iv) Dispute resolution: either courts of the Federal Republic of Nigeria (Lagos or Abuja Judicial Division of the Federal High Court / High Court) or arbitration under the Arbitration and Mediation Act 2023, seat in Lagos, administered by LCA / NCIA / ICC as specified. (v) Denominate amounts in Naira (NGN / ₦) or the currency specified, include a clause on CBN foreign-exchange controls if the investment is in USD and conversion or repatriation is contemplated. (vi) Certificate of Incorporation / CAC Registration Number must be stated in the parties block. (vii) Stamping: note that the Agreement is dutiable under the Stamp Duties Act and should be stamped at the FIRS within 30 days of execution.'
     : ''
 
-  const kenyaEquityClause = isEquityDoc && isKenya
+  const kenyaEquityClause = isEquityDoc && isIncorpKenya
     ? '\n\nIMPORTANT — KENYAN COMPANY LAW FOR EQUITY INSTRUMENTS: Apply the Companies Act 2015 (Cap. 486) — reference sections 327 (allotment of shares), 334 (return of allotment filed with the Registrar of Companies within 1 month), 338 (pre-emption rights), 344 (alteration of share capital), and Part XXIII for disclosure obligations. Use Kenyan terminology: "ordinary shares" and "preference shares" (not US "common/preferred stock"). For securities law, apply the Capital Markets Act (Cap. 485A) and Capital Markets (Securities) (Public Offers, Listing and Disclosures) Regulations — private placements to accredited investors are exempt under Regulation 21 of the 2002 Regulations. Default governing law to the Laws of Kenya, dispute resolution to the High Court of Kenya at Nairobi or arbitration under the Arbitration Act 1995 with NCIA seat. Reference Business Registration Service (BRS) registration number in parties block. Denominate in KES unless specified.'
     : ''
 
-  const ghanaEquityClause = isEquityDoc && isGhana
+  const ghanaEquityClause = isEquityDoc && isIncorpGhana
     ? '\n\nIMPORTANT — GHANAIAN COMPANY LAW FOR EQUITY INSTRUMENTS: Apply the Companies Act 2019 (Act 992) — reference sections 43 (power to issue shares), 45 (allotment of shares), 46 (return of allotment filed with the Registrar of Companies within 28 days), 50 (pre-emption rights), 75 (alteration of stated capital). Use Ghanaian terminology: Ghana abolished par value — shares are "no par value" and the Agreement references "stated capital" rather than authorised capital. For securities regulation apply the Securities Industry Act 2016 (Act 929) and SEC Ghana rules — private placements to qualified investors are exempt under section 109. Default governing law to the Laws of the Republic of Ghana, dispute resolution to the High Court at Accra (Commercial Division) or arbitration under the Alternative Dispute Resolution Act 2010 (Act 798), seat in Accra (GAAC). Reference Registrar-General\'s Department company registration number in parties block. Denominate in GHS unless specified.'
     : ''
 
-  const ukEquityClause = isEquityDoc && isUK
+  const ukEquityClause = isEquityDoc && isIncorpUK
     ? '\n\nIMPORTANT — UK COMPANY LAW FOR EQUITY INSTRUMENTS: Apply the Companies Act 2006 — reference sections 549–551 (authority to allot), 561 (pre-emption rights), 617 (alteration of share capital), 561–577 (disapplication of pre-emption), and Part 17 generally. Use UK terminology: "ordinary shares" and "preference shares" (not US "common/preferred stock"). For securities regulation apply FSMA 2000 and the Prospectus Regulation — small-scale private placements to qualified / sophisticated / HNW investors are exempt from prospectus requirements under Article 1(4) of the UK Prospectus Regulation. File SH01 (return of allotment) with Companies House within 1 month. Default governing law to the laws of England and Wales (or Scotland / Northern Ireland if specified), dispute resolution to the courts of England and Wales or arbitration under the Arbitration Act 1996 with LCIA or London seat. Reference Companies House number in parties block. Denominate in GBP unless specified. Note HMRC Stamp Duty / SDRT obligations on share transfers.'
     : ''
 
-  const southAfricaEquityClause = isEquityDoc && isSouthAfrica
+  const southAfricaEquityClause = isEquityDoc && isIncorpSouthAfrica
     ? '\n\nIMPORTANT — SOUTH AFRICAN COMPANY LAW FOR EQUITY INSTRUMENTS: Apply the Companies Act 71 of 2008 — reference sections 38 (allotment), 39 (subscription for shares), 40 (consideration for shares), 41 (shareholder approval for issue of shares to directors or at a discount), 95 (securities register). Use South African terminology: "ordinary shares" / "preference shares", and note that "par value" shares were abolished for new companies — use "no par value" shares and CTC (contributed tax capital). For securities regulation apply the Financial Markets Act 19 of 2012 and the FSCA requirements — private placements to qualified investors under section 96 of the Companies Act are exempt from prospectus. Default governing law to the laws of the Republic of South Africa, dispute resolution to the High Court of South Africa (Gauteng or Western Cape Division) or arbitration under the Arbitration Act 42 of 1965 / AFSA rules, seat in Johannesburg. Reference CIPC registration number in parties block. Denominate in ZAR unless specified. Note SARB exchange-control considerations for cross-border investments.'
     : ''
 
-  const usEquityClause = isEquityDoc && (isUSA || isCalifornia) && !isNigeria && !isKenya && !isGhana && !isSouthAfrica && !isUK
+  const usEquityClause = isEquityDoc && isIncorpUS && !isIncorpNigeria && !isIncorpKenya && !isIncorpGhana && !isIncorpSouthAfrica && !isIncorpUK
     ? '\n\nIMPORTANT — US COMPANY LAW FOR EQUITY INSTRUMENTS: Default incorporation state is Delaware for SAFE and startup documents unless the user specifies otherwise. Apply the Delaware General Corporation Law (DGCL) — reference §151 (classes and series of stock), §152 (issuance of capital stock), §153 (consideration for stock), §157 (rights and options), §161 (issuance of additional stock). Use US terminology: "common stock" and "preferred stock" (NOT UK/Commonwealth "ordinary/preference shares"). Use the most current Y Combinator post-money SAFE v1.2 template structure (September 2022) as a baseline unless a pre-money SAFE is explicitly selected. For federal securities law, claim Regulation D Rule 506(b) (or 506(c) if general solicitation is used) exemption from Securities Act registration, with a Form D filed with the SEC within 15 days of first sale. State Blue Sky notice filings may be required in each state where investors reside. Default governing law to Delaware (SAFE), jurisdiction and venue to state and federal courts in Delaware. Denominate in USD. For California companies, note that California may apply its own corporate-governance rules under Cal. Corp. Code §2115 for "quasi-California" corporations.'
     : ''
 
-  const canadaEquityClause = isEquityDoc && isCanada && !isQuebec
+  const canadaEquityClause = isEquityDoc && isIncorpCanada && !isQuebec
     ? '\n\nIMPORTANT — CANADIAN COMPANY LAW FOR EQUITY INSTRUMENTS: Apply the Canada Business Corporations Act (CBCA) or the corresponding provincial Business Corporations Act (OBCA for Ontario, BCBCA for BC, ABCA for Alberta) — reference CBCA §25 (issue of shares), §27 (continuous disclosure of shares), §42 (solvency test for share issuance), §49 (share certificates). Use Canadian terminology: "common shares" and "preferred shares". For securities regulation apply the applicable provincial Securities Act (Ontario Securities Act, BC Securities Act, etc.) and National Instrument 45-106 — claim the "accredited investor" exemption (NI 45-106 §2.3), the "private issuer" exemption (§2.4), or the "offering memorandum" exemption (§2.9) as applicable. File Form 45-106F1 report of exempt distribution within 10 days. Default governing law to the laws of the specified Canadian province and the federal laws of Canada applicable therein, jurisdiction to that province\'s Superior Court of Justice. Use Canadian spelling (cheque, labour, organisation). Denominate in CAD unless specified.'
     : ''
 
@@ -320,7 +437,19 @@ export default async function handler(req, res) {
         ? '(i) *** MANDATORY STATUTE CITATION — DO NOT DEVIATE ***: This property is in an EXCLUDED LAGOS AREA (Apapa / Ikeja GRA / Ikoyi / Victoria Island) under s.1(3) of the Lagos State Tenancy Law 2011. You MUST cite "the Recovery of Premises Act (Cap. R7 LFN 2004) and the Rules of the High Court of Lagos State" as the governing statute in the Governing Law clause. DO NOT cite the Lagos State Tenancy Law 2011 for this property — the LSTL 2011 does not apply. Jurisdiction: the High Court of Lagos State (the Magistrate\'s Court has no jurisdiction for excluded areas). Notice periods follow the common-law periodic-tenancy rules (at least one full period of the tenancy) and any specific notice provisions in the tenancy agreement itself.\n'
         : isLstlLagos
           ? '(i) *** MANDATORY STATUTE CITATION — DO NOT DEVIATE ***: This property is in Lagos State (outside the s.1(3) excluded areas). You MUST cite "the Lagos State Tenancy Law 2011 (Law No. 8 of 2011)" by name in the Governing Law clause. Jurisdiction: Magistrate\'s Court for tenancy recovery where annual rent is below the jurisdictional limit (s.47 LSTL); High Court of Lagos State otherwise. The statutory notice periods in paragraph (ii) below are MANDATORY — do not contract out of them to the tenant\'s disadvantage.\n'
-          : '(i) LAGOS STATE TENANCY LAW 2011 applies to properties in Lagos State EXCEPT the high-value areas excluded by s.1(3): Apapa, Ikeja GRA (Government Reservation Area), Ikoyi, and Victoria Island — those excluded areas are governed by the Recovery of Premises Act (Cap. R7 LFN 2004) and the High Court rules. If the property is in Lagos but not in those excluded areas, reference the LSTL 2011 by name in the governing-law clause. For other Nigerian states, cite the equivalent state Tenancy Law or the Recovery of Premises Act as the residual common-law statute.\n') +
+          : '(i) NIGERIAN STATE-SPECIFIC TENANCY STATUTE — cite the correct state statute by name in the Governing Law clause:\n' +
+            (ngStateRivers ? '     • RIVERS STATE: cite "Rivers State Rent Control and Recovery of Premises Edict 1983 (No. 6 of 1983)" — Magistrate\'s Court Port Harcourt for recovery; statutory notice periods consistent with LSTL pattern.\n' : '') +
+            (ngStateAnambra ? '     • ANAMBRA STATE: cite "Anambra State Recovery of Premises Law (Cap. 138 Laws of Anambra State 1991)" — High Court Awka for recovery; equivalent statutory notice periods apply.\n' : '') +
+            (ngStateOyo ? '     • OYO STATE: cite "Oyo State Recovery of Premises Law (Cap. 142 Laws of Oyo State 2000)" — Magistrate\'s Court / High Court Ibadan for recovery.\n' : '') +
+            (ngStateKano ? '     • KANO STATE: cite "Kano State Rent Control and Recovery of Premises Edict 1986 (No. 7 of 1986)" — Magistrate\'s Court Kano for recovery.\n' : '') +
+            (ngStateEnugu ? '     • ENUGU STATE: cite "Recovery of Premises Law of Eastern Nigeria (Cap. 118)" as adopted by Enugu State — High Court Enugu for recovery.\n' : '') +
+            (ngStateAbia ? '     • ABIA STATE: cite "Recovery of Premises Law of Eastern Nigeria (Cap. 118)" as adopted by Abia State — Magistrate\'s Court Umuahia / Aba for recovery.\n' : '') +
+            (ngStateImo ? '     • IMO STATE: cite "Recovery of Premises Law of Eastern Nigeria (Cap. 118)" as adopted by Imo State — Magistrate\'s Court Owerri for recovery.\n' : '') +
+            (ngStateFCT ? '     • FCT ABUJA: cite "Recovery of Premises Act (Cap. R7 LFN 2004)" — federal statute applies in the FCT — High Court of the FCT Abuja for recovery.\n' : '') +
+            (!ngStateRivers && !ngStateAnambra && !ngStateOyo && !ngStateKano && !ngStateEnugu && !ngStateAbia && !ngStateImo && !ngStateFCT
+              ? '     • Other Nigerian state: cite the equivalent state Tenancy / Recovery of Premises Law if known, else fall back to the federal Recovery of Premises Act (Cap. R7 LFN 2004) as the residual statute.\n'
+              : '') +
+            '     LAGOS reference (for context, not the governing statute here): LSTL 2011 applies in non-excluded Lagos areas; Recovery of Premises Act applies in Apapa, Ikeja GRA, Ikoyi, Victoria Island.\n') +
       '(ii) STATUTORY NOTICE PERIODS — Section 13 of the Lagos State Tenancy Law 2011 (and equivalent state Tenancy Laws) sets the MINIMUM notice periods which the parties cannot contract out of to the tenant\'s disadvantage:\n' +
       '     • Weekly tenancy — 1 week\'s notice\n' +
       '     • Monthly tenancy — 1 month\'s notice\n' +
@@ -746,8 +875,11 @@ export default async function handler(req, res) {
   // ────────────────────────────────────────────────────────────────────────
   // TIER 4 — NIGERIA COMMERCIAL HYGIENE clauses (NDA + general commercial)
   // ────────────────────────────────────────────────────────────────────────
-  const isNdaDoc = lower.includes('non-disclosure agreement') || lower.includes(' nda ') || lower.includes('\nnda\n')
-    || /^nda\b/.test(lower) || lower.endsWith('nda')
+  // FIX 1: word-boundary regex prevents the previous endsWith('nda') bug
+  // where any prompt mentioning India (or "agenda", "Honda", "Uganda") would
+  // false-positive as an NDA and inject NDA-specific NG clauses into the
+  // wrong document type. /\bnda\b/ matches only the standalone token.
+  const isNdaDoc = lower.includes('non-disclosure agreement') || /\bnda\b/.test(lower)
   const isGeneralCommercialDoc = lower.includes('terms of service') || lower.includes('memorandum of understanding')
     || lower.includes(' mou') || lower.includes('letter of intent') || lower.includes(' loi ')
     || lower.includes('business partnership') || lower.includes('joint venture')
@@ -796,6 +928,77 @@ export default async function handler(req, res) {
       '(ix) WORKERS\' COMP — state-specific; typically mandatory; bars most civil claims for workplace injury.\n' +
       '(x) IMMIGRATION — I-9 within 3 business days; E-Verify mandatory in certain states and for federal contractors.\n' +
       'Governing law: specified US state law (federal law overrides where applicable). Jurisdiction: federal court (federal-question, diversity, or FLSA collective); state court or agency (EEOC, state FEP agency) per claim.'
+    : ''
+
+  // FIX 8 — US state-specific employment sub-clauses. Each fires ONLY when
+  // both the US employment doc AND the specific state are detected (in the
+  // jurisdiction-scoped fields). California already has californiaClause for
+  // most cases; this adds extra employment-specific California depth as well.
+  const californiaEmploymentClause = isEmploymentDoc && isCalifornia
+    ? '\n\nCALIFORNIA EMPLOYMENT — apply on top of general US employment law:\n' +
+      '• Cal. Labor Code §2802 — employer must reimburse all necessary expenses incurred by employee in discharge of duties (cell phone, mileage, home-office where required).\n' +
+      '• Cal. Bus. & Prof. Code §16600 — non-compete clauses are VOID. Do not include post-employment non-competes; even non-solicitation of customers is restricted to trade-secret protection (Edwards v Arthur Andersen [2008] 44 Cal.4th 937).\n' +
+      '• Meal & rest breaks — Cal. Labor Code §§512, 226.7: 30-minute unpaid meal break for shifts >5 hours, second meal break for shifts >10 hours; 10-minute paid rest break per 4 hours worked. Premium pay (1 hour wages) for missed breaks.\n' +
+      '• WARN Act (CalWARN) — Cal. Labor Code §§1400-1408: 60-day notice for plant closing / mass layoff at any covered establishment with 75+ employees.\n' +
+      '• AB 5 ABC Test (codified at Cal. Labor Code §2750.3) — independent-contractor classification: worker is contractor ONLY if A: free from control, B: work outside usual course of hiring entity\'s business, C: customarily engaged in independently established trade. Strict; many traditional 1099 categories now misclassified.\n' +
+      '• Pay transparency — SB 1162 (2023): employers with 15+ employees must include pay scale in job postings; provide pay scale to current employees on request.\n' +
+      '• PAGA — Private Attorneys General Act allows employees to sue on behalf of state for Labor Code violations. Recent reform AB 2288 (2024) limits scope but does not eliminate.'
+    : ''
+
+  const newYorkEmploymentClause = isEmploymentDoc && isUsStateNY
+    ? '\n\nNEW YORK EMPLOYMENT — apply on top of general US employment law:\n' +
+      '• NYLL (New York Labor Law) §191 — frequency of pay: manual workers weekly, clerical / other semi-monthly. Common compliance gap for employers using bi-weekly for manual workers (recent class-action wave).\n' +
+      '• NYLL §195(1) — Wage Theft Prevention Act (WTPA): written notice of pay rate, pay date, allowances, employer name/address must be provided at hire and on rate change. Failure = $50/day damages capped at $5,000.\n' +
+      '• NYSHRL — New York State Human Rights Law: anti-discrimination, broader than federal Title VII; applies to all employers regardless of size; includes gender identity, sexual orientation, predisposing genetic characteristics.\n' +
+      '• Pay transparency (NY Labor Law §194-b, effective Sept 2023): job postings for positions performed at least partially in NY must disclose compensation range.\n' +
+      '• NY Paid Family Leave — up to 12 weeks paid family leave; employee-funded payroll deduction (~0.45% of wages 2025).\n' +
+      '• Non-competes — generally enforceable if reasonable; recent legislative attempts to ban have stalled. Garden-leave consideration recommended.\n' +
+      'Jurisdiction: NY state court (Supreme Court) or federal SDNY/EDNY; NYSHRL claims to NY State Division of Human Rights or court.'
+    : ''
+
+  const texasEmploymentClause = isEmploymentDoc && isUsStateTX
+    ? '\n\nTEXAS EMPLOYMENT — apply on top of general US employment law:\n' +
+      '• At-will doctrine — broadly applied; few exceptions (Sabine Pilot public-policy exception narrow).\n' +
+      '• Tex. Labor Code §61 (Texas Payday Law) — wages due on or before next regular pay day after termination. Final pay: discharge = within 6 days; voluntary quit = next regular pay date.\n' +
+      '• No state minimum wage above federal — Texas defaults to FLSA $7.25/hour.\n' +
+      '• No state-mandated meal/rest breaks (FLSA federal rules apply only to break compensation).\n' +
+      '• Non-competes — Tex. Bus. & Com. Code §15.50: enforceable if (a) ancillary to otherwise enforceable agreement, (b) contains reasonable limitations on time / geography / scope. Marsh USA v Cook [2011] confirmed enforceability standards.\n' +
+      '• No state version of WARN — federal WARN Act (100+ employees) is the only mass-layoff notice requirement.\n' +
+      'Jurisdiction: Texas state district court or federal court; Texas Workforce Commission for unemployment / wage claims.'
+    : ''
+
+  const floridaEmploymentClause = isEmploymentDoc && isUsStateFL
+    ? '\n\nFLORIDA EMPLOYMENT — apply on top of general US employment law:\n' +
+      '• At-will doctrine — strongly applied; very few public-policy exceptions.\n' +
+      '• Fla. Stat. §542.335 — non-competes ENFORCEABLE if employer demonstrates legitimate business interest (trade secrets, customer relationships >3 months, training / specialised investment) AND restraint is reasonable (presumed reasonable: ≤6 months for non-customer-relationship cases, ≤2 years for customer-relationship cases). Florida is one of the most employer-friendly non-compete jurisdictions in the US.\n' +
+      '• No state minimum wage law of consequence — Fla. Const. Art. X §24 sets minimum at $13/hour (2024) rising to $15/hour (Sept 2026).\n' +
+      '• No state-mandated meal/rest breaks (FLSA only).\n' +
+      '• Final pay — no state requirement for prompt final wages; common-law contract terms apply.\n' +
+      '• Florida Civil Rights Act 1992 — anti-discrimination; mirrors Title VII. Jurisdiction: Florida Commission on Human Relations or court.\n' +
+      'Jurisdiction: Florida circuit court or federal court; Department of Economic Opportunity for unemployment.'
+    : ''
+
+  const illinoisEmploymentClause = isEmploymentDoc && isUsStateIL
+    ? '\n\nILLINOIS EMPLOYMENT — apply on top of general US employment law:\n' +
+      '• 820 ILCS 90/ — Illinois Freedom to Work Act (as amended 2022): non-competes VOID for employees earning ≤ $75,000/year; non-solicits VOID for employees earning ≤ $45,000/year (income thresholds adjusted annually). Above thresholds, must be reasonable in scope/duration/geography AND supported by adequate consideration.\n' +
+      '• 740 ILCS 14/ — BIPA (Biometric Information Privacy Act): written notice + written consent required before collecting biometric data (fingerprints, face geometry, etc.). $1,000 negligent / $5,000 reckless statutory damages per violation. Major employer-class-action exposure.\n' +
+      '• 820 ILCS 105/ — Illinois Minimum Wage Law: state minimum $14/hour (2024), $15/hour (Jan 2025).\n' +
+      '• Illinois One Day Rest in Seven Act — at least 24 consecutive hours of rest in every calendar week.\n' +
+      '• Illinois Paid Leave for All Workers Act (effective Jan 2024) — minimum 40 hours / 5 days paid leave per year for any reason.\n' +
+      '• Illinois Human Rights Act (775 ILCS 5/) — broader than Title VII; covers employers with 15+ (1+ for sexual harassment).\n' +
+      'Jurisdiction: Illinois Circuit Court or federal court; Illinois Department of Human Rights for IHRA claims.'
+    : ''
+
+  const washingtonEmploymentClause = isEmploymentDoc && isUsStateWA
+    ? '\n\nWASHINGTON EMPLOYMENT — apply on top of general US employment law:\n' +
+      '• RCW 49.62 — Washington non-compete statute: VOID unless (a) employee earns > $116,594 annually (2024 threshold, adjusted yearly), OR (b) independent contractor earns > $291,485 annually. Employer must disclose terms to employee in writing at offer. Garden leave required for layoff-triggered non-compete.\n' +
+      '• Pay transparency — RCW 49.58.110 (effective Jan 2023): job postings for employers with 15+ employees must include wage scale and benefits.\n' +
+      '• WA Paid Family & Medical Leave (RCW 50A) — up to 12 weeks paid; funded by payroll premiums (~0.74% of wages, split employer/employee).\n' +
+      '• Final pay — RCW 49.48.010: wages due at end of next pay period after termination.\n' +
+      '• WA Minimum Wage Act (RCW 49.46) — state minimum $16.28/hour (2024).\n' +
+      '• Long-Term Services and Supports Trust Act (RCW 50B.04) — payroll tax (0.58% of wages) for long-term care insurance, employee can opt out under narrow conditions.\n' +
+      '• Washington Law Against Discrimination (RCW 49.60) — broader than Title VII; covers employers with 8+; includes gender identity, sexual orientation.\n' +
+      'Jurisdiction: WA Superior Court or federal Western/Eastern District of Washington; WA Human Rights Commission for WLAD claims.'
     : ''
 
   const canadaEmploymentClause = isEmploymentDoc && isCanada && !isQuebec
@@ -890,17 +1093,29 @@ export default async function handler(req, res) {
     ? '\n\n*** CRITICAL — DO NOT DEFAULT TO US / CALIFORNIA / DELAWARE LAW ***: The user has NOT selected a U.S. jurisdiction for this document. Do not under any circumstances default the governing law, venue, arbitration rules, or statute references to California, Delaware, New York, the Uniform Commercial Code, the American Arbitration Association, or any U.S. court. Use the jurisdiction explicitly selected by the user. If the user\'s selection is ambiguous or missing, use English common-law principles and name "the courts of [user\'s stated jurisdiction]" or, as a last resort, "the courts of the Federal Republic of Nigeria" (the default upstream jurisdiction for this service). A California-default output will be treated as an error.'
     : ''
 
+  // FIX 2 — DPA jurisdiction routing. Previous chain ended with
+  // 'Nigeria — NDPA 2023' as a fallback for ANY non-US/non-Canada
+  // jurisdiction, meaning UK, Kenya, Ghana, and South Africa DPAs all
+  // routed to Nigerian regulator + statute. UK DPAs were the worst case:
+  // a UK data controller got a Nigerian-flavoured DPA with NDPC referral.
+  // Now: dedicated routing for UK / SA / KE / GH (all already in CLAUSE_REGISTRY)
+  // + a Commonwealth fallback for fully unmapped jurisdictions.
   const systemPrompt = isDpa
     ? buildDpaSystemPrompt(
-        isCalifornia ? 'United States — CCPA/CPRA'
+        isUK ? 'United Kingdom — UK GDPR / DPA 2018'
+        : isCalifornia ? 'United States — CCPA/CPRA'
         : isQuebec ? 'Canada — Quebec Law 25'
         : isCanada ? 'Canada — PIPEDA'
         : isUSA ? 'United States — CCPA/CPRA'
-        : 'Nigeria — NDPA 2023'
+        : isSouthAfrica ? 'South Africa — POPIA'
+        : isKenya ? 'Kenya — Data Protection Act 2019'
+        : isGhana ? 'Ghana — Data Protection Act 2012'
+        : isNigeria ? 'Nigeria — NDPA 2023'
+        : 'Commonwealth common-law privacy baseline'
       ) + '\n\nThis is a premium paid document — make it exceptional.'
     : 'You are an expert legal document drafter with deep knowledge of international law, including the common-law traditions of Nigeria, Kenya, Ghana, South Africa, Canada, the United States, the United Kingdom, and Commonwealth jurisdictions; the civil-law tradition of Quebec; and the statutory frameworks of each (CAMA 2020 & ISA 2025 for Nigeria; Lagos State Tenancy Law 2011; Labour Act & PRA 2014; Land Use Act 1978; Hire Purchase Act 1965; Companies Act 2015 for Kenya; Companies Act 2019 (Act 992) for Ghana; Companies Act 71 of 2008 for South Africa; Companies Act 2006 and FSMA 2000 for the UK; DGCL for Delaware; CBCA and provincial ESAs for Canada; PIPEDA, Quebec Law 25, CCPA/CPRA, UK GDPR, NDPA 2023, POPIA, Kenya DPA 2019 for data). Generate comprehensive, professional legal documents tailored precisely to the user details provided. Use formal legal language, clear numbered sections, and include all standard clauses. Use the spelling conventions of the governing jurisdiction (US English for US documents, British / Commonwealth English for UK / African / Commonwealth documents, Canadian English for Canadian documents). This is a premium paid document — make it exceptional. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.'
       + nigeriaClause + canadaClause + quebecClause + californiaClause + usaClause
-      + nigeriaEquityClause + kenyaEquityClause + ghanaEquityClause + ukEquityClause + southAfricaEquityClause + usEquityClause + canadaEquityClause
+      + nigeriaEquityClause + kenyaEquityClause + ghanaEquityClause + ukEquityClause + southAfricaEquityClause + usEquityClause + canadaEquityClause + equityCrossBorderNote
       + nigeriaTenancyClause + nigeriaDeedClause + nigeriaQuitNoticeClause + nigeriaPowerOfAttorneyClause + nigeriaLandlordAgentClause
       + nigeriaEmploymentClause + nigeriaNonCompeteClause
       + nigeriaLoanClause + nigeriaHirePurchaseClause + nigeriaCommercialClause
@@ -910,6 +1125,8 @@ export default async function handler(req, res) {
       + southAfricaTenancyClause + southAfricaEmploymentClause + southAfricaNonCompeteClause + southAfricaPropertyClause + southAfricaLoanClause
       + nigeriaNDAClause + nigeriaCommercialGeneralClause
       + usEmploymentClause + canadaEmploymentClause + usCanadaPropertyClause
+      + californiaEmploymentClause + newYorkEmploymentClause + texasEmploymentClause
+      + floridaEmploymentClause + illinoisEmploymentClause + washingtonEmploymentClause
       + genericFallbackClause
       + antiUsDefaultClause + executionFormalitiesClause
 

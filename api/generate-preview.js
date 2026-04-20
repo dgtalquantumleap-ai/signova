@@ -72,12 +72,28 @@ export default async function handler(req, res) {
     || lower.includes('independent contractor') || lower.includes('freelance contract')
     || lower.includes('consulting agreement') || lower.includes('contract of employment')
   const isNonCompeteDoc = lower.includes('non-compete') || lower.includes('non compete') || lower.includes('noncompete')
-  const isLoanDoc = lower.includes('loan agreement')
+  // FIX 7: broadened (parity with generate.js)
+  const isLoanDoc = /\b(loan agreement|credit agreement|personal loan|business loan|loan contract)\b/.test(lower)
   const isHirePurchaseDoc = lower.includes('hire purchase') || lower.includes('hire-purchase')
   const isCommercialDoc = lower.includes('distribution agreement') || lower.includes('distribution / reseller')
     || lower.includes('supply agreement') || lower.includes('reseller agreement')
 
   // ── Jurisdiction detection (parity with paid generate.js) ─────────────────
+  // FIX 3 — scoped detection (mirror of generate.js). Detects every
+  // jurisdiction except Nigeria from the labelled jurisdiction lines only.
+  const govLawLine = (lower.match(/governing law:\s*([^\n]+)/) || [])[1] || ''
+  const countryLine = (lower.match(/country:\s*([^\n]+)/) || [])[1] || ''
+  const stateLine = (lower.match(/state:\s*([^\n]+)/) || [])[1] || ''
+  const jurisdictionLine = (lower.match(/jurisdiction:\s*([^\n]+)/) || [])[1] || ''
+  const incorpLine = (lower.match(/country of incorporation[^:]*:\s*([^\n]+)/) || [])[1] || ''
+  const jurisdictionScope = `${govLawLine} ${countryLine} ${stateLine} ${jurisdictionLine} ${incorpLine}`
+  const promptScopeRaw = (() => {
+    const lines = prompt.split('\n')
+    return lines.filter(l =>
+      /^(Governing law|Country|State|Jurisdiction|Country of incorporation)/i.test(l)
+    ).join(' ')
+  })()
+
   const isNigeria = lower.includes('nigeria') || lower.includes('ndpa') || lower.includes('ndpc')
     || lower.includes('cama 2020') || lower.includes('isa 2025') || /\b(lagos|abuja|kano|ibadan|port harcourt)\b/.test(lower)
   const isExcludedLagosArea = isNigeria && (
@@ -92,33 +108,33 @@ export default async function handler(req, res) {
     lower.includes('lagos state tenancy law') ||
     /\b(lekki|surulere|yaba|ajah|ikorodu|magodo|gbagada|ogudu|ojodu|ikate|agege|mushin|badagry|epe)\b/.test(lower)
   )
-  const isKenya = lower.includes('kenya') || lower.includes('kenyan') ||
-    /\b(nairobi|mombasa|kisumu|nakuru)\b/.test(lower) ||
-    lower.includes('companies act 2015') || lower.includes('kenya data protection act')
-  const isGhana = lower.includes('ghana') || lower.includes('ghanaian') ||
-    /\b(accra|kumasi|tema|takoradi)\b/.test(lower) ||
-    lower.includes('companies act 2019') || lower.includes('act 992')
-  const isSouthAfrica = lower.includes('south africa') || lower.includes('south african') ||
-    /\b(johannesburg|cape town|durban|pretoria|sandton)\b/.test(lower) ||
-    lower.includes('popia') || lower.includes('companies act 71 of 2008')
-  const isUK = lower.includes('united kingdom') || lower.includes('england and wales') || lower.includes('england & wales')
-    || /\b(uk|u\.k\.)\b/.test(lower) || lower.includes('british')
-    || /\b(london|manchester|birmingham|edinburgh|glasgow|cardiff|belfast)\b/.test(lower)
-    || lower.includes('companies act 2006')
-  const isQuebec = /\bqu[eé]bec\b/.test(lower) || lower.includes('law 25') || lower.includes('bill 64') ||
-    /\b(montr[eé]al|quebec city)\b/.test(lower)
-  const isCanada = !isQuebec && (lower.includes('canada') || lower.includes('canadian') ||
-    /\b(ontario|british columbia|alberta|manitoba|saskatchewan|nova scotia|new brunswick|newfoundland|prince edward island|yukon|nunavut|northwest territories)\b/.test(lower) ||
-    /\b(toronto|vancouver|calgary|edmonton|ottawa|mississauga|winnipeg|halifax|victoria|saskatoon|regina|hamilton)\b/.test(lower) ||
-    lower.includes('pipeda') || lower.includes('casl') || lower.includes('cbca'))
-  const isCalifornia = lower.includes('california') || lower.includes('ccpa') || lower.includes('cpra') ||
-    /\b(san francisco|los angeles|san diego|san jose|sacramento|oakland|santa clara|palo alto|silicon valley)\b/.test(lower)
+  const isKenya = /\bkenya|kenyan\b/.test(jurisdictionScope) ||
+    /\b(nairobi|mombasa|kisumu|nakuru)\b/.test(jurisdictionScope) ||
+    /\bcompanies act 2015|kenya data protection act\b/.test(jurisdictionScope)
+  const isGhana = /\bghana|ghanaian\b/.test(jurisdictionScope) ||
+    /\b(accra|kumasi|tema|takoradi)\b/.test(jurisdictionScope) ||
+    /\bcompanies act 2019|act 992\b/.test(jurisdictionScope)
+  const isSouthAfrica = /\bsouth africa|south african\b/.test(jurisdictionScope) ||
+    /\b(johannesburg|cape town|durban|pretoria|sandton)\b/.test(jurisdictionScope) ||
+    /\bpopia|companies act 71 of 2008\b/.test(jurisdictionScope)
+  const isUK = /\bunited kingdom|england and wales|england & wales\b/.test(jurisdictionScope)
+    || /\b(uk|u\.k\.)\b/.test(jurisdictionScope) || /\bbritish\b/.test(jurisdictionScope)
+    || /\b(london|manchester|birmingham|edinburgh|glasgow|cardiff|belfast)\b/.test(jurisdictionScope)
+    || /\bcompanies act 2006\b/.test(jurisdictionScope)
+  const isQuebec = /\bqu[eé]bec\b/.test(jurisdictionScope) || /\blaw 25|bill 64\b/.test(jurisdictionScope) ||
+    /\b(montr[eé]al|quebec city)\b/.test(jurisdictionScope)
+  const isCanada = !isQuebec && (/\bcanada|canadian\b/.test(jurisdictionScope) ||
+    /\b(ontario|british columbia|alberta|manitoba|saskatchewan|nova scotia|new brunswick|newfoundland|prince edward island|yukon|nunavut|northwest territories)\b/.test(jurisdictionScope) ||
+    /\b(toronto|vancouver|calgary|edmonton|ottawa|mississauga|winnipeg|halifax|victoria|saskatoon|regina|hamilton)\b/.test(jurisdictionScope) ||
+    /\bpipeda|casl|cbca\b/.test(jurisdictionScope))
+  const isCalifornia = /\bcalifornia\b/.test(jurisdictionScope) || /\bccpa|cpra\b/.test(jurisdictionScope) ||
+    /\b(san francisco|los angeles|san diego|san jose|sacramento|oakland|santa clara|palo alto|silicon valley)\b/.test(jurisdictionScope)
   const isUSA = !isCalifornia && (
-    lower.includes('united states') ||
-    /\b(USA|U\.S\.A\.|U\.S\.)\b/.test(prompt) ||
-    lower.includes('delaware') || lower.includes('dgcl') ||
-    /\b(alabama|alaska|arizona|arkansas|colorado|connecticut|delaware|florida|georgia|hawaii|idaho|illinois|indiana|iowa|kansas|kentucky|louisiana|maine|maryland|massachusetts|michigan|minnesota|mississippi|missouri|montana|nebraska|nevada|new hampshire|new jersey|new mexico|new york|north carolina|north dakota|ohio|oklahoma|oregon|pennsylvania|rhode island|south carolina|south dakota|tennessee|texas|utah|vermont|virginia|washington|west virginia|wisconsin|wyoming)\b/.test(lower) ||
-    /\b(nyc|new york city|chicago|houston|phoenix|philadelphia|dallas|austin|seattle|boston|miami|atlanta|denver|detroit|minneapolis|las vegas)\b/.test(lower)
+    /\bunited states\b/.test(jurisdictionScope) ||
+    /\b(USA|U\.S\.A\.|U\.S\.)\b/.test(promptScopeRaw) ||
+    /\bdelaware|dgcl\b/.test(jurisdictionScope) ||
+    /\b(alabama|alaska|arizona|arkansas|colorado|connecticut|delaware|florida|georgia|hawaii|idaho|illinois|indiana|iowa|kansas|kentucky|louisiana|maine|maryland|massachusetts|michigan|minnesota|mississippi|missouri|montana|nebraska|nevada|new hampshire|new jersey|new mexico|new york|north carolina|north dakota|ohio|oklahoma|oregon|pennsylvania|rhode island|south carolina|south dakota|tennessee|texas|utah|vermont|virginia|washington|west virginia|wisconsin|wyoming)\b/.test(jurisdictionScope) ||
+    /\b(nyc|new york city|chicago|houston|phoenix|philadelphia|dallas|austin|seattle|boston|miami|atlanta|denver|detroit|minneapolis|las vegas)\b/.test(jurisdictionScope)
   )
 
   const nigeriaClause = isNigeria && !isDpa
@@ -276,7 +292,8 @@ export default async function handler(req, res) {
     : ''
 
   // ── Tier 4: Nigeria commercial hygiene (NDA + general commercial) ────────
-  const isNdaDoc = lower.includes('non-disclosure agreement') || lower.includes(' nda ') || /^nda\b/.test(lower) || lower.endsWith('nda')
+  // FIX 1: word-boundary regex (parity with generate.js); prevents India/Uganda/etc. false positives
+  const isNdaDoc = lower.includes('non-disclosure agreement') || /\bnda\b/.test(lower)
   const isGeneralCommercialDoc = lower.includes('terms of service') || lower.includes('memorandum of understanding')
     || lower.includes(' mou') || lower.includes('letter of intent') || lower.includes(' loi ')
     || lower.includes('business partnership') || lower.includes('joint venture')
@@ -325,11 +342,17 @@ export default async function handler(req, res) {
       '6. Execution section is the LAST section (schedules after). DO NOT append any "Note:", "Generated by...", or "For legal advice..." footer — the client wrapper adds required footers.'
     : ''
 
-  const dpaJurisdiction = isCalifornia ? 'United States — CCPA/CPRA'
+  // FIX 2 — DPA jurisdiction routing (parity with generate.js).
+  const dpaJurisdiction = isUK ? 'United Kingdom — UK GDPR / DPA 2018'
+    : isCalifornia ? 'United States — CCPA/CPRA'
     : isQuebec ? 'Canada — Quebec Law 25'
     : isCanada ? 'Canada — PIPEDA'
     : isUSA ? 'United States — CCPA/CPRA'
-    : 'Nigeria — NDPA 2023'
+    : isSouthAfrica ? 'South Africa — POPIA'
+    : isKenya ? 'Kenya — Data Protection Act 2019'
+    : isGhana ? 'Ghana — Data Protection Act 2012'
+    : isNigeria ? 'Nigeria — NDPA 2023'
+    : 'Commonwealth common-law privacy baseline'
 
   const systemContent = isDpa
     ? buildDpaSystemPrompt(dpaJurisdiction)
