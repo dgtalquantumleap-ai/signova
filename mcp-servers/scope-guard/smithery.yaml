@@ -1,0 +1,20 @@
+# Smithery MCP Server Configuration
+# https://smithery.ai/docs/build/publish
+
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      ebenovaApiKey:
+        type: string
+        description: "Your Ebenova API key. Get one free at https://ebenova.dev/docs"
+    required:
+      - ebenovaApiKey
+  commandFunction:
+    command: npx
+    args:
+      - "-y"
+      - "@ebenova/scope-guard-mcp"
+    env:
+      EBENOVA_API_KEY: "{{ebenovaApiKey}}"

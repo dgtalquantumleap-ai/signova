@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { Helmet } from 'react-helmet-async'
+import { Lightning, ChatCircle } from '@phosphor-icons/react'
 
 export default function AdminPage() {
   const [secret, setSecret] = useState('')
@@ -8,9 +10,26 @@ export default function AdminPage() {
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
 
-  const handleUnlock = (e) => {
+  const [authError, setAuthError] = useState('')
+
+  const handleUnlock = async (e) => {
     e.preventDefault()
-    if (secret.trim()) setAuthed(true)
+    if (!secret.trim()) return
+    setAuthError('')
+    try {
+      const res = await fetch('/api/create-bypass', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret, probe: true }),
+      })
+      if (res.ok) {
+        setAuthed(true)
+      } else {
+        setAuthError('Invalid password.')
+      }
+    } catch {
+      setAuthError('Connection error. Please try again.')
+    }
   }
 
   const handleGenerate = async () => {
@@ -52,6 +71,10 @@ export default function AdminPage() {
 
   return (
     <div style={styles.page}>
+      <Helmet>
+        <title>Admin | Signova</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div style={styles.card}>
         <div style={styles.header}>
           <span style={styles.logoMark}>S</span>
@@ -70,6 +93,7 @@ export default function AdminPage() {
               autoFocus
             />
             <button style={styles.btn} type="submit">Unlock →</button>
+            {authError && <p style={{ color: '#ef4444', fontSize: '14px', marginTop: '8px' }}>{authError}</p>}
           </form>
         ) : (
           <div style={styles.body}>
@@ -84,7 +108,7 @@ export default function AdminPage() {
               onClick={handleGenerate}
               disabled={loading}
             >
-              {loading ? 'Generating…' : '⚡ Generate New Code'}
+              {loading ? 'Generating…' : <><Lightning size={14} weight="fill" style={{ verticalAlign: '-2px', marginRight: 6 }} />Generate New Code</>}
             </button>
 
             {error && <p style={styles.error}>{error}</p>}
@@ -106,7 +130,7 @@ export default function AdminPage() {
                   rel="noopener noreferrer"
                   style={styles.waBtn}
                 >
-                  💬 Send via WhatsApp
+                  <ChatCircle size={14} weight="duotone" style={{ verticalAlign: '-2px', marginRight: 6 }} />Send via WhatsApp
                 </a>
                 <p style={styles.waSub}>Opens WhatsApp with the message pre-written</p>
               </div>

@@ -1,6 +1,6 @@
 {
   "name": "ebenova-legal-docs-mcp",
-  "version": "1.2.8",
+  "version": "1.5.2",
   "description": "MCP server for the Ebenova API. Generate legal documents (NDAs, contracts, tenancy agreements), invoices, and receipts — directly from Claude Desktop, Cursor, or any MCP-compatible AI assistant.",
   "type": "module",
   "main": "src/index.js",
@@ -13,7 +13,7 @@
     "publish:smithery": "smithery publish"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "zod": "^3.23.0"
   },
   "keywords": [

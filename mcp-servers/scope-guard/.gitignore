@@ -1,0 +1,5 @@
+node_modules/
+.smithery/
+*.log
+.env
+.env.local

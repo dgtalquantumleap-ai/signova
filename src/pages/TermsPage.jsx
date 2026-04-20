@@ -1,10 +1,17 @@
 import { useNavigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
+import SiteFooter from '../components/SiteFooter'
 import './LegalPage.css'
 
 export default function TermsPage() {
   const navigate = useNavigate()
   return (
     <div className="legal-page">
+      <Helmet>
+        <title>Terms of Use | Signova</title>
+        <meta name="description" content="Signova terms of use — understand your rights when generating legal documents with our AI service." />
+        <link rel="canonical" href="https://www.getsignova.com/terms" />
+      </Helmet>
       <nav className="legal-nav">
         <button className="legal-back" onClick={() => navigate('/')}>← Back to Signova</button>
         <div className="logo">
@@ -15,6 +22,12 @@ export default function TermsPage() {
       <div className="legal-body">
         <h1>Terms of Use</h1>
         <p className="legal-date">Last updated: March 2026</p>
+
+        <p style={{ background: '#1a1a1a', border: '1px solid #333', borderRadius: '8px', padding: '14px 18px', fontSize: '14px', color: '#c8c4bc' }}>
+          <strong>Using the Vigil Fraud Alert API?</strong> Vigil has additional terms
+          covering card data, GPS consent, AI decisioning, and acceptable use. See the
+          <a href="/vigil/terms" style={{ color: '#c9a84c', marginLeft: 4 }}>Vigil Terms Addendum</a>.
+        </p>
 
         <h2>1. Acceptance</h2>
         <p>By using Signova ("the Service"), you agree to these Terms. If you do not agree, do not use the Service.</p>
@@ -44,6 +57,7 @@ export default function TermsPage() {
           <span className="email-obfuscated" data-user="info" data-domain="ebenova.net"></span>
         </a>.</p>
       </div>
+      <SiteFooter variant="signova" />
     </div>
   )
 }

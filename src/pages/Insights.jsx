@@ -3,12 +3,18 @@
 // Full product page: hero, live preview, how it works, features, API docs, pricing, waitlist
 
 import { useState, useRef } from 'react'
-import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
+import { Broadcast, Warning, PenNib, EnvelopeSimple, Target, ShieldCheck, Globe, Plugs, MagnifyingGlass } from '@phosphor-icons/react'
+import SiteFooter from '../components/SiteFooter'
 import './Insights.css'
 
-const API_BASE   = import.meta.env.VITE_API_BASE   || 'https://api.ebenova.dev'
-const BILLING_BASE = import.meta.env.VITE_API_BASE || 'https://api.ebenova.dev'
+const INS_ICON = { size: 24, weight: 'duotone', color: 'currentColor' }
+
+// Use same-origin relative URLs in production so requests work from any host
+// (ebenova.dev, www.ebenova.dev, api.ebenova.dev, getsignova.com — all the same
+// Vercel deployment) and don't trigger cross-origin CSP blocks.
+const API_BASE     = import.meta.env.VITE_API_BASE || ''
+const BILLING_BASE = import.meta.env.VITE_API_BASE || ''
 
 // ── Email preview mock data ───────────────────────────────────────────────────
 const PREVIEW_MATCHES = [
@@ -53,11 +59,11 @@ function EmailPreview() {
     <div className="ins-email-preview">
       <div className="ins-email-chrome">
         <span className="ins-dot red" /><span className="ins-dot yellow" /><span className="ins-dot green" />
-        <span className="ins-chrome-bar">📨 Insights: 3 new mentions — freelance contract, client refused to pay…</span>
+        <span className="ins-chrome-bar"><EnvelopeSimple size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> Insights: 3 new mentions — freelance contract, client refused to pay…</span>
       </div>
       <div className="ins-email-body">
         <div className="ins-email-header">
-          <div className="ins-email-title">📡 Ebenova Insights Alert</div>
+          <div className="ins-email-title"><Broadcast size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> Ebenova Insights Alert</div>
           <div className="ins-email-meta">3 mentions · {new Date().toUTCString().slice(0, 16)}</div>
         </div>
         {PREVIEW_MATCHES.map((m, i) => (
@@ -65,10 +71,10 @@ function EmailPreview() {
             <div className="ins-match-meta">r/{m.subreddit} · u/{m.author} · {m.score} upvotes</div>
             <div className="ins-match-title">{m.title}</div>
             <div className="ins-match-body">{m.body}</div>
-            {!m.approved && <div className="ins-dnp">⚠️ DO NOT POST — r/{m.subreddit} not approved</div>}
+            {!m.approved && <div className="ins-dnp"><Warning size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> DO NOT POST — r/{m.subreddit} not approved</div>}
             {m.draft && (
               <div className="ins-draft-box">
-                <div className="ins-draft-label">✏️ Suggested reply</div>
+                <div className="ins-draft-label"><PenNib size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> Suggested reply</div>
                 <div className="ins-draft-text">{m.draft}</div>
               </div>
             )}
@@ -235,14 +241,14 @@ export default function Insights() {
       {/* ── Nav ── */}
       <nav className="ins-nav">
         <a href="https://ebenova.dev" className="ins-nav-brand">
-          <span className="ins-nav-logo">📡 Ebenova Insights</span>
+          <span className="ins-nav-logo"><Broadcast size={16} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> Ebenova Insights</span>
           <span className="ins-nav-badge">Live</span>
         </a>
         <div className="ins-nav-links">
           <a href="#how" className="ins-nav-link">How it works</a>
           <a href="#api" className="ins-nav-link">API</a>
           <a href="#pricing" className="ins-nav-link">Pricing</a>
-          <button className="ins-nav-cta" onClick={scrollToWaitlist}>Get access</button>
+          <button className="ins-nav-cta" onClick={scrollToWaitlist}>Get started</button>
         </div>
       </nav>
 
@@ -256,7 +262,7 @@ export default function Insights() {
           that sounds like a person, not a pitch.
         </p>
         <div className="ins-hero-actions">
-          <button className="ins-btn-gold" onClick={scrollToWaitlist}>Join waitlist — $49/mo</button>
+          <CheckoutButton tier="insights_starter" className="ins-btn-gold">Get Started — $49/mo</CheckoutButton>
           <a href="#preview" className="ins-btn-ghost">See a live alert →</a>
         </div>
         <div className="ins-hero-proof">
@@ -320,12 +326,12 @@ export default function Insights() {
           <h2>Built for distribution, not vanity metrics</h2>
           <div className="ins-features-grid">
             {[
-              ['🎯', 'Subreddit-scoped search', 'Keywords run against the exact subreddits you care about — fewer false positives, higher intent.', null],
+              [<Target {...INS_ICON} />, 'Subreddit-scoped search', 'Keywords run against the exact subreddits you care about — fewer false positives, higher intent.', null],
               ['✍️', 'AI reply drafts', 'Groq + Llama 3.3 70b. Community tone, not marketing copy. Helpful first, product mention optional.', 'Groq / Llama 3.3 70b'],
-              ['🛡️', 'Subreddit safety system', '71-subreddit whitelist. Every match flagged approved or DO NOT POST automatically.', null],
-              ['🌍', 'Nairaland included', "Nigeria's largest forum monitored alongside Reddit. Essential for products targeting African users.", null],
-              ['🔌', 'Full REST API', 'Create monitors, list matches, trigger drafts, send feedback — all via API. Bring your own dashboard.', 'Growth+'],
-              ['🔍', 'Semantic search', 'Embedding-based search catches intent even when your keyword isn\'t in the post. Coming in V2.', 'Coming soon'],
+              [<ShieldCheck {...INS_ICON} />, 'Subreddit safety system', '71-subreddit whitelist. Every match flagged approved or DO NOT POST automatically.', null],
+              [<Globe {...INS_ICON} />, 'Nairaland included', "Nigeria's largest forum monitored alongside Reddit. Essential for products targeting African users.", null],
+              [<Plugs {...INS_ICON} />, 'Full REST API', 'Create monitors, list matches, trigger drafts, send feedback — all via API. Bring your own dashboard.', 'Growth+'],
+              [<MagnifyingGlass {...INS_ICON} />, 'Semantic search', 'Embedding-based search catches intent even when your keyword isn\'t in the post. Coming in V2.', 'Coming soon'],
             ].map(([icon, title, desc, tag]) => (
               <div key={title} className="ins-feature-card">
                 <div className="ins-feature-icon">{icon}</div>
@@ -386,7 +392,7 @@ export default function Insights() {
 
           <div className="ins-api-auth-note">
             Base URL: <code>https://api.ebenova.dev</code> &nbsp;·&nbsp; All endpoints require <code>Authorization: Bearer sk_live_your_key</code> with Insights access.
-            {' '}<a href="mailto:akin@ebenova.dev">Email us</a> to get a key during beta.
+            {' '}<a href="https://www.ebenova.dev/dashboard">Get your API key</a> from the dashboard.
           </div>
         </div>
       </section>
@@ -394,8 +400,8 @@ export default function Insights() {
       {/* ── Pricing ── */}
       <section id="pricing" className="ins-section ins-pricing-section">
         <div className="ins-section-label">Pricing</div>
-        <h2>Simple pricing. Founding rate locked.</h2>
-        <p className="ins-section-sub">Beta opens to 10 founding members. $49/month locked for life.</p>
+        <h2>Simple pricing. No surprises.</h2>
+        <p className="ins-section-sub">All plans include email alerts, AI reply drafts, and subreddit safety checks.</p>
 
         <div className="ins-pricing-grid">
           {[
@@ -441,28 +447,14 @@ export default function Insights() {
         </div>
       </section>
 
-      {/* ── Waitlist ── */}
+      {/* ── CTA ── */}
       <section className="ins-waitlist-section" ref={waitlistRef}>
-        <h2>Get early access</h2>
-        <p>Beta opens to 10 founding members. You get $49/month locked for life, plus direct setup support from the builder.</p>
-        <WaitlistForm plan="starter" />
+        <h2>Start monitoring today</h2>
+        <p>Set up your first keyword monitor in under 60 seconds. Cancel any time.</p>
+        <CheckoutButton tier="insights_starter" className="ins-btn-gold">Get Starter — $49/mo →</CheckoutButton>
       </section>
 
-      {/* ── Footer ── */}
-      <footer className="ins-footer">
-        <div className="ins-footer-links">
-          <a href="https://ebenova.dev">Ebenova API Platform</a>
-          <span>·</span>
-          <a href="https://getsignova.com">Signova</a>
-          <span>·</span>
-          <a href="mailto:akin@ebenova.dev">akin@ebenova.dev</a>
-          <span>·</span>
-          <Link to="/privacy">Privacy</Link>
-          <span>·</span>
-          <Link to="/terms">Terms</Link>
-        </div>
-        <div className="ins-footer-copy">© {new Date().getFullYear()} Ebenova Solutions · Africa-first · Built in Canada</div>
-      </footer>
+      <SiteFooter variant="ebenova" />
 
     </div>
   )

@@ -52,8 +52,8 @@ export default async function handler(req, res) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: 'Ebenova Insights <info@getsignova.com>',
-          to: ['akin@ebenova.dev'],
+          from: 'Ebenova Insights <insights@ebenova.dev>',
+          to: ['info@ebenova.net'],
           subject: 'New Insights access request',
           text: `Email: ${email}\nRequested at: ${timestamp}`,
         }),

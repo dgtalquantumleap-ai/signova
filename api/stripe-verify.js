@@ -3,18 +3,7 @@
 // Replaces Polar verify-payment.js
 
 import Stripe from 'stripe'
-
-// Stripe client initialised lazily inside handler to avoid crashing on boot
-// when STRIPE_SECRET_KEY is not yet set (e.g. local dev without .env)
-async function parseBody(req) {
-  if (req.body && typeof req.body === 'object') return req.body
-  return new Promise((resolve, reject) => {
-    let data = ''
-    req.on('data', chunk => { data += chunk })
-    req.on('end', () => { try { resolve(data ? JSON.parse(data) : {}) } catch { resolve({}) } })
-    req.on('error', reject)
-  })
-}
+import { parseBody } from '../lib/parse-body.js'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
@@ -70,7 +59,7 @@ export default async function handler(req, res) {
                 </p>
                 <hr style="border:none;border-top:1px solid #2a2a2a;margin:24px 0;"/>
                 <p style="color:#5a5754;font-size:11px;">
-                  Signova · Questions? <a href="mailto:hello@getsignova.com" style="color:#5a5754;">hello@getsignova.com</a>
+                  Signova · Questions? <a href="mailto:info@ebenova.net" style="color:#5a5754;">info@ebenova.net</a>
                 </p>
               </div>`,
           }),

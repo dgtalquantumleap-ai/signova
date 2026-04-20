@@ -1,0 +1,12 @@
+{
+  "serverInfo": { "name": "ebenova-reddit-monitor", "version": "1.0.0" },
+  "authentication": { "required": false },
+  "tools": [
+    { "name": "search_reddit", "description": "Search Reddit posts and comments for a keyword or brand mention", "inputSchema": { "type": "object", "properties": { "keyword": { "type": "string" }, "subreddit": { "type": "string" }, "limit": { "type": "number" } }, "required": ["keyword"] } },
+    { "name": "monitor_keyword", "description": "Set up ongoing monitoring for a keyword across subreddits", "inputSchema": { "type": "object", "properties": { "keyword": { "type": "string" }, "subreddits": { "type": "array" }, "frequency": { "type": "string" } }, "required": ["keyword"] } },
+    { "name": "get_alerts", "description": "Get recent alerts and matches from active monitors", "inputSchema": { "type": "object", "properties": { "limit": { "type": "number" } } } },
+    { "name": "analyze_sentiment", "description": "AI-powered sentiment analysis on Reddit mentions", "inputSchema": { "type": "object", "properties": { "posts": { "type": "array" }, "keyword": { "type": "string" } }, "required": ["posts"] } }
+  ],
+  "resources": [],
+  "prompts": []
+}

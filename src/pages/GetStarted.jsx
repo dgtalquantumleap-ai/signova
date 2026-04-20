@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useNavigate } from 'react-router-dom'
+import {
+  Warning, Confetti, FileText, Globe, Scales, ShieldCheck, Robot, ChartBar, GlobeHemisphereEast,
+} from '@phosphor-icons/react'
 import './GetStarted.css'
 
-const API = 'https://www.getsignova.com'
+const GS_ICON = { size: 24, weight: 'duotone', color: 'currentColor' }
+
+const API = import.meta.env.VITE_API_BASE || ''
 
 export default function GetStarted() {
   const navigate = useNavigate()
@@ -67,7 +72,7 @@ export default function GetStarted() {
       <div className="gs-container">
         <Helmet><title>Error — Ebenova API</title></Helmet>
         <div className="gs-error">
-          <h1>⚠️ Something went wrong</h1>
+          <h1><Warning size={28} weight="fill" style={{ verticalAlign: '-5px', marginRight: 8 }} />Something went wrong</h1>
           <p>{error}</p>
           <button className="gs-btn-primary" onClick={generateKey}>
             Try again
@@ -86,7 +91,7 @@ export default function GetStarted() {
 
       <header className="gs-header">
         <div className="gs-header-inner">
-          <h1>🎉 Your API key is ready!</h1>
+          <h1><Confetti size={28} weight="fill" style={{ verticalAlign: '-5px', marginRight: 8 }} />Your API key is ready!</h1>
           <p>Start generating documents immediately. No credit card required.</p>
         </div>
       </header>
@@ -112,21 +117,21 @@ export default function GetStarted() {
         {/* Usage Info */}
         <section className="gs-section gs-info-grid">
           <div className="gs-info-card">
-            <div className="gs-info-icon">📄</div>
+            <div className="gs-info-icon"><FileText {...GS_ICON} /></div>
             <h3>Documents/Month</h3>
             <div className="gs-info-value">{apiKey.monthlyLimit}</div>
             <p>Increase this by upgrading your plan</p>
           </div>
 
           <div className="gs-info-card">
-            <div className="gs-info-icon">🌍</div>
+            <div className="gs-info-icon"><Globe {...GS_ICON} /></div>
             <h3>Document Types</h3>
             <div className="gs-info-value">{apiKey.documentTypes}</div>
             <p>NDAs, contracts, invoices, and more</p>
           </div>
 
           <div className="gs-info-card">
-            <div className="gs-info-icon">⚖️</div>
+            <div className="gs-info-icon"><Scales {...GS_ICON} /></div>
             <h3>Jurisdictions</h3>
             <div className="gs-info-value">{apiKey.jurisdictions}</div>
             <p>Nigeria, Kenya, Ghana, US, EU, and more</p>
@@ -185,7 +190,7 @@ export default function GetStarted() {
             <div className="gs-step">
               <div className="gs-step-num">2</div>
               <h3>Read the Docs</h3>
-              <p>Learn all 27 document types, parameters, and error handling.</p>
+              <p>Learn all 34 document types, parameters, and error handling.</p>
               <a href="/docs" className="gs-link">View API Documentation →</a>
             </div>
 
@@ -212,25 +217,25 @@ export default function GetStarted() {
           <h2>What You Can Build</h2>
           <div className="gs-features-grid">
             <div className="gs-feature">
-              <span className="gs-feature-icon">🛡️</span>
+              <span className="gs-feature-icon"><ShieldCheck {...GS_ICON} /></span>
               <h3>Scope Guard API</h3>
               <p>Detect contract violations automatically (Pro tier)</p>
             </div>
 
             <div className="gs-feature">
-              <span className="gs-feature-icon">🤖</span>
+              <span className="gs-feature-icon"><Robot {...GS_ICON} /></span>
               <h3>AI Agent Integration</h3>
               <p>Connect to Claude, GPT-4, or custom agents via MCP</p>
             </div>
 
             <div className="gs-feature">
-              <span className="gs-feature-icon">📊</span>
+              <span className="gs-feature-icon"><ChartBar {...GS_ICON} /></span>
               <h3>Document Analytics</h3>
               <p>Track usage, monitor API performance, see trends</p>
             </div>
 
             <div className="gs-feature">
-              <span className="gs-feature-icon">🌐</span>
+              <span className="gs-feature-icon"><GlobeHemisphereEast {...GS_ICON} /></span>
               <h3>Multi-Jurisdiction</h3>
               <p>Generate documents compliant with local laws automatically</p>
             </div>

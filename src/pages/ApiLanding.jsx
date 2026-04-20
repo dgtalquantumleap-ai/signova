@@ -2,22 +2,28 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { track } from '../lib/analytics'
+import SiteFooter from '../components/SiteFooter'
+import {
+  FileText, Receipt, Shield, Lock, ChatCircle, Link,
+  Package, ClipboardText, Robot, Broadcast, ArrowsLeftRight,
+  House, Briefcase, Bank, Code,
+} from '@phosphor-icons/react'
 import './ApiLanding.css'
 
 const API_CARDS = [
   {
     id: 'documents',
-    icon: '📄',
+    icon: <FileText size={24} weight="duotone" color="currentColor" />,
     title: 'Legal Documents API',
-    desc: 'Generate 27 document types across 18 jurisdictions. NDAs, contracts, tenancy agreements, and more.',
-    features: ['27 document types', '18 jurisdictions', 'AI-powered drafting'],
+    desc: 'Generate 34 document types across 18 jurisdictions. NDAs, contracts, tenancy agreements, and more.',
+    features: ['34 document types', '18 jurisdictions', 'AI-powered drafting'],
     endpoint: 'POST /v1/documents/generate',
     cta: 'Generate Document',
     link: '/docs#generate',
   },
   {
     id: 'invoices',
-    icon: '🧾',
+    icon: <Receipt size={24} weight="duotone" color="currentColor" />,
     title: 'Invoice & Receipt API',
     desc: 'Create professional invoices, receipts, and proforma invoices with multi-currency support.',
     features: ['PDF + HTML output', '12+ currencies', 'Auto-calculations'],
@@ -27,7 +33,7 @@ const API_CARDS = [
   },
   {
     id: 'scope-guard',
-    icon: '🛡️',
+    icon: <Shield size={24} weight="duotone" color="currentColor" />,
     title: 'Scope Guard™ API',
     desc: 'Your client just asked for something not in the contract. Paste the contract + their message. Get back: what they\'re violating, 3 professional response drafts, and a change order price. One API call.',
     features: ['Detects 6 violation types', '3 professional response drafts', 'Auto-calculated change order pricing', 'Zero API competitors — industry first'],
@@ -38,17 +44,18 @@ const API_CARDS = [
   },
   {
     id: 'vigil',
-    icon: '🔒',
+    icon: <Lock size={24} weight="duotone" color="currentColor" />,
     title: 'Vigil Fraud Alert API',
-    desc: 'Proximity-based card fraud detection. Your card declines when you\'re in Lagos but a transaction fires in London. Powered by GPS haversine engine + Claude AI risk analysis and AML report generation.',
-    features: ['Real-time proximity authorization', 'AI risk scoring 0–100 (Claude Haiku)', 'AML compliance reports (Claude Sonnet)', '13 MCP tools — Claude-native'],
+    desc: 'Proximity-based card fraud detection. GPS haversine engine decides approve/decline in under 150ms. AI risk scoring (Claude Haiku) and AML compliance reports (Claude Sonnet) included on your existing API key — no separate server to deploy.',
+    features: ['Real-time proximity authorization', 'AI risk scoring 0–100 (Claude Haiku · Growth+)', 'AML compliance reports (Claude Sonnet · Scale+)', '8 MCP tools — Claude-native'],
     endpoint: 'POST /v1/vigil/authorize',
     cta: 'View Docs',
     link: '/vigil',
+    badge: 'Live',
   },
   {
     id: 'extraction',
-    icon: '💬',
+    icon: <ChatCircle size={24} weight="duotone" color="currentColor" />,
     title: 'WhatsApp Extraction API',
     desc: 'Paste any conversation — WhatsApp, email, chat. Extract structured fields and generate contracts.',
     features: ['Field extraction', 'Auto-document generation', '10k context window'],
@@ -58,7 +65,7 @@ const API_CARDS = [
   },
   {
     id: 'contract-link',
-    icon: '🔗',
+    icon: <Link size={24} weight="duotone" color="currentColor" />,
     title: 'Contract-Payment Linking API',
     desc: 'Associate contracts with payment references. Track which contracts have been paid, look up by bank transfer ref or contract ID.',
     features: ['Bidirectional lookup', 'Payment status tracking', 'Redis-backed storage'],
@@ -68,7 +75,7 @@ const API_CARDS = [
   },
   {
     id: 'batch',
-    icon: '📦',
+    icon: <Package size={24} weight="duotone" color="currentColor" />,
     title: 'Batch Generation API',
     desc: 'Generate up to 10 legal documents in a single API call. Perfect for onboarding multiple clients or vendors at once.',
     features: ['Up to 10 docs per call', 'Independent processing', 'Detailed results'],
@@ -78,28 +85,29 @@ const API_CARDS = [
   },
   {
     id: 'templates',
-    icon: '📋',
+    icon: <ClipboardText size={24} weight="duotone" color="currentColor" />,
     title: 'Document Templates API',
-    desc: 'Get field schemas for all 27 document types. Build dynamic forms, validate input, or understand requirements before generating.',
-    features: ['27 document schemas', 'Field types & validation', 'Zero AI cost'],
+    desc: 'Get field schemas for all 34 document types. Build dynamic forms, validate input, or understand requirements before generating.',
+    features: ['34 document schemas', 'Field types & validation', 'Zero AI cost'],
     endpoint: 'GET /v1/documents/templates',
     cta: 'View Templates',
     link: '/docs#templates',
   },
   {
     id: 'fieldops',
-    icon: '🤖',
+    icon: <Robot size={24} weight="duotone" color="currentColor" />,
     title: 'FieldOps Agent API',
-    desc: 'WhatsApp-native booking, revenue recovery, and staff coordination for service businesses. AI agent that books jobs, chases unpaid invoices, and briefs staff — all via WhatsApp.',
+    desc: 'WhatsApp-native booking, revenue recovery, and staff coordination for service businesses. Proxied through the Ebenova API — requires a FieldOps server deployment. Contact info@ebenova.net to get started.',
     features: ['WhatsApp booking + confirmation', '3-step invoice recovery', 'Staff job briefings', '5-tool MCP server', 'OxaPay + Polar payments'],
     endpoint: 'POST /v1/bookings',
     cta: 'View Docs',
     link: '/docs#fieldops',
     highlight: true,
+    badge: 'Separate Service',
   },
   {
     id: 'insights',
-    icon: '📡',
+    icon: <Broadcast size={24} weight="duotone" color="currentColor" />,
     title: 'Insights — Reddit Monitor API',
     desc: 'Monitor Reddit and Nairaland for keywords about your product. Get email alerts with AI-drafted replies every 15 minutes. Built for founders doing distribution.',
     features: ['Reddit + Nairaland monitoring', 'AI reply drafts (community tone)', 'Subreddit safety system', 'Multi-tenant — serve multiple clients'],
@@ -112,7 +120,7 @@ const API_CARDS = [
 const COMING_SOON_APIS = [
   {
     id: 'payouts',
-    icon: '💸',
+    icon: <ArrowsLeftRight size={24} weight="duotone" color="currentColor" />,
     title: 'Africa Payouts API',
     desc: 'Send payments to bank accounts and mobile money across 10+ African countries.',
     features: ['Mobile money + bank', 'Real-time settlement', 'Join waitlist for early access'],
@@ -124,25 +132,25 @@ const COMING_SOON_APIS = [
 
 const USE_CASES = [
   {
-    icon: '🏠',
+    icon: <House size={24} weight="duotone" color="currentColor" />,
     title: 'Property Rental Platforms',
     problem: 'Tenants forge bank transfer receipts. Landlords release keys without payment.',
     solution: 'Link tenancy agreements to payment references. Verify transfers before auto-sending keys.',
   },
   {
-    icon: '💼',
+    icon: <Briefcase size={24} weight="duotone" color="currentColor" />,
     title: 'Freelance Marketplaces',
     problem: 'Clients request "small extras" until scope balloons. Freelancers have no leverage.',
     solution: 'Auto-detect scope violations. Generate change orders with one click. Link payment to deliverables.',
   },
   {
-    icon: '🏦',
+    icon: <Bank size={24} weight="duotone" color="currentColor" />,
     title: 'Fintechs & Lenders',
     problem: 'Loan agreements are generic. Jurisdiction enforcement is manual. Default tracking is broken.',
     solution: 'Generate jurisdiction-aware loan agreements. Link to repayment schedules. Auto-track defaults.',
   },
   {
-    icon: '🤖',
+    icon: <Robot size={24} weight="duotone" color="currentColor" />,
     title: 'AI Agents & SaaS',
     problem: 'AI agents can draft documents but cannot verify payments or enforce contracts.',
     solution: 'MCP-native API. Connect Claude, Cursor, or custom agents to the full trust stack.',
@@ -274,11 +282,7 @@ export default function ApiLanding() {
 
   const handlePricingCta = (tier) => {
     track('pricing_cta_click', { tier })
-    if (tier === 'free' || tier === 'starter' || tier === 'growth') {
-      navigate('/dashboard')
-    } else if (tier === 'scale') {
-      window.location.href = 'mailto:api@ebenova.dev?subject=Scale%20Tier%20Inquiry'
-    }
+    navigate('/pricing')
   }
 
   const handleViewDocs = () => {
@@ -286,47 +290,61 @@ export default function ApiLanding() {
     navigate('/docs')
   }
 
+  const isEbenova = typeof window !== 'undefined'
+    && (window.location.hostname === 'ebenova.dev'
+      || window.location.hostname === 'www.ebenova.dev'
+      || window.location.hostname === 'api.ebenova.dev')
+
   return (
     <div className="api-landing">
       <Helmet>
-        <title>Ebenova — The API Layer for Business Agreements</title>
-        <meta name="description" content="Generate contracts, verify payments, detect fraud, enforce scope — 27 document types, 18 jurisdictions. MCP-native. Built for Africa, open to the world. Free tier available." />
-        <link rel="canonical" href="https://www.ebenova.dev/" />
-        <link rel="alternate" hreflang="en" href="https://www.ebenova.dev/" />
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="Ebenova" />
-        <meta property="og:url" content="https://www.ebenova.dev/" />
-        <meta property="og:title" content="Ebenova — The API Layer for Business Agreements" />
-        <meta property="og:description" content="Generate contracts, verify payments, detect fraud, enforce scope — 27 document types, 18 jurisdictions. MCP-native. Built for Africa, open to the world." />
-        <meta property="og:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@quantimleap100" />
-        <meta name="twitter:title" content="Ebenova — The API Layer for Business Agreements" />
-        <meta name="twitter:description" content="Contracts, invoices, fraud detection, scope enforcement. 27 document types, 18 jurisdictions. MCP-native. Free tier." />
-        <meta name="twitter:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
-        <script type="application/ld+json">{JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "SoftwareApplication",
-          "name": "Ebenova API",
-          "url": "https://www.ebenova.dev",
-          "description": "Developer-first API platform for legal document generation, invoices, contract enforcement, and Reddit monitoring. 27 document types across 18 jurisdictions including Nigeria, Kenya, Ghana, UK, US, and Canada.",
-          "applicationCategory": "DeveloperApplication",
-          "operatingSystem": "Web",
-          "offers": [
-            { "@type": "Offer", "name": "Free Tier", "price": "0", "priceCurrency": "USD" },
-            { "@type": "Offer", "name": "Starter", "price": "29", "priceCurrency": "USD", "billingIncrement": "month" },
-            { "@type": "Offer", "name": "Growth", "price": "79", "priceCurrency": "USD", "billingIncrement": "month" },
-            { "@type": "Offer", "name": "Scale", "price": "199", "priceCurrency": "USD", "billingIncrement": "month" }
-          ],
-          "provider": {
-            "@type": "Organization",
-            "name": "Ebenova Solutions",
-            "url": "https://www.ebenova.dev",
-            "email": "api@ebenova.dev"
-          }
-        })}</script>
+        {isEbenova ? (
+          <>
+            <title>Ebenova — The API Layer for Business Agreements</title>
+            <meta name="description" content="Generate contracts, verify payments, detect fraud, enforce scope — 34 document types, 18 jurisdictions. MCP-native. Built for Africa, open to the world. Free tier available." />
+            <link rel="canonical" href="https://www.ebenova.dev/" />
+            <link rel="alternate" hreflang="en" href="https://www.ebenova.dev/" />
+            <meta property="og:type" content="website" />
+            <meta property="og:site_name" content="Ebenova" />
+            <meta property="og:url" content="https://www.ebenova.dev/" />
+            <meta property="og:title" content="Ebenova — The API Layer for Business Agreements" />
+            <meta property="og:description" content="Generate contracts, verify payments, detect fraud, enforce scope — 34 document types, 18 jurisdictions. MCP-native. Built for Africa, open to the world." />
+            <meta property="og:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
+            <meta property="og:image:width" content="1200" />
+            <meta property="og:image:height" content="630" />
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:site" content="@quantimleap100" />
+            <meta name="twitter:title" content="Ebenova — The API Layer for Business Agreements" />
+            <meta name="twitter:description" content="Contracts, invoices, fraud detection, scope enforcement. 34 document types, 18 jurisdictions. MCP-native. Free tier." />
+            <meta name="twitter:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
+            <script type="application/ld+json">{JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "Ebenova API",
+              "url": "https://www.ebenova.dev",
+              "description": "Developer-first API platform for legal document generation, invoices, contract enforcement, and Reddit monitoring. 34 document types across 18 jurisdictions including Nigeria, Kenya, Ghana, UK, US, and Canada.",
+              "applicationCategory": "DeveloperApplication",
+              "operatingSystem": "Web",
+              "offers": [
+                { "@type": "Offer", "name": "Free Tier", "price": "0", "priceCurrency": "USD" },
+                { "@type": "Offer", "name": "Starter", "price": "29", "priceCurrency": "USD", "billingIncrement": "month" },
+                { "@type": "Offer", "name": "Growth", "price": "79", "priceCurrency": "USD", "billingIncrement": "month" },
+                { "@type": "Offer", "name": "Scale", "price": "199", "priceCurrency": "USD", "billingIncrement": "month" }
+              ],
+              "provider": {
+                "@type": "Organization",
+                "name": "Ebenova Solutions",
+                "url": "https://www.ebenova.dev",
+                "email": "info@ebenova.net"
+              }
+            })}</script>
+          </>
+        ) : (
+          <>
+            <title>Signova — Professional Legal Documents</title>
+            <meta name="robots" content="noindex" />
+          </>
+        )}
       </Helmet>
 
       {/* Navigation */}
@@ -338,7 +356,7 @@ export default function ApiLanding() {
           </div>
           <div className="api-nav-links">
             <a href="#apis">APIs</a>
-            <a href="#pricing">Pricing</a>
+            <a href="/pricing">Pricing</a>
             <a href="#mcp">MCP</a>
             <a href="/insights">Insights</a>
             <a href="/docs">Docs</a>
@@ -366,7 +384,7 @@ export default function ApiLanding() {
 
           <p className="api-hero-sub">
             One API for contracts, invoices, fraud detection, and scope enforcement —
-            27 document types, 18 jurisdictions, MCP-native. Works wherever your
+            34 document types, 18 jurisdictions, MCP-native. Works wherever your
             business operates. Goes deeper where others don't.
           </p>
 
@@ -374,7 +392,7 @@ export default function ApiLanding() {
           <div className="api-counter-banner">
             <div className="api-counter-grid">
               <div className="counter-item">
-                <div className="counter-number">27</div>
+                <div className="counter-number">34</div>
                 <div className="counter-label">document types</div>
               </div>
               <div className="counter-item">
@@ -397,7 +415,7 @@ export default function ApiLanding() {
           <div className="trust-signals">
             <span>✓ No credit card required</span>
             <span>✓ Nigeria · Kenya · Ghana · any jurisdiction</span>
-            <span>✓ 27 Document Types</span>
+            <span>✓ 34 Document Types</span>
             <span>✓ Free tier · No commitment</span>
           </div>
 
@@ -410,7 +428,7 @@ export default function ApiLanding() {
                 onClick={() => handleCopyCode(CURL_EXAMPLE, 'hero-curl')}
                 aria-label="Copy curl example"
               >
-                {copiedCode === 'hero-curl' ? '✓ Copied' : '📋 Copy'}
+                {copiedCode === 'hero-curl' ? '✓ Copied' : 'Copy'}
               </button>
             </div>
             <pre className="code-block">
@@ -451,7 +469,7 @@ export default function ApiLanding() {
             </div>
           </div>
           <div className="not-for" role="note">
-            <p><strong>Not the right fit if:</strong> You only need one-off documents as a non-developer (try <a href="https://getsignova.com" target="_blank" rel="noopener noreferrer">Signova.com</a>) · You need a full e-signature platform (DocuSign is better) · You need US-only card payment processing (Stripe is better)</p>
+            <p><strong>Not the right fit if:</strong> You only need one-off documents as a non-developer (try <a href="https://www.getsignova.com" target="_blank" rel="noopener noreferrer">Signova.com</a>) · You need a full e-signature platform (DocuSign is better) · You need US-only card payment processing (Stripe is better)</p>
           </div>
         </div>
       </section>
@@ -492,6 +510,9 @@ export default function ApiLanding() {
                 key={card.id}
                 className={`api-card ${card.highlight ? 'highlight' : ''}`}
               >
+                {card.badge && (
+                  <span className="api-card-badge">{card.badge}</span>
+                )}
                 <div className="api-card-icon">{card.icon}</div>
                 <h3 className="api-card-title">{card.title}</h3>
                 <p className="api-card-desc">{card.desc}</p>
@@ -711,7 +732,7 @@ export default function ApiLanding() {
                   onClick={() => handleCopyCode(MCP_EXAMPLE, 'mcp-config')}
                   aria-label="Copy MCP config"
                 >
-                  {copiedCode === 'mcp-config' ? '✓ Copied' : '📋 Copy'}
+                  {copiedCode === 'mcp-config' ? '✓ Copied' : 'Copy'}
                 </button>
               </div>
               <pre className="code-block">
@@ -751,7 +772,7 @@ export default function ApiLanding() {
         <div className="section-inner">
           <h2 id="founder-heading" className="sr-only">Built By</h2>
           <div className="founder-card">
-            <div className="founder-avatar" aria-hidden="true">👨🏾‍💻</div>
+            <div className="founder-avatar" aria-hidden="true"><Code size={32} weight="duotone" /></div>
             <div className="founder-content">
               <h3>Olumide Akinsola</h3>
               <p className="founder-title">Fraud Officer @ RBC | Nigerian-Canadian Founder</p>
@@ -763,58 +784,14 @@ export default function ApiLanding() {
                 Ebenova is that infrastructure."
               </blockquote>
               <p className="founder-contact">
-                Questions? <a href="mailto:olumide@ebenova.dev">Email me directly</a>
+                Questions? <a href="mailto:info@ebenova.net">Email me directly</a>
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="api-footer">
-        <div className="api-footer-inner">
-          <div className="api-footer-brand">
-            <div className="api-logo">
-              <span className="api-logo-mark">E</span>
-              <span className="api-logo-text">ebenova.dev</span>
-            </div>
-            <p className="api-footer-desc">
-              Developer-first APIs for legal documents, invoices, and African business workflows.
-            </p>
-          </div>
-
-          <div className="api-footer-links">
-            <div className="footer-col">
-              <h4>Product</h4>
-              <a href="#apis">APIs</a>
-              <a href="/docs#scope-guard">Scope Guard API</a>
-              <a href="/insights">Insights</a>
-              <a href="#pricing">Pricing</a>
-              <a href="#mcp">MCP Servers</a>
-              <a href="/docs">Documentation</a>
-            </div>
-            <div className="footer-col">
-              <h4>Company</h4>
-              <a href="/about">About</a>
-              <a href="/contact">Contact</a>
-              <a href="https://getsignova.com" target="_blank" rel="noopener noreferrer">Signova</a>
-            </div>
-            <div className="footer-col">
-              <h4>Legal</h4>
-              <a href="/privacy">Privacy</a>
-              <a href="/terms">Terms</a>
-            </div>
-            <div className="footer-col">
-              <h4>Connect</h4>
-              <a href="https://github.com/dgtalquantumleap-ai" target="_blank" rel="noopener noreferrer">GitHub</a>
-              <a href="mailto:olumide@ebenova.net">olumide@ebenova.net</a>
-            </div>
-          </div>
-        </div>
-        <div className="api-footer-copy">
-          © 2026 Ebenova Solutions · Africa-first · Built in Canada · API v1 · Updated April 2026
-        </div>
-      </footer>
+      <SiteFooter variant="ebenova" />
     </div>
   )
 }

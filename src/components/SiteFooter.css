@@ -1,0 +1,168 @@
+/* src/components/SiteFooter.css
+ * Self-contained styling for <SiteFooter>. Uses the global brand palette
+ * (#0e0e0e dark bg, #c9a84c gold, #f0ece4 cream text) but no dependencies
+ * on per-page CSS files, so it renders identically wherever it's mounted.
+ */
+
+.site-footer {
+  background: #0a0a0a;
+  border-top: 1px solid #1c1c1c;
+  color: #c8c4bc;
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  padding: 56px 24px 24px;
+}
+
+.site-footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 3fr;
+  gap: 48px;
+  padding-bottom: 36px;
+  border-bottom: 1px solid #1c1c1c;
+}
+
+.site-footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sf-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #f0ece4;
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 0.3px;
+}
+
+.sf-logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #c9a84c, #b09238);
+  color: #0e0e0e;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.sf-logo-mark--ebenova {
+  background: linear-gradient(135deg, #c9a84c, #8b6e1a);
+}
+
+.sf-logo-text {
+  color: #f0ece4;
+}
+
+.site-footer-tagline {
+  color: #9a9690;
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 4px 0 0;
+  max-width: 280px;
+}
+
+.site-footer-contact {
+  color: #c9a84c;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 4px;
+  align-self: flex-start;
+}
+
+.site-footer-contact:hover {
+  text-decoration: underline;
+}
+
+.site-footer-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 36px 24px;
+}
+
+.site-footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.site-footer-col h4 {
+  color: #f0ece4;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin: 0 0 6px;
+}
+
+.site-footer-col a {
+  color: #9a9690;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.4;
+  transition: color 120ms ease;
+}
+
+.site-footer-col a:hover {
+  color: #c9a84c;
+}
+
+.site-footer-col a:focus-visible {
+  outline: 2px solid #c9a84c;
+  outline-offset: 2px;
+  border-radius: 2px;
+  color: #c9a84c;
+}
+
+.site-footer-disclaimer {
+  max-width: 1200px;
+  margin: 24px auto 0;
+  color: #6a6760;
+  font-size: 12px;
+  line-height: 1.6;
+  padding: 0 4px;
+}
+
+.site-footer-copy {
+  max-width: 1200px;
+  margin: 18px auto 0;
+  color: #555;
+  font-size: 12px;
+  padding: 0 4px;
+}
+
+/* Tablet — keep grid but compress */
+@media (max-width: 900px) {
+  .site-footer {
+    padding: 44px 20px 20px;
+  }
+  .site-footer-inner {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    padding-bottom: 28px;
+  }
+}
+
+/* Mobile — single column, looser tap targets */
+@media (max-width: 560px) {
+  .site-footer-cols {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px 16px;
+  }
+  .site-footer-col a {
+    padding: 4px 0;  /* bigger tap area */
+  }
+}
+
+@media (max-width: 380px) {
+  .site-footer-cols {
+    grid-template-columns: 1fr;
+  }
+}

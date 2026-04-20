@@ -1,6 +1,7 @@
 import { useParams, Link, Navigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { useState, useEffect } from 'react'
+import { Lightning } from '@phosphor-icons/react'
 import './Blog.css'
 
 export default function BlogPost() {
@@ -96,7 +97,7 @@ export default function BlogPost() {
 
           {/* CTA box */}
           <div className="blog-cta-box">
-            <div className="blog-cta-icon">⚡</div>
+            <div className="blog-cta-icon"><Lightning size={28} weight="fill" /></div>
             <div className="blog-cta-text">
               <strong>Generate yours in 2 minutes</strong>
               <p>Preview free — download for $4.99. No account needed.</p>

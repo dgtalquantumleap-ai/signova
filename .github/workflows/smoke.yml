@@ -1,0 +1,71 @@
+name: Post-deploy smoke
+
+# Runs the end-to-end smoke harness against production after every merge
+# to main. Also listens to Vercel's deployment_status webhook as a backup
+# (fires when a deploy succeeds, covering hot-fix deploys done via
+# `vercel --prod` from the CLI that didn't go through main).
+#
+# Vercel tags ALL deployments as "Preview" in GitHub's API (even the ones
+# aliased to api.ebenova.dev), so we can't filter by environment. Instead
+# we rely on:
+#   - push to main → wait for Vercel → smoke (primary path)
+#   - deployment_status with state=success → smoke the environment_url
+#   - workflow_dispatch → manual run
+
+on:
+  push:
+    branches: [main]
+  deployment_status:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: 'Base URL to smoke (default https://www.ebenova.dev)'
+        required: false
+        default: 'https://www.ebenova.dev'
+      api_host:
+        description: 'API host to smoke (default https://api.ebenova.dev)'
+        required: false
+        default: 'https://api.ebenova.dev'
+
+jobs:
+  smoke:
+    name: Smoke production endpoints
+    runs-on: ubuntu-latest
+
+    # Run on push (after wait), workflow_dispatch, or any SUCCESSFUL deploy.
+    # Skip deployment_status events for non-success states to avoid spam.
+    if: |
+      github.event_name == 'push' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'deployment_status' &&
+       github.event.deployment_status.state == 'success')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22.x
+          cache: 'npm'
+
+      # On push to main, give Vercel time to deploy before we smoke.
+      # Typical prod deploy is ~30-45s; 90s is a safe ceiling.
+      - name: Wait for Vercel deploy (push only)
+        if: github.event_name == 'push'
+        run: sleep 90
+
+      - name: Run smoke
+        run: node scripts/smoke.mjs
+        env:
+          BASE_URL: ${{ github.event.inputs.base_url || github.event.deployment_status.environment_url || 'https://www.ebenova.dev' }}
+          API_HOST: ${{ github.event.inputs.api_host || 'https://api.ebenova.dev' }}
+          SMOKE_TIMEOUT_MS: 20000
+
+      - name: Notify failure
+        if: failure()
+        run: |
+          echo "::error::Smoke test FAILED against production — the site may be broken."
+          echo "::error::Last commit: $(git log -1 --format='%H %s')"
+          echo "::error::Open an incident and investigate ${{ github.event_name }} from ${{ github.sha }}"

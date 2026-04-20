@@ -1,8 +1,13 @@
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
+import { House, Buildings, Handshake, DeviceMobile } from '@phosphor-icons/react'
+import SiteNav from '../components/SiteNav'
+import SiteFooter from '../components/SiteFooter'
 import './Landing.css'
 import './NDALanding.css'
 import './TenancyLanding.css'
+
+const TL_ICON = { size: 28, weight: 'duotone', color: 'currentColor' }
 
 const FAQS = [
   {
@@ -37,22 +42,22 @@ const FAQS = [
 
 const USE_CASES = [
   {
-    icon: '🏠',
+    icon: <House {...TL_ICON} />,
     title: 'Residential rentals',
     body: 'Flats, duplexes, bungalows, and self-contained apartments. Protects both landlord and tenant on everything from rent to notice periods.',
   },
   {
-    icon: '🏢',
+    icon: <Buildings {...TL_ICON} />,
     title: 'Commercial properties',
     body: 'Office space, shops, warehouses, and event venues. Covers business use restrictions, alterations, and sub-letting clauses.',
   },
   {
-    icon: '🤝',
+    icon: <Handshake {...TL_ICON} />,
     title: 'Agent-managed lettings',
     body: 'Estate agents generating agreements on behalf of landlord clients. Professional-grade document in minutes, not days.',
   },
   {
-    icon: '📱',
+    icon: <DeviceMobile {...TL_ICON} />,
     title: 'WhatsApp negotiations',
     body: 'Already agreed rent and terms over WhatsApp? Paste the conversation and we auto-fill the form — faster than typing it manually.',
   },
@@ -89,26 +94,13 @@ export default function TenancyLanding() {
         })}</script>
       </Helmet>
 
-      {/* Nav */}
-      <nav className="nav">
-        <div className="nav-inner">
-          <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            <div className="logo-mark">S</div>
-            <span className="logo-text">Signova</span>
-          </div>
-          <div className="nav-links">
-            <a href="/#how">How it works</a>
-            <a href="/#documents">Documents</a>
-            <a href="/blog">Blog</a>
-          </div>
-        </div>
-      </nav>
+      <SiteNav variant="signova" />
 
       {/* Hero */}
       <section className="nda-hero">
         <div className="hero-glow" />
         <div className="nda-hero-inner">
-          <div className="nda-badge">🏠 Tenancy Agreement Generator</div>
+          <div className="nda-badge"><House size={16} weight="duotone" style={{ verticalAlign: '-3px', marginRight: 6 }} />Tenancy Agreement Generator</div>
           <h1 className="nda-h1">
             Tenancy Agreement —<br />Ready in 3 Minutes
           </h1>
@@ -229,24 +221,7 @@ export default function TenancyLanding() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="footer">
-        <div className="footer-inner">
-          <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            <div className="logo-mark">S</div>
-            <span className="logo-text">Signova</span>
-          </div>
-          <div className="footer-links">
-            <a href="/privacy">Privacy Policy</a>
-            <a href="/terms">Terms of Service</a>
-            <a href="/about">Contact</a>
-          </div>
-          <p className="footer-disc">
-            Signova is a document generation tool, not a law firm. Documents are AI-generated starting points — not legal advice. Consult a qualified attorney for high-stakes matters.
-          </p>
-          <p className="footer-copy">© 2026 Signova · Ebenova Solutions</p>
-        </div>
-      </footer>
+      <SiteFooter variant="signova" />
     </div>
   )
 }

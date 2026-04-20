@@ -3,9 +3,13 @@ import { Helmet } from 'react-helmet-async'
 import UsageChart from '../components/UsageChart'
 import ScopeGuardStats from '../components/ScopeGuardStats'
 import RevenueMetrics from '../components/RevenueMetrics'
+import {
+  Scales, Shield, ChartBar, CurrencyDollar, Broadcast,
+  FileText, Note, ChatCircle, EnvelopeSimple, Calendar, Books,
+} from '@phosphor-icons/react'
 import './Dashboard.css'
 
-const API = 'https://www.getsignova.com'
+const API = import.meta.env.VITE_API_BASE || ''
 
 const TIERS = {
   free:       { label: 'Free',       limit: 5,    price: 0,     color: '#6b7280' },
@@ -42,7 +46,7 @@ export default function Dashboard() {
   const fetchUsage = useCallback(async (key) => {
     if (!key) return
     try {
-      const res = await fetch(`${API}/api/v1/keys/usage`, {
+      const res = await fetch(`${API}/v1/keys/usage`, {
         headers: { Authorization: `Bearer ${key}` },
       })
       const data = await res.json()
@@ -53,7 +57,7 @@ export default function Dashboard() {
   const fetchScopeGuardStats = useCallback(async (key) => {
     if (!key) return
     try {
-      const res = await fetch(`${API}/api/v1/scope/stats`, {
+      const res = await fetch(`${API}/v1/scope/stats`, {
         headers: { Authorization: `Bearer ${key}` },
       })
       const data = await res.json()
@@ -64,7 +68,7 @@ export default function Dashboard() {
   const fetchRevenueMetrics = useCallback(async (adminToken) => {
     if (!adminToken) return
     try {
-      const res = await fetch(`${API}/api/v1/admin/revenue`, {
+      const res = await fetch(`${API}/v1/admin/revenue`, {
         headers: { Authorization: `Bearer ${adminToken}` },
       })
       const data = await res.json()
@@ -104,7 +108,7 @@ export default function Dashboard() {
   async function verifyMagicToken(token) {
     setView('loading')
     try {
-      const res = await fetch(`${API}/api/v1/auth/verify`, {
+      const res = await fetch(`${API}/v1/auth/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token }),
@@ -131,7 +135,7 @@ export default function Dashboard() {
     if (!email || !email.includes('@')) return setError('Enter a valid email')
     setSendingLink(true); setError('')
     try {
-      const res = await fetch(`${API}/api/v1/auth/magic-link`, {
+      const res = await fetch(`${API}/v1/auth/magic-link`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -146,7 +150,7 @@ export default function Dashboard() {
   async function handleUpgrade(tier) {
     setUpgrading(tier)
     try {
-      const res = await fetch(`${API}/api/v1/billing/checkout`, {
+      const res = await fetch(`${API}/v1/billing/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${activeKey?.key}` },
         body: JSON.stringify({ tier, success_url: `${window.location.origin}/dashboard?subscribed=1`, cancel_url: `${window.location.origin}/dashboard` }),
@@ -191,7 +195,7 @@ export default function Dashboard() {
       <Helmet><title>Sign In — Ebenova Dashboard</title></Helmet>
       <div className="dash-login-wrap">
         <div className="dash-login-card">
-          <div className="dash-login-logo">⚖️</div>
+          <div className="dash-login-logo"><Scales size={40} weight="duotone" color="currentColor" /></div>
           <h1>Ebenova Dashboard</h1>
           <p className="dash-login-sub">Sign in to manage your API keys and usage</p>
 
@@ -217,7 +221,7 @@ export default function Dashboard() {
             </>
           ) : (
             <div className="dash-email-sent">
-              <div className="dash-email-icon">📧</div>
+              <div className="dash-email-icon"><EnvelopeSimple size={40} weight="duotone" color="currentColor" /></div>
               <h3>Check your inbox</h3>
               <p>We sent a sign-in link to <strong>{email}</strong></p>
               <p className="dash-login-note">Link expires in 15 minutes.</p>
@@ -245,7 +249,7 @@ export default function Dashboard() {
         {/* Header */}
         <header className="dash-header">
           <div className="dash-header-left">
-            <span className="dash-logo">⚖️ Ebenova</span>
+            <span className="dash-logo"><Scales size={18} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 6 }} /> Ebenova</span>
             <span className="dash-tier-badge" style={{ background: tierInfo.color }}>
               {tierInfo.label}
             </span>
@@ -306,7 +310,7 @@ export default function Dashboard() {
           {/* Scope Guard */}
           <section className={`dash-card ${!isProUser ? 'dash-card-locked' : ''}`}>
             <div className="dash-card-title-row">
-              <h2 className="dash-card-title">🛡️ Scope Guard</h2>
+              <h2 className="dash-card-title"><Shield size={18} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 6 }} /> Scope Guard</h2>
               {!isProUser && <span className="dash-pro-badge">Pro</span>}
             </div>
             {isProUser ? (
@@ -329,7 +333,7 @@ export default function Dashboard() {
           {/* Scope Guard Stats */}
           {isProUser && scopeGuardStats && (
             <section className="dash-card">
-              <h2 className="dash-card-title">📊 Scope Guard Activity</h2>
+              <h2 className="dash-card-title"><ChartBar size={18} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 6 }} /> Scope Guard Activity</h2>
               <ScopeGuardStats stats={scopeGuardStats} />
             </section>
           )}
@@ -337,7 +341,7 @@ export default function Dashboard() {
           {/* Revenue Dashboard (Admin Only) */}
           {isAdmin && revenueMetrics && (
             <section className="dash-card dash-admin-section">
-              <h2 className="dash-card-title">💰 Revenue Dashboard</h2>
+              <h2 className="dash-card-title"><CurrencyDollar size={18} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 6 }} /> Revenue Dashboard</h2>
               <RevenueMetrics metrics={revenueMetrics.metrics} monthlyData={revenueMetrics.monthlyRevenue} />
             </section>
           )}
@@ -371,7 +375,7 @@ export default function Dashboard() {
           {/* ── Insights Section ──────────────────────────────────────────── */}
           <section className="dash-card">
             <div className="dash-card-title-row">
-              <h2 className="dash-card-title">📡 Ebenova Insights</h2>
+              <h2 className="dash-card-title"><Broadcast size={18} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 6 }} /> Ebenova Insights</h2>
               {!hasInsights && <span className="dash-pro-badge">Add-on</span>}
             </div>
             {hasInsights ? (
@@ -381,11 +385,11 @@ export default function Dashboard() {
                   Plan: <strong>{insightsPlan ? insightsPlan.charAt(0).toUpperCase() + insightsPlan.slice(1) : 'Starter'}</strong>
                 </p>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '12px' }}>
-                  <a href="https://ebenova.dev/insights" className="dash-btn-secondary" style={{ textDecoration: 'none' }}>
-                    📅 View Monitors
+                  <a href="https://www.ebenova.dev/insights" className="dash-btn-secondary" style={{ textDecoration: 'none' }}>
+                    <Calendar size={14} weight="regular" style={{ verticalAlign: '-2px', marginRight: 6 }} />View Monitors
                   </a>
-                  <a href="https://ebenova.dev/docs#insights" className="dash-btn-secondary" style={{ textDecoration: 'none' }}>
-                    📚 API Docs
+                  <a href="https://www.ebenova.dev/docs#insights" className="dash-btn-secondary" style={{ textDecoration: 'none' }}>
+                    <Books size={14} weight="regular" style={{ verticalAlign: '-2px', marginRight: 6 }} />API Docs
                   </a>
                 </div>
                 <code className="dash-code-block" style={{ marginTop: '12px' }}>GET https://api.ebenova.dev/v1/insights/monitors</code>
@@ -432,9 +436,9 @@ export default function Dashboard() {
   -H "Content-Type: application/json" \\
   -d '{"document_type":"nda","fields":{"party_a":"Acme Inc","party_b":"Jane Smith"},"jurisdiction":"Nigeria"}'`}</pre>
             <div className="dash-links-row">
-              <a href="/docs" className="dash-link">📄 API Docs</a>
-              <a href="https://ebenova.dev/blog" className="dash-link">📝 Blog</a>
-              <a href="mailto:api@ebenova.dev" className="dash-link">💬 Support</a>
+              <a href="/docs" className="dash-link"><FileText size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> API Docs</a>
+              <a href="https://www.ebenova.dev/blog" className="dash-link"><Note size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> Blog</a>
+              <a href="mailto:info@ebenova.net" className="dash-link"><ChatCircle size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> Support</a>
             </div>
           </section>
 

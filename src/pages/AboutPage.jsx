@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
+import SiteNav from '../components/SiteNav'
+import SiteFooter from '../components/SiteFooter'
 
 export default function AboutPage() {
   const navigate = useNavigate()
@@ -12,42 +14,7 @@ export default function AboutPage() {
         <link rel="canonical" href="https://www.getsignova.com/about" />
       </Helmet>
 
-      {/* Nav */}
-      <nav style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 24px', height: '64px',
-        borderBottom: '1px solid var(--border)',
-        position: 'sticky', top: 0,
-        background: 'rgba(14,14,14,0.95)',
-        backdropFilter: 'blur(12px)', zIndex: 10
-      }}>
-        <button
-          onClick={() => navigate('/')}
-          style={{ background: 'none', border: 'none', color: 'var(--text2)', fontSize: '14px', cursor: 'pointer' }}
-        >
-          ← Back
-        </button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => navigate('/')}>
-          <span style={{
-            width: '32px', height: '32px', borderRadius: '8px',
-            background: 'var(--gold)', color: '#0e0e0e',
-            fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 700,
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>S</span>
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 600 }}>Signova</span>
-        </div>
-        <button
-          onClick={() => navigate('/')}
-          style={{
-            background: 'var(--gold)', color: '#0e0e0e',
-            border: 'none', borderRadius: '8px',
-            padding: '8px 18px', fontSize: '13px',
-            fontWeight: 600, cursor: 'pointer'
-          }}
-        >
-          Try it free →
-        </button>
-      </nav>
+      <SiteNav variant="signova" />
 
       {/* Hero */}
       <section style={{ maxWidth: '680px', margin: '0 auto', padding: '72px 24px 48px', textAlign: 'center' }}>
@@ -93,7 +60,7 @@ export default function AboutPage() {
             `I'm Olumide — a Nigerian software developer based in Calgary, Canada. I've watched friends, family, and colleagues across Nigeria, Ghana, and Kenya lose money, deals, and sometimes relationships because they had no written agreement. A cousin lent ₦500,000 to a business partner on a handshake. A freelancer built a full website and got ghosted. A landlord couldn't evict a non-paying tenant because the tenancy was verbal.`,
             `The frustrating part isn't that people didn't know they needed a contract. They did. The problem is that getting a lawyer to draft one costs ₦50,000–₦200,000 in Nigeria for what is often a standard document. In Canada and the UK, it's $300–$500/hour. Most people — especially freelancers and small landlords — just skip it and hope for the best.`,
             `Signova changes that. You answer a few questions about your specific situation. We generate a professional, jurisdiction-aware legal document in under 3 minutes. You preview it for free, and pay $4.99 — less than a lunch — to download the clean PDF.`,
-            `We now support 27 document types for any jurisdiction worldwide. Nigerian landlords, Kenyan freelancers, Canadian contractors, Indian consultants, UAE business owners — anyone who needs a proper document without paying lawyer rates.`,
+            `We now support 34 document types for any jurisdiction worldwide. Nigerian landlords, Kenyan freelancers, Canadian contractors, Indian consultants, UAE business owners — anyone who needs a proper document without paying lawyer rates.`,
           ].map((para, i) => (
             <p key={i} style={{ fontSize: '16px', color: 'var(--text2)', lineHeight: 1.8, margin: 0 }}>
               {para}
@@ -113,8 +80,8 @@ export default function AboutPage() {
           border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden'
         }}>
           {[
-            { num: '27', label: 'Document types' },
-            { num: '180+', label: 'Countries supported' },
+            { num: '34', label: 'Document types' },
+            { num: '47', label: 'Geo-currencies' },
             { num: '$4.99', label: 'Per document' },
           ].map((s, i) => (
             <div key={i} style={{
@@ -217,17 +184,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer style={{
-        borderTop: '1px solid var(--border)',
-        padding: '28px 24px', textAlign: 'center'
-      }}>
-        <p style={{ fontSize: '12px', color: 'var(--text3)', margin: 0 }}>
-          © 2026 Signova™ · Ebenova Solutions ·{' '}
-          <a href="/privacy" style={{ color: 'var(--text3)' }}>Privacy</a> ·{' '}
-          <a href="/terms" style={{ color: 'var(--text3)' }}>Terms</a>
-        </p>
-      </footer>
+      <SiteFooter variant="signova" />
     </div>
   )
 }

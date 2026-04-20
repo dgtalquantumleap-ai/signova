@@ -1,7 +1,7 @@
 {
   "$schema": "https://glama.ai/mcp/glama-schema.json",
   "name": "Ebenova Legal Docs MCP",
-  "description": "Generate professionally drafted legal documents via AI — NDAs, freelance contracts, tenancy agreements, privacy policies, and 23 more document types across 18 jurisdictions including Nigeria, Kenya, Ghana, UK, US, and Canada. Also extracts document fields from WhatsApp and email conversations.",
+  "description": "Generate professionally drafted legal documents via AI — NDAs, freelance contracts, tenancy agreements, privacy policies, and 30 more document types across 18 jurisdictions including Nigeria, Kenya, Ghana, UK, US, and Canada. Also extracts document fields from WhatsApp and email conversations.",
   "version": "1.2.5",
   "license": "MIT",
   "homepage": "https://ebenova.dev",
@@ -21,7 +21,7 @@
   "tools": [
     {
       "name": "generate_legal_document",
-      "description": "Generate a professionally drafted legal document. 27 types across 18 jurisdictions including Nigeria, Kenya, UK, US, Canada."
+      "description": "Generate a professionally drafted legal document. 34 types across 18 jurisdictions including Nigeria, Kenya, UK, US, Canada."
     },
     {
       "name": "generate_invoice",
@@ -41,7 +41,7 @@
     },
     {
       "name": "list_document_types",
-      "description": "List all 27 supported legal document types grouped by category."
+      "description": "List all 34 supported legal document types grouped by category."
     },
     {
       "name": "check_usage",

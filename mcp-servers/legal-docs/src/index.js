@@ -4,6 +4,9 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
+import { randomUUID } from 'node:crypto'
+import http from 'node:http'
 import { z } from 'zod'
 
 // ─── Server factory ───────────────────────────────────────────────────────────
@@ -56,7 +59,7 @@ function createServer(config = {}) {
       description: `Generate a professionally drafted legal document using the Ebenova API.
 
 Use this tool when the user needs to create any legal document — contracts, NDAs, agreements,
-privacy policies, tenancy agreements, and more. Supports 27 document types across 18 jurisdictions.
+privacy policies, tenancy agreements, and more. Supports 34 document types across 18 jurisdictions.
 
 When to use:
 - "Create an NDA between me and John Smith"
@@ -66,14 +69,17 @@ When to use:
 - "I need a service agreement for my consulting work"`,
       inputSchema: z.object({
         document_type: z.enum([
-          'nda', 'freelance-contract', 'service-agreement', 'consulting-agreement',
-          'independent-contractor', 'business-partnership', 'joint-venture',
-          'distribution-agreement', 'supply-agreement', 'business-proposal', 'purchase-agreement',
-          'employment-offer-letter', 'non-compete-agreement', 'loan-agreement',
-          'payment-terms-agreement', 'shareholder-agreement', 'hire-purchase',
-          'tenancy-agreement', 'quit-notice', 'deed-of-assignment', 'power-of-attorney',
-          'landlord-agent-agreement', 'facility-manager-agreement',
-          'privacy-policy', 'terms-of-service', 'mou', 'letter-of-intent',
+          'nda', 'freelance-contract', 'tenancy-agreement', 'employment-contract',
+          'service-agreement', 'partnership-agreement', 'loan-agreement',
+          'power-of-attorney', 'will', 'invoice', 'receipt', 'proforma-invoice',
+          'credit-note', 'privacy-policy', 'terms-of-service', 'cookie-policy',
+          'dmca-notice', 'cease-and-desist', 'affidavit', 'statutory-declaration',
+          'memorandum-of-understanding', 'share-purchase-agreement',
+          'joint-venture-agreement', 'non-compete-agreement', 'consulting-agreement',
+          'subcontractor-agreement', 'licensing-agreement', 'franchise-agreement',
+          'distribution-agreement', 'agency-agreement', 'sale-of-goods-agreement',
+          'intellectual-property-assignment', 'data-processing-agreement',
+          'deed-of-assignment',
         ]).describe('The type of legal document to generate'),
         fields: z.record(z.union([z.string(), z.array(z.string())])).describe(
           'Document-specific fields as key-value pairs. Include all relevant parties, terms, dates, and conditions.'
@@ -416,31 +422,92 @@ export function createSandboxServer() {
 // ─── CLI entrypoint ──────────────────────────────────────────────────────────
 
 async function main() {
-  // Check if running in build/test mode (no stdin available)
-  const isBuildMode = process.env.NODE_ENV === 'build' ||
-                      process.env.EBENOVA_API_KEY === 'sk_test_sandbox' ||
-                      !process.stdin.isTTY
-
-  // Apify detection: Actor runs timeout because stdio server waits forever for stdin.
-  // When on Apify, just verify the server starts and exit cleanly.
+  // Apify detection — actor times out waiting for stdin; verify + exit cleanly.
   const isApify = !!(process.env.APIFY_IS_AT_HOME ||
                      process.env.ACTOR_IS_AT_HOME ||
                      process.env.APIFY_ACTOR_RUN_ID ||
                      process.env.ACTOR_RUN_ID ||
                      process.env.APIFY_CONTAINER_URL)
 
-  const server = createServer()
-
-  // Build mode or Apify: just verify server starts, then exit
-  if (isBuildMode || isApify) {
-    process.stderr.write('[ebenova-legal-docs-mcp] Server initialized successfully\n')
-    process.stderr.write('[ebenova-legal-docs-mcp] Tools registered: generate_legal_document, extract_from_conversation, list_document_types, generate_invoice, analyze_scope_creep, generate_change_order, check_usage\n')
+  if (isApify) {
+    process.stderr.write('[ebenova-legal-docs-mcp] Apify mode — server initialized\n')
+    process.stderr.write('[ebenova-legal-docs-mcp] Tools: generate_legal_document, extract_from_conversation, list_document_types, generate_invoice, analyze_scope_creep, generate_change_order, check_usage\n')
     process.exit(0)
     return
   }
-  
-  const transport = new StdioServerTransport()
-  await server.connect(transport)
+
+  const port = process.env.PORT
+
+  if (port) {
+    // ── HTTP / Streamable-HTTP mode (MCPize, Railway, Render, etc.) ──────────
+    // MCPize deploys behind an HTTP-to-MCP bridge and sets PORT.
+    // Each incoming request gets its own stateless transport instance.
+    const httpServer = http.createServer(async (req, res) => {
+      // Health check endpoints
+      if (req.method === 'GET' && (req.url === '/ping' || req.url === '/health')) {
+        res.writeHead(200, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ status: 'ok', server: 'ebenova-legal-docs-mcp', version: '1.5.1' }))
+        return
+      }
+
+      // GET on root or /mcp — return server info for discovery
+      if (req.method === 'GET' && (req.url === '/' || req.url === '/mcp' || req.url === '/sse')) {
+        res.writeHead(200, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({
+          name: 'ebenova-legal-docs',
+          version: '1.5.1',
+          transport: 'streamable-http',
+          description: 'Generate 34 legal document types across 18 jurisdictions via AI',
+          endpoints: { mcp: '/', health: '/ping' },
+        }))
+        return
+      }
+
+      // POST on root or /mcp — handle MCP JSON-RPC
+      if (req.method === 'POST' && (req.url === '/' || req.url === '/mcp')) {
+        try {
+          const chunks = []
+          for await (const chunk of req) chunks.push(chunk)
+          const body = Buffer.concat(chunks).toString('utf8')
+
+          let parsedBody
+          try { parsedBody = JSON.parse(body) } catch { parsedBody = undefined }
+
+          const transport = new StreamableHTTPServerTransport({
+            sessionIdGenerator: () => randomUUID(),
+            onsessioninitialized: (id) => {
+              process.stderr.write(`[ebenova-legal-docs-mcp] Session: ${id}\n`)
+            },
+          })
+
+          const server = createServer()
+          await server.connect(transport)
+          await transport.handleRequest(req, res, parsedBody)
+        } catch (err) {
+          process.stderr.write(`[ebenova-legal-docs-mcp] Error: ${err.message}\n`)
+          if (!res.headersSent) {
+            res.writeHead(500, { 'Content-Type': 'application/json' })
+            res.end(JSON.stringify({ error: 'Internal server error' }))
+          }
+        }
+        return
+      }
+
+      // Method not allowed
+      res.writeHead(405, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ error: 'Method not allowed', allowed: ['GET', 'POST'] }))
+    })
+
+    httpServer.listen(parseInt(port, 10), () => {
+      process.stderr.write(`[ebenova-legal-docs-mcp] HTTP server listening on port ${port}\n`)
+      process.stderr.write('[ebenova-legal-docs-mcp] Tools ready: generate_legal_document, extract_from_conversation, list_document_types, generate_invoice, analyze_scope_creep, generate_change_order, check_usage\n')
+    })
+  } else {
+    // ── Stdio mode (Claude Desktop, Cursor, Smithery, npx) ──────────────────
+    const server = createServer()
+    const transport = new StdioServerTransport()
+    await server.connect(transport)
+  }
 }
 
 main().catch(err => {

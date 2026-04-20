@@ -2,6 +2,13 @@
 import DOMPurify from 'dompurify'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState, useRef } from 'react'
+import { Helmet } from 'react-helmet-async'
+import {
+  Lock, Target, EnvelopeSimple, CurrencyCircleDollar, ClipboardText,
+  CreditCard, Globe, Handshake, Package, Prohibit, Paperclip, PenNib,
+} from '@phosphor-icons/react'
+
+const CICON = { size: 18, weight: 'duotone', color: 'currentColor' }
 import {
   trackPreviewLoaded,
   trackPaymentAttempted,
@@ -12,17 +19,43 @@ import {
 } from '../lib/analytics'
 import './Preview.css'
 
+const DEV = import.meta.env.DEV
+
 // Geo detect — same sessionStorage key used by Landing.jsx
-function useIsNigeria() {
+const CURRENCY_MAP_PREVIEW = {
+  NG: { symbol: '₦', amount: 6900, code: 'NGN' },
+  GH: { symbol: 'GH₵', amount: 75, code: 'GHS' },
+  KE: { symbol: 'KSh', amount: 650, code: 'KES' },
+  ZA: { symbol: 'R', amount: 93, code: 'ZAR' },
+  IN: { symbol: '₹', amount: 418, code: 'INR' },
+  GB: { symbol: '£', amount: 3.95, code: 'GBP' },
+  DE: { symbol: '€', amount: 4.60, code: 'EUR' },
+  FR: { symbol: '€', amount: 4.60, code: 'EUR' },
+  US: { symbol: '$', amount: 4.99, code: 'USD' },
+  CN: { symbol: '¥', amount: 36, code: 'CNY' },
+  HK: { symbol: 'HK$', amount: 39, code: 'HKD' },
+  JP: { symbol: '¥', amount: 750, code: 'JPY' },
+  KR: { symbol: '₩', amount: 6900, code: 'KRW' },
+  TH: { symbol: '฿', amount: 175, code: 'THB' },
+  TR: { symbol: '₺', amount: 175, code: 'TRY' },
+  PL: { symbol: 'zł', amount: 20, code: 'PLN' },
+  SE: { symbol: 'kr', amount: 52, code: 'SEK' },
+}
+const DEFAULT_CURRENCY_PREVIEW = { symbol: '$', amount: 4.99, code: 'USD' }
+
+function useGeoCurrency() {
   const [isNG, setIsNG] = useState(false)
+  const [currency, setCurrency] = useState(DEFAULT_CURRENCY_PREVIEW)
+
   useEffect(() => {
     // Key must match Landing.jsx which writes 'sig_geo'
     const cached = sessionStorage.getItem('sig_geo')
     if (cached) {
       try {
         const parsed = JSON.parse(cached)
-        // sig_geo stores { currency: { code, ... }, countryCode: 'NG' }
+        // sig_geo stores { currency: { code, symbol, amount, local }, countryCode: 'NG' }
         setIsNG(parsed.countryCode === 'NG' || parsed.currency?.code === 'NGN')
+        if (parsed.currency) setCurrency(parsed.currency)
       } catch {
         // Ignore JSON parse errors for cached data
       }
@@ -31,18 +64,36 @@ function useIsNigeria() {
     // Use our own API endpoint which leverages Vercel geo headers (free, unlimited)
     fetch('/api/geo')
       .then(r => r.json())
-      .then(d => setIsNG(d.country_code === 'NG'))
+      .then(d => {
+        if (d.country_code) {
+          setIsNG(d.country_code === 'NG')
+          const cur = CURRENCY_MAP_PREVIEW[d.country_code] || DEFAULT_CURRENCY_PREVIEW
+          setCurrency(cur)
+        }
+      })
       .catch(() => {})
   }, [])
-  return isNG
+  return { isNG, currency }
 }
+
+// Simplified currency options for checkout dropdown
+const CHECKOUT_CURRENCY_OPTIONS = [
+  { code: 'USD', symbol: '$', amount: 4.99, label: 'USD — $4.99' },
+  { code: 'NGN', symbol: '₦', amount: 6900, label: 'NGN — ₦6,900 /doc' },
+  { code: 'GBP', symbol: '£', amount: 3.95, label: 'GBP — £3.95 /doc' },
+  { code: 'EUR', symbol: '€', amount: 4.60, label: 'EUR — €4.60 /doc' },
+  { code: 'GHS', symbol: 'GH₵', amount: 75, label: 'GHS — GH₵75 /doc' },
+]
 
 
 
 
 export default function Preview() {
   const navigate = useNavigate()
-  const isNigeria = useIsNigeria()
+  const { isNG: isNigeria, currency: geoCurrency } = useGeoCurrency()
+  const [activeCurrency, setActiveCurrency] = useState(null) // null = use geo
+  const [currencyOpen, setCurrencyOpen] = useState(false)
+  const effectiveCurrency = activeCurrency || geoCurrency
   const [doc, setDoc] = useState(null)
   const [paying, setPaying] = useState(false)
   const [paid, setPaid] = useState(false)
@@ -50,6 +101,9 @@ export default function Preview() {
   const [error, setError] = useState('')
   const [payingUsdt, setPayingUsdt] = useState(false)
   const [buyerEmail, setBuyerEmail] = useState('')
+  // Shown inline when Paystack checkout needs an email we don't have yet
+  const [showEmailPrompt, setShowEmailPrompt] = useState(false)
+  const [showIntlCard, setShowIntlCard] = useState(false)
   const [emailSubmitted, setEmailSubmitted] = useState(false)
   const [emailLoading, setEmailLoading] = useState(false)
   const [preEmail, setPreEmail] = useState('')
@@ -80,14 +134,28 @@ export default function Preview() {
     setDoc(parsed)
     trackPreviewLoaded(parsed.docType)
     window.scrollTo(0, 0)
+
+    // Promo code carry-through: accept ?promo=XXX in the URL (or picked up
+    // from sessionStorage if the upstream /generate step saved it) so
+    // targeted share-links like getsignova.com/nda-generator?promo=ROSEMARY
+    // auto-populate the promo field. User can still edit / remove before
+    // clicking Apply — we don't auto-apply, to keep the action explicit.
+    try {
+      const params = new URLSearchParams(window.location.search)
+      const urlPromo = params.get('promo') || params.get('code')
+      const storedPromo = sessionStorage.getItem('signova_promo')
+      const pre = (urlPromo || storedPromo || '').toUpperCase().trim()
+      if (pre) {
+        setPromoCode(pre)
+        sessionStorage.setItem('signova_promo', pre)
+      }
+    } catch { /* ignore malformed URL */ }
   }, [])
 
-  // Show pre-purchase capture after 20 seconds — user is warm but hasn't paid
-  useEffect(() => {
-    if (paid) return
-    const t = setTimeout(() => setShowPreCapture(true), 20000)
-    return () => clearTimeout(t)
-  }, [paid])
+  // Pre-purchase email popup removed — it interrupted users mid-decision
+  // (20s after landing on Preview) and measurably increased bounce.
+  // The state + JSX is retained (referenced by setShowPreCapture below)
+  // but never activates, so the popup never renders.
 
   const handlePreCapture = async () => {
     if (!preEmail || !preEmail.includes('@')) return
@@ -270,8 +338,57 @@ export default function Preview() {
     }
   }
 
+  const handlePaystackCheckout = async () => {
+    // Collect email before redirect. Paystack pre-fills its checkout with
+    // whatever we send; if we send a placeholder the user sees a confusing
+    // 'invalid' page they can't fix. Show the inline buyer-email input
+    // (same box used post-purchase) and wait for the user to fill it.
+    const trimmedEmail = (buyerEmail || '').trim()
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setError('Please enter your email below first — Paystack sends your receipt there.')
+      setShowEmailPrompt(true)
+      return
+    }
+    setPaying(true)
+    setError('')
+    trackPaymentAttempted(doc?.docType, 'paystack')
+    const paystackTimer = setTimeout(() => setPaying(false), 8000)
+    try {
+      const res = await fetch('/api/paystack-initialize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          docType: doc.docType,
+          docName: doc.docName,
+          email: trimmedEmail,
+        }),
+      })
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}))
+        throw new Error(errData.error || 'Could not start Paystack payment. Please try again.')
+      }
+      const { url, reference } = await res.json()
+      sessionStorage.setItem('paystack_reference', reference)
+      clearTimeout(paystackTimer)
+      window.location.href = url
+    } catch (e) {
+      clearTimeout(paystackTimer)
+      setError(e.message)
+      setPaying(false)
+    }
+  }
+
   const handlePromoApply = async () => {
-    if (!promoCode.trim()) return
+    // Normalize at the input boundary one more time — belt-and-suspenders
+    // against browser autofill / paste events that can bypass the onChange
+    // handler and leave React state out of sync with the DOM input.
+    const normalized = promoCode.trim().toUpperCase()
+    if (!normalized) {
+      // Previously returned silently — customer reported 'not responding'
+      // when the input appeared empty (autofill, premature Apply click, etc.)
+      setPromoError('Please enter a promo code.')
+      return
+    }
     setPromoLoading(true)
     setPromoError('')
     setPromoMsg('')
@@ -279,7 +396,7 @@ export default function Preview() {
       const res = await fetch('/api/promo-redeem', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: promoCode, docType: doc?.docType, docName: doc?.docName }),
+        body: JSON.stringify({ code: normalized, docType: doc?.docType, docName: doc?.docName }),
       })
       const data = await res.json()
       if (!res.ok || !data.valid) {
@@ -297,8 +414,49 @@ export default function Preview() {
         } else {
           setPromoToken(data.token)
           setPromoMsg(data.message)
-          trackPromoApplied(doc?.docType, promoCode)
+          trackPromoApplied(doc?.docType, normalized)
           setPaid(true)
+
+          // ── Trigger Claude Sonnet regeneration for premium quality ──
+          // The user unlocked via promo — regenerate with Anthropic instead of Llama preview
+          try {
+            const storedDoc = sessionStorage.getItem('signova_doc')
+            if (storedDoc) {
+              const parsed = JSON.parse(storedDoc)
+              if (parsed.prompt) {
+                setPromoMsg('Unlocked! Regenerating premium version…')
+                const regenRes = await fetch('/api/generate', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    prompt: parsed.prompt,
+                    promoToken: data.token,
+                  }),
+                })
+                if (regenRes.ok) {
+                  const regenData = await regenRes.json()
+                  if (regenData.text) {
+                    setDoc(prev => ({ ...prev, content: regenData.text }))
+                    // Update sessionStorage with premium content
+                    sessionStorage.setItem('signova_doc', JSON.stringify({
+                      ...parsed,
+                      content: regenData.text,
+                      isPremium: true,
+                    }))
+                    setPromoMsg('✓ Premium document ready — powered by Claude Sonnet')
+                  }
+                } else {
+                  // Regeneration failed — user still has unlocked preview, don't revert
+                  if (DEV) console.error('Promo regeneration failed:', regenRes.status)
+                  setPromoMsg(data.message + ' (preview version — regeneration unavailable)')
+                }
+              }
+            }
+          } catch (regenErr) {
+            // Graceful fallback: user keeps unlocked preview, log the error
+            if (DEV) console.error('Promo regeneration error:', regenErr)
+            setPromoMsg(data.message + ' (preview version)')
+          }
         }
       }
     } catch {
@@ -341,6 +499,66 @@ export default function Preview() {
   // Verify the payment server-side, then regenerate with Anthropic
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
+
+    // Handle Paystack return
+    if (params.get('payment') === 'paystack_success') {
+      const reference = sessionStorage.getItem('paystack_reference')
+      if (!reference) {
+        setError('Payment reference missing. If you paid, please contact info@ebenova.net.')
+        return
+      }
+      const raw = sessionStorage.getItem('signova_doc')
+      if (!raw) return
+      const savedDoc = JSON.parse(raw)
+      setVerifying(true)
+      const verifyPaystack = async () => {
+        try {
+          const verifyRes = await fetch('/api/paystack-verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reference }),
+          })
+          const verifyData = await verifyRes.json()
+          if (!verifyRes.ok || !verifyData.verified) {
+            setError('Payment not confirmed. If you just paid, wait a moment and refresh. Need help? Email info@ebenova.net.')
+            setVerifying(false)
+            return
+          }
+          // Payment verified — regenerate with Anthropic
+          if (savedDoc.prompt) {
+            try {
+              const genRes = await fetch('/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: savedDoc.prompt }),
+              })
+              if (genRes.ok) {
+                const genData = await genRes.json()
+                if (genData.text) {
+                  const upgraded = { ...savedDoc, content: genData.text, isPremium: true }
+                  sessionStorage.setItem('signova_doc', JSON.stringify(upgraded))
+                  setDoc(upgraded)
+                }
+              }
+            } catch (genErr) {
+              DEV && console.error('Premium regen error:', genErr)
+            }
+          }
+          sessionStorage.removeItem('paystack_reference')
+          setTimeout(() => trackPaymentSuccess(savedDoc.docType, 'paystack'), 1500)
+          setPaid(true)
+          window.history.replaceState({}, '', '/preview')
+        } catch (err) {
+          DEV && console.error('Paystack verify error:', err)
+          setError('Something went wrong verifying your payment. Please contact info@ebenova.net.')
+        } finally {
+          setVerifying(false)
+        }
+      }
+      verifyPaystack()
+      return
+    }
+
     // Handle OxaPay (USDT) return
     if (params.get('payment') === 'oxapay_success') {
       const trackId = sessionStorage.getItem('oxapay_trackId')
@@ -382,7 +600,7 @@ export default function Preview() {
               }
             }
           } catch (genErr) {
-            console.error('Premium regen error:', genErr)
+            DEV && console.error('Premium regen error:', genErr)
           }
         }
         sessionStorage.removeItem('oxapay_trackId')
@@ -390,7 +608,7 @@ export default function Preview() {
         setPaid(true)
         window.history.replaceState({}, '', '/preview')
       } catch (err) {
-        console.error('OxaPay verify error:', err)
+        DEV && console.error('OxaPay verify error:', err)
         setError('Something went wrong verifying your USDT payment. Please contact info@ebenova.net.')
       } finally {
         setVerifying(false)
@@ -404,7 +622,7 @@ export default function Preview() {
 
     const sessionId = params.get('session_id')
     if (!sessionId) {
-      console.error('No session_id in return URL')
+      DEV && console.error('No session_id in return URL')
       setError('Payment could not be verified — missing checkout reference. Please contact info@ebenova.net.')
       return
     }
@@ -427,7 +645,7 @@ export default function Preview() {
         const verifyData = await verifyRes.json()
 
         if (!verifyRes.ok || !verifyData.verified) {
-          console.error('Payment verification failed:', verifyData)
+          DEV && console.error('Payment verification failed:', verifyData)
           setError('Payment could not be verified. If you were charged, please contact info@ebenova.net with your checkout reference.')
           setVerifying(false)
           return
@@ -450,10 +668,10 @@ export default function Preview() {
                 setDoc(upgraded)
               }
             } else {
-              console.warn('Premium regeneration failed, using preview version')
+              DEV && console.warn('Premium regeneration failed, using preview version')
             }
           } catch (genErr) {
-            console.error('Premium regeneration error:', genErr)
+            DEV && console.error('Premium regeneration error:', genErr)
             // Still mark as paid — they paid, let them download the preview version
           }
         }
@@ -462,7 +680,7 @@ export default function Preview() {
         setPaid(true)
         window.history.replaceState({}, '', '/preview')
       } catch (err) {
-        console.error('Verification error:', err)
+        DEV && console.error('Verification error:', err)
         setError('Something went wrong verifying your payment. Please contact info@ebenova.net.')
       } finally {
         setVerifying(false)
@@ -496,6 +714,11 @@ export default function Preview() {
 
   return (
     <div className="preview-page">
+      <Helmet>
+        <title>Document Preview | Signova</title>
+        <meta name="description" content="Preview your AI-generated legal document before downloading." />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       {/* Nav */}
       <div className="preview-nav">
         <button className="gen-back" onClick={() => navigate('/')}>← Back to home</button>
@@ -510,7 +733,7 @@ export default function Preview() {
             </button>
           ) : (
             <button className="btn-pay" onClick={handleDownload} disabled={paying}>
-              {paying ? <><span className="spinner-sm" /> Processing…</> : <>Download PDF — $4.99</>}
+              {paying ? <><span className="spinner-sm" /> Processing…</> : <>Download PDF — {effectiveCurrency.code === 'USD' ? '$4.99' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()}`}</>}
             </button>
           )}
         </div>
@@ -521,7 +744,7 @@ export default function Preview() {
         <div className="preview-doc-wrap">
           {!paid && (
             <div className="preview-watermark-bar">
-              🔒 Preview — showing first 40% of your document
+              <Lock size={14} weight="regular" style={{ verticalAlign: '-2px', marginRight: 6 }} />Preview — showing first 40% of your document
             </div>
           )}
           {paid && (
@@ -556,7 +779,7 @@ export default function Preview() {
                   </div>
                   <div className="locked-overlay">
                     <div className="locked-content">
-                      <div className="locked-icon">🔒</div>
+                      <div className="locked-icon"><Lock size={32} weight="duotone" /></div>
                       <h3 className="locked-title">
                         {hiddenSectionCount > 0 
                           ? `${hiddenSectionCount} more section${hiddenSectionCount > 1 ? 's' : ''} hidden`
@@ -571,9 +794,9 @@ export default function Preview() {
                         onClick={handleDownload}
                         disabled={paying}
                       >
-                        {paying 
-                          ? <><span className="spinner-sm" /> Processing…</> 
-                          : <>Unlock Full Document — $4.99</>
+                        {paying
+                          ? <><span className="spinner-sm" /> Processing…</>
+                          : <>Unlock Full Document — {effectiveCurrency.code === 'USD' ? '$4.99' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()}`}</>
                         }
                       </button>
                       <p className="locked-guarantee">30-day money-back guarantee · Instant download</p>
@@ -618,7 +841,7 @@ export default function Preview() {
 
             {/* First paying customer — honest signal */}
             <div className="sidebar-social-proof">
-              <span className="proof-badge">🎯</span>
+              <span className="proof-badge"><Target size={18} weight="duotone" /></span>
               <p className="proof-text">First paying customer — March 2026. Early access open.</p>
             </div>
 
@@ -632,7 +855,7 @@ export default function Preview() {
                 ) : (
                   <>
                     <p className="email-capture-label">
-                      📧 Not ready to pay?
+                      <EnvelopeSimple size={16} weight="regular" style={{ verticalAlign: '-3px', marginRight: 6 }} />Not ready to pay?
                     </p>
                     <p className="email-capture-sub">
                       Get a link to this preview sent to your inbox. Come back anytime.
@@ -660,9 +883,50 @@ export default function Preview() {
               </div>
             )}
 
+            {/* Currency toggle */}
+            {!paid && (
+              <div className="sidebar-currency-toggle" style={{ position: 'relative', marginBottom: '12px' }}>
+                <button
+                  className="sidebar-currency-btn"
+                  onClick={() => setCurrencyOpen(o => !o)}
+                  aria-label="Change currency"
+                  title="Change currency"
+                >
+                  <CurrencyCircleDollar size={16} weight="regular" style={{ verticalAlign: '-3px', marginRight: 6 }} />{effectiveCurrency.code === 'USD' ? '$4.99 USD' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()} ${effectiveCurrency.code}`}
+                </button>
+                {currencyOpen && (
+                  <div className="sidebar-currency-dropdown">
+                    {CHECKOUT_CURRENCY_OPTIONS.map(opt => (
+                      <button
+                        key={opt.code}
+                        className={`sidebar-currency-option ${effectiveCurrency.code === opt.code ? 'active' : ''}`}
+                        onClick={() => {
+                          if (opt.code === geoCurrency.code) {
+                            setActiveCurrency(null)
+                          } else {
+                            setActiveCurrency({ code: opt.code, symbol: opt.symbol, amount: opt.amount })
+                          }
+                          setCurrencyOpen(false)
+                        }}
+                      >
+                        {opt.label}
+                        {opt.code === geoCurrency.code && !activeCurrency && <span className="currency-auto-badge">Auto</span>}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="sidebar-price">
-              <span className="price-big">$4.99</span>
-              <span className="price-label">one-time · instant download</span>
+              <span className="price-big">
+                {effectiveCurrency.code === 'USD' ? '$4.99' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()}`}
+              </span>
+              <span className="price-label">
+                {effectiveCurrency.code === 'USD'
+                  ? 'one-time · instant download'
+                  : `≈ $4.99 · one-time · instant download`}
+              </span>
             </div>
 
             {/* Guarantee — prominent, not buried */}
@@ -671,33 +935,33 @@ export default function Preview() {
               <span>30-day money-back guarantee — no questions asked</span>
             </div>
             {error && <div className="sidebar-error">{error}</div>}
-            {/* Promo code — hidden behind toggle so it doesn't distract the pay button */}
+            {/* Promo code — always visible, above payment buttons, so users
+                who arrive with a code can't miss it. Real customer (ROSEMARY
+                code) clicked the payment button instead of finding the
+                hidden toggle, then got confused by Paystack's 'invalid
+                link' / 'incomplete email' errors on the wrong flow.
+                Showing the input by default adds minor visual weight for
+                non-promo users but eliminates the miss-the-toggle failure. */}
             {!paid && (
-              <div className="promo-box">
-                {!promoOpen ? (
-                  <button className="promo-toggle" onClick={() => setPromoOpen(true)}>
-                    Have a promo code?
+              <div className="promo-box promo-box-visible">
+                <label className="promo-label">
+                  Have a promo code?
+                </label>
+                <div className="promo-row">
+                  <input
+                    className="promo-input"
+                    type="text"
+                    placeholder="Enter code"
+                    value={promoCode}
+                    onChange={e => { setPromoCode(e.target.value.toUpperCase().trimStart()); setPromoError(''); setPromoMsg('') }}
+                    onKeyDown={e => e.key === 'Enter' && handlePromoApply()}
+                  />
+                  <button className="promo-btn" onClick={handlePromoApply} disabled={promoLoading}>
+                    {promoLoading ? '…' : 'Apply'}
                   </button>
-                ) : (
-                  <>
-                    <div className="promo-row">
-                      <input
-                        className="promo-input"
-                        type="text"
-                        placeholder="Promo code"
-                        value={promoCode}
-                        autoFocus
-                        onChange={e => { setPromoCode(e.target.value.toUpperCase()); setPromoError(''); setPromoMsg('') }}
-                        onKeyDown={e => e.key === 'Enter' && handlePromoApply()}
-                      />
-                      <button className="promo-btn" onClick={handlePromoApply} disabled={promoLoading}>
-                        {promoLoading ? '…' : 'Apply'}
-                      </button>
-                    </div>
-                    {promoMsg && <div className="promo-success">{promoMsg}</div>}
-                    {promoError && <div className="promo-error">{promoError}</div>}
-                  </>
-                )}
+                </div>
+                {promoMsg && <div className="promo-success">{promoMsg}</div>}
+                {promoError && <div className="promo-error">{promoError}</div>}
               </div>
             )}
             {/* Promo success message — shown briefly before paid state takes over */}
@@ -747,7 +1011,7 @@ export default function Preview() {
                 {!emailSubmitted ? (
                   <div className="buyer-capture">
                     <p className="buyer-capture-label">
-                      📋 Get your free checklist
+                      <ClipboardText size={16} weight="regular" style={{ verticalAlign: '-3px', marginRight: 6 }} />Get your free checklist
                     </p>
                     <p className="buyer-capture-sub">
                       5 ways to protect your document after signing — sent to your inbox instantly.
@@ -778,41 +1042,48 @@ export default function Preview() {
             ) : (
               <>
                 {isNigeria ? (
-                  // Nigeria: crypto first — card success rates are low
+                  // Nigeria: Paystack (local card) first, then crypto, then international card
                   <>
-                    <div className="nigeria-notice">
-                      🇳🇬 <strong>Nigeria tip:</strong> Crypto / USDT works best — Nigerian cards are sometimes declined on international platforms.
-                    </div>
+                    {/* Inline email prompt — Paystack requires a real email for the receipt.
+                        Only shown when user clicks Paystack without having entered email yet. */}
+                    {showEmailPrompt && (
+                      <div className="email-prompt-inline">
+                        <label className="email-prompt-label">Enter your email for the receipt:</label>
+                        <input
+                          className="email-prompt-input"
+                          type="email"
+                          placeholder="your@email.com"
+                          value={buyerEmail}
+                          onChange={e => setBuyerEmail(e.target.value)}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(buyerEmail.trim())) {
+                              setShowEmailPrompt(false)
+                              setError('')
+                              handlePaystackCheckout()
+                            }
+                          }}
+                          autoFocus
+                        />
+                      </div>
+                    )}
+                    {/* PRIMARY — Paystack Nigerian card. Gold CTA, can't miss.
+                        Nigerian users are here to pay with their Nigerian card
+                        the overwhelming majority of the time; give it the biggest
+                        visual weight. */}
                     <button
-                      className="btn-usdt btn-usdt-primary"
-                      onClick={handleUsdtCheckout}
-                      disabled={payingUsdt}
+                      className="btn-pay-full"
+                      onClick={handlePaystackCheckout}
+                      disabled={paying}
                     >
-                      {payingUsdt
-                        ? <><span className="spinner-sm" /> Preparing invoice…</>
-                        : <>⬡ Pay $4.99 in USDT / Crypto →</>}
-                    </button>
-                    <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Works with Myaza, Binance & all African crypto wallets</p>
-                    <div className="usdt-divider"><span>or try card payment</span></div>
-                    <button className="btn-pay-full btn-pay-secondary" onClick={handleDownload} disabled={paying}>
                       {paying
                         ? <><span className="spinner-sm" /> Processing…</>
-                        : <>💳 Pay $4.99 by Card →</>
+                        : <><CreditCard size={16} weight="regular" style={{ verticalAlign: '-3px', marginRight: 6 }} />Pay {effectiveCurrency.symbol}{effectiveCurrency.amount.toLocaleString()} with Nigerian Card →</>
                       }
                     </button>
-                    <div className="trust-badge">🔒 SSL encrypted · Secure checkout · Instant delivery</div>
-                    <p className="trust-line">🔒 Secure checkout · Instant delivery · No account needed</p>
-                  </>
-                ) : (
-                  // Everyone else: card first, crypto below
-                  <>
-                    <button className="btn-pay-full" onClick={handleDownload} disabled={paying}>
-                      {paying
-                        ? <><span className="spinner-sm" /> Processing…</>
-                        : <>Download full document — $4.99 →</>
-                      }
-                    </button>
-                    <p className="trust-line">🔒 SSL secure · No account · Instant PDF · 30-day refund</p>
+                    <p className="trust-line"><Lock size={12} weight="regular" style={{ verticalAlign: '-1px', marginRight: 4 }} />GTBank · Access · FirstBank · UBA · Kuda · All Nigerian debit cards · Instant delivery</p>
+
+                    {/* SECONDARY — USDT/crypto. Subtle button, same weight as the
+                        non-Nigerian USDT option for consistency. */}
                     <div className="sidebar-usdt">
                       <div className="usdt-divider"><span>or pay with crypto</span></div>
                       <button
@@ -822,7 +1093,54 @@ export default function Preview() {
                       >
                         {payingUsdt
                           ? <><span className="spinner-sm" /> Preparing invoice…</>
-                          : <>⬡ Pay $4.99 in USDT / Crypto →</>}
+                          : <>⬡ Pay {effectiveCurrency.symbol}{effectiveCurrency.amount.toLocaleString()} in USDT / Crypto →</>}
+                      </button>
+                      <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Binance, Myaza & all African crypto wallets</p>
+                    </div>
+
+                    {/* TERTIARY — International card, hidden behind a disclosure.
+                        Useful fallback when Paystack rejects a virtual card etc.,
+                        but adds decision paralysis if shown by default. */}
+                    {!showIntlCard ? (
+                      <button
+                        type="button"
+                        className="intl-card-toggle"
+                        onClick={() => setShowIntlCard(true)}
+                      >
+                        Having trouble? Try international card →
+                      </button>
+                    ) : (
+                      <>
+                        <button className="btn-pay-full btn-pay-secondary" onClick={handleDownload} disabled={paying}>
+                          {paying
+                            ? <><span className="spinner-sm" /> Processing…</>
+                            : <><Globe size={16} weight="regular" style={{ verticalAlign: '-3px', marginRight: 6 }} />Pay $4.99 USD by International Card →</>
+                          }
+                        </button>
+                        <p className="trust-line">Charged in USD · Works with Visa, Mastercard, Amex</p>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  // Everyone else: card first, crypto below
+                  <>
+                    <button className="btn-pay-full" onClick={handleDownload} disabled={paying}>
+                      {paying
+                        ? <><span className="spinner-sm" /> Processing…</>
+                        : <>Download full document — {effectiveCurrency.code === 'USD' ? '$4.99' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()}`} →</>
+                      }
+                    </button>
+                    <p className="trust-line"><Lock size={12} weight="regular" style={{ verticalAlign: '-1px', marginRight: 4 }} />SSL secure · No account · Instant PDF · 30-day refund</p>
+                    <div className="sidebar-usdt">
+                      <div className="usdt-divider"><span>or pay with crypto</span></div>
+                      <button
+                        className="btn-usdt"
+                        onClick={handleUsdtCheckout}
+                        disabled={payingUsdt}
+                      >
+                        {payingUsdt
+                          ? <><span className="spinner-sm" /> Preparing invoice…</>
+                          : <>⬡ Pay {effectiveCurrency.code === 'USD' ? '$4.99' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()}`} in USDT / Crypto →</>}
                       </button>
                       <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Works with Myaza, Binance & all African crypto wallets · Instant confirmation</p>
                     </div>
@@ -840,21 +1158,21 @@ export default function Preview() {
           {/* Companion doc — context-aware suggestion */}
           {doc && (() => {
             const companions = {
-              'privacy-policy': { id: 'terms-of-service', label: 'Terms of Service', icon: '📋', reason: 'Every app needs both.' },
-              'terms-of-service': { id: 'privacy-policy', label: 'Privacy Policy', icon: '🔒', reason: 'Required alongside Terms of Service.' },
-              'nda': { id: 'freelance-contract', label: 'Freelance Contract', icon: '✍️', reason: 'Protect scope and payment too.' },
-              'freelance-contract': { id: 'nda', label: 'NDA', icon: '🤝', reason: 'Protect your ideas before the project.' },
-              'tenancy-agreement': { id: 'quit-notice', label: 'Quit Notice', icon: '📦', reason: 'Ready if you ever need it.' },
-              'loan-agreement': { id: 'payment-terms-agreement', label: 'Payment Terms', icon: '💳', reason: 'Document the repayment schedule too.' },
-              'business-partnership': { id: 'nda', label: 'NDA', icon: '🤝', reason: 'Protect confidential info before you start.' },
-              'consulting-agreement': { id: 'nda', label: 'NDA', icon: '🤝', reason: 'Standard companion for consulting work.' },
-              'employment-offer-letter': { id: 'non-compete-agreement', label: 'Non-Compete', icon: '🚫', reason: 'Protect your business from day one.' },
+              'privacy-policy': { id: 'terms-of-service', label: 'Terms of Service', icon: <ClipboardText {...CICON} />, reason: 'Every app needs both.' },
+              'terms-of-service': { id: 'privacy-policy', label: 'Privacy Policy', icon: <Lock {...CICON} />, reason: 'Required alongside Terms of Service.' },
+              'nda': { id: 'freelance-contract', label: 'Freelance Contract', icon: <PenNib {...CICON} />, reason: 'Protect scope and payment too.' },
+              'freelance-contract': { id: 'nda', label: 'NDA', icon: <Handshake {...CICON} />, reason: 'Protect your ideas before the project.' },
+              'tenancy-agreement': { id: 'quit-notice', label: 'Quit Notice', icon: <Package {...CICON} />, reason: 'Ready if you ever need it.' },
+              'loan-agreement': { id: 'payment-terms-agreement', label: 'Payment Terms', icon: <CreditCard {...CICON} />, reason: 'Document the repayment schedule too.' },
+              'business-partnership': { id: 'nda', label: 'NDA', icon: <Handshake {...CICON} />, reason: 'Protect confidential info before you start.' },
+              'consulting-agreement': { id: 'nda', label: 'NDA', icon: <Handshake {...CICON} />, reason: 'Standard companion for consulting work.' },
+              'employment-offer-letter': { id: 'non-compete-agreement', label: 'Non-Compete', icon: <Prohibit {...CICON} />, reason: 'Protect your business from day one.' },
             }
             const c = companions[doc.docType]
             if (!c) return null
             return (
               <div className="sidebar-companion">
-                <p className="companion-reason">📎 You'll also need</p>
+                <p className="companion-reason"><Paperclip size={14} weight="regular" style={{ verticalAlign: '-2px', marginRight: 4 }} />You'll also need</p>
                 <button className="companion-btn" onClick={() => { trackCompanionClicked(doc.docType, c.id); navigate(`/generate/${c.id}`) }}>
                   <span className="companion-icon">{c.icon}</span>
                   <span>

@@ -74,7 +74,7 @@ export default async function handler(req, res) {
       key,
       tier: 'free',
       monthlyLimit: 5,
-      documentTypes: 27,
+      documentTypes: 34,
       jurisdictions: 18,
       resets_at: nextReset.toISOString(),
       message: 'Your API key is ready! You can generate 5 documents this month.',

@@ -1,5 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
+import { Handshake, User } from '@phosphor-icons/react'
+import SiteNav from '../components/SiteNav'
+import SiteFooter from '../components/SiteFooter'
 import './Landing.css'
 import './NDALanding.css'
 
@@ -50,26 +53,13 @@ export default function NDALanding() {
         <link rel="canonical" href="https://www.getsignova.com/nda-generator" />
       </Helmet>
 
-      {/* Nav */}
-      <nav className="nav">
-        <div className="nav-inner">
-          <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            <div className="logo-mark">S</div>
-            <span className="logo-text">Signova</span>
-          </div>
-          <div className="nav-links">
-            <a href="/#how">How it works</a>
-            <a href="/#documents">Documents</a>
-            <a href="/blog">Blog</a>
-          </div>
-        </div>
-      </nav>
+      <SiteNav variant="signova" />
 
       {/* Hero */}
       <section className="nda-hero">
         <div className="hero-glow" />
         <div className="nda-hero-inner">
-          <div className="nda-badge">🤝 NDA Generator</div>
+          <div className="nda-badge"><Handshake size={16} weight="duotone" style={{ verticalAlign: '-3px', marginRight: 6 }} />NDA Generator</div>
           <h1 className="nda-h1">
             Create a Non-Disclosure<br />Agreement in Minutes
           </h1>
@@ -134,7 +124,7 @@ export default function NDALanding() {
               <span className="nda-type-cta">Generate →</span>
             </div>
             <div className="nda-type-card" onClick={() => navigate('/generate/nda')}>
-              <div className="nda-type-icon">👤</div>
+              <div className="nda-type-icon"><User size={28} weight="duotone" /></div>
               <h3>Employee NDA</h3>
               <p>Protect proprietary information, client data, and trade secrets when onboarding staff with access to sensitive systems.</p>
               <span className="nda-type-cta">Generate →</span>
@@ -169,21 +159,7 @@ export default function NDALanding() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="footer">
-        <div className="footer-inner">
-          <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            <div className="logo-mark">S</div>
-            <span className="logo-text">Signova</span>
-          </div>
-          <p className="footer-copy">© {new Date().getFullYear()} Signova. All rights reserved.</p>
-          <div className="footer-links">
-            <a href="/privacy">Privacy</a>
-            <a href="/terms">Terms</a>
-            <a href="/blog">Blog</a>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter variant="signova" />
     </div>
   )
 }

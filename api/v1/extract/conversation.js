@@ -44,6 +44,7 @@ const FIELD_MAPS = {
   'facility-manager-agreement':['propertyOwner', 'facilityManager', 'property', 'services', 'fee', 'duration', 'country', 'liability'],
   'hire-purchase':           ['seller', 'buyer', 'asset', 'assetValue', 'deposit', 'installments', 'interestRate', 'country', 'ownershipTransfer', 'defaultClause'],
   'purchase-agreement':      ['seller', 'buyer', 'goods', 'purchasePrice', 'paymentMethod', 'deliveryTerms', 'condition', 'warranty', 'country'],
+  'data-processing-agreement': ['controllerName', 'processorName', 'dataSubjects', 'dataCategories', 'specialCategoryData', 'processingPurpose', 'processingActivities', 'retentionPeriod', 'subProcessors', 'securityMeasures', 'dataTransfers', 'jurisdiction', 'dpoContact', 'breachNotificationHours'],
 }
 
 async function parseBody(req) {

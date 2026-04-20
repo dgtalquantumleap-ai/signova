@@ -1,6 +1,7 @@
 /* eslint no-unused-vars: off */
 import { Routes, Route } from 'react-router-dom'
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useState, useEffect } from 'react'
+import ScrollToHash from './components/ScrollToHash'
 
 const Landing    = lazy(() => import('./pages/Landing'))
 const ApiLanding = lazy(() => import('./pages/ApiLanding'))
@@ -21,26 +22,39 @@ const ContactPage = lazy(() => import('./pages/ContactPage'))
 const Docs      = lazy(() => import('./pages/Docs'))
 const Dashboard   = lazy(() => import('./pages/Dashboard'))
 const GetStarted  = lazy(() => import('./pages/GetStarted'))
+const PricingPage = lazy(() => import('./pages/PricingPage'))
 const ScopeGuard  = lazy(() => import('./pages/ScopeGuard'))
+const Trust       = lazy(() => import('./pages/Trust'))
 const Vigil             = lazy(() => import('./pages/VigilLanding'))
+const VigilTerms        = lazy(() => import('./pages/VigilTerms'))
 const Insights          = lazy(() => import('./pages/Insights'))
 const InsightsDashboard = lazy(() => import('./pages/InsightsDashboard'))
 
-const PageShell = () => (
-  <div style={{ minHeight: '100vh', background: '#0e0e0e' }} />
-)
+function SuspenseFallback() {
+  const [timedOut, setTimedOut] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setTimedOut(true), 2000)
+    return () => clearTimeout(t)
+  }, [])
+  if (timedOut) {
+    return (
+      <div style={{ minHeight: '100vh', background: '#0e0e0e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px', padding: '24px', textAlign: 'center' }}>
+        <p style={{ color: '#c8c4bc', fontFamily: "'DM Sans', system-ui, sans-serif", fontSize: '16px' }}>Page is taking longer than expected. Please refresh.</p>
+        <a href="/" style={{ background: '#c9a84c', color: '#0e0e0e', border: 'none', borderRadius: '8px', padding: '14px 28px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', textDecoration: 'none', display: 'inline-block' }}>Back to Signova →</a>
+      </div>
+    )
+  }
+  return <div style={{ minHeight: '100vh', background: '#0e0e0e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ width: '32px', height: '32px', border: '3px solid #333', borderTopColor: '#c9a84c', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /></div>
+}
 
 // Serve the correct root page based on which domain is being visited.
 // ebenova.dev  → ApiLanding (the API platform homepage)
 // getsignova.com / anything else → Landing (the Signova product homepage)
 function isEbenovaDomain() {
   const hostname = window.location.hostname
-  // localhost / 127.0.0.1 included so local dev can reach /insights routes
   return hostname === 'ebenova.dev'
     || hostname === 'www.ebenova.dev'
     || hostname === 'api.ebenova.dev'
-    || hostname === 'localhost'
-    || hostname === '127.0.0.1'
 }
 
 function RootPage() {
@@ -56,10 +70,34 @@ function InsightsDashboardPage() {
   return isEbenovaDomain() ? <InsightsDashboard /> : <NotFound />
 }
 
+function CookieConsent() {
+  const [visible, setVisible] = useState(false)
+  useEffect(() => {
+    if (!localStorage.getItem('sig_cookie_consent')) setVisible(true)
+  }, [])
+  if (!visible) return null
+  const accept = () => { localStorage.setItem('sig_cookie_consent', 'accepted'); setVisible(false) }
+  const decline = () => {
+    localStorage.setItem('sig_cookie_consent', 'declined')
+    setVisible(false)
+    // Disable GA4 if user declines
+    window['ga-disable-G-BT3L97QKS5'] = true
+  }
+  return (
+    <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999, background: '#1a1a1a', borderTop: '1px solid #333', padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', flexWrap: 'wrap', fontFamily: "'DM Sans', system-ui, sans-serif", fontSize: '13px', color: '#c8c4bc' }}>
+      <span>We use cookies for analytics (Google Analytics). No tracking cookies. <a href="/privacy" style={{ color: '#c9a84c', textDecoration: 'underline' }}>Privacy Policy</a></span>
+      <button onClick={accept} style={{ background: '#c9a84c', color: '#0e0e0e', border: 'none', borderRadius: '6px', padding: '8px 18px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Accept</button>
+      <button onClick={decline} style={{ background: 'transparent', color: '#888', border: '1px solid #444', borderRadius: '6px', padding: '8px 18px', fontSize: '13px', cursor: 'pointer' }}>Decline</button>
+    </div>
+  )
+}
+
 export default function App() {
   return (
-    <Suspense fallback={<PageShell />}>
+    <Suspense fallback={<SuspenseFallback />}>
+      <ScrollToHash />
       <a href="#main-content" className="skip-nav">Skip to main content</a>
+      <CookieConsent />
       <Routes>
         <Route path="/" element={<RootPage />} />
         <Route path="/api" element={<ApiLanding />} />
@@ -77,12 +115,14 @@ export default function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/team" element={<AboutPage />} />
-        <Route path="/pricing" element={<Landing />} />
+        <Route path="/pricing" element={<PricingPage />} />
         <Route path="/docs" element={<Docs />} />
         <Route path="/get-started" element={<GetStarted />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/vigil" element={<Vigil />} />
+        <Route path="/vigil/terms" element={<VigilTerms />} />
         <Route path="/scope-guard" element={<ScopeGuard />} />
+        <Route path="/trust" element={<Trust />} />
         <Route path="/insights" element={<InsightsPage />} />
         <Route path="/insights/dashboard" element={<InsightsDashboardPage />} />
         <Route path="/:slug" element={<DocLanding />} />

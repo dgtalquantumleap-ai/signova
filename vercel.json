@@ -3,6 +3,10 @@
     {
       "path": "/v1/insights/poll",
       "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/ots-upgrade",
+      "schedule": "17 */2 * * *"
     }
   ],
   "redirects": [
@@ -22,6 +26,73 @@
       "source": "/favicon.ico",
       "destination": "/favicon.svg",
       "permanent": false
+    },
+    {
+      "source": "/vigil",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "destination": "https://www.ebenova.dev/vigil",
+      "permanent": true
+    },
+    {
+      "source": "/vigil/terms",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "destination": "https://www.ebenova.dev/vigil/terms",
+      "permanent": true
+    },
+    {
+      "source": "/insights/:path*",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "destination": "https://www.ebenova.dev/insights/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/docs",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "destination": "https://www.ebenova.dev/docs",
+      "permanent": true
+    },
+    {
+      "source": "/dashboard",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "destination": "https://www.ebenova.dev/dashboard",
+      "permanent": true
+    },
+    {
+      "source": "/api-landing",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "destination": "https://www.ebenova.dev/api-landing",
+      "permanent": true
+    },
+
+    {
+      "source": "/api",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "destination": "https://www.ebenova.dev/api",
+      "permanent": true
+    },
+    {
+      "source": "/pricing",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "destination": "https://www.ebenova.dev/pricing",
+      "permanent": true
+    },
+    {
+      "source": "/get-started",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "destination": "https://www.ebenova.dev/get-started",
+      "permanent": true
+    },
+    {
+      "source": "/admin",
+      "has": [{ "type": "host", "value": "www.getsignova.com" }],
+      "destination": "https://www.ebenova.dev/admin",
+      "permanent": true
+    },
+    {
+      "source": "/scope-guard",
+      "has": [{ "type": "host", "value": "www.ebenova.dev" }],
+      "destination": "https://www.getsignova.com/scope-guard",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -44,6 +115,14 @@
     {
       "source": "/v1/insights/poll",
       "destination": "/api/v1/insights/poll"
+    },
+    {
+      "source": "/v1/monitors",
+      "destination": "/api/v1/insights/monitors/router"
+    },
+    {
+      "source": "/stripe-webhook",
+      "destination": "/api/stripe-webhook"
     },
     {
       "source": "/v1/(.*)",
@@ -71,6 +150,10 @@
     },
     {
       "source": "/vigil",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/vigil/terms",
       "destination": "/index.html"
     },
     {
@@ -103,8 +186,10 @@
     "api/v1/keys/create.js": { "maxDuration": 30 },
     "api/v1/keys/usage.js": { "maxDuration": 30 },
     "api/v1/documents/types.js": { "maxDuration": 30 },
+    "api/stripe-webhook.js": { "maxDuration": 30 },
     "api/v1/billing/checkout.js": { "maxDuration": 30 },
     "api/v1/billing/webhook.js": { "maxDuration": 30 },
+    "api/v1/keys/self-serve.js": { "maxDuration": 30 },
     "api/v1/billing/portal.js": { "maxDuration": 30 },
     "api/v1/insights/matches/draft.js": { "maxDuration": 60 },
     "api/v1/insights/monitors/create.js": { "maxDuration": 30 },
@@ -115,24 +200,13 @@
     "api/v1/insights/matches/list.js": { "maxDuration": 30 },
     "api/v1/insights/matches/feedback.js": { "maxDuration": 30 },
     "api/v1/insights/poll.js": { "maxDuration": 300 },
-    "api/capture-buyer.js": { "maxDuration": 30 },
-    "api/checkout.js": { "maxDuration": 30 },
-    "api/contact.js": { "maxDuration": 30 },
-    "api/create-bypass.js": { "maxDuration": 15 },
     "api/extract-terms.js": { "maxDuration": 60 },
     "api/generate-preview.js": { "maxDuration": 60 },
     "api/generate.js": { "maxDuration": 120 },
     "api/geo.js": { "maxDuration": 10 },
     "api/mcp.js": { "maxDuration": 120 },
-    "api/oxapay-checkout.js": { "maxDuration": 30 },
-    "api/oxapay-verify.js": { "maxDuration": 30 },
-    "api/oxapay-webhook.js": { "maxDuration": 30 },
-    "api/promo-redeem.js": { "maxDuration": 15 },
-    "api/promo-verify.js": { "maxDuration": 15 },
-    "api/scope-guard-waitlist.js": { "maxDuration": 15 },
-    "api/stripe-checkout.js": { "maxDuration": 30 },
-    "api/stripe-verify.js": { "maxDuration": 30 },
-    "api/v1/admin/revenue.js": { "maxDuration": 60 }
+    "api/v1/admin/revenue.js": { "maxDuration": 60 },
+    "api/cron/ots-upgrade.js": { "maxDuration": 300 }
   },
   "headers": [
     {
@@ -188,7 +262,7 @@
         { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
         { "key": "X-DNS-Prefetch-Control", "value": "on" },
         { "key": "Cross-Origin-Opener-Policy", "value": "same-origin-allow-popups" },
-        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms https://scripts.clarity.ms https://*.vercel-insights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://*.clarity.ms https://ipapi.co https://*.vercel-insights.com; frame-src https://www.loom.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';" }
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms https://scripts.clarity.ms https://*.vercel-insights.com https://vercel.live; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.ebenova.dev https://www.ebenova.dev https://ebenova.dev https://www.getsignova.com https://getsignova.com https://www.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://*.clarity.ms https://ipapi.co https://*.vercel-insights.com https://vercel.live wss://ws-us3.pusher.com; frame-src https://www.loom.com https://vercel.live; frame-ancestors 'none'; base-uri 'self'; form-action 'self';" }
       ]
     }
   ]

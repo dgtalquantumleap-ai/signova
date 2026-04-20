@@ -93,6 +93,28 @@ const TEMPLATES = {
       { key: 'budget', label: 'Budget', type: 'text', required: true },
     ],
   },
+  'data-processing-agreement': {
+    label: 'Data Processing Agreement (DPA)',
+    category: 'Data Protection & Compliance',
+    fields: [
+      { key: 'controllerName', label: 'Data Controller (your organisation)', type: 'text', required: true, placeholder: 'Acme Ltd.' },
+      { key: 'processorName', label: 'Data Processor (vendor/contractor)', type: 'text', required: true, placeholder: 'CloudServ Ltd.' },
+      { key: 'controllerAddress', label: 'Controller Address', type: 'text', required: false },
+      { key: 'processorAddress', label: 'Processor Address', type: 'text', required: false },
+      { key: 'dataSubjects', label: 'Categories of Data Subjects', type: 'textarea', required: true, placeholder: 'Customers, employees, website visitors' },
+      { key: 'dataCategories', label: 'Categories of Personal Data', type: 'textarea', required: true, placeholder: 'Names, emails, phone numbers, payment details' },
+      { key: 'specialCategoryData', label: 'Special Category Data? (if any)', type: 'textarea', required: false, placeholder: 'Health data, biometric data — leave blank if none' },
+      { key: 'processingPurpose', label: 'Purpose of Processing', type: 'textarea', required: true, placeholder: 'Cloud hosting of customer database, email marketing, payroll processing' },
+      { key: 'processingActivities', label: 'Description of Processing Activities', type: 'textarea', required: true, placeholder: 'Storing, retrieving, transmitting, and backing up customer data on cloud infrastructure' },
+      { key: 'retentionPeriod', label: 'Data Retention Period', type: 'text', required: true, placeholder: 'Duration of contract + 30 days after termination' },
+      { key: 'subProcessors', label: 'Sub-Processors Authorised?', type: 'select', options: ['Yes — with prior written authorisation', 'No — not permitted', 'Yes — specific list attached'], required: true },
+      { key: 'securityMeasures', label: 'Technical & Organisational Security Measures', type: 'textarea', required: false, placeholder: 'Encryption at rest, role-based access, 2FA, regular audits, incident response plan' },
+      { key: 'dataTransfers', label: 'Cross-Border Data Transfers?', type: 'select', options: ['No — data stays in-country', 'Yes — to specific countries (list them)', 'Yes — globally with adequate safeguards'], required: true },
+      { key: 'jurisdiction', label: 'Governing Law / Data Protection Regime', type: 'select', options: ['Canada — PIPEDA', 'Canada — Quebec Law 25', 'United States — CCPA/CPRA', 'United Kingdom — UK GDPR / DPA 2018', 'European Union — GDPR', 'Nigeria — NDPA 2023', 'South Africa — POPIA', 'Kenya — Data Protection Act 2019', 'Ghana — Data Protection Act 2012', 'Other'], required: true },
+      { key: 'dpoContact', label: 'Data Protection Officer / Contact Person', type: 'text', required: false, placeholder: 'dpo@acme.com or Legal Department' },
+      { key: 'breachNotificationHours', label: 'Breach Notification Timeline', type: 'text', required: false, placeholder: '24 hours (internal) / 72 hours (to regulator)' },
+    ],
+  },
 }
 
 // Add remaining types with minimal schemas
@@ -103,6 +125,8 @@ const SIMPLE_TYPES = [
   'non-compete-agreement', 'payment-terms-agreement', 'business-partnership',
   'joint-venture', 'shareholder-agreement', 'mou', 'letter-of-intent',
   'distribution-agreement', 'supply-agreement', 'purchase-agreement',
+  'founders-agreement', 'ip-assignment-agreement', 'advisory-board-agreement',
+  'vesting-agreement', 'term-sheet', 'safe-agreement',
 ]
 
 for (const t of SIMPLE_TYPES) {

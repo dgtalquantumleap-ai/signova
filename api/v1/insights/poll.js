@@ -13,19 +13,21 @@
 import { getRedis } from '../../../lib/redis.js'
 import { pollInsights } from '../../../lib/insights-poller.js'
 
-const POLL_SECRET = process.env.POLL_CRON_SECRET || ''
+// Accept both CRON_SECRET (Vercel's standard) and POLL_CRON_SECRET (legacy)
+const POLL_SECRET = process.env.CRON_SECRET || process.env.POLL_CRON_SECRET || ''
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
 
   if (req.method === 'OPTIONS') return res.status(200).end()
-  if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, error: { code: 'METHOD_NOT_ALLOWED', message: 'Use POST' } })
+  // Vercel crons send GET; manual triggers can use POST
+  if (req.method !== 'GET' && req.method !== 'POST') {
+    return res.status(405).json({ success: false, error: { code: 'METHOD_NOT_ALLOWED', message: 'Use GET or POST' } })
   }
 
-  // Auth: require POLL_CRON_SECRET
+  // Auth: require cron secret (Vercel sends CRON_SECRET as Bearer token on cron invocations)
   const auth = req.headers['authorization'] || ''
   const provided = auth.startsWith('Bearer ') ? auth.slice(7).trim() : ''
   if (!POLL_SECRET || provided !== POLL_SECRET) {

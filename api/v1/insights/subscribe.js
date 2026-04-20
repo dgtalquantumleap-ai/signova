@@ -72,7 +72,8 @@ export default async function handler(req, res) {
 
   if (process.env.RESEND_API_KEY) {
     await sendResendEmail({
-      from: 'Akin at Ebenova <akin@ebenova.dev>',
+      from: 'Ebenova Insights <insights@ebenova.dev>',
+      reply_to: 'info@ebenova.net',
       to: normalizedEmail,
       subject: "You're on the Insights waitlist",
       html: buildConfirmationEmail(normalizedEmail, plan),
@@ -122,8 +123,8 @@ function buildConfirmationEmail(_email, _plan) {
       </ul>
     </div>
     <p style="color:#888;font-size:13px;margin:0;">
-      Akin, Ebenova<br>
-      <a href="mailto:akin@ebenova.dev" style="color:#c9a84c;">akin@ebenova.dev</a>
+      The Ebenova team<br>
+      <a href="mailto:info@ebenova.net" style="color:#c9a84c;">info@ebenova.net</a>
     </p>
   </div>
 </body>

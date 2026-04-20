@@ -41,3 +41,5 @@ api-keys.md
 find-token.js
 temp_token.txt
 temp_url.txt
+
+.env*.local

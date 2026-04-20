@@ -6,6 +6,7 @@ import { authenticate, recordUsage, buildUsageBlock } from '../../../lib/api-aut
 import { DocumentGenerateSchema, formatValidationError } from '../../../lib/validators.js'
 import { logError, logRequest, logDetailedError } from '../../../lib/logger.js'
 import { parseBody } from '../../../lib/parse-body.js'
+import { buildDpaSystemPrompt, buildKeyObligationsSummary, buildDataFlowMappingTemplate, getDpaClauses } from './clauses.js'
 
 const LEGAL_DISCLAIMER = {
   type: 'disclaimer',
@@ -25,6 +26,32 @@ function buildPrompt(docType, fields) {
     .join('\n')
 
   const docName = docType.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+
+  if (docType === 'data-processing-agreement') {
+    const jurisdiction = fields.jurisdiction || 'Nigeria — NDPA 2023'
+    const summary = buildKeyObligationsSummary(fields, jurisdiction)
+    const dataFlow = buildDataFlowMappingTemplate(fields)
+    return `Generate a Data Processing Agreement (DPA) for the following:
+
+${fieldSummary}
+
+The generated DPA must include THREE sections in this order:
+
+SECTION 1 — KEY OBLIGATIONS SUMMARY (plain language, top of document):
+${summary}
+
+SECTION 2 — THE FORMAL DPA:
+Write a comprehensive Data Processing Agreement with clear numbered sections. Include all standard DPA clauses tailored to the details provided. Use formal legal language but prioritise clarity — every obligation must state "Who," "What," and "When."
+
+SECTION 3 — DATA FLOW MAPPING TEMPLATE (operational checklist):
+${dataFlow}
+
+Requirements:
+- Do not include any placeholder text like [INSERT NAME] — use the actual values provided
+- End with a signature block after Section 2 (before Section 3)
+- Do NOT add any disclaimers, footnotes, notes, or suggestions to seek legal advice
+- Output the complete document only, no preamble, explanation, or closing notes.`
+  }
 
   return `Generate a professional, comprehensive ${docName} document for the following:
 
@@ -94,7 +121,36 @@ export default async function handler(req, res) {
 
   try {
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 90000) // 90s timeout
+    const timeoutId = setTimeout(() => controller.abort(), 90000)
+
+    // ── Jurisdiction-aware enhancement (non-DPA docs) ─────────────────────
+    // jurisdiction comes from a validated field, so matching is safe without pronoun worries.
+    const jurRaw = String(fields.jurisdiction || jurisdiction || '')
+    const jurLower = jurRaw.toLowerCase()
+    const isQuebecJur = jurLower.includes('quebec') || jurLower.includes('québec') || jurLower.includes('law 25')
+    const isCanadaJur = !isQuebecJur && (jurLower.includes('canada') || jurLower.includes('pipeda') ||
+      /\b(ontario|british columbia|alberta|manitoba|saskatchewan|nova scotia|new brunswick|newfoundland|prince edward island|yukon|nunavut|northwest territories)\b/.test(jurLower))
+    const isCaliforniaJur = jurLower.includes('california') || jurLower.includes('ccpa') || jurLower.includes('cpra')
+    const isUSAJur = !isCaliforniaJur && (
+      jurLower.includes('united states') ||
+      /\b(USA|U\.S\.A\.|U\.S\.)\b/.test(jurRaw) ||
+      /\b(alabama|alaska|arizona|arkansas|colorado|connecticut|delaware|florida|georgia|hawaii|idaho|illinois|indiana|iowa|kansas|kentucky|louisiana|maine|maryland|massachusetts|michigan|minnesota|mississippi|missouri|montana|nebraska|nevada|new hampshire|new jersey|new mexico|new york|north carolina|north dakota|ohio|oklahoma|oregon|pennsylvania|rhode island|south carolina|south dakota|tennessee|texas|utah|vermont|virginia|washington|west virginia|wisconsin|wyoming)\b/.test(jurLower)
+    )
+
+    let jurisdictionEnhancement = ''
+    if (isQuebecJur) {
+      jurisdictionEnhancement = '\n\nQUEBEC JURISDICTION: Apply Quebec Law 25, the Civil Code of Québec (reference CCQ articles, not common-law doctrine), and the Charter of the French Language. Use CAD currency. Include a language-choice clause.'
+    } else if (isCanadaJur) {
+      jurisdictionEnhancement = '\n\nCANADIAN JURISDICTION: Apply PIPEDA (privacy), CASL (commercial electronic messages), the applicable provincial Employment Standards Act for employment clauses, the Competition Act and provincial Consumer Protection Acts for B2C matters, and the Sale of Goods Act for commercial dealings. Use Canadian spelling and CAD currency. Name the specific province and its courts in governing-law/venue clauses.'
+    } else if (isCaliforniaJur) {
+      jurisdictionEnhancement = '\n\nCALIFORNIA JURISDICTION: Apply CCPA/CPRA for personal-information handling, California Labor Code for employment (note: post-employment non-competes are void under Bus. & Prof. Code §16600 — do not include), the CLRA for consumer terms, and the California Commercial Code for goods. Name a specific California county for venue. Use USD.'
+    } else if (isUSAJur) {
+      jurisdictionEnhancement = '\n\nUS JURISDICTION: Apply the UCC as adopted in the specified state for goods, the Restatement (Second) of Contracts for common-law doctrine, the applicable state data-breach notification statute, state comprehensive privacy laws (VCDPA, CPA, CTDPA, UCPA, TDPSA) where applicable, CAN-SPAM for commercial email, and the Federal Arbitration Act for arbitration clauses. Draft non-competes narrowly (duration, geography, legitimate protectable interest) and note states where they are restricted or void (CA, ND, OK). Name specific state and federal judicial district. Use USD.'
+    }
+
+    const systemPrompt = document_type === 'data-processing-agreement'
+      ? buildDpaSystemPrompt(fields.jurisdiction) + '\n\nThis is a premium paid document — make it exceptional.'
+      : 'You are an expert legal document drafter with deep knowledge of international law, including common-law (Canada, US, UK, Commonwealth), civil-law (Quebec), and the North American statutory privacy regimes (PIPEDA, Quebec Law 25, CCPA/CPRA). Generate comprehensive, professional legal documents tailored precisely to the details provided. Use formal legal language, clear numbered sections, and include all standard clauses. Use the spelling conventions of the governing jurisdiction. This is a premium paid document — make it exceptional. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.' + jurisdictionEnhancement
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -104,10 +160,9 @@ export default async function handler(req, res) {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5-20250929',
-        max_tokens: 4000,
-        system:
-          'You are an expert legal document drafter with deep knowledge of international law. Generate comprehensive, professional legal documents tailored precisely to the details provided. Use formal legal language, clear numbered sections, and include all standard clauses. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.',
+        model: 'claude-sonnet-4-6',
+        max_tokens: 8000,
+        system: systemPrompt,
         messages: [{ role: 'user', content: prompt }],
       }),
       signal: controller.signal,

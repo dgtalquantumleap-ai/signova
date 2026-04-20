@@ -1,13 +1,55 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useNavigate } from 'react-router-dom'
+import { Package, ArrowsLeftRight, Warning, Briefcase, Shield, ClipboardText } from '@phosphor-icons/react'
+import SiteFooter from '../components/SiteFooter'
+import SiteNav from '../components/SiteNav'
 import './ScopeGuard.css'
 
+// ── Geo-currency for ScopeGuard subscription pricing ────────────────────────
+// $9.99/mo Pro and $79/mo API — monthly equivalents per country
+const SG_CURRENCY_MAP = {
+  NG: { symbol: '₦', proAmount: 13800, apiAmount: 110000, code: 'NGN' },
+  GH: { symbol: 'GH₵', proAmount: 150, apiAmount: 1200, code: 'GHS' },
+  KE: { symbol: 'KSh', proAmount: 1300, apiAmount: 10500, code: 'KES' },
+  ZA: { symbol: 'R', proAmount: 185, apiAmount: 1480, code: 'ZAR' },
+  IN: { symbol: '₹', proAmount: 835, apiAmount: 6640, code: 'INR' },
+  GB: { symbol: '£', proAmount: 7.90, apiAmount: 63, code: 'GBP' },
+  DE: { symbol: '€', proAmount: 9.20, apiAmount: 73, code: 'EUR' },
+  FR: { symbol: '€', proAmount: 9.20, apiAmount: 73, code: 'EUR' },
+  DEFAULT: { symbol: '$', proAmount: 9.99, apiAmount: 79, code: 'USD' },
+}
+
+function useGeoCurrency() {
+  const [currency, setCurrency] = useState(SG_CURRENCY_MAP.DEFAULT)
+  useEffect(() => {
+    const cached = sessionStorage.getItem('sig_geo')
+    if (cached) {
+      try {
+        const d = JSON.parse(cached)
+        const cur = SG_CURRENCY_MAP[d.countryCode] || SG_CURRENCY_MAP.DEFAULT
+        setCurrency(cur)
+      } catch { /* ignore */ }
+      return
+    }
+    fetch('/api/geo')
+      .then(r => r.json())
+      .then(d => {
+        if (d.country_code) {
+          const cur = SG_CURRENCY_MAP[d.country_code] || SG_CURRENCY_MAP.DEFAULT
+          setCurrency(cur)
+        }
+      })
+      .catch(() => {})
+  }, [])
+  return currency
+}
+
 const VIOLATIONS_DEMO = [
-  { icon: '📦', title: 'Scope creep', example: '"Can you also add a blog section? Should be quick."', response: 'Auto-drafts a change order with estimated hours and cost.' },
-  { icon: '🔄', title: 'Extra revisions', example: '"One more round of changes — just small tweaks!"', response: 'Cites your revision limit clause and offers a paid revision quote.' },
-  { icon: '⏰', title: 'Deadline compression', example: '"Actually, we need this by Friday, not end of month."', response: 'Calculates rush fee and sends a formal timeline adjustment notice.' },
-  { icon: '💸', title: 'Unpaid extras', example: '"Can you handle the hosting setup too? It\'s tiny."', response: 'Flags the request as outside scope and drafts a professional pushback.' },
+  { icon: <Package size={24} weight="duotone" color="currentColor" />, title: 'Scope creep', example: '"Can you also add a blog section? Should be quick."', response: 'Auto-drafts a change order with estimated hours and cost.' },
+  { icon: <ClipboardText size={24} weight="duotone" color="currentColor" />, title: 'Extra revisions', example: '"One more round of changes — just small tweaks!"', response: 'Cites your revision limit clause and offers a paid revision quote.' },
+  { icon: <Warning size={24} weight="duotone" color="currentColor" />, title: 'Deadline compression', example: '"Actually, we need this by Friday, not end of month."', response: 'Calculates rush fee and sends a formal timeline adjustment notice.' },
+  { icon: <ArrowsLeftRight size={24} weight="duotone" color="currentColor" />, title: 'Unpaid extras', example: '"Can you handle the hosting setup too? It\'s tiny."', response: 'Flags the request as outside scope and drafts a professional pushback.' },
 ]
 
 // Free-tier uses tracked server-side via IP (no localStorage needed)
@@ -15,6 +57,7 @@ const FREE_LIMIT = 3
 
 export default function ScopeGuard() {
   const navigate = useNavigate()
+  const currency = useGeoCurrency()
 
   // Tool state
   const [contractText, setContractText] = useState('')
@@ -71,15 +114,29 @@ export default function ScopeGuard() {
     }
   }
 
+  const [upgradeLoading, setUpgradeLoading] = useState(false)
+
   async function handleUpgradeSubmit(e) {
     e.preventDefault()
     if (!upgradeEmail.includes('@')) return
-    await fetch('/api/scope-guard-waitlist', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: upgradeEmail }),
-    }).catch(() => {})
-    setUpgradeSubmitted(true)
+    setUpgradeLoading(true)
+    try {
+      const res = await fetch('/api/scope-guard-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: upgradeEmail }),
+      })
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        setUpgradeSubmitted(true) // fallback if checkout fails
+      }
+    } catch {
+      setUpgradeSubmitted(true) // graceful fallback
+    } finally {
+      setUpgradeLoading(false)
+    }
   }
 
   function copyResponse() {
@@ -108,13 +165,7 @@ export default function ScopeGuard() {
         <meta name="twitter:image" content="https://www.getsignova.com/og-image.png" />
       </Helmet>
 
-      <nav className="sg-nav">
-        <div className="sg-logo" onClick={() => navigate('/')}>
-          <span className="sg-logo-mark">S</span>
-          <span className="sg-logo-text">Signova</span>
-        </div>
-        <a href="https://www.getsignova.com" className="sg-nav-link">← Back to Signova</a>
-      </nav>
+      <SiteNav variant="signova" />
 
       {/* ── Hero ── */}
       <section className="sg-hero">
@@ -172,7 +223,7 @@ export default function ScopeGuard() {
               </div>
               {toolError && <p className="sg-tool-error">{toolError}</p>}
               <button className="sg-btn-primary sg-btn-analyze" type="submit" disabled={analyzing}>
-                {analyzing ? '🔍 Analyzing…' : '🛡️ Analyze for scope violations →'}
+                {analyzing ? 'Analyzing…' : <><Shield size={16} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 6 }} /> Analyze for scope violations →</>}
               </button>
             </form>
           ) : (
@@ -180,8 +231,8 @@ export default function ScopeGuard() {
               {/* Summary */}
               <div className={`sg-result-header ${result.violation_detected ? 'sg-violation-found' : 'sg-no-violation'}`}>
                 {result.violation_detected
-                  ? <><span className="sg-result-icon">⚠️</span><div><strong>{result.violations?.length} violation{result.violations?.length !== 1 ? 's' : ''} detected</strong><p>{result.summary}</p></div></>
-                  : <><span className="sg-result-icon">✅</span><div><strong>No violations detected</strong><p>{result.summary}</p></div></>
+                  ? <><span className="sg-result-icon"><Warning size={24} weight="duotone" color="currentColor" /></span><div><strong>{result.violations?.length} violation{result.violations?.length !== 1 ? 's' : ''} detected</strong><p>{result.summary}</p></div></>
+                  : <><span className="sg-result-icon"><Shield size={24} weight="duotone" color="currentColor" /></span><div><strong>No violations detected</strong><p>{result.summary}</p></div></>
                 }
               </div>
 
@@ -195,7 +246,7 @@ export default function ScopeGuard() {
                         <span className="sg-viol-severity">{v.severity}</span>
                       </div>
                       <p className="sg-viol-desc">{v.description}</p>
-                      {v.contract_reference && <p className="sg-viol-ref">📄 {v.contract_reference}</p>}
+                      {v.contract_reference && <p className="sg-viol-ref"><ClipboardText size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> {v.contract_reference}</p>}
                     </div>
                   ))}
                 </div>
@@ -220,7 +271,7 @@ export default function ScopeGuard() {
                   <div className="sg-response-draft">
                     <pre className="sg-draft-text">{result.response_options[selectedResponse]?.draft}</pre>
                     <button className="sg-btn-copy" onClick={copyResponse}>
-                      {copied ? '✓ Copied!' : '📋 Copy response'}
+                      {copied ? '✓ Copied!' : 'Copy response'}
                     </button>
                   </div>
                 </div>
@@ -229,7 +280,7 @@ export default function ScopeGuard() {
               {/* Change order suggestion */}
               {result.suggested_change_order?.applicable && (
                 <div className="sg-change-order-hint">
-                  <h4>💼 Suggested change order</h4>
+                  <h4><Briefcase size={16} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 6 }} /> Suggested change order</h4>
                   <p>{result.suggested_change_order.additional_work_description}</p>
                   <div className="sg-co-meta">
                     {result.suggested_change_order.estimated_hours && <span>~{result.suggested_change_order.estimated_hours} hrs</span>}
@@ -258,14 +309,16 @@ export default function ScopeGuard() {
             <div className="sg-upgrade-overlay">
               <div className="sg-upgrade-box">
                 <h3>You've used your 3 free analyses</h3>
-                <p>Join the waitlist for unlimited Scope Guard access at $9.99/month (50% off launch price).</p>
+                <p>Upgrade to Scope Guard Pro for unlimited analyses at {currency.symbol}{currency.proAmount.toLocaleString()}/month.</p>
                 {!upgradeSubmitted ? (
                   <form className="sg-form" onSubmit={handleUpgradeSubmit}>
                     <input className="sg-input" type="email" placeholder="your@email.com" value={upgradeEmail} onChange={e => setUpgradeEmail(e.target.value)} />
-                    <button className="sg-btn-primary" type="submit">Get early access →</button>
+                    <button className="sg-btn-primary" type="submit" disabled={upgradeLoading}>
+                      {upgradeLoading ? 'Redirecting to checkout…' : `Upgrade — ${currency.symbol}${currency.proAmount.toLocaleString()}/mo →`}
+                    </button>
                   </form>
                 ) : (
-                  <p className="sg-success-title">✓ You're on the list. We'll email you when unlimited access launches.</p>
+                  <p className="sg-success-title">✓ Redirecting to checkout…</p>
                 )}
                 <button className="sg-upgrade-close" onClick={() => setShowUpgrade(false)}>✕</button>
               </div>
@@ -315,8 +368,7 @@ export default function ScopeGuard() {
             <div className="sg-price-card sg-price-pro">
               <div className="sg-price-popular">Most Popular</div>
               <div className="sg-price-tier">Pro</div>
-              <div className="sg-price-amount">$9.99<span>/mo</span></div>
-              <div className="sg-price-early">Early access price · $19.99 after launch</div>
+              <div className="sg-price-amount">{currency.symbol}{currency.proAmount.toLocaleString()}<span>/mo</span></div>
               <ul className="sg-price-features">
                 <li>✓ Unlimited Scope Guard</li>
                 <li>✓ 500 documents/month</li>
@@ -325,38 +377,25 @@ export default function ScopeGuard() {
                 <li>✓ 18 jurisdictions</li>
               </ul>
               <button className="sg-btn-primary sg-btn-full" onClick={() => setShowUpgrade(true)}>
-                Join waitlist for 50% off →
+                Get Pro →
               </button>
             </div>
             <div className="sg-price-card sg-price-scale">
               <div className="sg-price-tier">Developer API</div>
-              <div className="sg-price-amount">$79<span>/mo</span></div>
+              <div className="sg-price-amount">{currency.symbol}{currency.apiAmount.toLocaleString()}<span>/mo</span></div>
               <ul className="sg-price-features">
                 <li>✓ Scope Guard API access</li>
                 <li>✓ 500 API calls/month</li>
                 <li>✓ MCP server included</li>
                 <li>✓ Build your own tools</li>
               </ul>
-              <a className="sg-btn-secondary sg-btn-full" href="https://ebenova.dev/docs#scope">View API docs →</a>
+              <a className="sg-btn-secondary sg-btn-full" href="https://www.ebenova.dev/docs#scope-guard">View API docs →</a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer className="sg-footer">
-        <div className="sg-logo" onClick={() => navigate('/')}>
-          <span className="sg-logo-mark">S</span>
-          <span className="sg-logo-text">Signova</span>
-        </div>
-        <div className="sg-footer-links">
-          <a href="https://www.getsignova.com">Home</a>
-          <a href="https://www.getsignova.com/#documents">Documents</a>
-          <a href="https://ebenova.dev/docs">API Docs</a>
-          <a href="mailto:hello@getsignova.com">Contact</a>
-        </div>
-        <p className="sg-footer-copy">© 2026 Ebenova Solutions · Calgary, Alberta</p>
-      </footer>
+      <SiteFooter variant="signova" />
     </div>
   )
 }

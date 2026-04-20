@@ -1,0 +1,1346 @@
+openapi: 3.0.3
+info:
+  title: Ebenova Legal Document API
+  description: |
+    Generate professional, AI-powered legal documents in seconds. The Ebenova API lets
+    developers embed legal document generation directly into their products — covering
+    NDAs, contracts, invoices, tenancy agreements, and 30+ other document types.
+
+    Built on Claude (Anthropic), every document is jurisdiction-aware, uses formal
+    legal language, and includes all standard clauses tailored to your specific inputs.
+
+    **Tiers:**
+    - `starter` / `growth` / `scale` / `enterprise` — see [ebenova.dev/pricing](https://ebenova.dev/pricing)
+    - Scope Guard endpoints (analyze, change-order, stats) require **Growth or above**
+
+    **Base URL:** `https://api.ebenova.dev`
+  version: 1.0.0
+  contact:
+    url: https://ebenova.dev
+  x-rapidapi-slug: ebenova-legal-document-api
+
+servers:
+  - url: https://api.ebenova.dev
+    description: Production
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Documents
+    description: Generate, list types, and fetch field templates for legal documents
+  - name: Scope Guard
+    description: AI-powered contract enforcement — detect scope creep and generate change orders (Pro plans only)
+  - name: Invoices
+    description: Generate pixel-perfect HTML invoices, receipts, proforma invoices, and credit notes
+  - name: Keys
+    description: API key usage and quota management
+
+paths:
+
+  # ── Document Types ────────────────────────────────────────────────────────────
+  /v1/documents/types:
+    get:
+      operationId: listDocumentTypes
+      summary: List all supported document types
+      description: |
+        Returns the full catalogue of supported document types, grouped by category.
+        Use this to populate a document-type picker in your UI before calling `/generate`.
+
+        **Free endpoint — no API key required.**
+      tags: [Documents]
+      security: []
+      responses:
+        '200':
+          description: Supported document types grouped by category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentTypesResponse'
+              example:
+                success: true
+                total: 27
+                types:
+                  - nda
+                  - freelance-contract
+                  - tenancy-agreement
+                grouped:
+                  business_contracts:
+                    - type: nda
+                      label: Non-Disclosure Agreement
+                    - type: freelance-contract
+                      label: Freelance / Client Contract
+                  real_estate:
+                    - type: tenancy-agreement
+                      label: Tenancy / Rental Agreement
+
+  # ── Document Templates ────────────────────────────────────────────────────────
+  /v1/documents/templates:
+    get:
+      operationId: getDocumentTemplates
+      summary: Get field schemas for document types
+      description: |
+        Returns the field definitions (form schema) for one or all document types.
+        Use the `type` query parameter to get the fields for a specific document type —
+        ideal for building dynamic forms that collect the right inputs before calling `/generate`.
+
+        **Requires API key.**
+      tags: [Documents]
+      parameters:
+        - name: type
+          in: query
+          required: false
+          description: Slug of the document type (e.g. `nda`, `freelance-contract`). Omit to list all templates.
+          schema:
+            type: string
+            example: nda
+      responses:
+        '200':
+          description: Template fields for the requested document type, or a summary list of all templates
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/SingleTemplateResponse'
+                  - $ref: '#/components/schemas/AllTemplatesResponse'
+              examples:
+                single:
+                  summary: Single template (type=nda)
+                  value:
+                    success: true
+                    type: nda
+                    label: Non-Disclosure Agreement
+                    category: Core Legal
+                    fields:
+                      - key: disclosingParty
+                        label: Disclosing Party
+                        type: text
+                        required: true
+                        placeholder: Acme Inc.
+                      - key: receivingParty
+                        label: Receiving Party
+                        type: text
+                        required: true
+                        placeholder: John Smith
+                      - key: purpose
+                        label: Purpose of Disclosure
+                        type: text
+                        required: true
+                      - key: duration
+                        label: Confidentiality Duration
+                        type: text
+                        required: true
+                        placeholder: 2 years
+                      - key: mutual
+                        label: Mutual NDA?
+                        type: select
+                        options: [Yes, No]
+                        required: true
+                      - key: jurisdiction
+                        label: Governing Law
+                        type: text
+                        required: false
+                        placeholder: Ontario, Canada
+                all:
+                  summary: All templates summary
+                  value:
+                    success: true
+                    total: 27
+                    templates:
+                      - type: nda
+                        label: Non-Disclosure Agreement
+                        category: Core Legal
+                        field_count: 6
+                        required_fields: 5
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Document Generate ─────────────────────────────────────────────────────────
+  /v1/documents/generate:
+    post:
+      operationId: generateDocument
+      summary: Generate a legal document
+      description: |
+        The core endpoint. Provide a document type and the required field values;
+        the API returns a fully drafted, jurisdiction-aware legal document as a
+        plain-text string, along with a legal disclaimer block.
+
+        Generation is powered by Claude (Anthropic). Expect a response in 5–30 seconds
+        for most documents; complex multi-party agreements may take up to 90 seconds.
+
+        **Requires API key. Consumes 1 document from your monthly quota.**
+      tags: [Documents]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentGenerateRequest'
+            example:
+              document_type: nda
+              jurisdiction: Ontario, Canada
+              fields:
+                disclosingParty: Acme Inc.
+                receivingParty: John Smith
+                purpose: Evaluating a potential product partnership
+                duration: 2 years
+                mutual: "No"
+      responses:
+        '200':
+          description: Generated document
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentGenerateResponse'
+              example:
+                success: true
+                document_type: nda
+                document: "NON-DISCLOSURE AGREEMENT\n\nThis Non-Disclosure Agreement (\"Agreement\") is entered into as of ..."
+                disclaimer:
+                  type: disclaimer
+                  title: Legal Disclaimer
+                  text: These documents are generated by AI and provided as templates for informational purposes only...
+                  source: ebenova.dev
+                usage:
+                  documents_used: 14
+                  documents_remaining: 86
+                  monthly_limit: 100
+                generated_at: "2026-04-12T09:00:00.000Z"
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/QuotaExceeded'
+        '504':
+          description: Generation timed out
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error:
+                  code: GENERATION_TIMEOUT
+                  message: Document generation timed out. Please try again.
+
+  # ── Document Batch ────────────────────────────────────────────────────────────
+  /v1/documents/batch:
+    post:
+      operationId: generateDocumentBatch
+      summary: Generate up to 10 documents in one call
+      description: |
+        Batch generate multiple legal documents in a single API request.
+        Documents are generated sequentially and each success consumes one document
+        from your quota. The response includes per-document results so you can see
+        which succeeded and which failed.
+
+        **Maximum 10 documents per batch. Requires API key.**
+      tags: [Documents]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentBatchRequest'
+            example:
+              documents:
+                - document_type: nda
+                  jurisdiction: Ontario, Canada
+                  fields:
+                    disclosingParty: Acme Inc.
+                    receivingParty: John Smith
+                    purpose: Partnership evaluation
+                    duration: 2 years
+                    mutual: "No"
+                - document_type: freelance-contract
+                  jurisdiction: Lagos, Nigeria
+                  fields:
+                    clientName: Lagos Ventures Ltd
+                    freelancerName: Ada Nwosu
+                    projectDescription: Website redesign
+                    deliverables: 5 pages, mobile responsive
+                    totalFee: "₦500,000"
+                    paymentSchedule: 50% upfront, 50% on delivery
+                    deadline: June 30, 2026
+                    ipOwnership: Transfers to client on payment
+      responses:
+        '200':
+          description: Batch results — partial success is possible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentBatchResponse'
+              example:
+                success: true
+                total: 2
+                succeeded: 2
+                failed: 0
+                results:
+                  - index: 0
+                    document_type: nda
+                    success: true
+                    document: "NON-DISCLOSURE AGREEMENT\n\n..."
+                    error: null
+                  - index: 1
+                    document_type: freelance-contract
+                    success: true
+                    document: "FREELANCE CONTRACT\n\n..."
+                    error: null
+                usage:
+                  documents_used: 16
+                  documents_remaining: 84
+                  monthly_limit: 100
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/QuotaExceeded'
+
+  # ── Scope Guard: Analyze ──────────────────────────────────────────────────────
+  /v1/scope/analyze:
+    post:
+      operationId: analyzeScopeCreep
+      summary: Detect scope violations in a client message
+      description: |
+        **Scope Guard** — AI-powered contract enforcement for freelancers and agencies.
+
+        Paste your original contract text and a client message. The API identifies all
+        scope violations (SCOPE, REVISION, TIMELINE, PAYMENT, IP, TERMINATION), rates their
+        severity, and returns three ready-to-send response drafts: a friendly pushback,
+        a change order proposal, and a firm contract reference.
+
+        **Requires Growth, Scale, or Enterprise plan.**
+      tags: [Scope Guard]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScopeAnalyzeRequest'
+            example:
+              contract_text: "...full contract text here..."
+              client_message: "Can you also add a mobile app version? And can we get it by Friday instead of the 20th?"
+              channel: email
+      responses:
+        '200':
+          description: Scope analysis result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScopeAnalyzeResponse'
+              example:
+                success: true
+                violation_detected: true
+                violations:
+                  - type: SCOPE
+                    severity: HIGH
+                    description: Client is requesting a mobile app which is outside the agreed web-only scope
+                    contract_reference: Section 2.1 — Deliverables
+                    client_claim: Adding a mobile app version
+                  - type: TIMELINE
+                    severity: MEDIUM
+                    description: Client is requesting an earlier delivery date
+                    contract_reference: Section 4 — Timeline
+                    client_claim: Delivery by Friday instead of the 20th
+                response_options:
+                  - type: PUSHBACK
+                    label: Friendly Pushback
+                    draft: "Hi! Thanks for the ideas — just to clarify, the mobile app wasn't part of our original scope..."
+                    recommended: false
+                  - type: CHANGE_ORDER
+                    label: Propose Change Order
+                    draft: "Hi! Love the ambition. I can absolutely add a mobile app — here's a change order..."
+                    recommended: true
+                  - type: FIRM
+                    label: Firm Contract Reference
+                    draft: "Hi, per Section 2.1 of our contract, the agreed scope is limited to web..."
+                    recommended: false
+                suggested_change_order:
+                  applicable: true
+                  additional_work_description: Native mobile app (iOS + Android)
+                  estimated_hours: 80
+                  suggested_rate_usd: 95
+                  suggested_cost_usd: 7600
+                  timeline_extension_days: 21
+                  notes: Estimate assumes React Native with shared codebase
+                summary: Client is requesting a mobile app (out of scope) and an earlier deadline
+                usage:
+                  documents_used: 17
+                  documents_remaining: 83
+                  monthly_limit: 100
+                meta:
+                  contract_length: 3200
+                  message_length: 142
+                  channel: email
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/ProRequired'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # ── Scope Guard: Change Order ─────────────────────────────────────────────────
+  /v1/scope/change-order:
+    post:
+      operationId: generateChangeOrder
+      summary: Generate a formal change order document
+      description: |
+        Generates a complete, professional change order document ready to send to a client.
+        The document references the original agreement, defines the additional work,
+        states the extra compensation, revised timeline, and includes signature blocks.
+
+        Typically called after `/v1/scope/analyze` suggests a change order is appropriate.
+
+        **Requires Growth, Scale, or Enterprise plan.**
+      tags: [Scope Guard]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeOrderRequest'
+            example:
+              freelancer_name: Ada Nwosu
+              client_name: Lagos Ventures Ltd
+              original_scope: 5-page website redesign with CMS integration
+              additional_work: Native iOS and Android mobile app using React Native
+              additional_cost: 7600
+              currency: USD
+              timeline_extension_days: 21
+              jurisdiction: Ontario, Canada
+              contract_date: March 1, 2026
+              change_order_number: 1
+      responses:
+        '200':
+          description: Generated change order document
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangeOrderResponse'
+              example:
+                success: true
+                document: "CHANGE ORDER #1\n\nThis Change Order (\"Order\") is entered into..."
+                change_order_details:
+                  freelancer_name: Ada Nwosu
+                  client_name: Lagos Ventures Ltd
+                  additional_work: Native iOS and Android mobile app using React Native
+                  additional_cost: 7600
+                  currency: USD
+                  timeline_extension_days: 21
+                  jurisdiction: Ontario, Canada
+                  generated_at: "2026-04-12T09:15:00.000Z"
+                usage:
+                  documents_used: 18
+                  documents_remaining: 82
+                  monthly_limit: 100
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/ProRequired'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # ── Scope Guard: Stats ────────────────────────────────────────────────────────
+  /v1/scope/stats:
+    get:
+      operationId: getScopeStats
+      summary: Get Scope Guard usage statistics
+      description: |
+        Returns your Scope Guard usage for the current month and the last 3 months —
+        including analyze calls, change orders generated, violations detected, and
+        a breakdown of response types recommended.
+
+        **Requires Growth, Scale, or Enterprise plan.**
+      tags: [Scope Guard]
+      responses:
+        '200':
+          description: Scope Guard usage statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScopeStatsResponse'
+              example:
+                success: true
+                current_month:
+                  analyze_calls: 34
+                  change_orders_generated: 12
+                  violations_detected: 29
+                  response_breakdown:
+                    firm_responses: 8
+                    pushback_responses: 9
+                    change_order_responses: 12
+                history:
+                  - month: "2026-02"
+                    analyze_calls: 21
+                    change_orders_generated: 7
+                  - month: "2026-03"
+                    analyze_calls: 28
+                    change_orders_generated: 10
+                  - month: "2026-04"
+                    analyze_calls: 34
+                    change_orders_generated: 12
+                resets_at: "2026-05-01T00:00:00.000Z"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/ProRequired'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # ── Invoices: Generate ────────────────────────────────────────────────────────
+  /v1/invoices/generate:
+    post:
+      operationId: generateInvoice
+      summary: Generate an invoice, receipt, proforma, or credit note
+      description: |
+        Generates a styled HTML invoice (or receipt / proforma invoice / credit note)
+        from structured data. Supports 13 currencies, optional logo, tax, and discount.
+
+        If the `to.email` or `from.email` is provided and `invoice_number` is set,
+        the invoice is automatically emailed to the recipient.
+
+        Returns the HTML string in the response — render it directly in a WebView,
+        pass it to a PDF service, or send it as an email attachment.
+
+        **Requires API key. Consumes 1 document from your monthly quota.**
+      tags: [Invoices]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceGenerateRequest'
+            example:
+              type: invoice
+              invoice_number: INV-2026-042
+              issue_date: April 12, 2026
+              due_date: April 26, 2026
+              currency: USD
+              tax_rate: 10
+              discount_percent: 5
+              from:
+                name: Acme Design Studio
+                email: hello@acmedesign.io
+                address: 123 King St W, Toronto, ON M5X 1A1
+                phone: "+1-416-555-0100"
+                tax_id: BN 123456789
+              to:
+                name: Lagos Ventures Ltd
+                email: finance@lagosventures.com
+                address: 4 Ozumba Mbadiwe Ave, Victoria Island, Lagos
+              items:
+                - description: Brand Identity Package
+                  quantity: 1
+                  unit_price: 3500
+                  notes: Logo, colours, typography guide
+                - description: Website Design (5 pages)
+                  quantity: 1
+                  unit_price: 2000
+              notes: Thank you for your business!
+              payment_instructions: "Bank: TD Canada Trust\nAccount: 1234-567890\nTransit: 12345"
+      responses:
+        '200':
+          description: Generated invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceGenerateResponse'
+              example:
+                success: true
+                invoice_id: inv_m3x7k_a8f2b
+                invoice_number: INV-2026-042
+                type: invoice
+                currency: USD
+                subtotal: 5500
+                discount_amount: 275
+                tax_amount: 522.5
+                total: 5747.5
+                html: "<!DOCTYPE html><html lang=\"en\">..."
+                email_sent: true
+                usage:
+                  documents_used: 19
+                  documents_remaining: 81
+                  monthly_limit: 100
+                generated_at: "2026-04-12T09:30:00.000Z"
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/QuotaExceeded'
+
+  # ── Keys: Usage ───────────────────────────────────────────────────────────────
+  /v1/keys/usage:
+    get:
+      operationId: getKeyUsage
+      summary: Get API key usage and quota
+      description: |
+        Returns usage statistics for your API key: tier, owner, current-month document
+        consumption, remaining quota, reset date, and a 3-month usage history.
+
+        **Requires API key.**
+      tags: [Keys]
+      responses:
+        '200':
+          description: API key usage details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KeyUsageResponse'
+              example:
+                success: true
+                key:
+                  owner: Ada Nwosu
+                  tier: growth
+                  label: Production Key
+                  created_at: "2026-01-15T08:00:00.000Z"
+                current_month:
+                  documents_used: 19
+                  documents_remaining: 481
+                  monthly_limit: 500
+                  resets_at: "2026-05-01T00:00:00.000Z"
+                history:
+                  - month: "2026-02"
+                    documents_generated: 312
+                  - month: "2026-03"
+                    documents_generated: 445
+                  - month: "2026-04"
+                    documents_generated: 19
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: Pass your Ebenova API key as a Bearer token. Example — `Authorization: Bearer sk_live_abc123`
+
+  schemas:
+
+    # ── Document Types ──────────────────────────────────────────────────────────
+    DocumentTypesResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        total:
+          type: integer
+          example: 27
+        types:
+          type: array
+          items:
+            type: string
+          example: [nda, freelance-contract, tenancy-agreement]
+        grouped:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                label:
+                  type: string
+
+    # ── Templates ───────────────────────────────────────────────────────────────
+    TemplateField:
+      type: object
+      properties:
+        key:
+          type: string
+          example: disclosingParty
+        label:
+          type: string
+          example: Disclosing Party
+        type:
+          type: string
+          enum: [text, textarea, select]
+        required:
+          type: boolean
+        placeholder:
+          type: string
+        options:
+          type: array
+          items:
+            type: string
+          description: Present only when type is `select`
+
+    SingleTemplateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        type:
+          type: string
+        label:
+          type: string
+        category:
+          type: string
+        fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateField'
+
+    AllTemplatesResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        total:
+          type: integer
+        templates:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              label:
+                type: string
+              category:
+                type: string
+              field_count:
+                type: integer
+              required_fields:
+                type: integer
+        usage:
+          $ref: '#/components/schemas/UsageBlock'
+
+    # ── Document Generate ───────────────────────────────────────────────────────
+    DocumentGenerateRequest:
+      type: object
+      required: [document_type, fields]
+      properties:
+        document_type:
+          type: string
+          description: |
+            Slug of the document type. Use `/v1/documents/types` to see all valid values.
+          example: nda
+        jurisdiction:
+          type: string
+          description: Governing law / jurisdiction for the document (e.g. "Ontario, Canada", "Lagos, Nigeria")
+          example: Ontario, Canada
+        fields:
+          type: object
+          description: |
+            Key-value map of field values. Use `/v1/documents/templates?type=<type>` to discover
+            the required and optional fields for each document type.
+          additionalProperties:
+            oneOf:
+              - type: string
+              - type: array
+                items:
+                  type: string
+          example:
+            disclosingParty: Acme Inc.
+            receivingParty: John Smith
+            purpose: Partnership discussion
+            duration: 2 years
+            mutual: "No"
+
+    DocumentGenerateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        document_type:
+          type: string
+        document:
+          type: string
+          description: The complete generated legal document as plain text
+        disclaimer:
+          $ref: '#/components/schemas/LegalDisclaimer'
+        usage:
+          $ref: '#/components/schemas/UsageBlock'
+        generated_at:
+          type: string
+          format: date-time
+
+    LegalDisclaimer:
+      type: object
+      properties:
+        type:
+          type: string
+          example: disclaimer
+        title:
+          type: string
+          example: Legal Disclaimer
+        text:
+          type: string
+        source:
+          type: string
+          example: ebenova.dev
+
+    # ── Batch ───────────────────────────────────────────────────────────────────
+    DocumentBatchRequest:
+      type: object
+      required: [documents]
+      properties:
+        documents:
+          type: array
+          minItems: 1
+          maxItems: 10
+          description: Array of document generation requests (max 10)
+          items:
+            type: object
+            required: [document_type, fields]
+            properties:
+              document_type:
+                type: string
+                example: nda
+              jurisdiction:
+                type: string
+                example: Ontario, Canada
+              fields:
+                type: object
+                additionalProperties:
+                  type: string
+
+    DocumentBatchResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        total:
+          type: integer
+        succeeded:
+          type: integer
+        failed:
+          type: integer
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              index:
+                type: integer
+              document_type:
+                type: string
+              success:
+                type: boolean
+              document:
+                type: string
+                nullable: true
+              error:
+                nullable: true
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        usage:
+          $ref: '#/components/schemas/UsageBlock'
+
+    # ── Scope Guard ─────────────────────────────────────────────────────────────
+    ScopeAnalyzeRequest:
+      type: object
+      required: [contract_text, client_message]
+      properties:
+        contract_text:
+          type: string
+          description: The full text of the original signed contract
+          example: "This Freelance Contract is entered into as of March 1, 2026..."
+        client_message:
+          type: string
+          description: The client message to analyze for scope violations
+          example: "Can you also add a mobile app? And can we move the deadline up to Friday?"
+        channel:
+          type: string
+          description: Communication channel the message came from (for context)
+          enum: [email, slack, whatsapp, chat, other]
+          example: email
+
+    ScopeViolation:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [SCOPE, REVISION, TIMELINE, PAYMENT, IP, TERMINATION]
+        severity:
+          type: string
+          enum: [LOW, MEDIUM, HIGH]
+        description:
+          type: string
+        contract_reference:
+          type: string
+        client_claim:
+          type: string
+
+    ResponseOption:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [PUSHBACK, CHANGE_ORDER, FIRM]
+        label:
+          type: string
+        draft:
+          type: string
+          description: Full ready-to-send message draft
+        recommended:
+          type: boolean
+
+    ScopeAnalyzeResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        violation_detected:
+          type: boolean
+        violations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScopeViolation'
+        response_options:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResponseOption'
+        suggested_change_order:
+          nullable: true
+          type: object
+          properties:
+            applicable:
+              type: boolean
+            additional_work_description:
+              type: string
+            estimated_hours:
+              type: integer
+            suggested_rate_usd:
+              type: number
+            suggested_cost_usd:
+              type: number
+            timeline_extension_days:
+              type: integer
+            notes:
+              type: string
+        summary:
+          type: string
+        usage:
+          $ref: '#/components/schemas/UsageBlock'
+        meta:
+          type: object
+          properties:
+            contract_length:
+              type: integer
+            message_length:
+              type: integer
+            channel:
+              type: string
+
+    ChangeOrderRequest:
+      type: object
+      required: [additional_work, additional_cost]
+      properties:
+        freelancer_name:
+          type: string
+          example: Ada Nwosu
+        client_name:
+          type: string
+          example: Lagos Ventures Ltd
+        original_contract_summary:
+          type: string
+          description: Summary of what was originally agreed (used if original_scope not provided)
+        original_scope:
+          type: string
+          description: Description of the original project scope
+          example: 5-page website redesign with CMS integration
+        additional_work:
+          type: string
+          description: Description of the additional work being added
+          example: Native iOS and Android mobile app using React Native
+        additional_cost:
+          type: number
+          description: Additional fee for the extra work (numeric)
+          example: 7600
+        currency:
+          type: string
+          default: USD
+          example: USD
+        timeline_extension_days:
+          type: integer
+          description: How many additional business days are needed
+          example: 21
+        jurisdiction:
+          type: string
+          default: International
+          example: Ontario, Canada
+        contract_date:
+          type: string
+          description: Date of the original contract
+          example: March 1, 2026
+        change_order_number:
+          type: integer
+          default: 1
+          example: 1
+
+    ChangeOrderResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        document:
+          type: string
+          description: Complete change order document as plain text
+        change_order_details:
+          type: object
+          properties:
+            freelancer_name:
+              type: string
+            client_name:
+              type: string
+            additional_work:
+              type: string
+            additional_cost:
+              type: number
+            currency:
+              type: string
+            timeline_extension_days:
+              type: integer
+              nullable: true
+            jurisdiction:
+              type: string
+            generated_at:
+              type: string
+              format: date-time
+        usage:
+          $ref: '#/components/schemas/UsageBlock'
+
+    ScopeStatsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        current_month:
+          type: object
+          properties:
+            analyze_calls:
+              type: integer
+            change_orders_generated:
+              type: integer
+            violations_detected:
+              type: integer
+            response_breakdown:
+              type: object
+              properties:
+                firm_responses:
+                  type: integer
+                pushback_responses:
+                  type: integer
+                change_order_responses:
+                  type: integer
+        history:
+          type: array
+          items:
+            type: object
+            properties:
+              month:
+                type: string
+                example: "2026-04"
+              analyze_calls:
+                type: integer
+              change_orders_generated:
+                type: integer
+        resets_at:
+          type: string
+          format: date-time
+
+    # ── Invoices ────────────────────────────────────────────────────────────────
+    InvoiceParty:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          example: Acme Design Studio
+        email:
+          type: string
+          format: email
+          example: hello@acmedesign.io
+        address:
+          type: string
+          example: 123 King St W, Toronto, ON M5X 1A1
+        phone:
+          type: string
+          example: "+1-416-555-0100"
+        tax_id:
+          type: string
+          example: BN 123456789
+
+    InvoiceItem:
+      type: object
+      required: [description, quantity, unit_price]
+      properties:
+        description:
+          type: string
+          example: Brand Identity Package
+        quantity:
+          type: number
+          minimum: 0
+          exclusiveMinimum: true
+          example: 1
+        unit_price:
+          type: number
+          minimum: 0
+          example: 3500
+        notes:
+          type: string
+          example: Logo, colours, typography guide
+
+    InvoiceGenerateRequest:
+      type: object
+      required: [from, to, items]
+      properties:
+        type:
+          type: string
+          enum: [invoice, receipt, proforma, credit-note]
+          default: invoice
+          example: invoice
+        invoice_number:
+          type: string
+          example: INV-2026-042
+        issue_date:
+          type: string
+          example: April 12, 2026
+        due_date:
+          type: string
+          example: April 26, 2026
+        currency:
+          type: string
+          enum: [USD, EUR, GBP, CAD, AUD, NGN, KES, GHS, ZAR, INR, AED, SGD, USDT]
+          default: USD
+          example: USD
+        tax_rate:
+          type: number
+          minimum: 0
+          maximum: 100
+          default: 0
+          example: 10
+          description: Tax rate as a percentage (e.g. 10 for 10%)
+        discount_percent:
+          type: number
+          minimum: 0
+          maximum: 100
+          default: 0
+          example: 5
+          description: Discount as a percentage of subtotal
+        from:
+          $ref: '#/components/schemas/InvoiceParty'
+        to:
+          $ref: '#/components/schemas/InvoiceParty'
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/InvoiceItem'
+        notes:
+          type: string
+          example: Thank you for your business!
+        payment_instructions:
+          type: string
+          example: "Bank: TD Canada Trust\nAccount: 1234-567890"
+        logo_url:
+          type: string
+          format: uri
+          description: Public URL to your logo image (max 48px height recommended)
+          example: https://cdn.acme.io/logo.png
+
+    InvoiceGenerateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        invoice_id:
+          type: string
+          description: Internal ID for this invoice generation
+          example: inv_m3x7k_a8f2b
+        invoice_number:
+          type: string
+          nullable: true
+          example: INV-2026-042
+        type:
+          type: string
+          example: invoice
+        currency:
+          type: string
+          example: USD
+        subtotal:
+          type: number
+          example: 5500
+        discount_amount:
+          type: number
+          example: 275
+        tax_amount:
+          type: number
+          example: 522.5
+        total:
+          type: number
+          example: 5747.5
+        html:
+          type: string
+          description: Complete HTML string of the rendered invoice
+        email_sent:
+          type: boolean
+          description: True if an email was automatically dispatched to the recipient
+        usage:
+          $ref: '#/components/schemas/UsageBlock'
+        generated_at:
+          type: string
+          format: date-time
+
+    # ── Keys ────────────────────────────────────────────────────────────────────
+    KeyUsageResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        key:
+          type: object
+          properties:
+            owner:
+              type: string
+            tier:
+              type: string
+              enum: [starter, growth, scale, enterprise]
+            label:
+              type: string
+              nullable: true
+            created_at:
+              type: string
+              format: date-time
+        current_month:
+          type: object
+          properties:
+            documents_used:
+              type: integer
+            documents_remaining:
+              type: integer
+            monthly_limit:
+              type: integer
+            resets_at:
+              type: string
+              format: date-time
+        history:
+          type: array
+          items:
+            type: object
+            properties:
+              month:
+                type: string
+                example: "2026-04"
+              documents_generated:
+                type: integer
+
+    # ── Shared ──────────────────────────────────────────────────────────────────
+    UsageBlock:
+      type: object
+      properties:
+        documents_used:
+          type: integer
+          example: 19
+        documents_remaining:
+          type: integer
+          example: 481
+        monthly_limit:
+          type: integer
+          example: 500
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid API key
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Invalid or missing API key
+
+    ValidationError:
+      description: Request body failed validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: document_type is required
+
+    QuotaExceeded:
+      description: Monthly document quota exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: QUOTA_EXCEEDED
+              message: Monthly document limit reached. Upgrade at ebenova.dev/pricing
+
+    ProRequired:
+      description: Endpoint requires a Pro plan (Growth, Scale, or Enterprise)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: PRO_REQUIRED
+              message: Scope Guard requires a Pro plan (Growth, Scale, or Enterprise)
+              hint: Upgrade at https://ebenova.dev/pricing
+              upgrade_url: https://ebenova.dev/pricing
+
+    NotFound:
+      description: Requested resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: NOT_FOUND
+              message: Unknown document type
+
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: GENERATION_FAILED
+              message: Document generation failed. Please try again.

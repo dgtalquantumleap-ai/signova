@@ -1,0 +1,12 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.dgtalquantumleap-ai/ebenova-legal-docs",
+  "description": "Generate 34 legal document types across 18 jurisdictions via Ebenova API.",
+  "repository": { "url": "https://github.com/dgtalquantumleap-ai/legal-docs-mcp", "source": "github" },
+  "version": "1.5.1",
+  "packages": [{
+    "registryType": "npm", "identifier": "ebenova-legal-docs-mcp", "version": "1.5.1",
+    "transport": { "type": "stdio" },
+    "environmentVariables": [{ "name": "EBENOVA_API_KEY", "description": "Ebenova API key from ebenova.dev/dashboard", "isRequired": true, "format": "string", "isSecret": true }]
+  }]
+}

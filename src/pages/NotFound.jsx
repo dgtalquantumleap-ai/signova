@@ -1,15 +1,22 @@
 import { useNavigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
+import { FileText } from '@phosphor-icons/react'
 
 export default function NotFound() {
   const navigate = useNavigate()
   return (
-    <div style={{
-      minHeight: '100vh', background: 'var(--bg)',
+    <>
+      <Helmet>
+        <title>404 — Page Not Found | Signova</title>
+        <meta name="robots" content="noindex" />
+      </Helmet>
+      <div style={{
+        minHeight: '100vh', background: 'var(--bg)',
       display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
       padding: '24px', textAlign: 'center'
     }}>
-      <div style={{ fontSize: '48px', marginBottom: '16px' }}>📄</div>
+      <FileText size={56} weight="duotone" color="var(--gold)" style={{ marginBottom: '16px' }} />
       <h1 style={{
         fontFamily: 'var(--font-display)', fontSize: '32px',
         fontWeight: 700, color: 'var(--text)', marginBottom: '12px'
@@ -32,5 +39,6 @@ export default function NotFound() {
         Back to Signova →
       </button>
     </div>
+    </>
   )
 }
