@@ -28,7 +28,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your Tenancy Agreement Free',
-        body: `Generate a professional, fully customised Nigerian tenancy agreement in under 2 minutes using Signova. Fill in the landlord name, tenant name, property address, rent, duration, and special conditions — Signova generates a properly structured agreement you can preview free and download for $4.99.\n\nNo lawyer fees. No manual templates. No account required.`
+        body: `Generate a professional, fully customised Nigerian tenancy agreement in under 2 minutes using Signova. Fill in the landlord name, tenant name, property address, rent, duration, and special conditions — Signova generates a properly structured agreement you can preview free and pay when you download.\n\nNo lawyer fees. No manual templates. No account required.`
       },
     ],
     cta: { label: 'Generate Tenancy Agreement Free →', href: '/generate/tenancy-agreement' }
@@ -61,7 +61,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your Deed of Assignment',
-        body: `Signova generates a professionally structured Deed of Assignment customised to your transaction — parties, property details, consideration, covenants, and execution clauses. Preview for free, download for $4.99.\n\nNote: for high-value transactions, have a qualified Nigerian property lawyer review and complete the registration and consent process.`
+        body: `Signova generates a professionally structured Deed of Assignment customised to your transaction — parties, property details, consideration, covenants, and execution clauses. Preview for free, pay when you download.\n\nNote: for high-value transactions, have a qualified Nigerian property lawyer review and complete the registration and consent process.`
       },
     ],
     cta: { label: 'Generate Deed of Assignment Free →', href: '/generate/deed-of-assignment' }
@@ -94,7 +94,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your NDA Free',
-        body: `Signova generates a complete, professionally worded NDA customised to your situation — one-way or mutual, your party names, the specific type of information protected, and your governing jurisdiction.\n\nWorks for Nigerian businesses, international freelancers, and startups globally. Preview free, download for $4.99.`
+        body: `Signova generates a complete, professionally worded NDA customised to your situation — one-way or mutual, your party names, the specific type of information protected, and your governing jurisdiction.\n\nWorks for Nigerian businesses, international freelancers, and startups globally. Preview free. Pay when you download.`
       },
     ],
     cta: { label: 'Generate Your Free NDA →', href: '/generate/nda' }
@@ -127,7 +127,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your Freelance Contract Free',
-        body: `Signova generates a complete, professional freelance contract in under 3 minutes. Works for designers, developers, writers, marketers, photographers, and any freelancer in Nigeria or internationally. Preview free, download for $4.99.`
+        body: `Signova generates a complete, professional freelance contract in under 3 minutes. Works for designers, developers, writers, marketers, photographers, and any freelancer in Nigeria or internationally. Preview free. Pay when you download.`
       },
     ],
     cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
@@ -300,7 +300,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your NDA Free in 2 Minutes',
-        body: `Go to getsignova.com, select NDA, enter the party names, describe the information being protected, choose mutual or one-way, select Nigeria as governing law, and click Generate. Preview instantly, free. Download for $4.99 equivalent. No account required. No lawyer fees.`
+        body: `Go to getsignova.com, select NDA, enter the party names, describe the information being protected, choose mutual or one-way, select Nigeria as governing law, and click Generate. Preview instantly, free. Pay when you download. No account required. No lawyer fees.`
       },
     ],
     cta: { label: 'Generate Your Free NDA →', href: '/generate/nda' }
@@ -332,7 +332,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'How to Generate Your Agreement in 2 Minutes',
-        body: `You do not need a lawyer to turn your WhatsApp negotiation into a proper document.\n\n1. Open Signova at getsignova.com\n2. Select Tenancy Agreement\n3. Enter the terms you agreed — landlord name, tenant name, property address, rent, duration, notice period, maintenance split\n4. Click Generate — your complete tenancy agreement is ready to preview instantly\n5. Download for $4.99 — clean PDF, no watermark, ready to print and sign\n\nThe whole process takes under 2 minutes. Both parties sign the printed document. The WhatsApp negotiation is now a legal agreement.`
+        body: `You do not need a lawyer to turn your WhatsApp negotiation into a proper document.\n\n1. Open Signova at getsignova.com\n2. Select Tenancy Agreement\n3. Enter the terms you agreed — landlord name, tenant name, property address, rent, duration, notice period, maintenance split\n4. Click Generate — your complete tenancy agreement is ready to preview instantly\n5. Pay when you download — clean PDF, no watermark, ready to print and sign\n\nThe whole process takes under 2 minutes. Both parties sign the printed document. The WhatsApp negotiation is now a legal agreement.`
       },
       {
         heading: 'Before You Sign — What to Check',
@@ -369,7 +369,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your Loan Agreement Free',
-        body: `Signova generates a complete, professional loan agreement in under 3 minutes — lender and borrower details, loan amount, interest rate, repayment schedule, and collateral if applicable.\n\nFree preview. $4.99 to download. No account needed. Works for personal and business loans in Nigeria and internationally.`
+        body: `Signova generates a complete, professional loan agreement in under 3 minutes — lender and borrower details, loan amount, interest rate, repayment schedule, and collateral if applicable.\n\nFree preview. Pay when you download. No account needed. Works for personal and business loans in Nigeria and internationally.`
       },
     ],
     cta: { label: 'Generate Loan Agreement Free →', href: '/generate/loan-agreement' }
@@ -403,7 +403,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your Business Proposal Free',
-        body: `Signova generates a professional business proposal tailored to your service and client in under 3 minutes. Free preview. $4.99 to download. No account needed.`
+        body: `Signova generates a professional business proposal tailored to your service and client in under 3 minutes. Free preview. Pay when you download. No account needed.`
       },
     ],
     cta: { label: 'Generate Business Proposal Free →', href: '/generate/business-proposal' }
@@ -436,7 +436,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your Privacy Policy Free',
-        body: `Signova generates a complete, jurisdiction-aware privacy policy in under 2 minutes. Select your jurisdiction (Nigeria, EU/GDPR, US, UK, or global), describe what data you collect and why, and Signova generates a professional policy ready to publish.\n\nFree preview. $4.99 to download. No account needed.`
+        body: `Signova generates a complete, jurisdiction-aware privacy policy in under 2 minutes. Select your jurisdiction (Nigeria, EU/GDPR, US, UK, or global), describe what data you collect and why, and Signova generates a professional policy ready to publish.\n\nFree preview. Pay when you download. No account needed.`
       },
     ],
     cta: { label: 'Generate Privacy Policy Free →', href: '/generate/privacy-policy' }
@@ -470,7 +470,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your Employment Contract Free',
-        body: `Signova generates a complete employment contract aligned with the Nigerian Labour Act in under 3 minutes. Fill in the role, salary, working hours, leave entitlement, and notice periods — Signova structures a professional contract ready to send to your new hire.\n\nFree preview. $4.99 to download. No account needed.`
+        body: `Signova generates a complete employment contract aligned with the Nigerian Labour Act in under 3 minutes. Fill in the role, salary, working hours, leave entitlement, and notice periods — Signova structures a professional contract ready to send to your new hire.\n\nFree preview. Pay when you download. No account needed.`
       },
     ],
     cta: { label: 'Generate Employment Contract Free →', href: '/generate/employment-contract' }
@@ -507,7 +507,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your NDA Free',
-        body: `Signova generates a complete, properly structured NDA under Nigerian law in under 2 minutes. Answer a few questions about the parties, the information being protected, and the duration — Signova drafts the full document. Free preview, $4.99 to download.`
+        body: `Signova generates a complete, properly structured NDA under Nigerian law in under 2 minutes. Answer a few questions about the parties, the information being protected, and the duration — Signova drafts the full document. Free preview. Pay when you download.`
       },
     ],
     cta: { label: 'Generate NDA Free →', href: '/generate/nda' }
@@ -526,7 +526,7 @@ export const BLOG_POSTS = [
       { heading: 'The Caution Deposit Clause — Get This Right', body: `Your agreement must state the exact caution amount, that it is held as security against damage beyond fair wear and tear and unpaid rent, the specific refund timeframe (30 days is standard), and that deductions will be itemised in writing with supporting evidence.\n\nWithout these specific terms, a tenant can challenge any deduction in the Rent Tribunal.` },
       { heading: 'The Notice and Recovery Clause', body: `The Lagos State Tenancy Law sets minimum notice periods: 6 months for yearly tenants, 1 month for monthly tenants. Your agreement should state the notice period clearly and specify service by written notice delivered by hand or registered post. Also include specific breach grounds — consistent rent default, subletting without consent, significant property damage.` },
       { heading: 'Service Charge — Protect Your Estate Fund', body: `Specify the service charge amount, exactly what it covers, whether it is payable annually or alongside rent, and the notice required before any increase. Without this clarity, tenants routinely dispute service charge obligations.` },
-      { heading: 'Generate a Professional Lagos Tenancy Agreement', body: `Signova generates a complete tenancy agreement aligned with the Lagos State Tenancy Law 2011. Customised with your specific rent, caution deposit, service charge, maintenance terms, and notice periods. Free preview. $4.99 to download.` },
+      { heading: 'Generate a Professional Lagos Tenancy Agreement', body: `Signova generates a complete tenancy agreement aligned with the Lagos State Tenancy Law 2011. Customised with your specific rent, caution deposit, service charge, maintenance terms, and notice periods. Free preview. Pay when you download.` },
     ],
     cta: { label: 'Generate Tenancy Agreement Free →', href: '/generate/tenancy-agreement' }
   },
@@ -544,7 +544,7 @@ export const BLOG_POSTS = [
       { heading: 'What a Partnership Agreement Must Include', body: `1. Names of partners.\n2. Business name and description.\n3. Capital contributions — cash, assets, or labour.\n4. Profit and loss sharing — the percentage each partner receives.\n5. Roles and responsibilities.\n6. Decision-making — which decisions require consensus.\n7. Partner drawings — how partners can withdraw money.\n8. Exit provisions — right of first refusal, valuation method, buyout terms.\n9. Dissolution — how assets are divided if the business ends.\n10. Dispute resolution.` },
       { heading: 'The Exit Clause — The Most Important Provision Nobody Discusses', body: `When two people start a business together, discussing exit scenarios feels premature. But the exit clause determines what happens to the business if things go wrong. A good exit clause covers: right of first refusal, the valuation method, buyout payment terms, and ongoing obligations after exit (non-compete, IP).` },
       { heading: '50/50 Partnerships — Why Equal Splits Create Problems', body: `A 50/50 split feels fair but creates structural deadlock. If partners disagree, no decision can be made. Include a deadlock resolution mechanism: a casting vote procedure, mediation, or an agreed third-party arbitrator for major decisions.` },
-      { heading: 'Generate Your Partnership Agreement Free', body: `Signova generates a complete business partnership agreement in under 3 minutes. Free preview. $4.99 to download. No account needed.` },
+      { heading: 'Generate Your Partnership Agreement Free', body: `Signova generates a complete business partnership agreement in under 3 minutes. Free preview. Pay when you download. No account needed.` },
     ],
     cta: { label: 'Generate Partnership Agreement Free →', href: '/generate/partnership-agreement' }
   },
@@ -562,7 +562,7 @@ export const BLOG_POSTS = [
       { heading: 'How Much Caution Fee Is Reasonable in Nigeria?', body: `Standard market practice: equivalent to 1 month's rent for residential properties. For mid-range to high-end properties in Lagos, some landlords request an additional service charge equivalent. A caution fee exceeding 6 months' rent equivalent would be considered excessive and potentially challengeable.` },
       { heading: 'What the Tenancy Agreement Must Say', body: `The agreement must specify: the exact caution amount, that it is refundable, the conditions for deduction (unpaid rent, damage beyond fair wear and tear, outstanding bills), the refund timeline (14–30 days after vacating), and that any deductions will be itemised and evidenced in writing.` },
       { heading: 'Fair Wear and Tear vs. Damage', body: `Fair wear and tear — faded paint after 3 years, worn carpet in high-traffic areas, minor scuffs. Landlords cannot deduct for these.\n\nDamage — broken fittings, holes in walls, stained carpets, missing items. These justify deductions.\n\nDocument the property condition at check-in with photos signed by both parties. This single step prevents most disputes at check-out.` },
-      { heading: 'Generate a Tenancy Agreement with Proper Caution Deposit Clauses', body: `Signova generates a complete tenancy agreement with properly drafted caution deposit provisions. Free preview. $4.99 to download.` },
+      { heading: 'Generate a Tenancy Agreement with Proper Caution Deposit Clauses', body: `Signova generates a complete tenancy agreement with properly drafted caution deposit provisions. Free preview. Pay when you download.` },
     ],
     cta: { label: 'Generate Tenancy Agreement Free →', href: '/generate/tenancy-agreement' }
   },
@@ -580,7 +580,7 @@ export const BLOG_POSTS = [
       { heading: 'What an Invoice Can and Cannot Do', body: `An invoice CAN record the amount owed, specify payment due date, and serve as evidence of a debt.\n\nAn invoice CANNOT define what work was agreed, restrict unlimited revision requests, establish who owns the finished work, or govern disputes about scope or quality. Once a dispute moves beyond payment — a contract is what you need.` },
       { heading: 'The Right Sequence for Every Client Engagement', body: `1. Contract — signed before work starts. Defines scope, price, IP, revisions, cancellation.\n2. Invoice — sent at agreed billing milestones.\n3. Receipt — confirms payment received.\n\nThe contract comes before the invoice.` },
       { heading: 'When Just an Invoice Works', body: `For simple, low-value, repeat transactions with trusted long-term clients — a master service agreement signed once, governing all ongoing work, combined with per-project invoices, is a practical approach. But for new clients or large projects, always have a signed contract first.` },
-      { heading: 'Generate Your Contract Free', body: `Signova generates freelance contracts, service agreements, and consulting contracts in under 3 minutes. Free preview. $4.99 to download.` },
+      { heading: 'Generate Your Contract Free', body: `Signova generates freelance contracts, service agreements, and consulting contracts in under 3 minutes. Free preview. Pay when you download.` },
     ],
     cta: { label: 'Generate Client Contract Free →', href: '/generate/freelance-contract' }
   },
@@ -599,7 +599,7 @@ export const BLOG_POSTS = [
       { heading: 'Clause 2: Payment Terms', body: `State the total fee, deposit amount, and payment schedule. Example: "Total fee: ₦300,000. Non-refundable deposit of ₦150,000 due before work commences. Balance due upon delivery. Invoices unpaid after 7 days attract a late fee of 5% per month." Specify accepted payment methods.` },
       { heading: 'Clause 3: Revision Policy', body: `Define how many revision rounds are included and the rate for additional rounds. Example: "Two rounds of revisions are included. A revision round means one consolidated set of feedback. Additional rounds are billed at ₦20,000 per round."` },
       { heading: 'Clause 4: Intellectual Property', body: `All IP rights remain with the creator until full payment is received. Upon receipt of full payment, all rights are assigned to the client. This also means: if the client does not pay in full, you retain the right to the work and can prevent them from using it.` },
-      { heading: 'Generate Your Freelance Contract Free', body: `Signova generates a complete freelance contract with all essential clauses. Free preview. $4.99 to download. Under 3 minutes. No account needed.` },
+      { heading: 'Generate Your Freelance Contract Free', body: `Signova generates a complete freelance contract with all essential clauses. Free preview. Pay when you download. Under 3 minutes. No account needed.` },
     ],
     cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
   },
@@ -618,7 +618,7 @@ export const BLOG_POSTS = [
       { heading: 'What Must a Terms of Service Include?', body: `A complete Terms of Service should cover: acceptance of terms (how users agree), description of services, user conduct rules (what is and is not allowed), payment and subscription terms (if applicable), intellectual property ownership, disclaimers and limitations of liability, account suspension and termination rights, and governing law and dispute resolution.\n\nFor SaaS products, add clauses covering data handling, uptime commitments, and what happens to user data on cancellation.` },
       { heading: 'Do I Need a Lawyer to Write Terms of Service?', body: `For standard websites, apps, and online services — no. A professionally generated Terms of Service covering the standard clauses is sufficient for the vast majority of businesses. Where you do need a lawyer is for complex regulated industries (healthcare, finance, legal services), high-value enterprise contracts, or if you are facing an active dispute.\n\nFor early-stage businesses and independent operators, a generated Terms of Service is far better than no Terms of Service, which is what most people have.` },
       { heading: 'Terms of Service vs Privacy Policy — What Is the Difference?', body: `These are two separate documents that every website needs.\n\nTerms of Service governs the relationship between you and your users — what they can and cannot do, your liability, your right to terminate accounts.\n\nPrivacy Policy governs how you collect, use, store, and share user data — required by GDPR, CCPA, NDPR, and most other data protection laws.\n\nYou need both. They work together but serve different legal purposes.` },
-      { heading: 'Generate Your Terms of Service Free', body: `Signova generates a complete, jurisdiction-aware Terms of Service in under 2 minutes. Answer questions about your service type, governing law, and subscription model — get a professional document ready to publish. Free preview, $4.99 to download.` },
+      { heading: 'Generate Your Terms of Service Free', body: `Signova generates a complete, jurisdiction-aware Terms of Service in under 2 minutes. Answer questions about your service type, governing law, and subscription model — get a professional document ready to publish. Free preview. Pay when you download.` },
     ],
     cta: { label: 'Generate Terms of Service Free →', href: '/generate/terms-of-service' }
   },
@@ -634,7 +634,7 @@ export const BLOG_POSTS = [
       { heading: 'What Must a Hire Purchase Agreement Contain?', body: `A valid hire purchase agreement must include: full names of the seller/finance company and buyer, complete description of the asset (make, model, serial number), total cash price of the asset, deposit amount paid upfront, number and amount of each instalment, total hire purchase price (cash price + interest/charges), interest rate if applicable, what happens on default (repossession rights), and when legal ownership transfers to the buyer.` },
       { heading: 'What Happens If You Miss Payments?', body: `This is the most important clause in any hire purchase agreement. Typically, if a buyer misses payments, the seller has the right to repossess the asset. However, under Nigerian law (and most jurisdictions), the seller must give reasonable notice before repossession — usually 14 to 30 days.\n\nSome agreements include a clause stating that if more than one-third of the total price has been paid, the seller cannot repossess without a court order. Make sure your agreement specifies the exact repossession process.` },
       { heading: 'Hire Purchase vs Lease — Key Differences', body: `In a hire purchase, you will own the asset at the end of the agreement once all payments are made. In a lease, you are paying for the use of the asset and typically return it at the end.\n\nHire purchase is better when you want eventual ownership. Leasing is better when you want to upgrade regularly or preserve working capital. Make sure your agreement clearly states which arrangement applies.` },
-      { heading: 'Generate Your Hire Purchase Agreement Free', body: `Signova generates a complete hire purchase agreement covering deposit, instalments, interest rate, repossession terms, and ownership transfer — for any asset, any country. Free preview, $4.99 to download. Ready in 2 minutes.` },
+      { heading: 'Generate Your Hire Purchase Agreement Free', body: `Signova generates a complete hire purchase agreement covering deposit, instalments, interest rate, repossession terms, and ownership transfer — for any asset, any country. Free preview. Pay when you download. Ready in 2 minutes.` },
     ],
     cta: { label: 'Generate Hire Purchase Agreement Free →', href: '/generate/hire-purchase' }
   },
@@ -650,7 +650,7 @@ export const BLOG_POSTS = [
       { heading: 'Consulting Agreement vs Service Agreement — What Is the Difference?', body: `A service agreement covers the delivery of a specific service or output — a website, a report, a physical installation. A consulting agreement covers advisory work — analysis, strategy, recommendations, and guidance — where the deliverable is expertise and judgment, not a physical product.\n\nIf you are being paid to think, advise, and recommend — you need a consulting agreement. If you are being paid to build or deliver something specific — a service agreement is more appropriate.` },
       { heading: 'Key Clauses Every Consulting Agreement Needs', body: `Scope of work — define precisely what advice and services you are providing and what is explicitly excluded. Compensation — your rate (daily, monthly, or project), payment schedule, and late payment terms. Exclusivity — whether you can work with competitors during the engagement. IP ownership — who owns the deliverables, reports, and recommendations you produce. Confidentiality — protecting the client's business information. Termination — how either party exits the agreement and what notice is required.` },
       { heading: 'Protecting Yourself on IP Ownership', body: `This is the clause most consultants overlook. If your contract is silent on IP, courts in many jurisdictions will assume work created during the engagement belongs to the client. If you want to retain any rights to methodologies, frameworks, or tools you develop, your agreement must say so explicitly.\n\nA standard clause: "All pre-existing intellectual property of the Consultant remains the property of the Consultant. Work product specifically created for this engagement transfers to the Client upon receipt of full payment."` },
-      { heading: 'Generate Your Consulting Agreement Free', body: `Signova generates a complete consulting agreement covering scope, rate, exclusivity, IP, and termination — for any industry, any country. Free preview, $4.99 to download. Ready in 3 minutes.` },
+      { heading: 'Generate Your Consulting Agreement Free', body: `Signova generates a complete consulting agreement covering scope, rate, exclusivity, IP, and termination — for any industry, any country. Free preview. Pay when you download. Ready in 3 minutes.` },
     ],
     cta: { label: 'Generate Consulting Agreement Free →', href: '/generate/consulting-agreement' }
   },
@@ -666,7 +666,7 @@ export const BLOG_POSTS = [
       { heading: 'Is a Non-Compete Enforceable?', body: `This depends heavily on jurisdiction. In many US states, including California, non-competes are largely unenforceable. In Nigeria, UK, Canada, and most other common law jurisdictions, non-competes are enforceable — but courts will only uphold them if they are reasonable in scope, duration, and geography.\n\nA non-compete that says "you cannot work in any business globally for 10 years" will not survive court scrutiny. One that says "you cannot solicit our existing clients in Lagos for 12 months" likely will.` },
       { heading: 'What Makes a Non-Compete Reasonable?', body: `Courts evaluate three things: duration (typically 6–24 months is considered reasonable), geographic scope (limited to the areas where the employer actually operates), and activity scope (limited to genuinely competing activities, not all employment).\n\nThe narrower and more specific your non-compete, the more likely it is to be enforced. A narrow, enforceable agreement is more valuable than a broad agreement that a court will strike down entirely.` },
       { heading: 'Non-Compete vs Non-Solicitation — Key Difference', body: `A non-compete restricts working for competitors broadly. A non-solicitation clause specifically restricts approaching the employer's clients or staff — and is generally easier to enforce because it is narrower.\n\nFor most businesses, a non-solicitation clause combined with a confidentiality clause provides more practical protection than a broad non-compete that may not hold up in court.` },
-      { heading: 'Generate Your Non-Compete Agreement Free', body: `Signova generates a jurisdiction-aware non-compete agreement with appropriate duration, geographic scope, and activity restrictions. Free preview, $4.99 to download. Ready in 2 minutes.` },
+      { heading: 'Generate Your Non-Compete Agreement Free', body: `Signova generates a jurisdiction-aware non-compete agreement with appropriate duration, geographic scope, and activity restrictions. Free preview. Pay when you download. Ready in 2 minutes.` },
     ],
     cta: { label: 'Generate Non-Compete Agreement Free →', href: '/generate/non-compete-agreement' }
   },
@@ -682,7 +682,7 @@ export const BLOG_POSTS = [
       { heading: 'Is an MOU Legally Binding?', body: `This depends on how the MOU is drafted. MOUs can be non-binding (purely a statement of intent), partially binding (specific clauses like confidentiality and exclusivity are binding, but the main terms are not), or fully binding (treated as a contract in all respects).\n\nIn most cases, parties choose a non-binding MOU to maintain flexibility while negotiations continue. However, courts in many jurisdictions will examine the language carefully — if the MOU uses mandatory language ("the parties shall" rather than "the parties intend to"), it may be treated as binding.` },
       { heading: 'MOU vs Contract — When to Use Each', body: `Use an MOU when: negotiations are ongoing and final terms are not yet agreed, you want to signal commitment before due diligence is complete, you are working with government agencies or institutions that require formal documentation before approvals, or you want a record of agreed principles before drafting a full contract.\n\nUse a full contract when: you are exchanging money, transferring assets, or taking on specific obligations with defined consequences for non-performance.` },
       { heading: 'What Should an MOU Include?', body: `A well-drafted MOU should cover: names and descriptions of all parties, the purpose and background of the collaboration, each party's roles and contributions, the timeline or duration of the arrangement, whether it is binding or non-binding, confidentiality obligations, and how disputes will be handled. It should be dated and signed by authorised representatives of each party.` },
-      { heading: 'Generate Your MOU Free', body: `Signova generates a complete MOU for government, NGO, academic, and business partnerships — with options for non-binding, partially binding, or fully binding terms. Free preview, $4.99 to download. Ready in 3 minutes.` },
+      { heading: 'Generate Your MOU Free', body: `Signova generates a complete MOU for government, NGO, academic, and business partnerships — with options for non-binding, partially binding, or fully binding terms. Free preview. Pay when you download. Ready in 3 minutes.` },
     ],
     cta: { label: 'Generate MOU Free →', href: '/generate/mou' }
   },
@@ -698,7 +698,7 @@ export const BLOG_POSTS = [
       { heading: 'Why Every Startup Needs One Before Raising Money', body: `Most founder disputes happen because there was no shareholder agreement when the company was formed. When two founders who started as friends need to make decisions about dilution, role changes, or a potential acquisition, the absence of a written agreement turns every conversation into a negotiation.\n\nGet your shareholder agreement in place before you take your first investment, before you add a co-founder, and before you give equity to anyone. It costs far less to do it now than to fix it later.` },
       { heading: 'Key Clauses: Drag-Along and Tag-Along Rights', body: `Drag-along rights allow majority shareholders to force minority shareholders to join a sale of the company on the same terms. This prevents a minority shareholder from blocking an acquisition.\n\nTag-along rights allow minority shareholders to join a sale initiated by majority shareholders on the same terms — protecting them from being left behind when the majority exits.\n\nBoth clauses are standard in venture-backed companies and should be included in any shareholder agreement where there are multiple investors or founders.` },
       { heading: 'Vesting Schedules and Founder Lockup', body: `Equity should vest over time, not be granted all at once. A standard founder vesting schedule is 4 years with a 1-year cliff — meaning no shares vest until the founder has been with the company for 12 months, then 25% vest at the cliff and the remaining shares vest monthly over the next 3 years.\n\nThis protects the company if a founder leaves early and prevents one founder from walking away with a large equity stake after minimal contribution.` },
-      { heading: 'Generate Your Shareholder Agreement Free', body: `Signova generates a complete shareholder agreement covering voting rights, dividends, share transfers, drag-along, tag-along, and anti-dilution provisions. Free preview, $4.99 to download. Ready in 4 minutes.` },
+      { heading: 'Generate Your Shareholder Agreement Free', body: `Signova generates a complete shareholder agreement covering voting rights, dividends, share transfers, drag-along, tag-along, and anti-dilution provisions. Free preview. Pay when you download. Ready in 4 minutes.` },
     ],
     cta: { label: 'Generate Shareholder Agreement Free →', href: '/generate/shareholder-agreement' }
   },
@@ -714,7 +714,7 @@ export const BLOG_POSTS = [
       { heading: 'Is a Letter of Intent Legally Binding?', body: `Most LOIs are intentionally non-binding on the main transaction — meaning neither party is obligated to complete the deal. However, specific clauses within an LOI are often binding: the exclusivity clause (preventing the seller from negotiating with others during due diligence), the confidentiality clause, and any cost-allocation provisions.\n\nIf you are signing an LOI as a buyer or investor, read the exclusivity and break-fee clauses carefully. These are the parts that have real legal teeth.` },
       { heading: 'LOI vs MOU — What Is the Difference?', body: `An LOI is typically used between two parties in a commercial transaction — an acquisition, investment, or lease — where one party is making a specific offer to another. It tends to include proposed valuation, deal structure, and timeline.\n\nAn MOU is more commonly used between organisations entering a collaborative arrangement — a partnership, a programme, a research initiative — where the focus is on roles and responsibilities rather than price and deal terms.` },
       { heading: 'What to Include in an LOI', body: `A well-drafted LOI should cover: identification of the parties, description of the proposed transaction, key financial terms (price, valuation, structure), exclusivity period, conditions for completing the deal (subject to due diligence, board approval, financing), timeline for completing negotiations, confidentiality obligations, and a clear statement of which provisions are binding and which are not.` },
-      { heading: 'Generate Your Letter of Intent Free', body: `Signova generates a professional Letter of Intent for acquisitions, investments, property purchases, and commercial leases — with clear binding/non-binding clauses. Free preview, $4.99 to download. Ready in 3 minutes.` },
+      { heading: 'Generate Your Letter of Intent Free', body: `Signova generates a professional Letter of Intent for acquisitions, investments, property purchases, and commercial leases — with clear binding/non-binding clauses. Free preview. Pay when you download. Ready in 3 minutes.` },
     ],
     cta: { label: 'Generate Letter of Intent Free →', href: '/generate/letter-of-intent' }
   },
@@ -730,7 +730,7 @@ export const BLOG_POSTS = [
       { heading: 'What Are the Required Notice Periods in Nigeria?', body: `Under Nigerian tenancy law, the required notice period depends on the tenancy type:\n\nWeek-to-week tenancies: 1 week notice.\nMonth-to-month tenancies: 1 month notice.\nQuarterly tenancies: 3 months notice.\nYearly tenancies: 6 months notice.\n\nThese are minimum periods. If your tenancy agreement specifies longer notice periods, those govern. The notice period begins from when the tenant actually receives the notice — not when it was written or posted.` },
       { heading: 'Valid Reasons for Issuing a Quit Notice', body: `A landlord can validly issue a quit notice for: expiration of the tenancy term, non-payment of rent, breach of tenancy conditions (subletting without permission, keeping prohibited pets, conducting business from a residential property), the landlord requiring the property for personal use, or demolition or redevelopment of the property.\n\nThe reason must be stated clearly in the quit notice. A notice that does not state a valid reason can be challenged in court.` },
       { heading: 'Common Mistakes That Invalidate a Quit Notice', body: `Not giving sufficient notice — the notice must give the tenant the legally required period to vacate. Not stating the reason — particularly for yearly tenancies, the reason for termination must be stated. Not serving it properly — a quit notice should be personally delivered or sent by registered post. A WhatsApp message or verbal notice is not sufficient. Not following up with a 7-day owner's notice — in Lagos, after the quit notice period expires and the tenant has not vacated, the landlord must serve a separate 7-day notice before applying to court.` },
-      { heading: 'Generate Your Quit Notice Free', body: `Signova generates a legally sound Nigerian quit notice — covering the correct notice period, reason for termination, and proper service requirements for Lagos, Abuja, and other states. Free preview, $4.99 to download. Ready in 2 minutes.` },
+      { heading: 'Generate Your Quit Notice Free', body: `Signova generates a legally sound Nigerian quit notice — covering the correct notice period, reason for termination, and proper service requirements for Lagos, Abuja, and other states. Free preview. Pay when you download. Ready in 2 minutes.` },
     ],
     cta: { label: 'Generate Quit Notice Free →', href: '/generate/quit-notice' }
   },
@@ -746,7 +746,7 @@ export const BLOG_POSTS = [
       { heading: 'General Power of Attorney vs Specific Power of Attorney', body: `A General Power of Attorney grants broad authority to act across all financial and legal matters. It is powerful and should only be given to someone with complete trust.\n\nA Specific (or Limited) Power of Attorney restricts authority to a defined transaction or purpose — for example, "authorised to sell Plot 7, Lekki Phase 2 on my behalf" or "authorised to operate my First Bank account number 1234567890 for 6 months."\n\nFor most situations, a Specific POA is the safer and more appropriate choice.` },
       { heading: 'Does a Power of Attorney Need to Be Notarised in Nigeria?', body: `For a POA to be used for property transactions in Nigeria, it must be notarised and in some cases stamped and registered. A POA executed abroad for use in Nigeria must be authenticated by a Nigerian High Commission or Embassy in the country where it was signed.\n\nFor POAs executed within Nigeria for property matters, registration at the Land Registry or Stamp Duties Office may be required to make the document admissible in evidence.` },
       { heading: 'When Does a Power of Attorney Expire?', body: `A POA can be time-limited (expiring after a specified period), transaction-limited (expiring when a specific act is completed), or open-ended (remaining valid until revoked by the donor).\n\nImportantly, a standard POA is automatically revoked if the donor loses mental capacity or dies. A "Durable" or "Enduring" POA (available in some jurisdictions) remains valid even if the donor loses capacity — and must be prepared with specific language to that effect.` },
-      { heading: 'Generate Your Power of Attorney Free', body: `Signova generates a professional Power of Attorney — general or specific — for property, financial, or business matters across Nigeria, UK, Canada, UAE, and globally. Free preview, $4.99 to download. Ready in 3 minutes.` },
+      { heading: 'Generate Your Power of Attorney Free', body: `Signova generates a professional Power of Attorney — general or specific — for property, financial, or business matters across Nigeria, UK, Canada, UAE, and globally. Free preview. Pay when you download. Ready in 3 minutes.` },
     ],
     cta: { label: 'Generate Power of Attorney Free →', href: '/generate/power-of-attorney' }
   },
@@ -762,7 +762,7 @@ export const BLOG_POSTS = [
       { heading: 'Joint Venture vs Partnership — Key Differences', body: `A partnership is an ongoing business relationship with shared profits, shared liabilities, and no defined end date. A joint venture is typically structured around a single project or purpose, with a clear end date or completion trigger.\n\nIn a JV, each party retains their separate legal identity and liability is generally limited to their JV contribution — unlike a general partnership where partners are jointly and severally liable for each other's actions.` },
       { heading: 'Essential Clauses in a Joint Venture Agreement', body: `Every JV agreement needs: names and descriptions of all parties, the purpose and scope of the joint venture, equity or ownership split, capital contributions (who puts in what), management structure (who makes day-to-day decisions, who has veto rights), profit and loss sharing mechanism, duration and termination triggers, confidentiality obligations, and what happens to assets and liabilities on dissolution.` },
       { heading: 'How to Structure the Management Committee', body: `Most JV agreements establish a joint management committee with representatives from each party. Decisions are typically classified as routine (can be made by either party's representative) and major (requiring unanimous or majority committee approval).\n\nMajor decisions should include: entering into contracts above a certain value, hiring senior staff, changing the JV's scope or purpose, and distributing profits. Get this structure right in the agreement — ambiguity here causes the most disputes.` },
-      { heading: 'Generate Your Joint Venture Agreement Free', body: `Signova generates a complete joint venture agreement covering equity split, management structure, profit sharing, confidentiality, and dissolution terms. Free preview, $4.99 to download. Ready in 4 minutes.` },
+      { heading: 'Generate Your Joint Venture Agreement Free', body: `Signova generates a complete joint venture agreement covering equity split, management structure, profit sharing, confidentiality, and dissolution terms. Free preview. Pay when you download. Ready in 4 minutes.` },
     ],
     cta: { label: 'Generate Joint Venture Agreement Free →', href: '/generate/joint-venture' }
   },
@@ -778,7 +778,7 @@ export const BLOG_POSTS = [
       { heading: 'What Must a Payment Terms Agreement Include?', body: `A complete payment terms agreement should cover: names of both parties (creditor and debtor), the total amount owed, the reason for the debt or obligation, the payment schedule (dates and amounts of each instalment), accepted payment methods, what constitutes a default, late payment penalties, and what the creditor can do if payments stop (demand full balance, take legal action, etc.).` },
       { heading: 'Why Late Payment Penalties Matter', body: `A payment terms agreement without a late payment clause has no teeth. If the debtor misses a payment and there is no agreed consequence, the creditor has to renegotiate from scratch.\n\nA well-drafted late payment clause specifies: a grace period (e.g. 3 days after due date), the penalty rate (e.g. 5% of the overdue amount per month), and acceleration — meaning if the debtor misses two consecutive payments, the entire outstanding balance becomes immediately due.` },
       { heading: 'When to Use This Instead of a Loan Agreement', body: `A loan agreement is used when money is being lent and will be repaid over time — typically with interest. A payment terms agreement is used when a debt already exists and you are agreeing on a repayment structure.\n\nIf goods have been delivered, services have been rendered, or a prior agreement has resulted in an outstanding balance — a payment terms agreement is the right document. If you are lending money that has not yet been transferred — use a loan agreement.` },
-      { heading: 'Generate Your Payment Terms Agreement Free', body: `Signova generates a complete payment terms agreement with instalment schedule, late payment penalties, and default consequences. Free preview, $4.99 to download. Ready in 2 minutes.` },
+      { heading: 'Generate Your Payment Terms Agreement Free', body: `Signova generates a complete payment terms agreement with instalment schedule, late payment penalties, and default consequences. Free preview. Pay when you download. Ready in 2 minutes.` },
     ],
     cta: { label: 'Generate Payment Terms Agreement Free →', href: '/generate/payment-terms-agreement' }
   },
@@ -794,7 +794,7 @@ export const BLOG_POSTS = [
       { heading: 'Exclusive vs Non-Exclusive Distribution', body: `In an exclusive distribution agreement, the supplier grants one distributor the sole right to sell their products in a defined territory. The supplier cannot appoint other distributors and usually cannot sell directly to customers in that territory either.\n\nIn a non-exclusive agreement, the supplier can appoint multiple distributors in the same territory and can also sell directly. Non-exclusive terms are more flexible for the supplier but give the distributor less protection for their investment in marketing and infrastructure.` },
       { heading: 'Minimum Purchase Commitments', body: `Most suppliers require distributors to commit to a minimum purchase quantity per quarter or year. This protects the supplier from appointing a distributor who then does nothing with the territory.\n\nNegotiate this carefully as a distributor — minimum commitments that are too high create pressure to push products at the wrong price point. Commitments should be tied to realistic market projections, not the supplier's ideal scenario.` },
       { heading: 'Termination and Post-Termination Obligations', body: `Distribution agreements should clearly state: how long the agreement lasts, whether it auto-renews, the notice period required for termination, and what happens to existing stock and orders if the agreement ends.\n\nPost-termination, key questions include: Can the distributor sell remaining stock? Who owns the customer relationships built during the agreement? Is there a transition period? These details should be agreed upfront.` },
-      { heading: 'Generate Your Distribution Agreement Free', body: `Signova generates a complete distribution agreement covering territory, exclusivity, minimum purchases, margin, returns, and termination — for any product, any country. Free preview, $4.99 to download. Ready in 3 minutes.` },
+      { heading: 'Generate Your Distribution Agreement Free', body: `Signova generates a complete distribution agreement covering territory, exclusivity, minimum purchases, margin, returns, and termination — for any product, any country. Free preview. Pay when you download. Ready in 3 minutes.` },
     ],
     cta: { label: 'Generate Distribution Agreement Free →', href: '/generate/distribution-agreement' }
   },
@@ -810,7 +810,7 @@ export const BLOG_POSTS = [
       { heading: 'Fixed Price vs Market-Indexed Pricing', body: `One of the most important decisions in a supply agreement is how price is determined. Fixed pricing gives both parties certainty — the buyer knows their cost, the supplier knows their revenue. But in volatile commodity markets (food, fuel, metals), a fixed price can quickly become unworkable.\n\nMarket-indexed pricing ties the price to a reference rate (the price of crude oil, commodity exchange rates, or an agreed index) and adjusts quarterly. This is fairer in volatile markets but requires clear language on which index is used and how adjustments are calculated.` },
       { heading: 'Quality Standards and Rejection Rights', body: `Your supply agreement must specify the quality standard for every delivery — and the buyer's right to reject non-conforming goods. Without this, a supplier can deliver substandard goods and argue that acceptance was implied.\n\nKey clauses: inspection period (how long the buyer has to inspect and reject after delivery), what constitutes a defect or non-conformity, whether rejected goods must be replaced or refunded, and who bears the cost of return shipping.` },
       { heading: 'Force Majeure and Delivery Failures', body: `A force majeure clause excuses a party from performance when events beyond their control — floods, strikes, government actions, pandemics — prevent delivery. This clause became extremely important during COVID-19 supply chain disruptions.\n\nDraft force majeure carefully: specify which events qualify, require prompt written notice, limit the duration before the other party can terminate, and make clear that force majeure does not excuse payment obligations already incurred.` },
-      { heading: 'Generate Your Supply Agreement Free', body: `Signova generates a complete supply agreement covering pricing, delivery schedule, quality standards, rejection rights, force majeure, and termination. Free preview, $4.99 to download. Ready in 3 minutes.` },
+      { heading: 'Generate Your Supply Agreement Free', body: `Signova generates a complete supply agreement covering pricing, delivery schedule, quality standards, rejection rights, force majeure, and termination. Free preview. Pay when you download. Ready in 3 minutes.` },
     ],
     cta: { label: 'Generate Supply Agreement Free →', href: '/generate/supply-agreement' }
   },
@@ -826,7 +826,7 @@ export const BLOG_POSTS = [
       { heading: 'What Commission Rate Is Standard in Nigeria?', body: `In Lagos and most major Nigerian cities, the standard estate agent commission is:\n\n10% of annual rent for new tenancies sourced by the agent.\n5–7.5% for tenancy renewals where the agent facilitated the renewal.\n\nThese are market norms, not legal requirements — your agreement can specify any rate. What matters is that the rate is written down and agreed before the agent begins work.` },
       { heading: 'Defining the Agent\'s Authority', body: `Your agreement must specify exactly what the agent is and is not authorised to do. Typical authority granted: marketing the property, conducting viewings, screening prospective tenants, collecting the first year's rent on signing, and serving routine notices.\n\nTypically not granted without specific approval: accepting tenants below the asking rent, agreeing to structural modifications, entering into any agreement on behalf of the landlord, or handling legal disputes with tenants.` },
       { heading: 'Handling Rent Collection and Remittance', body: `If your agent collects rent on your behalf, your agreement must specify: the remittance timeline (how quickly after collection must the landlord receive funds), the agent's handling fee if different from the initial commission, and what records the agent must keep and provide to the landlord.\n\nMany landlord-agent disputes in Nigeria arise specifically from agents collecting rent and being slow to remit — or deducting unauthorised fees. A written agreement with a clear 7-day remittance clause resolves this.` },
-      { heading: 'Generate Your Landlord-Agent Agreement Free', body: `Signova generates a professional landlord and estate agent agreement covering commission, authority, rent collection, reporting, and termination — tailored for Nigeria, Ghana, Kenya, and the UK. Free preview, $4.99 to download. Ready in 3 minutes.` },
+      { heading: 'Generate Your Landlord-Agent Agreement Free', body: `Signova generates a professional landlord and estate agent agreement covering commission, authority, rent collection, reporting, and termination — tailored for Nigeria, Ghana, Kenya, and the UK. Free preview. Pay when you download. Ready in 3 minutes.` },
     ],
     cta: { label: 'Generate Landlord-Agent Agreement Free →', href: '/generate/landlord-agent-agreement' }
   },
@@ -842,7 +842,7 @@ export const BLOG_POSTS = [
       { heading: 'When Do You Need a Purchase Agreement?', body: `You need a written purchase agreement whenever: you are selling high-value goods (vehicles, equipment, electronics), you are buying second-hand assets where condition matters, payment will be made in instalments, delivery will happen at a future date, there is a warranty or guarantee involved, or either party needs a record for accounting or legal purposes.\n\nFor small, immediate cash transactions — buying a market item, paying for a service on the spot — a receipt may be sufficient. For anything above a few hundred dollars, a written agreement protects both parties.` },
       { heading: 'Condition and "As-Is" Sales', body: `One of the most important clauses in any purchase agreement for second-hand goods is the condition clause. "Sold as-is" means the buyer accepts the goods in their current condition with no warranty — the seller is not responsible for defects discovered after the sale.\n\nIf you are the seller, always specify "sold as-is" for second-hand goods. If you are the buyer, insist on a warranty clause or a right to inspect before finalising payment.` },
       { heading: 'Delivery Terms and Risk of Loss', body: `When does responsibility for the goods transfer from seller to buyer? This matters especially when goods are shipped — if they are damaged in transit, who bears the loss?\n\nClearly specify: where delivery will take place (seller's premises, buyer's premises, a neutral location), who arranges transport, who pays for shipping and insurance, and at what point risk transfers from seller to buyer.` },
-      { heading: 'Generate Your Purchase Agreement Free', body: `Signova generates a complete purchase agreement covering item description, price, payment method, delivery terms, condition, and warranty — for any goods, any country. Free preview, $4.99 to download. Ready in 2 minutes.` },
+      { heading: 'Generate Your Purchase Agreement Free', body: `Signova generates a complete purchase agreement covering item description, price, payment method, delivery terms, condition, and warranty — for any goods, any country. Free preview. Pay when you download. Ready in 2 minutes.` },
     ],
     cta: { label: 'Generate Purchase Agreement Free →', href: '/generate/purchase-agreement' }
   },
@@ -858,7 +858,7 @@ export const BLOG_POSTS = [
       { heading: 'What Services Should Be Covered?', body: `A facility management agreement should explicitly list all services included — and just as importantly, all services excluded. Common inclusions: routine preventive maintenance, cleaning and sanitation, security management, utility management, emergency repairs up to a specified cost, and vendor coordination.\n\nCommon exclusions: major structural repairs, capital expenditure items, tenant fit-out works, and specialist technical services (elevators, fire suppression systems) unless specifically included. Ambiguity about scope leads to disputes about who pays for unexpected repairs.` },
       { heading: 'Fee Structures — Fixed vs Percentage of Revenue', body: `Facility management fees are typically structured as either a fixed monthly management fee, a percentage of the property's rental income (common for residential estates), or a combination of both.\n\nFor commercial properties, a fixed monthly fee provides budget certainty. For residential estates or mixed-use developments where income varies, a percentage model aligns the FM's incentive with occupancy performance.` },
       { heading: 'Service Level Agreements (SLAs) and Performance Standards', body: `Your agreement should include measurable performance standards — response time for emergency repairs (e.g. 2 hours for loss of power, 4 hours for water leaks), routine maintenance frequency, cleaning standards, and reporting requirements.\n\nWithout SLAs, you have no basis to hold the FM company accountable when performance falls short. With SLAs, you can tie payment deductions or termination rights to specific performance failures.` },
-      { heading: 'Generate Your Facility Management Agreement Free', body: `Signova generates a complete facility management agreement covering services scope, fee structure, SLAs, liability cap, and termination rights — for commercial and residential properties in Nigeria, Ghana, Kenya, and globally. Free preview, $4.99 to download. Ready in 3 minutes.` },
+      { heading: 'Generate Your Facility Management Agreement Free', body: `Signova generates a complete facility management agreement covering services scope, fee structure, SLAs, liability cap, and termination rights — for commercial and residential properties in Nigeria, Ghana, Kenya, and globally. Free preview. Pay when you download. Ready in 3 minutes.` },
     ],
     cta: { label: 'Generate Facility Manager Agreement Free →', href: '/generate/facility-manager-agreement' }
   },
@@ -890,7 +890,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'The One Thing Both Parties Need Right Now',
-        body: `Whether you are a landlord or a tenant, the single most important action you can take before this bill becomes law is to ensure you have a proper written tenancy agreement in place.\n\nA well-drafted tenancy agreement under current Lagos law already covers rent amount, duration, caution fee, notice periods, maintenance responsibilities, and termination conditions. If a dispute goes to tribunal — now or after the bill passes — your agreement is your primary evidence.\n\nSignova generates a Lagos-law-compliant tenancy agreement in under 3 minutes. You answer a few questions about your property, tenant, rent, and special conditions — and get a professionally structured agreement you can preview free and download for $4.99.\n\nNo lawyer. No waiting. No generic template that ignores Lagos State law.`
+        body: `Whether you are a landlord or a tenant, the single most important action you can take before this bill becomes law is to ensure you have a proper written tenancy agreement in place.\n\nA well-drafted tenancy agreement under current Lagos law already covers rent amount, duration, caution fee, notice periods, maintenance responsibilities, and termination conditions. If a dispute goes to tribunal — now or after the bill passes — your agreement is your primary evidence.\n\nSignova generates a Lagos-law-compliant tenancy agreement in under 3 minutes. You answer a few questions about your property, tenant, rent, and special conditions — and get a professionally structured agreement you can preview free and pay when you download.\n\nNo lawyer. No waiting. No generic template that ignores Lagos State law.`
       },
     ],
     cta: { label: 'Generate Lagos Tenancy Agreement →', href: '/generate/tenancy-agreement' }
@@ -923,7 +923,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your Freelance Contract Free',
-        body: `Signova generates a professional Nigerian freelance contract in under 3 minutes. Fill in the client name, project description, fee, payment schedule, revision limit, and any special conditions — and get a structured, enforceable contract you can preview free and download for $4.99.\n\nFor international clients, the contract can specify USD payment terms and an international governing law clause. For Nigerian clients, it follows Nigerian commercial law principles.\n\nNo lawyer needed. Preview completely free before paying anything.`
+        body: `Signova generates a professional Nigerian freelance contract in under 3 minutes. Fill in the client name, project description, fee, payment schedule, revision limit, and any special conditions — and get a structured, enforceable contract you can preview free and pay when you download.\n\nFor international clients, the contract can specify USD payment terms and an international governing law clause. For Nigerian clients, it follows Nigerian commercial law principles.\n\nNo lawyer needed. Preview completely free before paying anything.`
       },
     ],
     cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
@@ -959,7 +959,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate a Kenyan Tenancy Agreement Free',
-        body: `Signova generates a professional tenancy agreement suitable for Kenyan residential and commercial properties in under 2 minutes. Enter the landlord and tenant names, property address, rent amount, deposit, duration, and special conditions — get a structured agreement ready to print and sign.\n\nFree preview. KSh 650 (≈ $4.99) to download. No account needed.`
+        body: `Signova generates a professional tenancy agreement suitable for Kenyan residential and commercial properties in under 2 minutes. Enter the landlord and tenant names, property address, rent amount, deposit, duration, and special conditions — get a structured agreement ready to print and sign.\n\nFree preview. to download. No account needed.`
       },
     ],
     cta: { label: 'Generate Tenancy Agreement Free →', href: '/generate/tenancy-agreement' }
@@ -992,7 +992,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your Indian Freelance Contract Free',
-        body: `Signova generates a complete freelance contract suitable for Indian law — covering scope, payment in INR or USD, GST clause, IP ownership, revision policy, and dispute resolution. Free preview, ₹418 (≈ $4.99) to download. No account needed. Works for designers, developers, writers, marketers, and all freelancers.`
+        body: `Signova generates a complete freelance contract suitable for Indian law — covering scope, payment in INR or USD, GST clause, IP ownership, revision policy, and dispute resolution. Free preview to download. No account needed. Works for designers, developers, writers, marketers, and all freelancers.`
       },
     ],
     cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
@@ -1025,7 +1025,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your Freelance Contract Free',
-        body: `Signova generates a complete freelance contract for Philippine-based freelancers — covering scope, USD payment terms, independent contractor status, IP ownership, and termination provisions. Free preview, ₱288 (≈ $4.99) to download. No account needed.`
+        body: `Signova generates a complete freelance contract for Philippine-based freelancers — covering scope, USD payment terms, independent contractor status, IP ownership, and termination provisions. Free preview to download. No account needed.`
       },
     ],
     cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
@@ -1058,7 +1058,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your UK Freelance Contract Free',
-        body: `Signova generates a complete UK freelance contract covering IR35-friendly clauses, payment terms, IP assignment, late payment provisions, and limitation of liability — for any freelance or contracting work in the United Kingdom. Free preview, £3.95 (≈ $4.99) to download. No account needed.`
+        body: `Signova generates a complete UK freelance contract covering IR35-friendly clauses, payment terms, IP assignment, late payment provisions, and limitation of liability — for any freelance or contracting work in the United Kingdom. Free preview to download. No account needed.`
       },
     ],
     cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
@@ -1091,7 +1091,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your Canadian Freelance Contract Free',
-        body: `Signova generates a complete freelance contract for Canadian self-employed professionals — covering scope, HST/GST clause, copyright assignment, independent contractor status, and late payment terms. Free preview, CA$6.85 (≈ $4.99) to download. No account needed. Works for Ontario, BC, Alberta, and all Canadian provinces.`
+        body: `Signova generates a complete freelance contract for Canadian self-employed professionals — covering scope, HST/GST clause, copyright assignment, independent contractor status, and late payment terms. Free preview to download. No account needed. Works for Ontario, BC, Alberta, and all Canadian provinces.`
       },
     ],
     cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
@@ -1124,7 +1124,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate a Ghanaian Tenancy Agreement Free',
-        body: `Signova generates a professional tenancy agreement for Ghana — covering rent amount in Cedis, advance rent period, security deposit, notice period, utilities, and termination provisions. Free preview, GH₵75 (≈ $4.99) to download. No account needed.`
+        body: `Signova generates a professional tenancy agreement for Ghana — covering rent amount in Cedis, advance rent period, security deposit, notice period, utilities, and termination provisions. Free preview to download. No account needed.`
       },
     ],
     cta: { label: 'Generate Tenancy Agreement Free →', href: '/generate/tenancy-agreement' }
@@ -1160,7 +1160,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your South African NDA Free',
-        body: `Signova generates a complete NDA suitable for South African law — covering confidentiality obligations, POPIA-aware data handling clauses, duration, and jurisdiction. Free preview, R93 (≈ $4.99) to download. No account needed.`
+        body: `Signova generates a complete NDA suitable for South African law — covering confidentiality obligations, POPIA-aware data handling clauses, duration, and jurisdiction. Free preview, R93 (≈ a small fixed fee) to download. No account needed.`
       },
     ],
     cta: { label: 'Generate NDA Free →', href: '/generate/nda' }
@@ -1193,7 +1193,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate a South African Lease Agreement Free',
-        body: `Signova generates a complete residential lease agreement for South Africa — covering deposit terms, notice periods, maintenance obligations, and the required Rental Housing Act disclosures. Free preview, R93 (≈ $4.99) to download. No account needed.`
+        body: `Signova generates a complete residential lease agreement for South Africa — covering deposit terms, notice periods, maintenance obligations, and the required Rental Housing Act disclosures. Free preview, R93 (≈ a small fixed fee) to download. No account needed.`
       },
     ],
     cta: { label: 'Generate Lease Agreement Free →', href: '/generate/tenancy-agreement' }
@@ -1226,7 +1226,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate a UAE Tenancy Agreement Free',
-        body: `Signova generates a complete tenancy agreement for Dubai and UAE properties — covering RERA-compliant terms, Ejari registration provisions, deposit conditions, rent increase notice requirements, and cheque payment structure. Free preview, AED 18 (≈ $4.99) to download. No account needed.`
+        body: `Signova generates a complete tenancy agreement for Dubai and UAE properties — covering RERA-compliant terms, Ejari registration provisions, deposit conditions, rent increase notice requirements, and cheque payment structure. Free preview to download. No account needed.`
       },
     ],
     cta: { label: 'Generate Tenancy Agreement Free →', href: '/generate/tenancy-agreement' }
@@ -1259,7 +1259,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'WhatsApp Negotiations — Turning Them Into Contracts',
-        body: `Most Nigerian freelancers negotiate projects entirely over WhatsApp before any formal document is signed. The agreed rate, scope, timeline, and payment method exist only in a chat thread.\n\nSignova's WhatsApp feature lets you paste that conversation directly — it extracts the key terms and auto-fills a professional freelance contract in under 2 minutes. The result is a proper document covering all four protective clauses above, ready to send to the client for signature before any work begins.\n\nGenerate your contract free, download for ₦7,400 (≈ $4.99). No account needed.`
+        body: `Most Nigerian freelancers negotiate projects entirely over WhatsApp before any formal document is signed. The agreed rate, scope, timeline, and payment method exist only in a chat thread.\n\nSignova's WhatsApp feature lets you paste that conversation directly — it extracts the key terms and auto-fills a professional freelance contract in under 2 minutes. The result is a proper document covering all four protective clauses above, ready to send to the client for signature before any work begins.\n\nGenerate your contract free, download for. No account needed.`
       },
     ],
     cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
@@ -1292,7 +1292,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your Australian Freelance Contract Free',
-        body: `Signova generates a complete freelance contract for Australian contractors — covering scope, GST clause, copyright assignment, independent contractor status, and late payment provisions. Free preview, A$7.80 (≈ $4.99) to download. No account needed.`
+        body: `Signova generates a complete freelance contract for Australian contractors — covering scope, GST clause, copyright assignment, independent contractor status, and late payment provisions. Free preview to download. No account needed.`
       },
     ],
     cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
@@ -1325,7 +1325,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your Freelance Contract Free',
-        body: `Signova generates a complete freelance contract for Pakistani freelancers — covering USD payment terms, IP assignment, milestone structure, and international dispute resolution. Free preview, Rs 1,390 (≈ $4.99) to download. No account needed.`
+        body: `Signova generates a complete freelance contract for Pakistani freelancers — covering USD payment terms, IP assignment, milestone structure, and international dispute resolution. Free preview to download. No account needed.`
       },
     ],
     cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
@@ -1358,7 +1358,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your Canadian NDA Free',
-        body: `Signova generates a complete NDA suitable for Canadian law — covering trade secret protection, permitted use, return obligations, duration, and equitable relief provisions. Free preview, CA$6.85 (≈ $4.99) to download. No account needed. Works across Ontario, BC, Alberta, and all Canadian provinces.`
+        body: `Signova generates a complete NDA suitable for Canadian law — covering trade secret protection, permitted use, return obligations, duration, and equitable relief provisions. Free preview to download. No account needed. Works across Ontario, BC, Alberta, and all Canadian provinces.`
       },
     ],
     cta: { label: 'Generate NDA Free →', href: '/generate/nda' }
@@ -1391,7 +1391,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate Your Indian NDA Free',
-        body: `Signova generates a complete NDA suitable for Indian law — covering confidentiality obligations, DPDP Act-aware data handling, duration, stamp duty guidance, and court jurisdiction. Free preview, ₹418 (≈ $4.99) to download. No account needed.`
+        body: `Signova generates a complete NDA suitable for Indian law — covering confidentiality obligations, DPDP Act-aware data handling, duration, stamp duty guidance, and court jurisdiction. Free preview to download. No account needed.`
       },
     ],
     cta: { label: 'Generate NDA Free →', href: '/generate/nda' }
@@ -1502,7 +1502,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Step 3: Send a Payment Terms Agreement (even now, after the fact)',
-        body: `If the client acknowledges the debt but claims they can't pay right now, get it in writing immediately. A Payment Terms Agreement documents the exact amount owed, the reason for the debt, a payment schedule they agree to, and late payment penalties if they miss instalments.\n\nThis turns a verbal "I'll pay you next month" into an enforceable document. Generate a Payment Terms Agreement on Signova in 2 minutes — free to preview, $4.99 to download.`
+        body: `If the client acknowledges the debt but claims they can't pay right now, get it in writing immediately. A Payment Terms Agreement documents the exact amount owed, the reason for the debt, a payment schedule they agree to, and late payment penalties if they miss instalments.\n\nThis turns a verbal "I'll pay you next month" into an enforceable document. Generate a Payment Terms Agreement on Signova in 2 minutes — free to preview, a small fixed fee to download.`
       },
       {
         heading: 'Step 4: For future projects — the contract you needed',
@@ -1539,7 +1539,7 @@ export const BLOG_POSTS = [
       },
       {
         heading: 'Generate your Nigerian freelance contract free',
-        body: `Signova generates jurisdiction-aware freelance contracts for Nigeria in under 3 minutes. Answer a few questions — your name, the client's name, what you're delivering, how much you're charging — and Signova produces a properly structured contract that references Nigerian law.\n\nFree to preview. $4.99 to download as a clean PDF. No account, no subscription. You've probably spent more than $4.99 chasing a single unpaid invoice. One contract prevents all of that.`
+        body: `Signova generates jurisdiction-aware freelance contracts for Nigeria in under 3 minutes. Answer a few questions — your name, the client's name, what you're delivering, how much you're charging — and Signova produces a properly structured contract that references Nigerian law.\n\nFree to preview. Pay when you download the clean PDF. No account, no subscription. You've probably spent more than that chasing a single unpaid invoice. One contract prevents all of that.`
       },
     ],
     cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }

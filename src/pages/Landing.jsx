@@ -130,25 +130,33 @@ const _DEFAULT_LAWYER_FEE_RETAINED = '$150–$400'
 // switch risk. See src/lib/pricing.js + /api/v1/pricing/detect-region.js.
 
 // ── Geo-prioritised quick-pick documents ────────────────────────────────────
+// Top-3 slots drive the hero's above-the-fold quick picks (.slice(0,3)).
+// Ordered to match the "Don't start the work until this is signed"
+// positioning — contract primitives first, then supporting docs.
 const QUICKPICK_DEFAULT = [
-  { id: 'business-proposal', icon: <Rocket size={20} weight="duotone" color="currentColor" />, name: 'Business Proposal' },
-  { id: 'nda', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: 'NDA' },
   { id: 'freelance-contract', icon: <PenNib size={20} weight="duotone" color="currentColor" />, name: 'Freelance Contract' },
-  { id: 'privacy-policy', icon: <Lock size={20} weight="duotone" color="currentColor" />, name: 'Privacy Policy' },
+  { id: 'nda', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: 'NDA' },
   { id: 'service-agreement', icon: <FileText size={20} weight="duotone" color="currentColor" />, name: 'Service Agreement' },
-  { id: 'loan-agreement', icon: <CurrencyDollar size={20} weight="duotone" color="currentColor" />, name: 'Loan Agreement' },
   { id: 'tenancy-agreement', icon: <House size={20} weight="duotone" color="currentColor" />, name: 'Tenancy Agreement' },
+  { id: 'loan-agreement', icon: <CurrencyDollar size={20} weight="duotone" color="currentColor" />, name: 'Loan Agreement' },
   { id: 'employment-offer-letter', icon: <Briefcase size={20} weight="duotone" color="currentColor" />, name: 'Offer Letter' },
+  { id: 'business-proposal', icon: <Rocket size={20} weight="duotone" color="currentColor" />, name: 'Business Proposal' },
+  { id: 'privacy-policy', icon: <Lock size={20} weight="duotone" color="currentColor" />, name: 'Privacy Policy' },
 ]
 const QUICKPICK_REGIONS = {
   NG: [
-    { id: 'founders-agreement', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: "Founders' Agreement" },
+    // Reordered for pre-flight-checklist framing. Nigerian freelancer ghosting,
+    // informal tenancy disputes, and unwritten loans (the "lent money to a
+    // cousin" case from /about) are the three classic "should have signed it"
+    // moments. Founders' Agreement / Deed of Assignment / IP Assignment kept
+    // in the full grid below the top-3.
+    { id: 'freelance-contract', icon: <PenNib size={20} weight="duotone" color="currentColor" />, name: 'Freelance Contract' },
     { id: 'tenancy-agreement', icon: <House size={20} weight="duotone" color="currentColor" />, name: 'Tenancy Agreement' },
-    { id: 'deed-of-assignment', icon: <Article size={20} weight="duotone" color="currentColor" />, name: 'Deed of Assignment' },
-    { id: 'business-proposal', icon: <Rocket size={20} weight="duotone" color="currentColor" />, name: 'Business Proposal' },
-    { id: 'quit-notice', icon: <CurrencyDollar size={20} weight="duotone" color="currentColor" />, name: 'Quit Notice' },
     { id: 'loan-agreement', icon: <CurrencyDollar size={20} weight="duotone" color="currentColor" />, name: 'Loan Agreement' },
     { id: 'nda', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: 'NDA' },
+    { id: 'founders-agreement', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: "Founders' Agreement" },
+    { id: 'deed-of-assignment', icon: <Article size={20} weight="duotone" color="currentColor" />, name: 'Deed of Assignment' },
+    { id: 'quit-notice', icon: <CurrencyDollar size={20} weight="duotone" color="currentColor" />, name: 'Quit Notice' },
     { id: 'ip-assignment-agreement', icon: <LightbulbFilament size={20} weight="duotone" color="currentColor" />, name: 'IP Assignment' },
   ],
   GH: 'NG', KE: 'NG', ZA: 'NG', TZ: 'NG', UG: 'NG', ET: 'NG',
@@ -184,10 +192,14 @@ const QUICKPICK_REGIONS = {
   CA: 'US', GB: 'US', AU: 'US', NZ: 'US',
   DE: 'US', FR: 'US', IT: 'US', ES: 'US', NL: 'US', PT: 'US',
   AE: [
+    // Reordered for pre-flight-checklist framing. Gulf B2B deals map most
+    // cleanly to Service Agreement (the primary "don't start the work"
+    // doc), then NDA (required before nearly every deal conversation),
+    // then MOU (often the formal starting gun for bigger engagements).
+    { id: 'service-agreement', icon: <FileText size={20} weight="duotone" color="currentColor" />, name: 'Service Agreement' },
+    { id: 'nda', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: 'NDA' },
     { id: 'mou', icon: <Note size={20} weight="duotone" color="currentColor" />, name: 'MOU' },
     { id: 'business-partnership', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: 'Partnership Agreement' },
-    { id: 'nda', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: 'NDA' },
-    { id: 'service-agreement', icon: <FileText size={20} weight="duotone" color="currentColor" />, name: 'Service Agreement' },
     { id: 'distribution-agreement', icon: <FileText size={20} weight="duotone" color="currentColor" />, name: 'Distribution Agreement' },
     { id: 'supply-agreement', icon: <Package size={20} weight="duotone" color="currentColor" />, name: 'Supply Agreement' },
     { id: 'joint-venture', icon: <MapTrifold size={20} weight="duotone" color="currentColor" />, name: 'Joint Venture' },
