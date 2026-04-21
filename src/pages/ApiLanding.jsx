@@ -414,7 +414,7 @@ export default function ApiLanding() {
 
           <div className="trust-signals">
             <span>✓ No credit card required</span>
-            <span>✓ Nigeria · Kenya · Ghana · any jurisdiction</span>
+            <span>✓ Nigeria · Kenya · Ghana · UK · US · Canada · 8 jurisdictions verified</span>
             <span>✓ 34 Document Types</span>
             <span>✓ Free tier · No commitment</span>
           </div>

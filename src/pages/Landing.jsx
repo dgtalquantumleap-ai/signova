@@ -542,11 +542,7 @@ export default function Landing() {
             </div>
 
             <p className="hero-trust-line">
-              Free preview · No account required ·{' '}
-              {pricing.paystackAvailable
-                ? `${pricing.display} via card or ₦6,900 via Paystack`
-                : `${pricing.display} to download`}
-              {' '}· 30-day refund
+              Free preview · No account required · 30-day refund
             </p>
           </div>
 
@@ -1010,7 +1006,7 @@ export default function Landing() {
             {[
               { icon: <Warning size={32} weight="duotone" color="currentColor" />, title: 'Ready in 3 minutes', body: 'From question to signed-ready PDF faster than a WhatsApp voice note.' },
               { icon: <Key size={32} weight="duotone" color="currentColor" />, title: 'Your data stays yours', body: "Nothing is saved to a database. Close the tab and it's gone." },
-              { icon: <Globe size={32} weight="duotone" color="currentColor" />, title: 'Works in any jurisdiction', body: "Jurisdiction-aware documents for Nigeria, UK, US, India, and more. Not generic templates — tailored to your country's laws." },
+              { icon: <Globe size={32} weight="duotone" color="currentColor" />, title: 'Works in 8 jurisdictions', body: "Jurisdiction-aware documents for Nigeria, UK, US, Kenya, Ghana, South Africa, Canada, and India — not generic templates. Tailored to your country's laws." },
               { icon: <CreditCard size={32} weight="duotone" color="currentColor" />, title: 'Pay with card or crypto', body: 'Accepts all major cards and USDT. No restrictions — pay the way you already pay.' },
             ].map(t => (
               <div key={t.title} className="trust-item">
