@@ -1,0 +1,29 @@
+{
+  "_note": "Synthetic — shape matches Generator.jsx:238–252 Service Agreement fields. See tests/fixtures/README.md.",
+  "docType": "service-agreement",
+  "answers": {
+    "provider": "Adewale Okonkwo Consulting Ltd.",
+    "client": "BrightPath Nigeria Ltd.",
+    "services": "Strategic business advisory including market entry analysis, financial modelling, and board-level presentations for the 2026 Lagos expansion.",
+    "fee": "\u20a6150,000/month",
+    "paymentTerms": "Monthly retainer",
+    "duration": "6 months",
+    "country": "Nigeria",
+    "ipOwnership": "Provider retains ownership until paid in full",
+    "confidentiality": "Yes \u2014 both parties keep information confidential"
+  },
+  "developerApiEquivalent": {
+    "document_type": "service-agreement",
+    "jurisdiction": "Nigeria",
+    "fields": {
+      "provider": "Adewale Okonkwo Consulting Ltd.",
+      "client": "BrightPath Nigeria Ltd.",
+      "services": "Strategic business advisory including market entry analysis, financial modelling, and board-level presentations for the 2026 Lagos expansion.",
+      "fee": "\u20a6150,000/month",
+      "paymentTerms": "Monthly retainer",
+      "duration": "6 months",
+      "ipOwnership": "Provider retains ownership until paid in full",
+      "confidentiality": "Yes \u2014 both parties keep information confidential"
+    }
+  }
+}

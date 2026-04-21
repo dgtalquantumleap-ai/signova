@@ -1,0 +1,409 @@
+{
+  "_schemaVersion": 2,
+  "_notes": [
+    "Single source of truth for document type identity, routing, required",
+    "clauses, per-doctype max_tokens, jurisdiction variants, and worker",
+    "classification modes. Replaces lib/doc-completeness-spec.json (v1).",
+    "",
+    "Accessors live in lib/doc-registry.js — do NOT import this JSON from",
+    "anywhere else. Endpoint code must use typed accessors (getTitle,",
+    "getBodyTemplate, etc.), never string-parse this file.",
+    "",
+    "Structure:",
+    "  bodyTemplates[id]           → { declared_title }",
+    "  docTypes[id] contains       → { id, title, body_template_id,",
+    "                                  required_clauses, max_tokens,",
+    "                                  jurisdiction_variants,",
+    "                                  worker_classification_modes,",
+    "                                  forbidden_titles }",
+    "  jurisdiction_variants[key]  → { title, body_template_id }",
+    "",
+    "INVARIANT enforced by assertRegistryConsistent() at module load:",
+    "  For every docType × jurisdiction_variant, the resolved",
+    "  body_template_id must exist in bodyTemplates AND its declared_title",
+    "  must equal the variant's title. Bad merges fail server boot.",
+    "",
+    "worker_classification_modes is defined here but unused until Phase 5",
+    "(per amendment). Populated for employment-adjacent doc types so the",
+    "schema is ready; empty array for types where classification doesn't",
+    "apply.",
+    "",
+    "forbidden_titles is consumed by the DOC_TITLE_BODY_MISMATCH detector",
+    "in lib/doc-completeness.js. Entries are titles of legally-distinct",
+    "document types that must never appear in this doc's body. Scope them",
+    "tightly — too many false positives will suppress valid output."
+  ],
+  "defaults": {
+    "max_tokens": 8000
+  },
+  "bodyTemplates": {
+    "service_agreement_v1":        { "declared_title": "Service Agreement" },
+    "service_agreement_ng_v1":     { "declared_title": "Service Agreement" },
+    "consulting_agreement_v1":     { "declared_title": "Consulting Agreement" },
+    "privacy_policy_v1":           { "declared_title": "Privacy Policy" },
+    "terms_of_service_v1":         { "declared_title": "Terms of Service" },
+    "nda_v1":                      { "declared_title": "Non-Disclosure Agreement" },
+    "freelance_contract_v1":       { "declared_title": "Freelance Contract" },
+    "independent_contractor_v1":   { "declared_title": "Independent Contractor Agreement" },
+    "hire_purchase_v1":            { "declared_title": "Hire Purchase Agreement" },
+    "tenancy_agreement_v1":        { "declared_title": "Tenancy Agreement" },
+    "quit_notice_v1":              { "declared_title": "Quit Notice" },
+    "deed_of_assignment_v1":       { "declared_title": "Deed of Assignment" },
+    "power_of_attorney_v1":        { "declared_title": "Power of Attorney" },
+    "landlord_agent_agreement_v1": { "declared_title": "Landlord and Agent Agreement" },
+    "facility_manager_v1":         { "declared_title": "Facility Manager Agreement" },
+    "employment_offer_v1":         { "declared_title": "Employment Offer Letter" },
+    "non_compete_v1":              { "declared_title": "Non-Compete Agreement" },
+    "payment_terms_v1":            { "declared_title": "Payment Terms Agreement" },
+    "business_partnership_v1":     { "declared_title": "Business Partnership Agreement" },
+    "joint_venture_v1":            { "declared_title": "Joint Venture Agreement" },
+    "loan_agreement_v1":           { "declared_title": "Loan Agreement" },
+    "shareholder_agreement_v1":    { "declared_title": "Shareholder Agreement" },
+    "mou_v1":                      { "declared_title": "Memorandum of Understanding" },
+    "letter_of_intent_v1":         { "declared_title": "Letter of Intent" },
+    "distribution_agreement_v1":   { "declared_title": "Distribution Agreement" },
+    "supply_agreement_v1":         { "declared_title": "Supply Agreement" },
+    "business_proposal_v1":        { "declared_title": "Business Proposal" },
+    "purchase_agreement_v1":       { "declared_title": "Purchase Agreement" },
+    "data_processing_agreement_v1":{ "declared_title": "Data Processing Agreement" }
+  },
+  "docTypes": {
+    "service-agreement": {
+      "id": "service-agreement",
+      "title": "Service Agreement",
+      "body_template_id": "service_agreement_v1",
+      "required_clauses": [
+        { "id": "scope",          "anyOf": ["scope of services", "scope of work", "services", "engagement"] },
+        { "id": "fees",           "anyOf": ["fees", "remuneration", "payment", "compensation"] },
+        { "id": "term",           "anyOf": ["term", "duration", "effective date"] },
+        { "id": "termination",    "anyOf": ["termination", "term and termination"] },
+        { "id": "governing-law",  "anyOf": ["governing law", "jurisdiction and governing law"] },
+        { "id": "signature",      "anyOf": ["signature", "signed", "in witness whereof", "executed"] }
+      ],
+      "max_tokens": 16000,
+      "jurisdiction_variants": {
+        "default": { "title": "Service Agreement", "body_template_id": "service_agreement_v1" },
+        "nigeria": { "title": "Service Agreement", "body_template_id": "service_agreement_ng_v1" }
+      },
+      "worker_classification_modes": ["independent_contractor", "exempt_worker_s91"],
+      "worker_classification_rules": [
+        {
+          "mode": "independent_contractor",
+          "require_any_of": ["invoice", "fee for services", "independent contractor", "contractor agreement"],
+          "forbid_any_of": ["salary", "annual leave", "probation period"]
+        },
+        {
+          "mode": "exempt_worker_s91",
+          "require_any_of": ["manager", "managerial", "director", "executive", "professional services"],
+          "forbid_any_of": ["manual labour", "operational worker", "clerical worker"]
+        }
+      ],
+      "worker_classification_prompts": {
+        "independent_contractor": "CLASSIFICATION ROUTING \u2014 INDEPENDENT CONTRACTOR (Nigeria). This document is generated for an independent-contractor relationship. Apply ONLY the clauses relevant to this classification:\n- Nothing in this Agreement creates a relationship of employment.\n- The Contractor is responsible for its own taxes; do NOT deduct PAYE from the fee.\n- Do NOT include pension contributions (Pension Reform Act 2014 applies to employer/employee only).\n- Do NOT include NSITF (Employees\u2019 Compensation Act 2010), NHF (NHF Act 1992), or ITF contributions \u2014 these apply to employees, not contractors.\n- Do NOT cite s.91 Labour Act worker-exemption. s.91 defines who is a \u2018worker\u2019 under the Labour Act; citing it implies a Labour Act relationship, which is itself inconsistent with an independent-contractor engagement.\nDo not hedge. Do not include clauses from other classification sets.",
+        "exempt_worker_s91": "CLASSIFICATION ROUTING \u2014 EXEMPT WORKER under s.91 Labour Act (Nigeria). This document is generated for a managerial, professional, or executive EMPLOYMENT relationship that falls outside the Labour Act\u2019s \u2018worker\u2019 category per s.91. The engagement is still an employment relationship for tax, pension, and social-security purposes \u2014 s.91 only carves out Labour Act worker protections, it does NOT disapply Nigerian tax or social-security statutes.\n\nLABOUR ACT SCOPE (what s.91 DOES exempt):\n- Cite s.91 Labour Act expressly: the employee falls outside the \u2018worker\u2019 definition (manual/clerical/operational) in s.91.\n- Labour Act s.11 minimum-notice periods, s.7 written particulars window, and other worker-specific protections do NOT attach at statutory floor level.\n- Notice, leave, and termination are governed by the parties\u2019 express contractual terms rather than by Labour Act minimums.\n\nTAX / PENSION / SOCIAL SECURITY (what s.91 does NOT exempt \u2014 these MUST be included):\n- INCLUDE PAYE deductions per the Personal Income Tax Act (PITA). s.91 is a Labour Act concept; it does not affect PITA liability.\n- INCLUDE pension contributions per the Pension Reform Act 2014: employer 10% and employee 8% of monthly emoluments. PRA 2014 coverage of managerial/professional employees is not removed by s.91 Labour Act \u2014 pension obligations track the employment relationship, not the Labour Act worker definition.\n- INCLUDE NSITF contributions per the Employees\u2019 Compensation Act 2010 (1% of monthly emoluments, employer-borne). ECA 2010 applies to all employees.\n- INCLUDE NHF contributions per the NHF Act 1992 (2.5% of monthly basic salary, employee-deducted). NHF Act s.4 scopes to basic salary, excluding allowances.\n- INCLUDE ITF contributions per the ITF Act (1% of annual payroll, employer-borne).\n\nDo NOT include independent-contractor language (e.g. \u2018the parties are not in an employment relationship\u2019) \u2014 the s.91 exemption is about Labour Act scope only, not about whether an employment relationship exists. Do not hedge. Do not include clauses from other classification sets."
+      },
+      "forbidden_combinations": [
+        {
+          "id": "s91_with_paye_stack",
+          "description": "Scoped to INDEPENDENT_CONTRACTOR only. An independent-contractor engagement sits outside the Labour Act framing entirely; citing s.91 in that context is legally incoherent because s.91 is a definitional carve-out WITHIN the Labour Act (i.e. presupposes an employee-employer relationship). A contractor doc that also applies PAYE / pension / NSITF / NHF / ITF compounds the error by invoking the employee-side statutory stack on what is purportedly a contractor engagement. NOTE: for an EXEMPT_WORKER_S91 managerial employee, the same textual combination is CORRECT and must not fire here \u2014 s.91 exempts the role from Labour Act worker protections, but the engagement remains an employment relationship for PITA, PRA 2014, ECA 2010, NHF Act, and ITF Act purposes. That case is excluded via applies_when_worker_classification_in below.",
+          "applies_when_worker_classification_in": ["independent_contractor"],
+          "anchors": [
+            { "id": "s91", "patterns": ["s\\.\\s*91\\b", "section\\s+91\\b", "\\bs\\.91\\b"] },
+            { "id": "paye_or_employee_deductions", "patterns": ["\\bPAYE\\b", "pension\\s+reform\\s+act", "pension\\s+contribution", "\\bNSITF\\b", "\\bNHF\\b", "\\bITF\\b"] }
+          ]
+        }
+      ],
+      "forbidden_titles": ["Contract of Employment", "Employment Contract", "Employment Agreement"]
+    },
+    "consulting-agreement": {
+      "id": "consulting-agreement",
+      "title": "Consulting Agreement",
+      "body_template_id": "consulting_agreement_v1",
+      "required_clauses": [
+        { "id": "scope",         "anyOf": ["scope", "engagement", "services"] },
+        { "id": "fees",          "anyOf": ["fees", "remuneration", "compensation", "rate"] },
+        { "id": "term",          "anyOf": ["term", "duration"] },
+        { "id": "termination",   "anyOf": ["termination"] },
+        { "id": "governing-law", "anyOf": ["governing law"] },
+        { "id": "signature",     "anyOf": ["signature", "signed", "in witness whereof", "executed"] }
+      ],
+      "max_tokens": 16000,
+      "jurisdiction_variants": {
+        "default": { "title": "Consulting Agreement", "body_template_id": "consulting_agreement_v1" }
+      },
+      "worker_classification_modes": ["independent_contractor", "exempt_worker_s91"],
+      "forbidden_titles": ["Contract of Employment", "Employment Contract"]
+    },
+    "privacy-policy": {
+      "id": "privacy-policy",
+      "title": "Privacy Policy",
+      "body_template_id": "privacy_policy_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Privacy Policy", "body_template_id": "privacy_policy_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "terms-of-service": {
+      "id": "terms-of-service",
+      "title": "Terms of Service",
+      "body_template_id": "terms_of_service_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Terms of Service", "body_template_id": "terms_of_service_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "nda": {
+      "id": "nda",
+      "title": "Non-Disclosure Agreement",
+      "body_template_id": "nda_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Non-Disclosure Agreement", "body_template_id": "nda_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": ["Service Agreement", "Contract of Employment"]
+    },
+    "freelance-contract": {
+      "id": "freelance-contract",
+      "title": "Freelance Contract",
+      "body_template_id": "freelance_contract_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Freelance Contract", "body_template_id": "freelance_contract_v1" } },
+      "worker_classification_modes": ["independent_contractor"],
+      "forbidden_titles": ["Contract of Employment", "Employment Contract"]
+    },
+    "independent-contractor": {
+      "id": "independent-contractor",
+      "title": "Independent Contractor Agreement",
+      "body_template_id": "independent_contractor_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Independent Contractor Agreement", "body_template_id": "independent_contractor_v1" } },
+      "worker_classification_modes": ["independent_contractor"],
+      "forbidden_titles": ["Contract of Employment", "Employment Contract"]
+    },
+    "hire-purchase": {
+      "id": "hire-purchase",
+      "title": "Hire Purchase Agreement",
+      "body_template_id": "hire_purchase_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Hire Purchase Agreement", "body_template_id": "hire_purchase_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "tenancy-agreement": {
+      "id": "tenancy-agreement",
+      "title": "Tenancy Agreement",
+      "body_template_id": "tenancy_agreement_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Tenancy Agreement", "body_template_id": "tenancy_agreement_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "quit-notice": {
+      "id": "quit-notice",
+      "title": "Quit Notice",
+      "body_template_id": "quit_notice_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Quit Notice", "body_template_id": "quit_notice_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "deed-of-assignment": {
+      "id": "deed-of-assignment",
+      "title": "Deed of Assignment",
+      "body_template_id": "deed_of_assignment_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Deed of Assignment", "body_template_id": "deed_of_assignment_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "power-of-attorney": {
+      "id": "power-of-attorney",
+      "title": "Power of Attorney",
+      "body_template_id": "power_of_attorney_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Power of Attorney", "body_template_id": "power_of_attorney_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "landlord-agent-agreement": {
+      "id": "landlord-agent-agreement",
+      "title": "Landlord and Agent Agreement",
+      "body_template_id": "landlord_agent_agreement_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Landlord and Agent Agreement", "body_template_id": "landlord_agent_agreement_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "facility-manager-agreement": {
+      "id": "facility-manager-agreement",
+      "title": "Facility Manager Agreement",
+      "body_template_id": "facility_manager_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Facility Manager Agreement", "body_template_id": "facility_manager_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "employment-offer-letter": {
+      "id": "employment-offer-letter",
+      "title": "Employment Offer Letter",
+      "body_template_id": "employment_offer_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Employment Offer Letter", "body_template_id": "employment_offer_v1" } },
+      "worker_classification_modes": ["employee"],
+      "worker_classification_rules": [
+        {
+          "mode": "employee",
+          "require_any_of": ["salary", "annual leave", "probation", "employee handbook"],
+          "forbid_any_of": ["invoice", "fee for services"]
+        }
+      ],
+      "worker_classification_prompts": {
+        "employee": "CLASSIFICATION ROUTING \u2014 EMPLOYEE (Nigeria). This document is generated for a standard Nigerian employment relationship. Apply the employee-side clause set:\n- Include PAYE deductions per the Personal Income Tax Act.\n- Include pension contributions per the Pension Reform Act 2014 (employer 10%, employee 8% of monthly emoluments).\n- Include NSITF contributions per the Employees\u2019 Compensation Act 2010.\n- Include NHF contributions per the NHF Act 1992 (2.5% of monthly basic salary \u2014 NHF Act s.4 scopes to basic salary, excluding allowances).\n- Include ITF contributions per the ITF Act (1% of annual payroll, employer-borne).\n- Apply Labour Act minimum notice (s.11) where the employee falls within s.91\u2019s \u2018worker\u2019 definition; do NOT cite s.91 as an exemption \u2014 that would disclaim the employment relationship.\nDo not hedge. Do not include independent-contractor or s.91-exempt clause sets."
+      },
+      "forbidden_combinations": [],
+      "forbidden_titles": ["Service Agreement", "Independent Contractor Agreement"]
+    },
+    "non-compete-agreement": {
+      "id": "non-compete-agreement",
+      "title": "Non-Compete Agreement",
+      "body_template_id": "non_compete_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Non-Compete Agreement", "body_template_id": "non_compete_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "payment-terms-agreement": {
+      "id": "payment-terms-agreement",
+      "title": "Payment Terms Agreement",
+      "body_template_id": "payment_terms_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Payment Terms Agreement", "body_template_id": "payment_terms_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "business-partnership": {
+      "id": "business-partnership",
+      "title": "Business Partnership Agreement",
+      "body_template_id": "business_partnership_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Business Partnership Agreement", "body_template_id": "business_partnership_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "joint-venture": {
+      "id": "joint-venture",
+      "title": "Joint Venture Agreement",
+      "body_template_id": "joint_venture_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Joint Venture Agreement", "body_template_id": "joint_venture_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "loan-agreement": {
+      "id": "loan-agreement",
+      "title": "Loan Agreement",
+      "body_template_id": "loan_agreement_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Loan Agreement", "body_template_id": "loan_agreement_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "shareholder-agreement": {
+      "id": "shareholder-agreement",
+      "title": "Shareholder Agreement",
+      "body_template_id": "shareholder_agreement_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Shareholder Agreement", "body_template_id": "shareholder_agreement_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "mou": {
+      "id": "mou",
+      "title": "Memorandum of Understanding",
+      "body_template_id": "mou_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Memorandum of Understanding", "body_template_id": "mou_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "letter-of-intent": {
+      "id": "letter-of-intent",
+      "title": "Letter of Intent",
+      "body_template_id": "letter_of_intent_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Letter of Intent", "body_template_id": "letter_of_intent_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "distribution-agreement": {
+      "id": "distribution-agreement",
+      "title": "Distribution Agreement",
+      "body_template_id": "distribution_agreement_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Distribution Agreement", "body_template_id": "distribution_agreement_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "supply-agreement": {
+      "id": "supply-agreement",
+      "title": "Supply Agreement",
+      "body_template_id": "supply_agreement_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Supply Agreement", "body_template_id": "supply_agreement_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "business-proposal": {
+      "id": "business-proposal",
+      "title": "Business Proposal",
+      "body_template_id": "business_proposal_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Business Proposal", "body_template_id": "business_proposal_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "purchase-agreement": {
+      "id": "purchase-agreement",
+      "title": "Purchase Agreement",
+      "body_template_id": "purchase_agreement_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Purchase Agreement", "body_template_id": "purchase_agreement_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "data-processing-agreement": {
+      "id": "data-processing-agreement",
+      "title": "Data Processing Agreement",
+      "body_template_id": "data_processing_agreement_v1",
+      "required_clauses": [],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Data Processing Agreement", "body_template_id": "data_processing_agreement_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    }
+  }
+}

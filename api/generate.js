@@ -8,6 +8,63 @@ import { logError, logWarn, logInfo } from '../lib/logger.js'
 import { buildReceipt, renderProvenanceBlock, appendToAuditLog } from '../lib/doc-hash.js'
 import { getRedis } from '../lib/redis.js'
 import { buildDpaSystemPrompt } from './v1/documents/clauses.js'
+import {
+  generateWithCompletenessCheck,
+  DOC_INCOMPLETE_AFTER_RETRY,
+  DOC_TITLE_BODY_MISMATCH,
+  DOC_FORBIDDEN_COMBINATION,
+} from '../lib/doc-completeness.js'
+import {
+  hasDocType,
+  isWorkerClassificationRequired,
+  getWorkerClassificationModes,
+} from '../lib/doc-registry.js'
+import {
+  inferWorkerClassification,
+  buildClassificationInstruction,
+  WORKER_CLASSIFICATION_AMBIGUOUS,
+} from '../lib/doc-classification.js'
+import { randomBytes } from 'node:crypto'
+
+// Phase 4 — consumer doc_type resolution.
+//
+// PREFERRED: the Generator UI sends `doc_type_id` alongside `prompt`. We
+// validate it against the registry and use it.
+//
+// FALLBACK (amended Phase 4): older cached UIs may POST without doc_type_id.
+// We regex-extract from the prompt's stable opening line
+//   "Generate a professional, comprehensive <Doc Name> document for..."
+// and slugify. We do NOT remove the fallback in this phase — but every
+// fallback emits a structured `doc_type_resolution_fallback` log event so
+// the fallback rate is observable in production.
+//
+// Returns { docType, resolvedVia: 'body' | 'regex' | null }
+function resolveDocTypeFromPromptRegex(prompt) {
+  if (typeof prompt !== 'string') return null
+  const m = prompt.match(/comprehensive\s+([^\n]+?)\s+document\b/i)
+  if (!m) return null
+  return m[1]
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+}
+
+function resolveDocType({ bodyDocTypeId, prompt }) {
+  // 1. Explicit doc_type_id from the request body — only accept if it
+  //    matches a registered doc_type. An unregistered id means the UI is
+  //    out of date OR the caller is fuzzing; fall through to regex.
+  if (typeof bodyDocTypeId === 'string' && bodyDocTypeId.trim().length > 0) {
+    const id = bodyDocTypeId.trim()
+    if (hasDocType(id)) return { docType: id, resolvedVia: 'body' }
+    // fall through to regex fallback — but log the rejection below.
+  }
+  // 2. Regex fallback.
+  const fromRegex = resolveDocTypeFromPromptRegex(prompt)
+  if (fromRegex && hasDocType(fromRegex)) return { docType: fromRegex, resolvedVia: 'regex' }
+  if (fromRegex) return { docType: fromRegex, resolvedVia: 'regex-unregistered' }
+  return { docType: null, resolvedVia: null }
+}
 
 // Redis helpers (Upstash REST API) — gracefully degrade if env vars are missing
 async function redisGet(key) {
@@ -43,7 +100,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
   const body = await parseBody(req)
-  const { prompt, sessionId, oxapayTrackId, promoToken } = body
+  const { prompt, sessionId, oxapayTrackId, promoToken, doc_type_id: bodyDocTypeId } = body
   if (!prompt) return res.status(400).json({ error: 'Missing prompt' })
 
   // FIX 3: Prompt length limit
@@ -1138,30 +1195,116 @@ export default async function handler(req, res) {
     // with the full 46-clause jurisdiction-aware system prompt.
     const timeoutId = setTimeout(() => controller.abort(), 280000)
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 8000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: prompt }],
-      }),
-      signal: controller.signal,
+    // Phase 4 — doc_type resolution via registry (body field first, regex
+    // fallback instrumented). Then delegate to the shared orchestrator.
+    const { docType, resolvedVia } = resolveDocType({ bodyDocTypeId, prompt })
+    if (resolvedVia !== 'body') {
+      // Observable: how often does the consumer UI fall through to the
+      // regex fallback? If this number is non-trivial, the UI rollout is
+      // incomplete. If it goes to zero, we can remove the fallback in a
+      // future PR.
+      logWarn('/generate', {
+        event: 'doc_type_resolution_fallback',
+        body_doc_type_id: bodyDocTypeId || null,
+        resolved_via: resolvedVia,
+        resolved_doc_type: docType,
+        message: 'Consumer request arrived without a registered doc_type_id; used regex fallback',
+      })
+    }
+
+    const jurisdictionLog =
+      (isNigeria && 'Nigeria') ||
+      (lower.match(/governing law:\s*([^\n]+)/) || [])[1] ||
+      (lower.match(/country:\s*([^\n]+)/) || [])[1] ||
+      null
+
+    // Phase 5 — consumer path worker-classification inference. No UI
+    // changes: we run a deterministic rule set (registry-defined) over
+    // the already-assembled prompt. Ambiguous outcomes fail-close with
+    // WORKER_CLASSIFICATION_AMBIGUOUS so users aren't silently routed
+    // to the wrong clause set.
+    let workerClassification = null
+    let classificationInstruction = ''
+    if (docType && isWorkerClassificationRequired(docType)) {
+      const inferred = inferWorkerClassification(prompt, docType)
+      if (inferred.ok) {
+        workerClassification = inferred.mode
+        classificationInstruction = buildClassificationInstruction(docType, workerClassification)
+        logInfo('/generate', {
+          event: 'worker_classification_inferred',
+          doc_type: docType,
+          resolved: workerClassification,
+          triggering_anchors: inferred.triggering_anchors,
+        })
+      } else {
+        // Ambiguous — zero or multiple rules matched. Fail-close before
+        // spending an Anthropic call; reference_id lets the user quote
+        // the failure in support.
+        clearTimeout(timeoutId)
+        const refId = `ref_${randomBytes(4).toString('hex')}`
+        logError('/generate', {
+          reference_id: refId,
+          code: WORKER_CLASSIFICATION_AMBIGUOUS,
+          doc_type: docType,
+          candidates: inferred.candidates,
+          reason: inferred.reason,
+          valid_values: getWorkerClassificationModes(docType),
+        })
+        return res.status(422).json({
+          error: 'Could not determine whether this is an independent-contractor, exempt-worker (s.91), or employee engagement from the information provided. Please add clarifying language (e.g. "independent contractor", "annual leave", "s.91 exempt") and regenerate.',
+          code: WORKER_CLASSIFICATION_AMBIGUOUS,
+          reference_id: refId,
+          candidates: inferred.candidates,
+          valid_values: getWorkerClassificationModes(docType),
+        })
+      }
+    }
+
+    const completion = await generateWithCompletenessCheck({
+      apiKey,
+      model: 'claude-sonnet-4-6',
+      systemPrompt,
+      userPrompt: prompt,
+      docType,
+      jurisdiction: jurisdictionLog,
+      workerClassification,
+      classificationInstruction,
+      logger: { logWarn, logError },
+      abortSignal: controller.signal,
     })
     clearTimeout(timeoutId)
 
-    if (!response.ok) {
-      const err = await response.json()
-      return res.status(response.status).json({ error: err.error?.message || 'Generation failed' })
+    if (!completion.ok) {
+      // Fail-closed: do NOT return a partial or mistyped document.
+      // Stable machine-readable code + reference_id that matches the
+      // structured log. Code is one of DOC_INCOMPLETE_AFTER_RETRY
+      // (Phase 3, truncation) or DOC_TITLE_BODY_MISMATCH (Phase 4,
+      // routing). Payload shape is normalised by the orchestrator so
+      // downstream consumers can switch on `code`.
+      const failurePayload = {
+        error: completion.code === DOC_TITLE_BODY_MISMATCH
+          ? 'Generated document body declares a different document type than requested.'
+          : 'Document generation did not complete. Please try again; if this persists, quote the reference ID.',
+        code: completion.code,
+        reference_id: completion.referenceId,
+      }
+      if (completion.code === DOC_INCOMPLETE_AFTER_RETRY) {
+        failurePayload.missing_clauses = completion.missingClauses
+      }
+      if (completion.code === DOC_TITLE_BODY_MISMATCH) {
+        failurePayload.expected_title = completion.expectedTitle
+        failurePayload.conflicting_title = completion.conflictingTitle
+      }
+      if (completion.code === DOC_FORBIDDEN_COMBINATION) {
+        failurePayload.error = 'Generated document contains a legally incoherent combination of clauses. Please regenerate.'
+        failurePayload.combination_id = completion.combinationId
+        failurePayload.description = completion.description
+        failurePayload.anchor_hits = completion.anchorHits
+      }
+      return res.status(502).json(failurePayload)
     }
 
-    const data = await response.json()
-    const rawText = data.content[0]?.text || ''
+    const rawText = completion.text
 
     // Stamp a content hash + verifiable provenance block onto the document.
     // The hash is deterministic from the body, so anyone holding the doc

@@ -555,7 +555,9 @@ export default function Preview() {
       const regenRes = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: parsed.prompt, promoToken: token }),
+        // Phase 4 — send explicit doc_type_id so the server uses registry
+        // routing directly rather than falling back to prompt regex.
+        body: JSON.stringify({ prompt: parsed.prompt, doc_type_id: parsed.docType, promoToken: token }),
       })
       if (!regenRes.ok) {
         if (DEV) console.error('Promo regeneration failed:', regenRes.status)
@@ -721,7 +723,7 @@ export default function Preview() {
               const genRes = await fetch('/api/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: savedDoc.prompt }),
+                body: JSON.stringify({ prompt: savedDoc.prompt, doc_type_id: savedDoc.docType }),
               })
               if (genRes.ok) {
                 const genData = await genRes.json()
@@ -780,7 +782,7 @@ export default function Preview() {
             const genRes = await fetch('/api/generate', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ prompt: savedDoc.prompt, oxapayTrackId: trackId }),
+              body: JSON.stringify({ prompt: savedDoc.prompt, doc_type_id: savedDoc.docType, oxapayTrackId: trackId }),
             })
             if (genRes.ok) {
               const genData = await genRes.json()
@@ -848,7 +850,7 @@ export default function Preview() {
             const genRes = await fetch('/api/generate', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ prompt: savedDoc.prompt, sessionId }),
+              body: JSON.stringify({ prompt: savedDoc.prompt, doc_type_id: savedDoc.docType, sessionId }),
             })
 
             if (genRes.ok) {
