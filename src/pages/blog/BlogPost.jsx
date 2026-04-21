@@ -88,7 +88,7 @@ export default function BlogPost() {
                   <Link key="mid-cta" to={post.cta.href} className="blog-mid-cta">
                     <span className="blog-mid-cta-label">Skip the reading — </span>
                     <strong>{post.cta.label}</strong>
-                    <span className="blog-mid-cta-note">Free preview · $4.99 to download</span>
+                    <span className="blog-mid-cta-note">Free preview · pay when you download</span>
                   </Link>
                 )}
               </>
@@ -100,7 +100,7 @@ export default function BlogPost() {
             <div className="blog-cta-icon"><Lightning size={28} weight="fill" /></div>
             <div className="blog-cta-text">
               <strong>Generate yours in 2 minutes</strong>
-              <p>Preview free — download for $4.99. No account needed.</p>
+              <p>Preview free — pay when you download. No account needed.</p>
             </div>
             <Link to={post.cta.href} className="btn-blog-cta">{post.cta.label}</Link>
           </div>

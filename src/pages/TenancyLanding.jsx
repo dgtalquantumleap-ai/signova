@@ -1,8 +1,10 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { House, Buildings, Handshake, DeviceMobile } from '@phosphor-icons/react'
 import SiteNav from '../components/SiteNav'
 import SiteFooter from '../components/SiteFooter'
+import { fetchUserPricing } from '../lib/pricing'
 import './Landing.css'
 import './NDALanding.css'
 import './TenancyLanding.css'
@@ -36,7 +38,7 @@ const FAQS = [
   },
   {
     q: 'How much does it cost?',
-    a: 'Previewing your tenancy agreement is completely free — no account or credit card required. You only pay $4.99 (or ₦7,400) once to download the clean, watermark-free PDF.',
+    a: 'Previewing your tenancy agreement is completely free — no account or credit card required. You only pay once to download the clean, watermark-free PDF. Nigerian visitors can pay ₦6,900 via Paystack, or the price for your region in USD by card — shown on the preview page.',
   },
 ]
 
@@ -66,21 +68,29 @@ const USE_CASES = [
 export default function TenancyLanding() {
   const navigate = useNavigate()
 
+  // Region-detected pricing. Western-tier fallback while fetch resolves.
+  const [pricing, setPricing] = useState({ display: '$14.99', paystackAvailable: false })
+  useEffect(() => {
+    let alive = true
+    fetchUserPricing().then(p => { if (alive) setPricing(p) })
+    return () => { alive = false }
+  }, [])
+
   return (
     <div className="landing">
       <Helmet>
         <title>Tenancy Agreement Template Nigeria | Free Generator — Signova</title>
         <meta
           name="description"
-          content="Generate a professional tenancy agreement for Nigeria, Ghana, Kenya or the UK in minutes. Covers rent, caution deposit, duration, restrictions. Free preview, $4.99 to download. No account needed."
+          content="Generate a professional tenancy agreement for Nigeria, Ghana, Kenya or the UK in minutes. Covers rent, caution deposit, duration, restrictions. Free preview. Pay when you download. No account needed."
         />
         <meta name="keywords" content="tenancy agreement Nigeria, tenancy agreement template, tenancy agreement Lagos, rental agreement Nigeria, tenancy agreement Ghana, tenancy agreement Kenya, landlord tenant agreement Nigeria, tenancy agreement generator" />
         <meta property="og:title" content="Tenancy Agreement Generator Nigeria | Signova" />
-        <meta property="og:description" content="Professional tenancy agreement in minutes. Free preview — pay $4.99 to download." />
+        <meta property="og:description" content="Professional tenancy agreement in minutes. Free preview — pay when you download." />
         <meta property="og:image" content="https://www.getsignova.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Tenancy Agreement Generator Nigeria | Signova" />
-        <meta name="twitter:description" content="Professional tenancy agreement in minutes. Free preview — pay $4.99 to download." />
+        <meta name="twitter:description" content="Professional tenancy agreement in minutes. Free preview — pay when you download." />
         <meta name="twitter:image" content="https://www.getsignova.com/og-image.png" />
         <link rel="canonical" href="https://www.getsignova.com/tenancy-agreement-nigeria" />
         <script type="application/ld+json">{JSON.stringify({
@@ -106,12 +116,16 @@ export default function TenancyLanding() {
           </h1>
           <p className="nda-sub">
             Generate a professional, legally sound tenancy agreement for Nigeria, Ghana, Kenya or the UK.
-            Answer a few questions, preview the full document free, download for $4.99.
+            Answer a few questions, preview the full document free, download for {pricing.display}
+            {pricing.paystackAvailable ? ' (or ₦6,900 via Paystack)' : ''}.
           </p>
           <button className="nda-cta" onClick={() => navigate('/generate/tenancy-agreement')}>
             Generate My Tenancy Agreement →
           </button>
-          <p className="nda-cta-sub">No account required · Free preview · ₦7,400 or $4.99 to download</p>
+          <p className="nda-cta-sub">
+            No account required · Free preview ·{' '}
+            {pricing.paystackAvailable ? `${pricing.display} via card or ₦6,900 via Paystack` : `${pricing.display} to download`}
+          </p>
           <div className="nda-trust">
             <span>✓ Nigeria, Ghana, Kenya & UK</span>
             <span>✓ Covers rent, deposit & restrictions</span>
@@ -185,7 +199,7 @@ export default function TenancyLanding() {
             <div className="nda-step">
               <div className="nda-step-num">3</div>
               <h3>Download the PDF</h3>
-              <p>Pay $4.99 (₦7,400) once to download the clean, watermark-free PDF. Print and sign — done.</p>
+              <p>Pay {pricing.display}{pricing.paystackAvailable ? ' (or ₦6,900 via Paystack)' : ''} once to download the clean, watermark-free PDF. Print and sign — done.</p>
             </div>
           </div>
         </div>
@@ -198,7 +212,7 @@ export default function TenancyLanding() {
             Protect yourself before the tenant moves in
           </h2>
           <p style={{ color: '#888', marginBottom: '28px' }}>
-            Generate your tenancy agreement now — free preview, $4.99 to download.
+            Generate your tenancy agreement now — free preview, {pricing.display} to download.
           </p>
           <button className="nda-cta" onClick={() => navigate('/generate/tenancy-agreement')}>
             Generate My Tenancy Agreement →

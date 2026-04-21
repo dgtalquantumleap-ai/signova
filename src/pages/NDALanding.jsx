@@ -1,8 +1,10 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { Handshake, User } from '@phosphor-icons/react'
 import SiteNav from '../components/SiteNav'
 import SiteFooter from '../components/SiteFooter'
+import { fetchUserPricing } from '../lib/pricing'
 import './Landing.css'
 import './NDALanding.css'
 
@@ -40,13 +42,21 @@ const FAQS = [
 export default function NDALanding() {
   const navigate = useNavigate()
 
+  // Region-detected pricing. Western-tier fallback while fetch resolves.
+  const [pricing, setPricing] = useState({ display: '$14.99', paystackAvailable: false })
+  useEffect(() => {
+    let alive = true
+    fetchUserPricing().then(p => { if (alive) setPricing(p) })
+    return () => { alive = false }
+  }, [])
+
   return (
     <div className="landing">
       <Helmet>
         <title>Free NDA Generator — Create a Non-Disclosure Agreement in Minutes | Signova</title>
         <meta
           name="description"
-          content="Generate a professional Non-Disclosure Agreement (NDA) in minutes. Free preview, $4.99 to download. One-way or mutual NDAs for any country. No account needed."
+          content="Generate a professional Non-Disclosure Agreement (NDA) in minutes. Free preview. Pay when you download. One-way or mutual NDAs for 8 jurisdictions. No account needed."
         />
         <meta property="og:title" content="Free NDA Generator | Signova" />
         <meta property="og:description" content="Create a legally sound NDA in minutes. Free preview — pay only to download." />
@@ -65,7 +75,7 @@ export default function NDALanding() {
           </h1>
           <p className="nda-sub">
             Answer a few questions. Get a professional, AI-drafted NDA tailored to your situation.
-            Free preview — pay $4.99 to download the clean PDF.
+            Free preview — pay {pricing.display} to download the clean PDF.
           </p>
           <button className="nda-cta" onClick={() => navigate('/generate/nda')}>
             Generate My NDA Free →
@@ -75,7 +85,7 @@ export default function NDALanding() {
           {/* Trust row */}
           <div className="nda-trust">
             <span>✓ One-way &amp; mutual NDAs</span>
-            <span>✓ Any country or jurisdiction</span>
+            <span>✓ 8 jurisdictions verified</span>
             <span>✓ Instant download</span>
             <span>✓ AI-drafted by Claude</span>
           </div>
@@ -100,7 +110,7 @@ export default function NDALanding() {
             <div className="nda-step">
               <div className="nda-step-num">3</div>
               <h3>Download the PDF</h3>
-              <p>Pay $4.99 to unlock the clean, watermark-free PDF. Print it, sign it, send it — it's yours.</p>
+              <p>Pay {pricing.display} to unlock the clean, watermark-free PDF. Print it, sign it, send it — it's yours.</p>
             </div>
           </div>
         </div>
@@ -137,7 +147,7 @@ export default function NDALanding() {
       <section className="nda-cta-band">
         <div className="nda-container" style={{ textAlign: 'center' }}>
           <h2 style={{ color: '#fff', fontSize: '28px', marginBottom: '12px' }}>Ready to protect your information?</h2>
-          <p style={{ color: '#888', marginBottom: '28px' }}>Generate your NDA now — free preview, $4.99 to download.</p>
+          <p style={{ color: '#888', marginBottom: '28px' }}>Generate your NDA now — free preview, {pricing.display} to download.</p>
           <button className="nda-cta" onClick={() => navigate('/generate/nda')}>
             Generate My NDA Free →
           </button>
