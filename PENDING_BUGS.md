@@ -3,20 +3,14 @@
 Items spotted while landing on a different scope. Each entry: where, what,
 why-deferred.
 
-## 1. `WhatsApp.jsx` still uses pre-tier `formatPrice(currency)` system
+## ~~1. `WhatsApp.jsx` still uses pre-tier `formatPrice(currency)` system~~ DONE
 
-- Files: `src/pages/WhatsApp.jsx` lines 387, 507 (and the `formatPrice`/
-  `CURRENCY_MAP` helpers at lines 15-29, 237-252)
-- What: same 49-row local-currency display pattern that Landing.jsx + Preview.jsx
-  used to have. Was retired from those pages in PR #28 (landing conversion +
-  tiered pricing) because it created a bait-and-switch risk between displayed
-  local currency and actual Stripe USD charge.
-- Why deferred: PR #28 brief explicitly scoped to Landing.jsx, Preview.jsx,
-  Pricing.jsx. Wholesale rewrite of WhatsApp.jsx currency state is a separate
-  PR — needs its own pricing state, fallback, paystackAvailable gate, and
-  removal of `formatPrice`/`CURRENCY_MAP` reads.
-- Action: replicate the Landing.jsx pattern (`fetchUserPricing()` + retire the
-  local-currency map + display `pricing.display` only).
+Resolved in PR #30 (the catch-up PR after PRs #28/#29 stranded). Single
+`fetchUserPricing()` call now drives both `pricing.display` and the
+`countryCode` used by `GEO_DOC_PRIORITY` / `GEO_USECASES`. The local
+`CURRENCY_MAP` / `getCurrency` / `formatPrice` helpers were deleted (no
+`_RETAINED` constant — they were trivially recoverable from git history
+and not consumed elsewhere).
 
 ## 2. Blog post body content still mentions `$4.99` in some places
 
@@ -30,7 +24,36 @@ why-deferred.
 - Action: separate content-rewrite PR with a single guideline: blog content
   should not name a USD price; link to a pricing anchor instead.
 
-## 3. AboutPage.jsx replaced `$4.99` with "small fixed fee"
+## 3. Quick-pick ordering audit for non-US regions vs new positioning
+
+- File: `src/pages/Landing.jsx` lines ~172-230 (`QUICKPICK_REGIONS`)
+- What: PR #30 reordered `QUICKPICK_REGIONS.US` (and the 10 western
+  countries aliased to it: CA/GB/AU/NZ/DE/FR/IT/ES/NL/PT) so the hero's
+  `.slice(0,3)` shows Freelance Contract / NDA / Service Agreement —
+  which fits the new "Don't start the work until this is signed"
+  pre-flight-checklist framing.
+- Other regional sets were NOT audited:
+  - `NG` (also covers GH/KE/ZA/TZ/UG/ET/SN/CI/CM/EG/ZW): currently leads
+    with Founders' Agreement / Tenancy Agreement / Deed of Assignment.
+    For the new positioning, freelancer-deal docs (Freelance Contract,
+    Service Agreement) might convert better.
+  - `IN` (also PK/BD/PH/ID/MY/SG): currently NDA / Freelance Contract /
+    Service Agreement — already aligns with new positioning, no change
+    expected.
+  - `AE` (also SA): MOU / Partnership / NDA — sales-focused; might be
+    fine, might not.
+  - `BR` (also MX/CO/AR): Freelance Contract / Service Agreement / NDA
+    — already aligned.
+  - `QUICKPICK_DEFAULT`: Business Proposal / NDA / Freelance Contract.
+    "Business Proposal" is the odd one out for the pre-flight framing.
+- Why deferred: PR #30 was scoped to the obvious mismatch (US-aliased
+  visitors paying $14.99 seeing a SaaS-startup trio). Wider quick-pick
+  rework deserves its own PR with a/b consideration per region.
+- Action: separate UX PR — audit each region's top-3 against the
+  pre-flight-checklist framing, possibly drive ordering off real
+  conversion data.
+
+## 4. AboutPage.jsx replaced `$4.99` with "small fixed fee"
 
 - File: `src/pages/AboutPage.jsx` line 62
 - What: PR #28 replaced "pay $4.99" with "pay a small fixed fee" to avoid

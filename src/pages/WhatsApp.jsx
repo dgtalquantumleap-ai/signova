@@ -8,27 +8,17 @@ import {
   Car, Rocket,
 } from '@phosphor-icons/react'
 import { trackWaExtraction, trackWaExtractionSuccess } from '../lib/analytics'
+import { fetchUserPricing } from '../lib/pricing'
 import './WhatsApp.css'
 
 const ICON = { size: 24, weight: 'duotone', color: 'currentColor' }
 
-// Compact currency map — mirrors Landing.jsx CURRENCY_MAP
-const CURRENCY_MAP = {
-  NG: { symbol: '₦', amount: 6900, code: 'NGN' },
-  GH: { symbol: 'GH₵', amount: 75, code: 'GHS' },
-  KE: { symbol: 'KSh', amount: 650, code: 'KES' },
-  ZA: { symbol: 'R', amount: 93, code: 'ZAR' },
-  IN: { symbol: '₹', amount: 418, code: 'INR' },
-  GB: { symbol: '£', amount: 3.95, code: 'GBP' },
-  DE: { symbol: '€', amount: 4.60, code: 'EUR' },
-  FR: { symbol: '€', amount: 4.60, code: 'EUR' },
-  US: { symbol: '$', amount: 4.99, code: 'USD' },
-  DEFAULT: { symbol: '$', amount: 4.99, code: 'USD' },
-}
-function getCurrency(cc) { return CURRENCY_MAP[cc] || CURRENCY_MAP.DEFAULT }
-function formatPrice(cur) {
-  return cur.code === 'USD' ? '$4.99' : `${cur.symbol}${cur.amount.toLocaleString()}`
-}
+// CURRENCY_MAP / getCurrency / formatPrice retired — see PR #28 migration
+// notes for Landing.jsx + Preview.jsx. Pricing now flows from the
+// server-detected tier (src/lib/pricing.js → /api/v1/pricing/detect-region)
+// so the displayed price always matches what Stripe will actually charge.
+// This page does not have a Paystack button (extraction-only — payment
+// happens on Preview.jsx), so no paystackAvailable gate is needed here.
 
 // Geo-aware doc ordering — most relevant first per region
 const GEO_DOC_PRIORITY = {
@@ -234,55 +224,40 @@ export default function WhatsApp() {
   const [showAll, setShowAll] = useState(false)
   const [openFaq, setOpenFaq] = useState(null)
   const [countryCode, setCountryCode] = useState('DEFAULT')
-  const [currency, setCurrency] = useState(CURRENCY_MAP.DEFAULT)
-  const [_geoLoaded, setGeoLoaded] = useState(false)
+  // Region-driven pricing. Western-tier fallback ($14.99) protects revenue
+  // during the initial fetch — the actual charge is re-derived server-side
+  // by stripe-checkout.js anyway, so an underpriced display would only
+  // mislead the user. paystackAvailable not consumed here (no Paystack
+  // button on this page), but the field is in the response shape.
+  const [pricing, setPricing] = useState({
+    tier: 'western',
+    country: 'unknown',
+    priceUsd: 14.99,
+    unitAmount: 1499,
+    display: '$14.99',
+    label: 'Standard',
+    paystackAvailable: false,
+  })
 
-  // Geo detection — reuse session cache from Landing.jsx (key: sig_geo)
+  // Single source: pricing.country (from x-vercel-ip-country) drives both
+  // the price display AND the GEO_DOC_PRIORITY ordering / region-specific
+  // use-cases. The old /api/geo + sessionStorage path was retired with
+  // useGeoCurrency in PR #28; this replaces it with the same contract the
+  // rest of the app uses.
   useEffect(() => {
-    let mounted = true
-    const controller = new AbortController()
-
-    const cached = sessionStorage.getItem('sig_geo')
-    if (cached) {
-      try {
-        const d = JSON.parse(cached)
-        const cc = d.countryCode || 'DEFAULT'
-        if (cc !== 'DEFAULT') {
-          setCountryCode(cc)
-          setCurrency(d.currency || getCurrency(cc))
-          const priority = GEO_DOC_PRIORITY[cc] || GEO_DOC_PRIORITY.DEFAULT
-          setDocType(priority[0])
-        }
-      } catch {
-        // Ignore geo parse errors
-      }
-      setGeoLoaded(true)
-      return () => { mounted = false }
-    }
-
-    // Use our own API endpoint which leverages Vercel geo headers (free, unlimited)
-    fetch('/api/geo', { signal: controller.signal })
-      .then(r => r.json())
-      .then(d => {
-        if (!mounted || !d.country_code) return
-        const cc = d.country_code || 'DEFAULT'
-        const cur = getCurrency(cc)
-        setCountryCode(cc)
-        setCurrency(cur)
-        const priority = GEO_DOC_PRIORITY[cc] || GEO_DOC_PRIORITY.DEFAULT
-        setDocType(priority[0])
-        sessionStorage.setItem('sig_geo', JSON.stringify({
-          countryCode: cc,
-          currency: cur,
-        }))
-      })
-      .catch(() => {})
-      .finally(() => { if (mounted) setGeoLoaded(true) })
-
-    return () => {
-      mounted = false
-      controller.abort()
-    }
+    let alive = true
+    fetchUserPricing().then(p => {
+      if (!alive) return
+      setPricing(p)
+      // p.country is 'unknown' when no header was set; fall back to DEFAULT
+      // so GEO_DOC_PRIORITY / GEO_USECASES lookups hit their fallback row
+      // instead of returning undefined.
+      const cc = (p.country && p.country !== 'unknown') ? p.country : 'DEFAULT'
+      setCountryCode(cc)
+      const priority = GEO_DOC_PRIORITY[cc] || GEO_DOC_PRIORITY.DEFAULT
+      if (priority && priority[0]) setDocType(priority[0])
+    })
+    return () => { alive = false }
   }, [])
 
   const orderedDocs = getOrderedDocs(countryCode)
@@ -384,7 +359,7 @@ export default function WhatsApp() {
           <div className="wa-stat-div" />
           <div className="wa-stat"><span className="wa-stat-num">47</span><span className="wa-stat-label">geo-currencies</span></div>
           <div className="wa-stat-div" />
-          <div className="wa-stat"><span className="wa-stat-num">{formatPrice(currency)}</span><span className="wa-stat-label">to download</span></div>
+          <div className="wa-stat"><span className="wa-stat-num">{pricing.display}</span><span className="wa-stat-label">to download</span></div>
         </div>
       </section>
 
@@ -504,7 +479,7 @@ export default function WhatsApp() {
           <div className="wa-how-step">
             <div className="wa-how-num">03</div>
             <div className="wa-how-title">Review and generate</div>
-            <div className="wa-how-body">Check the extracted fields, adjust anything that needs changing, then generate your complete legal document. Free preview. {formatPrice(currency)} to download the clean PDF.</div>
+            <div className="wa-how-body">Check the extracted fields, adjust anything that needs changing, then generate your complete legal document. Free preview. {pricing.display} to download the clean PDF.</div>
           </div>
         </div>
       </section>
