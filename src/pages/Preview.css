@@ -186,21 +186,6 @@
 .sidebar-perks { list-style: none; display: flex; flex-direction: column; gap: var(--space-2); }
 .sidebar-perks li { font-size: 13px; color: var(--text2); }
 
-.sidebar-need-more {
-  margin-top: var(--space-4); padding: 20px;
-  background: var(--bg3); border: 1px solid var(--border);
-  border-radius: var(--radius); text-align: center;
-  display: flex; flex-direction: column; gap: var(--space-2);
-}
-.sidebar-need-more p { font-size: 13px; color: var(--text2); }
-.sidebar-need-more strong { font-size: var(--text-sm); color: var(--text); }
-.btn-unlimited {
-  background: transparent; border: 1px solid var(--border);
-  color: var(--text2); padding: 10px; border-radius: 8px;
-  font-size: 13px; cursor: pointer; transition: border-color 0.2s, color 0.2s;
-}
-.btn-unlimited:hover { border-color: var(--gold); color: var(--gold); }
-
 /* ── Companion doc suggestion ── */
 .sidebar-companion {
   padding: var(--space-4);
@@ -224,7 +209,6 @@
 .companion-btn strong { display: block; font-size: 13px; color: var(--text); font-weight: 600; }
 .companion-sub { display: block; font-size: 11px; color: var(--text3); margin-top: 2px; }
 .companion-arrow { font-size: var(--text-sm); color: var(--text3); margin-left: auto; flex-shrink: 0; }
-.need-more-sub { font-size: var(--text-xs); color: var(--text3); margin: -8px 0 0; }
 
 /* ── WhatsApp Fallback ── */
 .sidebar-whatsapp {

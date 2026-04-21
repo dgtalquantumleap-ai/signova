@@ -33,7 +33,7 @@ const FAQS = [
   },
   {
     q: 'How much does it cost?',
-    a: 'Generating a preview of your NDA is completely free — no account required. You only pay $4.99 to download the clean, watermark-free PDF. If you need multiple documents, the unlimited plan is $9.99/month.',
+    a: 'Generating a preview of your NDA is completely free — no account required. You only pay a small fixed fee to download the clean, watermark-free PDF — see the homepage for the price in your region.',
   },
 ]
 

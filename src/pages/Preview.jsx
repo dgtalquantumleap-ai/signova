@@ -1373,14 +1373,6 @@ export default function Preview() {
             )
           })()}
 
-          <div className="sidebar-need-more">
-            <p>Building multiple products?</p>
-            <strong>Unlimited plan — $9.99/month</strong>
-            <p className="need-more-sub">Agencies & freelancers generating docs for clients.</p>
-            <button className="btn-unlimited" onClick={() => { navigate('/'); setTimeout(() => { document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }) }, 100) }}>
-              View unlimited plan
-            </button>
-          </div>
         </div>
       </div>
     </div>
