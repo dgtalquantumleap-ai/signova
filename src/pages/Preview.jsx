@@ -17,83 +17,54 @@ import {
   trackPromoApplied,
   trackDownloadClicked,
 } from '../lib/analytics'
+import { fetchUserPricing } from '../lib/pricing'
 import './Preview.css'
 
 const DEV = import.meta.env.DEV
 
-// Geo detect — same sessionStorage key used by Landing.jsx
-const CURRENCY_MAP_PREVIEW = {
-  NG: { symbol: '₦', amount: 6900, code: 'NGN' },
-  GH: { symbol: 'GH₵', amount: 75, code: 'GHS' },
-  KE: { symbol: 'KSh', amount: 650, code: 'KES' },
-  ZA: { symbol: 'R', amount: 93, code: 'ZAR' },
-  IN: { symbol: '₹', amount: 418, code: 'INR' },
-  GB: { symbol: '£', amount: 3.95, code: 'GBP' },
-  DE: { symbol: '€', amount: 4.60, code: 'EUR' },
-  FR: { symbol: '€', amount: 4.60, code: 'EUR' },
-  US: { symbol: '$', amount: 4.99, code: 'USD' },
-  CN: { symbol: '¥', amount: 36, code: 'CNY' },
-  HK: { symbol: 'HK$', amount: 39, code: 'HKD' },
-  JP: { symbol: '¥', amount: 750, code: 'JPY' },
-  KR: { symbol: '₩', amount: 6900, code: 'KRW' },
-  TH: { symbol: '฿', amount: 175, code: 'THB' },
-  TR: { symbol: '₺', amount: 175, code: 'TRY' },
-  PL: { symbol: 'zł', amount: 20, code: 'PLN' },
-  SE: { symbol: 'kr', amount: 52, code: 'SEK' },
-}
-const DEFAULT_CURRENCY_PREVIEW = { symbol: '$', amount: 4.99, code: 'USD' }
+// Preview pricing is region-driven and server-detected via
+// /api/v1/pricing/detect-region. The old CURRENCY_MAP_PREVIEW +
+// CHECKOUT_CURRENCY_OPTIONS dropdown was removed when Stripe switched to
+// tiered USD pricing (africa $4.99 / emerging $7.99 / western $14.99);
+// per-country local-currency display would drift from the actual Stripe
+// charge and create a bait-and-switch risk at checkout.
+//
+// Nigerian visitors see ₦6,900 (Paystack charges exactly that amount) and
+// additionally get the Stripe USD option. Every other visitor sees only
+// the USD tier price — no Paystack button is rendered.
 
-function useGeoCurrency() {
-  const [isNG, setIsNG] = useState(false)
-  const [currency, setCurrency] = useState(DEFAULT_CURRENCY_PREVIEW)
+// Paystack charges this exact NGN amount. Kept as a display constant so
+// the UI label matches the API exactly. Not FX-derived.
+const PAYSTACK_NGN_DISPLAY = '₦6,900'
 
-  useEffect(() => {
-    // Key must match Landing.jsx which writes 'sig_geo'
-    const cached = sessionStorage.getItem('sig_geo')
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached)
-        // sig_geo stores { currency: { code, symbol, amount, local }, countryCode: 'NG' }
-        setIsNG(parsed.countryCode === 'NG' || parsed.currency?.code === 'NGN')
-        if (parsed.currency) setCurrency(parsed.currency)
-      } catch {
-        // Ignore JSON parse errors for cached data
-      }
-      return
-    }
-    // Use our own API endpoint which leverages Vercel geo headers (free, unlimited)
-    fetch('/api/geo')
-      .then(r => r.json())
-      .then(d => {
-        if (d.country_code) {
-          setIsNG(d.country_code === 'NG')
-          const cur = CURRENCY_MAP_PREVIEW[d.country_code] || DEFAULT_CURRENCY_PREVIEW
-          setCurrency(cur)
-        }
-      })
-      .catch(() => {})
-  }, [])
-  return { isNG, currency }
-}
-
-// Simplified currency options for checkout dropdown
-const CHECKOUT_CURRENCY_OPTIONS = [
-  { code: 'USD', symbol: '$', amount: 4.99, label: 'USD — $4.99' },
-  { code: 'NGN', symbol: '₦', amount: 6900, label: 'NGN — ₦6,900 /doc' },
-  { code: 'GBP', symbol: '£', amount: 3.95, label: 'GBP — £3.95 /doc' },
-  { code: 'EUR', symbol: '€', amount: 4.60, label: 'EUR — €4.60 /doc' },
-  { code: 'GHS', symbol: 'GH₵', amount: 75, label: 'GHS — GH₵75 /doc' },
-]
+// USDT checkout is a flat $4.99 for now — crypto buyers are price-sensitive
+// and geo-spoofable; tiered USDT is a separate PR if ever.
+const USDT_DISPLAY = '$4.99'
 
 
 
 
 export default function Preview() {
   const navigate = useNavigate()
-  const { isNG: isNigeria, currency: geoCurrency } = useGeoCurrency()
-  const [activeCurrency, setActiveCurrency] = useState(null) // null = use geo
-  const [currencyOpen, setCurrencyOpen] = useState(false)
-  const effectiveCurrency = activeCurrency || geoCurrency
+  // Region-driven pricing. Fallback display = $14.99 (western) to protect
+  // revenue during the initial fetch; re-verified server-side on checkout.
+  const [pricing, setPricing] = useState({
+    tier: 'western',
+    country: 'unknown',
+    priceUsd: 14.99,
+    unitAmount: 1499,
+    display: '$14.99',
+    label: 'Standard',
+    paystackAvailable: false,
+  })
+  useEffect(() => {
+    let alive = true
+    fetchUserPricing().then(p => { if (alive) setPricing(p) })
+    return () => { alive = false }
+  }, [])
+  // paystackAvailable is NG-only; a Kenyan / Ghanaian / South African
+  // visitor in the africa pricing tier still gets the Stripe USD rail.
+  const isNigeria = pricing.paystackAvailable
   const [doc, setDoc] = useState(null)
   const [paying, setPaying] = useState(false)
   const [paid, setPaid] = useState(false)
@@ -952,7 +923,7 @@ export default function Preview() {
             </button>
           ) : (
             <button className="btn-pay" onClick={handleDownload} disabled={paying}>
-              {paying ? <><span className="spinner-sm" /> Processing…</> : <>Download PDF — {effectiveCurrency.code === 'USD' ? '$4.99' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()}`}</>}
+              {paying ? <><span className="spinner-sm" /> Processing…</> : <>Download PDF — {pricing.display}</>}
             </button>
           )}
         </div>
@@ -1015,7 +986,7 @@ export default function Preview() {
                       >
                         {paying
                           ? <><span className="spinner-sm" /> Processing…</>
-                          : <>Unlock Full Document — {effectiveCurrency.code === 'USD' ? '$4.99' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()}`}</>
+                          : <>Unlock Full Document — {pricing.display}</>
                         }
                       </button>
                       <p className="locked-guarantee">30-day money-back guarantee · Instant download</p>
@@ -1102,51 +1073,34 @@ export default function Preview() {
               </div>
             )}
 
-            {/* Currency toggle */}
+            {/* Region-detected price header. Static display (no switcher) —
+                Stripe charges USD regardless of visitor currency. Nigerian
+                visitors additionally see ₦6,900 because Paystack charges
+                that amount directly on the NGN rail. */}
             {!paid && (
               <div className="sidebar-currency-toggle" style={{ position: 'relative', marginBottom: '12px' }}>
-                <button
-                  className="sidebar-currency-btn"
-                  onClick={() => setCurrencyOpen(o => !o)}
-                  aria-label="Change currency"
-                  title="Change currency"
-                >
-                  <CurrencyCircleDollar size={16} weight="regular" style={{ verticalAlign: '-3px', marginRight: 6 }} />{effectiveCurrency.code === 'USD' ? '$4.99 USD' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()} ${effectiveCurrency.code}`}
-                </button>
-                {currencyOpen && (
-                  <div className="sidebar-currency-dropdown">
-                    {CHECKOUT_CURRENCY_OPTIONS.map(opt => (
-                      <button
-                        key={opt.code}
-                        className={`sidebar-currency-option ${effectiveCurrency.code === opt.code ? 'active' : ''}`}
-                        onClick={() => {
-                          if (opt.code === geoCurrency.code) {
-                            setActiveCurrency(null)
-                          } else {
-                            setActiveCurrency({ code: opt.code, symbol: opt.symbol, amount: opt.amount })
-                          }
-                          setCurrencyOpen(false)
-                        }}
-                      >
-                        {opt.label}
-                        {opt.code === geoCurrency.code && !activeCurrency && <span className="currency-auto-badge">Auto</span>}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                <span className="sidebar-currency-btn" aria-live="polite" title="Price shown for your region">
+                  <CurrencyCircleDollar size={16} weight="regular" style={{ verticalAlign: '-3px', marginRight: 6 }} />
+                  {pricing.paystackAvailable
+                    ? `${pricing.display} via card · ${PAYSTACK_NGN_DISPLAY} via Paystack`
+                    : `${pricing.display} USD`}
+                </span>
               </div>
             )}
 
             <div className="sidebar-price">
-              <span className="price-big">
-                {effectiveCurrency.code === 'USD' ? '$4.99' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()}`}
-              </span>
+              <span className="price-big">{pricing.display}</span>
               <span className="price-label">
-                {effectiveCurrency.code === 'USD'
-                  ? 'one-time · instant download'
-                  : `≈ $4.99 · one-time · instant download`}
+                {pricing.paystackAvailable
+                  ? `or ${PAYSTACK_NGN_DISPLAY} via Paystack · one-time · instant download`
+                  : 'one-time · instant download'}
               </span>
             </div>
+            <p className="price-region-caption">
+              {pricing.paystackAvailable
+                ? 'Price shown for your region. NGN via Paystack or USD via card.'
+                : 'Price shown for your region. Payment processed in USD.'}
+            </p>
 
             {/* Guarantee — prominent, not buried */}
             <div className="sidebar-guarantee">
@@ -1311,7 +1265,7 @@ export default function Preview() {
                     >
                       {paying
                         ? <><span className="spinner-sm" /> Processing…</>
-                        : <><CreditCard size={16} weight="regular" style={{ verticalAlign: '-3px', marginRight: 6 }} />Pay {effectiveCurrency.symbol}{effectiveCurrency.amount.toLocaleString()} with Nigerian Card →</>
+                        : <><CreditCard size={16} weight="regular" style={{ verticalAlign: '-3px', marginRight: 6 }} />Pay {PAYSTACK_NGN_DISPLAY} via Paystack →</>
                       }
                     </button>
                     <p className="trust-line"><Lock size={12} weight="regular" style={{ verticalAlign: '-1px', marginRight: 4 }} />GTBank · Access · FirstBank · UBA · Kuda · All Nigerian debit cards · Instant delivery</p>
@@ -1327,7 +1281,7 @@ export default function Preview() {
                       >
                         {payingUsdt
                           ? <><span className="spinner-sm" /> Preparing invoice…</>
-                          : <>⬡ Pay {effectiveCurrency.symbol}{effectiveCurrency.amount.toLocaleString()} in USDT / Crypto →</>}
+                          : <>⬡ Pay {USDT_DISPLAY} in USDT / Crypto →</>}
                       </button>
                       <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Binance, Myaza & all African crypto wallets</p>
                     </div>
@@ -1348,7 +1302,7 @@ export default function Preview() {
                         <button className="btn-pay-full btn-pay-secondary" onClick={handleDownload} disabled={paying}>
                           {paying
                             ? <><span className="spinner-sm" /> Processing…</>
-                            : <><Globe size={16} weight="regular" style={{ verticalAlign: '-3px', marginRight: 6 }} />Pay $4.99 USD by International Card →</>
+                            : <><Globe size={16} weight="regular" style={{ verticalAlign: '-3px', marginRight: 6 }} />Pay {pricing.display} by International Card →</>
                           }
                         </button>
                         <p className="trust-line">Charged in USD · Works with Visa, Mastercard, Amex</p>
@@ -1361,7 +1315,7 @@ export default function Preview() {
                     <button className="btn-pay-full" onClick={handleDownload} disabled={paying}>
                       {paying
                         ? <><span className="spinner-sm" /> Processing…</>
-                        : <>Download full document — {effectiveCurrency.code === 'USD' ? '$4.99' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()}`} →</>
+                        : <>Pay {pricing.display} via card →</>
                       }
                     </button>
                     <p className="trust-line"><Lock size={12} weight="regular" style={{ verticalAlign: '-1px', marginRight: 4 }} />SSL secure · No account · Instant PDF · 30-day refund</p>
@@ -1374,7 +1328,7 @@ export default function Preview() {
                       >
                         {payingUsdt
                           ? <><span className="spinner-sm" /> Preparing invoice…</>
-                          : <>⬡ Pay {effectiveCurrency.code === 'USD' ? '$4.99' : `${effectiveCurrency.symbol}${effectiveCurrency.amount.toLocaleString()}`} in USDT / Crypto →</>}
+                          : <>⬡ Pay {USDT_DISPLAY} in USDT / Crypto →</>}
                       </button>
                       <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Works with Myaza, Binance & all African crypto wallets · Instant confirmation</p>
                     </div>

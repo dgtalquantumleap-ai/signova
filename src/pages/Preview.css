@@ -982,3 +982,11 @@
   margin: 0;
   text-align: center;
 }
+
+/* Region caption under sidebar price — explains which rail charges what. */
+.price-region-caption {
+  font-size: 11px;
+  color: var(--text3);
+  margin: 6px 0 0;
+  line-height: 1.5;
+}

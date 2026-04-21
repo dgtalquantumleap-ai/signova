@@ -196,7 +196,7 @@ const FAQS = [
   },
   {
     q: 'Are the documents legally valid in my country?',
-    a: 'Signova generates documents for any jurisdiction worldwide. Documents are tailored to the governing law you specify. For high-value transactions, we recommend having a local solicitor review the final document.',
+    a: 'Signova generates documents tailored to 8 jurisdictions — Nigeria, the UK, Kenya, Ghana, South Africa, the US, Canada, and India — using the governing law you specify. For high-value transactions, we recommend having a local solicitor review the final document.',
   },
   {
     q: 'What if the extraction misses something?',
@@ -569,7 +569,7 @@ export default function WhatsApp() {
         <button className="wa-bottom-btn" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           Paste your conversation →
         </button>
-        <p className="wa-bottom-note">Free preview · {formatPrice(currency)} to download · No account needed · Any jurisdiction</p>
+        <p className="wa-bottom-note">Free preview · No account needed · 8 jurisdictions verified · 30-day refund</p>
       </section>
 
       {/* Footer */}
