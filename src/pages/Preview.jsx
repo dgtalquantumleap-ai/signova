@@ -18,6 +18,7 @@ import {
   trackDownloadClicked,
 } from '../lib/analytics'
 import { fetchUserPricing } from '../lib/pricing'
+import { buildFeedbackUrl } from '../lib/feedback-config'
 import './Preview.css'
 
 const DEV = import.meta.env.DEV
@@ -381,6 +382,8 @@ export default function Preview() {
   ${htmlBody}
   <div class="footer">
     For legal advice, consult a qualified attorney. Generated on ${isoDate} · Reference: ${docRefId}
+    <br />
+    <a href="${buildFeedbackUrl(docRefId)}" target="_blank" rel="noopener noreferrer">Report an issue with this document</a>
   </div>
 </body>
 </html>`
