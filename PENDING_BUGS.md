@@ -3,20 +3,14 @@
 Items spotted while landing on a different scope. Each entry: where, what,
 why-deferred.
 
-## 1. `WhatsApp.jsx` still uses pre-tier `formatPrice(currency)` system
+## ~~1. `WhatsApp.jsx` still uses pre-tier `formatPrice(currency)` system~~ DONE
 
-- Files: `src/pages/WhatsApp.jsx` lines 387, 507 (and the `formatPrice`/
-  `CURRENCY_MAP` helpers at lines 15-29, 237-252)
-- What: same 49-row local-currency display pattern that Landing.jsx + Preview.jsx
-  used to have. Was retired from those pages in PR #28 (landing conversion +
-  tiered pricing) because it created a bait-and-switch risk between displayed
-  local currency and actual Stripe USD charge.
-- Why deferred: PR #28 brief explicitly scoped to Landing.jsx, Preview.jsx,
-  Pricing.jsx. Wholesale rewrite of WhatsApp.jsx currency state is a separate
-  PR — needs its own pricing state, fallback, paystackAvailable gate, and
-  removal of `formatPrice`/`CURRENCY_MAP` reads.
-- Action: replicate the Landing.jsx pattern (`fetchUserPricing()` + retire the
-  local-currency map + display `pricing.display` only).
+Resolved in `feat/whatsapp-tiered-pricing-migration` (stacked on PR #28).
+Single `fetchUserPricing()` call drives both `pricing.display` and the
+`countryCode` used by `GEO_DOC_PRIORITY` / `GEO_USECASES`. The local
+`CURRENCY_MAP` / `getCurrency` / `formatPrice` helpers were deleted (no
+`_RETAINED` constant — they were trivially recoverable from git history
+and not consumed elsewhere).
 
 ## 2. Blog post body content still mentions `$4.99` in some places
 
