@@ -3,6 +3,9 @@
 Items spotted while landing on a different scope. Each entry: where, what,
 why-deferred.
 
+All items from the initial 2026-04-21 list are now resolved. Log kept so
+that future entries have a template + historical context for the fixes.
+
 ## ~~1. `WhatsApp.jsx` still uses pre-tier `formatPrice(currency)` system~~ DONE
 
 Resolved in PR #30 (the catch-up PR after PRs #28/#29 stranded). Single
@@ -12,54 +15,43 @@ Resolved in PR #30 (the catch-up PR after PRs #28/#29 stranded). Single
 `_RETAINED` constant — they were trivially recoverable from git history
 and not consumed elsewhere).
 
-## 2. Blog post body content still mentions `$4.99` in some places
+## ~~2. Blog post body content still mentions `$4.99` in some places~~ DONE
 
-- File: `src/data/blogPosts.js`
-- What: prior PRs left literal `$4.99` references inside blog body content
-  (the prominent CTAs at lines 163/200/237/270/1509 were fixed in PR #28).
-- Why deferred: blog body rewriting is a content-edit PR, not a code-edit
-  PR. Each occurrence needs an editorial decision (mention the price at all?
-  reference a tier? link to pricing page?) rather than a mechanical
-  find-replace.
-- Action: separate content-rewrite PR with a single guideline: blog content
-  should not name a USD price; link to a pricing anchor instead.
+Resolved in PR #31. All 45 `$4.99` references and the localised
+`AMOUNT (≈ $4.99)` parentheticals were scrubbed from
+`src/data/blogPosts.js`. The CTAs now use generic phrasing
+("Preview free. Pay when you download.") so the page copy doesn't
+drift when tier pricing changes. Blog body text in general-knowledge
+sections ("courts in many jurisdictions...") was left alone — it's
+factual commentary, not Signova marketing copy.
 
-## 3. Quick-pick ordering audit for non-US regions vs new positioning
+## ~~3. Quick-pick ordering audit for non-US regions vs new positioning~~ DONE
 
-- File: `src/pages/Landing.jsx` lines ~172-230 (`QUICKPICK_REGIONS`)
-- What: PR #30 reordered `QUICKPICK_REGIONS.US` (and the 10 western
-  countries aliased to it: CA/GB/AU/NZ/DE/FR/IT/ES/NL/PT) so the hero's
-  `.slice(0,3)` shows Freelance Contract / NDA / Service Agreement —
-  which fits the new "Don't start the work until this is signed"
-  pre-flight-checklist framing.
-- Other regional sets were NOT audited:
-  - `NG` (also covers GH/KE/ZA/TZ/UG/ET/SN/CI/CM/EG/ZW): currently leads
-    with Founders' Agreement / Tenancy Agreement / Deed of Assignment.
-    For the new positioning, freelancer-deal docs (Freelance Contract,
-    Service Agreement) might convert better.
-  - `IN` (also PK/BD/PH/ID/MY/SG): currently NDA / Freelance Contract /
-    Service Agreement — already aligns with new positioning, no change
-    expected.
-  - `AE` (also SA): MOU / Partnership / NDA — sales-focused; might be
-    fine, might not.
-  - `BR` (also MX/CO/AR): Freelance Contract / Service Agreement / NDA
-    — already aligned.
-  - `QUICKPICK_DEFAULT`: Business Proposal / NDA / Freelance Contract.
-    "Business Proposal" is the odd one out for the pre-flight framing.
-- Why deferred: PR #30 was scoped to the obvious mismatch (US-aliased
-  visitors paying $14.99 seeing a SaaS-startup trio). Wider quick-pick
-  rework deserves its own PR with a/b consideration per region.
-- Action: separate UX PR — audit each region's top-3 against the
-  pre-flight-checklist framing, possibly drive ordering off real
-  conversion data.
+Resolved in PR #31. All `QUICKPICK_REGIONS` top-3 slots now lead with
+pre-flight-checklist primitives:
 
-## 4. AboutPage.jsx replaced `$4.99` with "small fixed fee"
+- `QUICKPICK_DEFAULT`: Freelance Contract / NDA / Service Agreement
+  (was Business Proposal / NDA / Freelance Contract).
+- `NG` (aliased by GH/KE/ZA/TZ/UG/ET/SN/CI/CM/EG/ZW): Freelance
+  Contract / Tenancy Agreement / Loan Agreement (was Founders' /
+  Tenancy / Deed of Assignment).
+- `AE` (aliased by SA): Service Agreement / NDA / MOU (was MOU /
+  Partnership / NDA).
+- `US` (aliased by CA/GB/AU/NZ/DE/FR/IT/ES/NL/PT): Freelance Contract /
+  NDA / Service Agreement (already done in PR #30 catch-up).
+- `IN` (aliased by PK/BD/PH/ID/MY/SG): already aligned — NDA /
+  Freelance Contract / Service Agreement. Left alone.
+- `BR` (aliased by MX/CO/AR): already aligned — Freelance Contract /
+  Service Agreement / NDA. Left alone.
 
-- File: `src/pages/AboutPage.jsx` line 62
-- What: PR #28 replaced "pay $4.99" with "pay a small fixed fee" to avoid
-  the bait-and-switch with western/emerging-tier visitors. The page does
-  not currently call `fetchUserPricing()`.
-- Why deferred: AboutPage is informational; introducing pricing state for
-  a single sentence is over-engineering.
-- Action: revisit only if the marketing copy benefits from a concrete number.
-  If so, wire `fetchUserPricing()` and use `pricing.display`.
+If a/b testing reveals a different optimal order for any region, adjust
+the relevant array in `src/pages/Landing.jsx` — the data is colocated
+with an explanatory comment at each reorder site.
+
+## ~~4. AboutPage.jsx replaced `$4.99` with "small fixed fee"~~ DONE
+
+Resolved in PR #31. `src/pages/AboutPage.jsx` now calls
+`fetchUserPricing()` and shows the tier-accurate price in the founder
+story paragraph. Nigerian visitors additionally see the Paystack NGN
+option — matching the compound-display convention used on Landing.jsx
+and Preview.jsx.

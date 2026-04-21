@@ -1,10 +1,30 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import SiteNav from '../components/SiteNav'
 import SiteFooter from '../components/SiteFooter'
+import { fetchUserPricing } from '../lib/pricing'
 
 export default function AboutPage() {
   const navigate = useNavigate()
+
+  // Region-detected price for the founder-story paragraph. Western-tier
+  // fallback during the initial fetch; the actual Stripe charge is always
+  // server-authoritative. See src/lib/pricing.js for the shape.
+  const [pricing, setPricing] = useState({
+    tier: 'western',
+    country: 'unknown',
+    priceUsd: 14.99,
+    unitAmount: 1499,
+    display: '$14.99',
+    label: 'Standard',
+    paystackAvailable: false,
+  })
+  useEffect(() => {
+    let alive = true
+    fetchUserPricing().then(p => { if (alive) setPricing(p) })
+    return () => { alive = false }
+  }, [])
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', fontFamily: 'var(--font-body)' }}>
@@ -59,7 +79,7 @@ export default function AboutPage() {
           {[
             `I'm Olumide — a Nigerian software developer based in Calgary, Canada. I've watched friends, family, and colleagues across Nigeria, Ghana, and Kenya lose money, deals, and sometimes relationships because they had no written agreement. A cousin lent ₦500,000 to a business partner on a handshake. A freelancer built a full website and got ghosted. A landlord couldn't evict a non-paying tenant because the tenancy was verbal.`,
             `The frustrating part isn't that people didn't know they needed a contract. They did. The problem is that getting a lawyer to draft one costs ₦50,000–₦200,000 in Nigeria for what is often a standard document. In Canada and the UK, it's $300–$500/hour. Most people — especially freelancers and small landlords — just skip it and hope for the best.`,
-            `Signova changes that. You answer a few questions about your specific situation. We generate a professional, jurisdiction-aware legal document in under 3 minutes. You preview it for free, and pay a small fixed fee — less than a lunch — to download the clean PDF.`,
+            `Signova changes that. You answer a few questions about your specific situation. We generate a professional, jurisdiction-aware legal document in under 3 minutes. You preview it for free, and pay ${pricing.display}${pricing.paystackAvailable ? ' (or ₦6,900 via Paystack)' : ''} — less than a lunch — to download the clean PDF.`,
             `We now support 34 document types across 8 jurisdictions — Nigeria, the UK, Kenya, Ghana, South Africa, the US, Canada, and India. Nigerian landlords, Kenyan freelancers, Canadian contractors, Indian consultants — anyone who needs a proper document without paying lawyer rates.`,
           ].map((para, i) => (
             <p key={i} style={{ fontSize: '16px', color: 'var(--text2)', lineHeight: 1.8, margin: 0 }}>
@@ -81,8 +101,8 @@ export default function AboutPage() {
         }}>
           {[
             { num: '34', label: 'Document types' },
-            { num: '47', label: 'Geo-currencies' },
-            { num: '$4.99', label: 'Per document' },
+            { num: '8', label: 'Jurisdictions verified' },
+            { num: pricing.display, label: 'Per document' },
           ].map((s, i) => (
             <div key={i} style={{
               background: 'var(--bg2)', padding: '28px 20px', textAlign: 'center'
@@ -167,7 +187,7 @@ export default function AboutPage() {
             Ready to generate your document?
           </h2>
           <p style={{ fontSize: '15px', color: 'var(--text2)', marginBottom: '24px', lineHeight: 1.6 }}>
-            Free preview. $4.99 to download. No account. No subscription. No lawyer needed.
+            Free preview. {pricing.display} to download. No account. No subscription. No lawyer needed.
           </p>
           <button
             onClick={() => navigate('/')}
