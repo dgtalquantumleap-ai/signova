@@ -721,7 +721,7 @@ export default function Landing() {
       <section className="stories-section">
         <div className="section-inner">
           <div className="section-header">
-            <h2 className="section-title">Every freelancer has a story like this. Yours is coming.</h2>
+            <h2 className="section-title">Every freelancer has a story like this.</h2>
           </div>
           <div className="stories-grid">
             <div className="story-card">
