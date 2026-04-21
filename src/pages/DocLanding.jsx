@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import SiteNav from '../components/SiteNav'
 import SiteFooter from '../components/SiteFooter'
+import { fetchUserPricing } from '../lib/pricing'
 import './Landing.css'
 import './NDALanding.css'
 
@@ -10,6 +11,14 @@ export default function DocLanding() {
   const navigate = useNavigate()
   const { slug } = useParams()
   const [config, setConfig] = useState(null)
+
+  // Region-detected pricing. Western-tier fallback while fetch resolves.
+  const [pricing, setPricing] = useState({ display: '$14.99', paystackAvailable: false })
+  useEffect(() => {
+    let alive = true
+    fetchUserPricing().then(p => { if (alive) setPricing(p) })
+    return () => { alive = false }
+  }, [])
 
   // Load doc landing data asynchronously — not in initial bundle
   useEffect(() => {
@@ -128,7 +137,7 @@ export default function DocLanding() {
             <div className="nda-step">
               <div className="nda-step-num">3</div>
               <h3>Download the PDF</h3>
-              <p>Pay $4.99 to unlock the clean, watermark-free PDF. Print it, sign it, send it — it's yours to keep.</p>
+              <p>Pay {pricing.display} to unlock the clean, watermark-free PDF. Print it, sign it, send it — it's yours to keep.</p>
             </div>
           </div>
         </div>
@@ -141,7 +150,7 @@ export default function DocLanding() {
             Ready to generate your {name}?
           </h2>
           <p style={{ color: '#888', marginBottom: '28px' }}>
-            Free preview — pay $4.99 only when you're ready to download.
+            Free preview — pay {pricing.display} only when you're ready to download.
           </p>
           <button className="nda-cta" onClick={() => navigate(`/generate/${docId}`)}>
             Generate My {name} Free →

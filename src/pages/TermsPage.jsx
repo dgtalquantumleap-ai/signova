@@ -39,7 +39,7 @@ export default function TermsPage() {
         <p>Once you download a document, you are responsible for reviewing it and determining whether it meets your needs. Signova makes no warranties, express or implied, regarding the fitness of any generated document for a particular legal purpose or jurisdiction.</p>
 
         <h2>4. Purchases and refunds</h2>
-        <p>Each document purchase is a one-time payment of $4.99. Because you can preview the full document before purchasing, all sales are final. If you experience a technical issue that prevented you from accessing your download, contact us at <a href={`mailto:${'info'}@${'ebenova.net'}`}>
+        <p>Each document purchase is a one-time payment at the price displayed for your region on the preview page before checkout. Because you can preview the full document — and see the exact price — before purchasing, all sales are final. If you experience a technical issue that prevented you from accessing your download, contact us at <a href={`mailto:${'info'}@${'ebenova.net'}`}>
           <span className="email-obfuscated" data-user="info" data-domain="ebenova.net"></span>
         </a> within 7 days and we will resolve it.</p>
 

@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { trackGenerateStarted, trackGenerateCompleted } from '../lib/analytics'
+import { fetchUserPricing } from '../lib/pricing'
 import {
   Lock, ClipboardText, Handshake, PenNib, FileText, Briefcase,
   Shield, CreditCard, MapTrifold, CurrencyDollar, ChartBar,
@@ -14,7 +15,7 @@ import './Generator.css'
 const SEO_META = {
   'privacy-policy': {
     title: 'Free Privacy Policy Generator | Create a Privacy Policy in 2 Minutes — Signova',
-    description: 'Generate a professional privacy policy for your website or app instantly. GDPR, NDPR, PIPEDA and CCPA compliant. Free preview, download for $4.99.',
+    description: 'Generate a professional privacy policy for your website or app instantly. GDPR, NDPR, PIPEDA and CCPA compliant. Free preview. Pay when you download.',
     keywords: 'privacy policy generator, free privacy policy, GDPR privacy policy, NDPR privacy policy, website privacy policy template, app privacy policy',
   },
   'terms-of-service': {
@@ -24,7 +25,7 @@ const SEO_META = {
   },
   'nda': {
     title: 'Free NDA Generator | Non-Disclosure Agreement Template — Signova',
-    description: 'Generate a legally sound Non-Disclosure Agreement (NDA) in under 3 minutes. Mutual and one-way NDA templates. Free preview, download for $4.99.',
+    description: 'Generate a legally sound Non-Disclosure Agreement (NDA) in under 3 minutes. Mutual and one-way NDA templates. Free preview. Pay when you download.',
     keywords: 'NDA generator, non-disclosure agreement template, free NDA, mutual NDA, confidentiality agreement, NDA Nigeria, NDA template',
   },
   'freelance-contract': {
@@ -722,6 +723,15 @@ export default function Generator() {
   const [extractMsg, setExtractMsg] = useState('')
   const [extractError, setExtractError] = useState('')
 
+  // Region-detected price for rate-limit messaging. Western-tier fallback
+  // during fetch; re-verified server-side on any actual checkout call.
+  const [pricing, setPricing] = useState({ display: '$14.99', paystackAvailable: false })
+  useEffect(() => {
+    let alive = true
+    fetchUserPricing().then(p => { if (alive) setPricing(p) })
+    return () => { alive = false }
+  }, [])
+
   // Redirect during render is a React anti-pattern — use useEffect
   useEffect(() => {
     if (!config) navigate('/')
@@ -982,7 +992,7 @@ Output the complete document only, no preamble, explanation, or closing notes.`
         const err = await response.json()
         // Handle rate limiting gracefully
         if (response.status === 429) {
-          throw new Error('You have used your 3 free previews this hour. Pay $4.99 to generate and download your document directly.')
+          throw new Error(`You have used your 3 free previews this hour. Pay ${pricing.display} to generate and download your document directly.`)
         }
         throw new Error(err.error || 'Generation failed')
       }
@@ -1010,7 +1020,7 @@ Output the complete document only, no preamble, explanation, or closing notes.`
 
   const seo = SEO_META[docType] || {
     title: `${config.name} Template | Free Generator — Signova`,
-    description: `Generate a professional ${config.name} in minutes. Free preview, download for $4.99. Used by businesses globally.`,
+    description: `Generate a professional ${config.name} in minutes. Free preview. Pay when you download. Used by businesses globally.`,
     keywords: `${config.name.toLowerCase()} template, ${config.name.toLowerCase()} generator, legal document generator`,
   }
 
