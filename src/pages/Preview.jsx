@@ -37,9 +37,10 @@ const DEV = import.meta.env.DEV
 // the UI label matches the API exactly. Not FX-derived.
 const PAYSTACK_NGN_DISPLAY = '₦6,900'
 
-// USDT checkout is a flat $4.99 for now — crypto buyers are price-sensitive
-// and geo-spoofable; tiered USDT is a separate PR if ever.
-const USDT_DISPLAY = '$4.99'
+// USDT checkout is tiered server-side (see api/oxapay-checkout.js) using
+// the same x-vercel-ip-country → $4.99 / $7.99 / $14.99 split as Stripe.
+// The UI therefore uses pricing.display directly; keep the historical
+// constant name removed so no caller accidentally falls back to flat $4.99.
 
 
 
@@ -1281,7 +1282,7 @@ export default function Preview() {
                       >
                         {payingUsdt
                           ? <><span className="spinner-sm" /> Preparing invoice…</>
-                          : <>⬡ Pay {USDT_DISPLAY} in USDT / Crypto →</>}
+                          : <>⬡ Pay {pricing.display} in USDT / Crypto →</>}
                       </button>
                       <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Binance, Myaza & all African crypto wallets</p>
                     </div>
@@ -1328,7 +1329,7 @@ export default function Preview() {
                       >
                         {payingUsdt
                           ? <><span className="spinner-sm" /> Preparing invoice…</>
-                          : <>⬡ Pay {USDT_DISPLAY} in USDT / Crypto →</>}
+                          : <>⬡ Pay {pricing.display} in USDT / Crypto →</>}
                       </button>
                       <p className="usdt-sub">USDT · USDC · TRC20 · BEP20 · Works with Myaza, Binance & all African crypto wallets · Instant confirmation</p>
                     </div>
