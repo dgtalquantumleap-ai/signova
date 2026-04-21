@@ -165,13 +165,20 @@ const QUICKPICK_REGIONS = {
   ],
   PK: 'IN', BD: 'IN', PH: 'IN', ID: 'IN', MY: 'IN', SG: 'IN',
   US: [
+    // Reordered so the hero's top-3 quick picks (.slice(0,3)) match the
+    // "Don't start the work until this is signed" positioning. The previous
+    // order (Founders' Agreement / Privacy Policy / Terms of Service) was
+    // a SaaS-startup trio; western-tier visitors landing on the new hero
+    // are reading a pre-flight-checklist message and want the contract
+    // primitives first.
+    { id: 'freelance-contract', icon: <PenNib size={20} weight="duotone" color="currentColor" />, name: 'Freelance Contract' },
+    { id: 'nda', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: 'NDA' },
+    { id: 'service-agreement', icon: <FileText size={20} weight="duotone" color="currentColor" />, name: 'Service Agreement' },
+    { id: 'independent-contractor', icon: <User size={20} weight="duotone" color="currentColor" />, name: 'Contractor Agreement' },
+    { id: 'employment-offer-letter', icon: <Briefcase size={20} weight="duotone" color="currentColor" />, name: 'Offer Letter' },
     { id: 'founders-agreement', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: "Founders' Agreement" },
     { id: 'privacy-policy', icon: <Lock size={20} weight="duotone" color="currentColor" />, name: 'Privacy Policy' },
     { id: 'terms-of-service', icon: <ClipboardText size={20} weight="duotone" color="currentColor" />, name: 'Terms of Service' },
-    { id: 'nda', icon: <Handshake size={20} weight="duotone" color="currentColor" />, name: 'NDA' },
-    { id: 'freelance-contract', icon: <PenNib size={20} weight="duotone" color="currentColor" />, name: 'Freelance Contract' },
-    { id: 'independent-contractor', icon: <User size={20} weight="duotone" color="currentColor" />, name: 'Contractor Agreement' },
-    { id: 'employment-offer-letter', icon: <Briefcase size={20} weight="duotone" color="currentColor" />, name: 'Offer Letter' },
     { id: 'ip-assignment-agreement', icon: <LightbulbFilament size={20} weight="duotone" color="currentColor" />, name: 'IP Assignment' },
   ],
   CA: 'US', GB: 'US', AU: 'US', NZ: 'US',
