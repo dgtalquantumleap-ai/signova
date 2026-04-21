@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom'
-import { useState, useEffect, useRef, useCallback, startTransition } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { trackDocSelected, trackHeroCtaClick } from '../lib/analytics'
+import { fetchUserPricing } from '../lib/pricing'
 import SiteFooter from '../components/SiteFooter'
 import {
   Rocket, Handshake, PenNib, Lock, FileText, CurrencyDollar,
@@ -41,7 +42,16 @@ function useLazyLoad(options = {}) {
 }
 
 // ── Geo-currency detection ──────────────────────────────────────────────────
-const CURRENCY_MAP = {
+//
+// RETAINED — NOT USED FOR STRIPE FLOWS.
+// Stripe pricing is driven entirely by src/lib/pricing.js → fetchUserPricing()
+// which reads the server-side tier from /api/v1/pricing/detect-region. This
+// table is kept for reference only; do NOT read from it for any price display
+// that a Stripe-paying user sees. Maintaining 49 localised rows against three
+// USD tiers is a misrepresentation risk (see Landing PR on tiered pricing).
+// Paystack (Nigerian rail) shows ₦6,900 directly, not from this map.
+//
+const _CURRENCY_MAP_RETAINED = {
   NG: { symbol: '₦', amount: 6900,   code: 'NGN', local: '≈ ₦6,900'       },
   GH: { symbol: 'GH₵', amount: 75,   code: 'GHS', local: '≈ GH₵75'        },
   SN: { symbol: 'CFA', amount: 3100, code: 'XOF', local: '≈ CFA 3,100'    },
@@ -95,9 +105,10 @@ const CURRENCY_MAP = {
   NO: { symbol: 'kr',   amount: 54,   code: 'NOK', local: '≈ kr54'       },
   DK: { symbol: 'kr',   amount: 34,   code: 'DKK', local: '≈ kr34'       },
 }
-const DEFAULT_CURRENCY = { symbol: '$', amount: 4.99, code: 'USD', local: null }
+const _DEFAULT_CURRENCY_RETAINED = { symbol: '$', amount: 4.99, code: 'USD', local: null }
 
-const LAWYER_FEE_MAP = {
+// Retained but not used — final CTA no longer quotes a lawyer fee.
+const _LAWYER_FEE_MAP_RETAINED = {
   NG: '₦50,000–₦150,000', GH: 'GH₵500–GH₵2,000', KE: 'KSh 5,000–KSh 20,000',
   ZA: 'R800–R3,000', ET: 'ETB 2,000–ETB 8,000', TZ: 'TSh 50,000–TSh 200,000',
   UG: 'USh 150,000–USh 600,000',
@@ -110,53 +121,13 @@ const LAWYER_FEE_MAP = {
   CO: 'COP 200,000–COP 800,000', AR: 'AR$5,000–AR$20,000',
   AE: 'AED 500–AED 2,000', SA: 'SAR 500–SAR 2,000', EG: 'E£500–E£2,000',
 }
-const DEFAULT_LAWYER_FEE = '$150–$400'
+const _DEFAULT_LAWYER_FEE_RETAINED = '$150–$400'
 
-function useGeo() {
-  const [currency, setCurrency] = useState(DEFAULT_CURRENCY)
-  const [countryCode, setCountryCode] = useState(null)
-
-  useEffect(() => {
-    const cached = sessionStorage.getItem('sig_geo')
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached)
-        setCurrency(parsed.currency)
-        setCountryCode(parsed.countryCode)
-      } catch {}
-      return
-    }
-
-    const doFetch = () => {
-      fetch('/api/geo')
-        .then(r => r.json())
-        .then(data => {
-          if (data.country_code) {
-            const c = CURRENCY_MAP[data.country_code] || DEFAULT_CURRENCY
-            const cc = data.country_code || null
-            sessionStorage.setItem('sig_geo', JSON.stringify({ currency: c, countryCode: cc }))
-            startTransition(() => {
-              setCurrency(c)
-              setCountryCode(cc)
-            })
-          }
-        })
-        .catch(() => {})
-    }
-
-    const timeoutId = setTimeout(() => {
-      if (typeof requestIdleCallback !== 'undefined') {
-        requestIdleCallback(doFetch, { timeout: 5000 })
-      } else {
-        doFetch()
-      }
-    }, 2000)
-
-    return () => clearTimeout(timeoutId)
-  }, [])
-
-  return { currency, countryCode }
-}
+// useGeo() was removed when landing moved to server-side tiered pricing.
+// The old 49-country CURRENCY_MAP drove a local-currency display that
+// approximated a flat $4.99 charge. With tiered USD pricing, per-country
+// display would drift from the actual Stripe charge and create a bait-and-
+// switch risk. See src/lib/pricing.js + /api/v1/pricing/detect-region.js.
 
 // ── Geo-prioritised quick-pick documents ────────────────────────────────────
 const QUICKPICK_DEFAULT = [
@@ -310,12 +281,9 @@ const SOCIAL_PROOF = {
     url: 'https://x.com/Riley_Ikni',
     date: 'April 2026',
   },
-  stats: [
-    { n: '83', label: 'visitors/week', sub: 'organic, no ads' },
-    { n: '$4.99', label: 'price point', sub: 'cheaper than losing one invoice' },
-    { n: '47', label: 'currencies', sub: 'jurisdiction-aware' },
-    { n: 'Mar \'26', label: 'first paying customer', sub: 'week 3 after launch' },
-  ],
+  // stats array removed — unused (never rendered) and contained a hardcoded
+  // price that conflicted with tiered pricing. Re-add with dynamic values
+  // (pricing.display) when you next render it.
 }
 
 const FAQS = [
@@ -351,8 +319,27 @@ const FAQS = [
 
 export default function Landing() {
   const navigate = useNavigate()
-  const { currency: geoCurrency, countryCode } = useGeo()
-  const quickPicks = getQuickPicks(countryCode)
+
+  // Regional pricing — server-detected, no client FX math.
+  // Fallback to western-tier display ($14.99) while the edge function round-trips.
+  // paystackAvailable is NG-only, not tier-wide — Kenya/Ghana/SA buyers do not
+  // see a Paystack button even though they share the Africa USD tier.
+  const [pricing, setPricing] = useState({
+    tier: 'western',
+    country: 'unknown',
+    priceUsd: 14.99,
+    unitAmount: 1499,
+    display: '$14.99',
+    label: 'Standard',
+    paystackAvailable: false,
+  })
+  useEffect(() => {
+    let alive = true
+    fetchUserPricing().then(p => { if (alive) setPricing(p) })
+    return () => { alive = false }
+  }, [])
+
+  const quickPicks = getQuickPicks(pricing.country)
 
   // Nav state
   const [navOpen, setNavOpen] = useState(false)
@@ -365,11 +352,7 @@ export default function Landing() {
   const [videoRef, videoVisible] = useLazyLoad({ threshold: 0.15 })
   const [videoPlaying, setVideoPlaying] = useState(false)
 
-  // Currency
-  const [currency, setCurrency] = useState(null)
-  const [currencyOpen, setCurrencyOpen] = useState(false)
-  const activeCurrency = currency || geoCurrency
-
+  // Currency-switcher UI retired — pricing is region-driven, server-side.
   // Document search & filter
   const [docSearch, setDocSearch] = useState('')
   const [showAllDocs, setShowAllDocs] = useState(false)
@@ -392,22 +375,11 @@ export default function Landing() {
   // Close nav on Escape
   useEffect(() => {
     const handleKey = (e) => {
-      if (e.key === 'Escape') {
-        if (navOpen) setNavOpen(false)
-        if (currencyOpen) setCurrencyOpen(false)
-      }
+      if (e.key === 'Escape' && navOpen) setNavOpen(false)
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [navOpen, currencyOpen])
-
-  // Close currency dropdown on outside click
-  useEffect(() => {
-    if (!currencyOpen) return
-    const handleClick = () => setCurrencyOpen(false)
-    const timer = setTimeout(() => document.addEventListener('click', handleClick), 0)
-    return () => { clearTimeout(timer); document.removeEventListener('click', handleClick) }
-  }, [currencyOpen])
+  }, [navOpen])
 
   // Filter docs based on search
   const filteredDocs = docSearch.trim()
@@ -418,23 +390,17 @@ export default function Landing() {
       )
     : DOCS
 
-  // Currency options
-  const CURRENCY_OPTIONS = [
-    { code: 'USD', symbol: '$', label: 'USD — $4.99' },
-    { code: 'NGN', symbol: '₦', amount: 6900, label: 'NGN — ₦6,900' },
-    { code: 'GBP', symbol: '£', amount: 3.95, label: 'GBP — £3.95' },
-    { code: 'EUR', symbol: '€', amount: 4.60, label: 'EUR — €4.60' },
-    { code: 'GHS', symbol: 'GH₵', amount: 75, label: 'GHS — GH₵75' },
-    { code: 'KES', symbol: 'KSh', amount: 650, label: 'KES — KSh 650' },
-    { code: 'INR', symbol: '₹', amount: 418, label: 'INR — ₹418' },
-    { code: 'ZAR', symbol: 'R', amount: 93, label: 'ZAR — R93' },
-  ]
+  // Nigerian-visitor compound price: show both Stripe USD and Paystack NGN
+  // so Nigerian buyers see both rails and what each will charge.
+  const navPriceLabel = pricing.paystackAvailable
+    ? `${pricing.display} · ₦6,900`
+    : pricing.display
 
   return (
     <div className="landing">
       <Helmet>
         <title>Signova — Professional Legal Documents for Freelancers, Landlords & Businesses | Free Preview</title>
-        <meta name="description" content="Generate legal contracts in 3 minutes — 34 document types across Canada, US, UK, EU, and Africa. NDAs, freelance contracts, tenancy agreements, privacy policies, DPAs. Free preview, $4.99 to download. No lawyer needed." />
+        <meta name="description" content="AI-drafted legal documents in minutes. 34 document types across Nigeria, UK, Kenya, Ghana, South Africa, US, Canada, and India. Free preview. 30-day refund." />
         <meta name="keywords" content="legal document generator Nigeria, tenancy agreement Nigeria, NDA template, freelance contract, deed of assignment Nigeria, loan agreement template, business proposal template, MOU template, hire purchase agreement Nigeria, power of attorney Nigeria, employment offer letter, shareholder agreement, joint venture agreement, service agreement, distribution agreement, quit notice Nigeria, privacy policy generator, terms of service generator" />
         <link rel="canonical" href="https://www.getsignova.com/" />
         <link rel="alternate" hreflang="en" href="https://www.getsignova.com/" />
@@ -454,41 +420,21 @@ export default function Landing() {
             <span className="logo-text">Signova</span>
           </a>
 
-          {/* Currency toggle */}
-          <div className="currency-toggle">
-            <button
+          {/* Region-based price indicator. Static display, driven by the
+              server-detected tier from /api/v1/pricing/detect-region. No
+              currency switcher — Stripe charges USD regardless of the
+              visitor's currency, and showing a switchable non-USD amount
+              would drift from what the user actually pays. Nigerian
+              visitors additionally see ₦6,900 because Paystack charges
+              that amount directly. */}
+          <div className="currency-toggle" aria-label="Pricing for your region">
+            <span
               className="currency-toggle-btn"
-              onClick={(e) => { e.stopPropagation(); setCurrencyOpen(o => !o) }}
-              aria-label="Change currency"
-              aria-expanded={currencyOpen}
-              aria-haspopup="listbox"
-              title="Change currency"
+              title="Price shown for your region"
+              aria-live="polite"
             >
-              {activeCurrency.symbol}{activeCurrency.code === 'USD' ? '4.99' : activeCurrency.amount?.toLocaleString()}
-            </button>
-            {currencyOpen && (
-              <div className="currency-dropdown" role="listbox" aria-label="Select currency" onClick={e => e.stopPropagation()}>
-                {CURRENCY_OPTIONS.map(opt => (
-                  <button
-                    key={opt.code}
-                    role="option"
-                    aria-selected={activeCurrency.code === opt.code}
-                    className={`currency-option ${activeCurrency.code === opt.code ? 'active' : ''}`}
-                    onClick={() => {
-                      if (opt.code === geoCurrency.code) {
-                        setCurrency(null)
-                      } else {
-                        setCurrency({ code: opt.code, symbol: opt.symbol, amount: opt.amount || 4.99 })
-                      }
-                      setCurrencyOpen(false)
-                    }}
-                  >
-                    {opt.label}
-                    {opt.code === geoCurrency.code && !currency && <span className="currency-auto-badge">Auto</span>}
-                  </button>
-                ))}
-              </div>
-            )}
+              {navPriceLabel}
+            </span>
           </div>
 
           {/* Nav links — simplified */}
@@ -545,31 +491,37 @@ export default function Landing() {
           {/* LEFT: headline + CTA */}
           <div className="hero-left">
             <h1 className="hero-title" fetchpriority="high">
-              Turn WhatsApp Chats into<br />
-              <span className="hero-title-gold">Enforceable Contracts.</span>
+              Don't start the work<br />
+              <span className="hero-title-gold">until this is signed.</span>
             </h1>
             <p className="hero-sub">
-              Paste your negotiation. Get a lawyer-quality document in 2 minutes. Free preview.
+              Paste the WhatsApp chat. Get a contract both sides can sign in 2 minutes. Built for Nigerian, UK, Kenyan, Ghanaian, South African, US, Canadian, Indian, and Commonwealth law. Full refund if it doesn't hold up.
+            </p>
+
+            <p className="hero-support-line">
+              The average freelancer has lost $3,000 to deals that never got signed. Some have lost $47,000. Sign before you start.
             </p>
 
             <button
               className="btn-primary btn-large"
               onClick={() => { trackHeroCtaClick(); navigate('/whatsapp') }}
-              aria-label="Paste your chat to start generating a contract"
+              aria-label="See your contract free"
             >
-              Paste Chat to Start <span className="btn-arrow" aria-hidden="true">→</span>
+              See my contract (free) <span className="btn-arrow" aria-hidden="true">→</span>
             </button>
 
-            {/* Trust signals immediately below CTA */}
+            {/* Guarantee strip — above the fold, below primary CTA */}
+            <p className="hero-guarantee-strip">
+              30-day refund · No account required · Full preview before paying · Works in 8 jurisdictions
+            </p>
+
+            {/* Social-proof / coverage strip — replaces the old emoji flag
+                row + overclaim with an honest named list matching the 8
+                jurisdictions we actually have statute coverage for (see
+                lib/jurisdiction-context.js). */}
             <div className="hero-trust-below-cta">
               <div className="hero-proof-badge">
-                <FileText size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> {DOCS_GENERATED.toLocaleString()}+ documents generated
-              </div>
-              <div className="hero-jurisdictions">
-                <span aria-label="Nigeria">🇳🇬</span>
-                <span aria-label="Canada">🇨🇦</span>
-                <span aria-label="Singapore">🇸🇬</span>
-                <span className="jurisdiction-more">any jurisdiction worldwide</span>
+                <FileText size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> {DOCS_GENERATED.toLocaleString()}+ documents signed · Nigerian, UK, Kenyan, Ghanaian, South African, US, Canadian, Indian law verified · 30-day refund
               </div>
             </div>
 
@@ -589,7 +541,13 @@ export default function Landing() {
               ))}
             </div>
 
-            <p className="hero-trust-line">Free preview · No account required · $4.99 {activeCurrency.local ? `(${activeCurrency.local})` : ''} to download · Enforceable in any jurisdiction worldwide · 30-day refund</p>
+            <p className="hero-trust-line">
+              Free preview · No account required ·{' '}
+              {pricing.paystackAvailable
+                ? `${pricing.display} via card or ₦6,900 via Paystack`
+                : `${pricing.display} to download`}
+              {' '}· 30-day refund
+            </p>
           </div>
 
           {/* RIGHT: animated proof — visual-only demo (not a primary CTA) */}
@@ -744,6 +702,30 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ── Stories section (loss-aversion proof) ─────────────────────── */}
+      <section className="stories-section">
+        <div className="section-inner">
+          <div className="section-header">
+            <h2 className="section-title">Every freelancer has a story like this. Yours is coming.</h2>
+          </div>
+          <div className="stories-grid">
+            <div className="story-card">
+              <div className="story-number">$47,000</div>
+              <p className="story-body">Lagos developer. 3 months of work. Client ghosted. No contract.</p>
+            </div>
+            <div className="story-card">
+              <div className="story-number">47 revisions</div>
+              <p className="story-body">Nairobi designer. Logo project. No scope document. Agreed on a phone call.</p>
+            </div>
+            <div className="story-card">
+              <div className="story-number">8 months</div>
+              <p className="story-body">Accra consultant. Waited for $2,800. Nothing in writing said when payment was due.</p>
+            </div>
+          </div>
+          <p className="stories-closing">It's not laziness. It's friction. Signova removes the friction.</p>
+        </div>
+      </section>
+
       {/* ── Video walkthrough (lazy loaded) ────────────────────────────── */}
       <section className="video-section" ref={videoRef}>
         <div className="section-inner">
@@ -826,13 +808,13 @@ export default function Landing() {
         <div className="section-inner">
           <div className="section-header">
             <p className="section-label">The process</p>
-            <h2 className="section-title">How Signova works — from question to signed document in 3 minutes</h2>
+            <h2 className="section-title">How Signova works — from chat to signed contract in 2 minutes</h2>
           </div>
           <div className="steps">
             {[
-              { n: '01', title: 'Choose your document', body: 'Pick from 34 document types built for global use — Tenancy Agreement, NDA, Freelance Contract, Deed of Assignment, Loan Agreement, Business Proposal, and more. Works in any jurisdiction.' },
-              { n: '02', title: 'Answer a few questions', body: 'Tell us your names, jurisdiction, and deal terms. Takes 2 minutes. No legal knowledge required — the questions are plain language. An old template won\'t know this client\'s name, this amount, or these terms. Signova does.' },
-              { n: '03', title: 'Preview free, download when ready', body: 'See your complete, properly structured document instantly — built on real legal frameworks used by attorneys, not generic AI output. When you\'re happy, download the clean PDF for the price of a phone call — not a lawyer.' },
+              { n: '01', title: 'Paste the conversation', body: 'WhatsApp, iMessage, email — whatever channel the deal happened in. Paste it as-is.' },
+              { n: '02', title: 'We extract what a court needs', body: 'Names, amounts, dates, scope, deliverables, timeline, payment terms, revisions, governing law. The 9 things a judge asks for when a deal goes sideways.' },
+              { n: '03', title: 'Both sides sign before work starts', body: `Your pre-flight checklist for every freelance deal. ${pricing.paystackAvailable ? `${pricing.display} via card or ₦6,900 via Paystack` : pricing.display} when you're ready to download. Refund if it doesn't hold up.` },
             ].map(s => (
               <div key={s.n} className="step">
                 <span className="step-num" aria-hidden="true">{s.n}</span>
@@ -884,7 +866,14 @@ export default function Landing() {
         <div className="section-inner">
           <div className="section-header">
             <p className="section-label">What people are saying</p>
-            <h2 className="section-title">Built for the people lawyers ignore</h2>
+            <h2 className="section-title">Built for the 2 a.m. WhatsApp deal.</h2>
+          </div>
+
+          <div className="testimonial-intro">
+            <p>For the logo job agreed on a phone call.</p>
+            <p>For the freelance gig that starts Monday without paperwork.</p>
+            <p>For the tenancy agreement nobody wrote down.</p>
+            <p className="testimonial-intro-emph">Lawyers charge $500 to do what Signova does in 2 minutes.</p>
           </div>
 
           <div className="advisor-quote-card">
@@ -940,7 +929,7 @@ export default function Landing() {
                 <li className="price-yes">Preview any document in full</li>
                 <li className="price-yes">34 document types</li>
                 <li className="price-yes">WhatsApp extraction</li>
-                <li className="price-yes">Any jurisdiction worldwide</li>
+                <li className="price-yes">8 jurisdictions verified</li>
                 <li className="price-no">Download PDF</li>
                 <li className="price-no">Watermark-free version</li>
               </ul>
@@ -954,12 +943,14 @@ export default function Landing() {
               <div className="price-top-badge">Most Popular</div>
               <div className="price-tier">Pay Per Document</div>
               <div className="price-amount">
-                {activeCurrency.code === 'USD' ? '$4.99' : `${activeCurrency.symbol}${activeCurrency.amount.toLocaleString()}`}
+                {pricing.display}
                 <span className="price-per">/ doc</span>
               </div>
-              {activeCurrency.local && (
-                <p className="price-local-equiv">≈ $4.99 USD</p>
-              )}
+              <p className="price-region-caption">
+                {pricing.paystackAvailable
+                  ? 'Price shown for your region. Pay in NGN via Paystack (₦6,900) or USD via card.'
+                  : 'Price shown for your region. Payment processed in USD.'}
+              </p>
               <p className="price-desc">Pay once per document. No subscription. Yours to keep forever.</p>
               <ul className="price-list">
                 <li className="price-yes">Clean PDF — no watermark</li>
@@ -1036,9 +1027,17 @@ export default function Landing() {
       <section className="cta-section">
         <div className="section-inner">
           <div className="cta-box">
-            <h2 className="cta-title">Stop paying {LAWYER_FEE_MAP[countryCode] || DEFAULT_LAWYER_FEE} for a document you can generate in 3 minutes.</h2>
-            <p className="cta-sub">Preview completely free — no account, no credit card. Pay only{' '}
-              {activeCurrency.code === 'USD' ? '$4.99' : `${activeCurrency.symbol}${activeCurrency.amount.toLocaleString()}`} when you're ready to download. Works in Nigeria, Ghana, Kenya, the UK, Canada, and any jurisdiction worldwide.</p>
+            <h2 className="cta-title">Sign before you start. Every deal. Every time.</h2>
+            <p className="cta-sub">
+              Preview completely free. No account. No credit card. Pay only when you download the signed-ready PDF —{' '}
+              {pricing.paystackAvailable
+                ? `${pricing.display} via card or ₦6,900 via Paystack`
+                : pricing.display}
+              .
+            </p>
+            <p className="cta-sub">
+              Built on Nigerian, UK, Kenyan, Ghanaian, South African, US, Canadian, and Indian legal frameworks. 30-day refund if it doesn't hold up.
+            </p>
             <div className="cta-trust-strip">
               <span>Built on real legal frameworks</span>
               <span className="cta-trust-dot" aria-hidden="true">·</span>

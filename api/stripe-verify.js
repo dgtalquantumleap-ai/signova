@@ -25,6 +25,25 @@ export default async function handler(req, res) {
 
     // Only 'complete' status means payment succeeded
     if (session.payment_status === 'paid') {
+      // ── Amount sanity check ────────────────────────────────────────────────
+      // Log (don't block) any amount_total that isn't one of the three tier
+      // values produced by stripe-checkout.js. This lets us spot drift between
+      // the tier table in stripe-checkout.js and what Stripe actually billed,
+      // without breaking payment verification for edge cases (legacy sessions,
+      // manual Stripe dashboard invoices, Stripe Tax surcharges, etc.).
+      const ALLOWED_AMOUNTS = [499, 799, 1499]
+      if (!ALLOWED_AMOUNTS.includes(session.amount_total)) {
+        console.error(
+          `[stripe-verify] Unexpected amount_total: ${session.amount_total} for session ${session.id}` +
+          ` (tier=${session.metadata?.tier || 'unknown'}, country=${session.metadata?.country || 'unknown'})`
+        )
+      }
+
+      // Receipt email shows what the buyer actually paid, derived from
+      // session.amount_total. Never hardcode a dollar amount here — a $14.99
+      // buyer seeing "$4.99 was successful" in their inbox is a support ticket.
+      const amountDisplay = `$${(session.amount_total / 100).toFixed(2)}`
+
       // Fire-and-forget receipt email to buyer
       const buyerEmail = session.customer_email || session.customer_details?.email
       if (buyerEmail && process.env.RESEND_API_KEY) {
@@ -48,7 +67,7 @@ export default async function handler(req, res) {
                 </div>
                 <h2 style="color:#c9a84c;font-size:20px;margin-bottom:8px;">✓ Payment confirmed — your document is ready</h2>
                 <p style="color:#9a9690;font-size:14px;line-height:1.7;margin-bottom:24px;">
-                  Your payment of <strong style="color:#f0ece4;">$4.99</strong> was successful. 
+                  Your payment of <strong style="color:#f0ece4;">${amountDisplay}</strong> was successful.
                   Return to Signova to download your clean, watermark-free PDF.
                 </p>
                 <a href="https://www.getsignova.com" style="display:inline-block;background:#c9a84c;color:#0e0e0e;font-weight:700;font-size:15px;padding:14px 28px;border-radius:8px;text-decoration:none;margin-bottom:24px;">
