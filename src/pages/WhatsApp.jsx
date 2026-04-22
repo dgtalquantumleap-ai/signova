@@ -386,7 +386,7 @@ export default function WhatsApp() {
             ))}
           </div>
           <button className="wa-show-all" onClick={() => setShowAll(v => !v)}>
-            {showAll ? '↑ Show fewer' : '+ Show all 34 document types'}
+            {showAll ? '↑ Show fewer' : '+ Show all 28 document types'}
           </button>
         </div>
 
@@ -544,7 +544,7 @@ export default function WhatsApp() {
         <button className="wa-bottom-btn" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           Paste your conversation →
         </button>
-        <p className="wa-bottom-note">Free preview · No account needed · 8 jurisdictions verified · 30-day refund</p>
+        <p className="wa-bottom-note">Free preview · No account needed · 18-jurisdiction framework coverage · 30-day refund</p>
       </section>
 
       {/* Footer */}

@@ -125,7 +125,7 @@ export default function SiteFooter({ variant = 'signova', disclaimer = true }) {
         </nav>
       </div>
 
-      {disclaimer && variant === 'signova' && (
+      {disclaimer && (
         <p className="site-footer-disclaimer">
           Signova is a document generation tool, not a law firm. Documents are AI-generated
           starting points — not legal advice. No attorney-client relationship is created.

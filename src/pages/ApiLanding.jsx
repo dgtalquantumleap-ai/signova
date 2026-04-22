@@ -15,8 +15,8 @@ const API_CARDS = [
     id: 'documents',
     icon: <FileText size={24} weight="duotone" color="currentColor" />,
     title: 'Legal Documents API',
-    desc: 'Generate 34 document types across 18 jurisdictions. NDAs, contracts, tenancy agreements, and more.',
-    features: ['34 document types', '18 jurisdictions', 'AI-powered drafting'],
+    desc: 'Generate 28 document types across 18 jurisdictions. NDAs, contracts, tenancy agreements, and more.',
+    features: ['28 document types', '18 jurisdictions', 'AI-powered drafting'],
     endpoint: 'POST /v1/documents/generate',
     cta: 'Generate Document',
     link: '/docs#generate',
@@ -87,8 +87,8 @@ const API_CARDS = [
     id: 'templates',
     icon: <ClipboardText size={24} weight="duotone" color="currentColor" />,
     title: 'Document Templates API',
-    desc: 'Get field schemas for all 34 document types. Build dynamic forms, validate input, or understand requirements before generating.',
-    features: ['34 document schemas', 'Field types & validation', 'Zero AI cost'],
+    desc: 'Get field schemas for all 28 document types. Build dynamic forms, validate input, or understand requirements before generating.',
+    features: ['28 document schemas', 'Field types & validation', 'Zero AI cost'],
     endpoint: 'GET /v1/documents/templates',
     cta: 'View Templates',
     link: '/docs#templates',
@@ -301,28 +301,28 @@ export default function ApiLanding() {
         {isEbenova ? (
           <>
             <title>Ebenova — The API Layer for Business Agreements</title>
-            <meta name="description" content="Generate contracts, verify payments, detect fraud, enforce scope — 34 document types, 18 jurisdictions. MCP-native. Built for Africa, open to the world. Free tier available." />
+            <meta name="description" content="The API layer for business agreements. Contracts, invoices, fraud detection, scope enforcement. MCP-native for AI agents. Africa-first coverage with global reach." />
             <link rel="canonical" href="https://www.ebenova.dev/" />
             <link rel="alternate" hreflang="en" href="https://www.ebenova.dev/" />
             <meta property="og:type" content="website" />
             <meta property="og:site_name" content="Ebenova" />
             <meta property="og:url" content="https://www.ebenova.dev/" />
             <meta property="og:title" content="Ebenova — The API Layer for Business Agreements" />
-            <meta property="og:description" content="Generate contracts, verify payments, detect fraud, enforce scope — 34 document types, 18 jurisdictions. MCP-native. Built for Africa, open to the world." />
+            <meta property="og:description" content="The API layer for business agreements. Contracts, invoices, fraud detection, scope enforcement. MCP-native for AI agents. Africa-first coverage with global reach." />
             <meta property="og:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
             <meta property="og:image:width" content="1200" />
             <meta property="og:image:height" content="630" />
             <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:site" content="@quantimleap100" />
             <meta name="twitter:title" content="Ebenova — The API Layer for Business Agreements" />
-            <meta name="twitter:description" content="Contracts, invoices, fraud detection, scope enforcement. 34 document types, 18 jurisdictions. MCP-native. Free tier." />
+            <meta name="twitter:description" content="The API layer for business agreements. Contracts, invoices, fraud detection, scope enforcement. MCP-native. Africa-first." />
             <meta name="twitter:image" content="https://www.ebenova.dev/og-image-ebenova.png" />
             <script type="application/ld+json">{JSON.stringify({
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",
               "name": "Ebenova API",
               "url": "https://www.ebenova.dev",
-              "description": "Developer-first API platform for legal document generation, invoices, contract enforcement, and Reddit monitoring. 34 document types across 18 jurisdictions including Nigeria, Kenya, Ghana, UK, US, and Canada.",
+              "description": "Developer-first API platform for legal document generation, invoices, contract enforcement, and Reddit monitoring. 28 document types. 18-jurisdiction Scope Guard. Africa-first coverage with global reach.",
               "applicationCategory": "DeveloperApplication",
               "operatingSystem": "Web",
               "offers": [
@@ -384,7 +384,7 @@ export default function ApiLanding() {
 
           <p className="api-hero-sub">
             One API for contracts, invoices, fraud detection, and scope enforcement —
-            34 document types, 18 jurisdictions, MCP-native. Works wherever your
+            28 document types, 18 jurisdictions, MCP-native. Works wherever your
             business operates. Goes deeper where others don't.
           </p>
 
@@ -414,8 +414,8 @@ export default function ApiLanding() {
 
           <div className="trust-signals">
             <span>✓ No credit card required</span>
-            <span>✓ Nigeria · Kenya · Ghana · UK · US · Canada · 8 jurisdictions verified</span>
-            <span>✓ 34 Document Types</span>
+            <span>✓ Nigeria · Kenya · Ghana · UK · US · Canada · 18-jurisdiction framework coverage</span>
+            <span>✓ 28 Document Types</span>
             <span>✓ Free tier · No commitment</span>
           </div>
 
