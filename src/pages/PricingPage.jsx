@@ -15,7 +15,7 @@ const PLANS = [
     description: 'For freelancers and small teams.',
     features: [
       '100 API calls per month',
-      'All 28 document types',
+      'All 34 document types',
       '18 jurisdictions',
       'Batch generation (up to 10)',
       'WhatsApp extraction',

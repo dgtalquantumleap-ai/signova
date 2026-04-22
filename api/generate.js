@@ -219,6 +219,16 @@ export default async function handler(req, res) {
   const lower = prompt.toLowerCase()
   const isDpa = lower.includes('data processing agreement') || lower.includes('dpa')
 
+  // Doc-type-specific detectors for the 6 new equity doc types. Used to
+  // build type-specific Nigeria prompt blocks (Guardrail 4 — exclusive with
+  // the shared nigeriaEquityClause so no doc gets both).
+  const isFoundersAgreementDoc = lower.includes("founders' agreement") || lower.includes('founders agreement') || lower.includes("founders agreement")
+  const isIpAssignmentDoc = lower.includes('ip assignment agreement') || lower.includes('intellectual property assignment')
+  const isAdvisoryBoardDoc = lower.includes('advisory board agreement')
+  const isVestingAgreementDoc = lower.includes('vesting agreement')
+  const isTermSheetDoc = lower.includes('term sheet')
+  const isSafeAgreementDoc = lower.includes('safe agreement') || lower.includes('simple agreement for future equity')
+
   // Equity-instrument detector. Fires for SAFE, term sheet, shareholder,
   // founders', vesting, IP assignment, and advisory-board agreements — i.e.
   // documents where the applicable COMPANY LAW (CAMA, Companies Act, DGCL,
@@ -481,7 +491,15 @@ export default async function handler(req, res) {
     return `\n\nCROSS-BORDER EQUITY DOCUMENT NOTE: The company is incorporated in ${incorpJurisdiction} but the contract's governing law is ${govLawJurisdiction}. Apply ${incorpJurisdiction} company law for ALL share-structure language (share class names, conversion mechanics, allotment / return-of-allotment filings with the appropriate registrar). Apply ${govLawJurisdiction} law for dispute-resolution / forum-selection / general contract interpretation. Do NOT mix terminology — never use US "common/preferred stock" wording for a Nigerian or UK company even if NY/Delaware governing law is selected.`
   })() : ''
 
-  const nigeriaEquityClause = isEquityDoc && isIncorpNigeria
+  // True when one of the 6 type-specific Nigeria equity blocks below will
+  // fire. The shared nigeriaEquityClause is suppressed for these types
+  // (Guardrail 4 — type-specific block and shared block are mutually exclusive).
+  const hasNigeriaTypeSpecificEquityBlock = isIncorpNigeria && (
+    isFoundersAgreementDoc || isIpAssignmentDoc || isAdvisoryBoardDoc ||
+    isVestingAgreementDoc || isTermSheetDoc || isSafeAgreementDoc
+  )
+
+  const nigeriaEquityClause = isEquityDoc && isIncorpNigeria && !hasNigeriaTypeSpecificEquityBlock
     ? '\n\nIMPORTANT — NIGERIAN COMPANY LAW FOR EQUITY INSTRUMENTS: This document concerns issuance of shares / equity rights in a Nigerian-incorporated entity. Strictly apply: (i) the Companies and Allied Matters Act (CAMA) 2020 — use CAMA terminology ("ordinary shares" and "preference shares" — NEVER US-style "common stock" or "preferred stock"). Reference sections 124 (allotment of shares), 125 (return of allotment, filed with the Corporate Affairs Commission (CAC) within 15 days of allotment), 128 (pre-emption rights), 141 (share capital increases), 165 (register of members). For conversion mechanics on the next equity round, require a board resolution, shareholders\' resolution where an increase in share capital is needed, and CAC filing within 15 days. (ii) the Investments and Securities Act (ISA) 2025 for private-placement exemptions — the Agreement should represent that the issuance is a private placement exempt from full SEC registration under ISA 2025, that the investor is a sophisticated or qualified investor, and that no public offering or advertisement has occurred. Reference the relevant SEC Rules on Private Placement. (iii) For governing law default to the Laws of the Federal Republic of Nigeria when Nigeria is the company\'s jurisdiction (NOT Delaware — explicitly reject US defaults). (iv) Dispute resolution: either courts of the Federal Republic of Nigeria (Lagos or Abuja Judicial Division of the Federal High Court / High Court) or arbitration under the Arbitration and Mediation Act 2023, seat in Lagos, administered by LCA / NCIA / ICC as specified. (v) Denominate amounts in Naira (NGN / ₦) or the currency specified, include a clause on CBN foreign-exchange controls if the investment is in USD and conversion or repatriation is contemplated. (vi) Certificate of Incorporation / CAC Registration Number must be stated in the parties block. (vii) Stamping: note that the Agreement is dutiable under the Stamp Duties Act and should be stamped at the FIRS within 30 days of execution.'
     : ''
 
@@ -507,6 +525,153 @@ export default async function handler(req, res) {
 
   const canadaEquityClause = isEquityDoc && isIncorpCanada && !isQuebec
     ? '\n\nIMPORTANT — CANADIAN COMPANY LAW FOR EQUITY INSTRUMENTS: Apply the Canada Business Corporations Act (CBCA) or the corresponding provincial Business Corporations Act (OBCA for Ontario, BCBCA for BC, ABCA for Alberta) — reference CBCA §25 (issue of shares), §27 (continuous disclosure of shares), §42 (solvency test for share issuance), §49 (share certificates). Use Canadian terminology: "common shares" and "preferred shares". For securities regulation apply the applicable provincial Securities Act (Ontario Securities Act, BC Securities Act, etc.) and National Instrument 45-106 — claim the "accredited investor" exemption (NI 45-106 §2.3), the "private issuer" exemption (§2.4), or the "offering memorandum" exemption (§2.9) as applicable. File Form 45-106F1 report of exempt distribution within 10 days. Default governing law to the laws of the specified Canadian province and the federal laws of Canada applicable therein, jurisdiction to that province\'s Superior Court of Justice. Use Canadian spelling (cheque, labour, organisation). Denominate in CAD unless specified.'
+    : ''
+
+  // ── Type-specific Nigeria equity clauses (Guardrail 4) ──────────────────
+  // Each fires only when the matching doc-type detector AND isIncorpNigeria
+  // are both true. These are EXCLUSIVE with nigeriaEquityClause — the
+  // hasNigeriaTypeSpecificEquityBlock flag above suppresses the shared block
+  // when any of these fires.
+
+  const nigeriaFoundersAgreementClause = isFoundersAgreementDoc && isIncorpNigeria
+    ? '\n\nIMPORTANT — NIGERIAN FOUNDERS AGREEMENT (CAMA 2020 / ISA 2025):\n' +
+      'This is a Founders Agreement for a Nigerian-incorporated company. Apply the following requirements:\n\n' +
+      'EQUITY STRUCTURE:\n' +
+      '- Use CAMA 2020 terminology throughout: "ordinary shares" and "preference shares" — NEVER "common stock" or "preferred stock".\n' +
+      '- Each founder\'s shareholding must reference the total issued share capital and the specific number of ordinary shares held. Reference CAMA s.124 (allotment) and s.165 (register of members).\n' +
+      '- CAC filing: any allotment of shares to founders must be returned to the Corporate Affairs Commission (CAC) within 15 days of allotment (CAMA s.125).\n\n' +
+      'VESTING SCHEDULE:\n' +
+      '- Include a 4-year vesting schedule with a 1-year cliff as the default unless parties specify otherwise.\n' +
+      '- State the vesting commencement date, cliff date, and monthly/quarterly vesting cadence after the cliff.\n' +
+      '- Specify good leaver and bad leaver definitions with corresponding buyback mechanics: unvested shares are subject to repurchase by the company at nominal value (bad leaver) or fair market value (good leaver).\n\n' +
+      'IP ASSIGNMENT:\n' +
+      '- Each founder must assign to the company all intellectual property created in connection with the company\'s business, including pre-existing IP contributed at incorporation.\n' +
+      '- Reference the Copyright Act 2022 (Act No. 35 of 2022) for copyright works and the Patents and Designs Act (Cap. P2 LFN 2004) for patentable inventions.\n' +
+      '- Excluded prior works must be listed in a schedule.\n\n' +
+      'NON-COMPETE / NON-SOLICITATION:\n' +
+      '- Include a non-compete restricted period of 12–24 months post-departure, scoped to the company\'s actual business activities and geographic market.\n' +
+      '- Nigerian courts will enforce non-competes if they protect a legitimate business interest and are reasonable in scope, duration, and geography.\n\n' +
+      'STRUCTURE NUMBERING REQUIREMENTS:\n' +
+      '- Each top-level Clause must have a unique sequential number.\n' +
+      '- Verify before output: no two clauses share the same number.\n' +
+      '- Sub-clauses follow their parent\'s number (Clause 8.1, 8.2, etc.).\n' +
+      '- Sections like "Part I, Part II" are separate from clause numbering — clauses within each Part continue the global sequence.\n\n' +
+      'GOVERNING LAW & DISPUTE RESOLUTION:\n' +
+      '- Governing law: Laws of the Federal Republic of Nigeria.\n' +
+      '- Dispute resolution: courts of the Federal Republic of Nigeria (Lagos or Abuja Judicial Division) or LCIA / LCA / NCIA arbitration, seat Lagos.\n' +
+      '- Denominate monetary amounts in Naira (₦ / NGN).\n\n' +
+      'STAMP DUTY: Note that the Agreement is dutiable under the Stamp Duties Act and should be stamped at the FIRS within 30 days of execution.'
+    : ''
+
+  const nigeriaIpAssignmentClause = isIpAssignmentDoc && isIncorpNigeria
+    ? '\n\nIMPORTANT — NIGERIAN IP ASSIGNMENT AGREEMENT (Copyright Act 2022 / Patents and Designs Act):\n' +
+      'This is an IP Assignment Agreement governed by Nigerian law. Apply the following:\n\n' +
+      'ASSIGNMENT LANGUAGE:\n' +
+      '- Use irrevocable absolute assignment language: "The Assignor hereby irrevocably and unconditionally assigns to the Assignee, with full title guarantee, all right, title, and interest in and to the Assigned IP."\n' +
+      '- Reference the Copyright Act 2022 (Act No. 35 of 2022) for copyright works: assignment must be in writing and signed by the assignor (Copyright Act 2022 s.11).\n' +
+      '- Reference the Patents and Designs Act (Cap. P2 LFN 2004) for patents: assignment must be in writing and registered at the Nigerian Trademarks, Patents and Designs Registry.\n' +
+      '- Reference the Trade Marks Act (Cap. T13 LFN 2004) for trade marks: assignment may be with or without the goodwill of the business.\n\n' +
+      'CONSIDERATION:\n' +
+      '- State the assignment consideration in Naira (₦ / NGN).\n' +
+      '- If nominal consideration, state "One Thousand Naira (₦1,000) and other good and valuable consideration."\n\n' +
+      'WARRANTIES:\n' +
+      '- Assignor warrants: sole ownership, no prior assignments, no encumbrances, no pending infringement claims, and the IP does not infringe third-party rights.\n' +
+      '- Include an indemnity from the assignor for breach of IP warranties.\n\n' +
+      'EXCLUDED PRIOR WORKS:\n' +
+      '- Include a schedule of pre-existing materials / prior works explicitly excluded from the assignment.\n\n' +
+      'NDPA 2023: If the IP includes personal data processing capabilities or datasets, note the Nigeria Data Protection Act 2023 (NDPA) obligations that transfer with the IP.\n\n' +
+      'GOVERNING LAW: Laws of the Federal Republic of Nigeria. Jurisdiction: Federal High Court or Lagos State High Court.\n' +
+      'STAMP DUTY: Dutiable under the Stamp Duties Act; stamp at FIRS within 30 days of execution.'
+    : ''
+
+  const nigeriaAdvisoryBoardClause = isAdvisoryBoardDoc && isIncorpNigeria
+    ? '\n\nIMPORTANT — NIGERIAN ADVISORY BOARD AGREEMENT (CAMA 2020 / ISA 2025):\n' +
+      'This is an Advisory Board Agreement for a Nigerian-incorporated company. Apply the following:\n\n' +
+      'EQUITY COMPENSATION:\n' +
+      '- Use CAMA 2020 terminology: "ordinary shares" — NEVER "common stock".\n' +
+      '- Advisor equity grants are allotted as ordinary shares subject to vesting. Any allotment must comply with CAMA s.124 and be returned to CAC within 15 days (s.125).\n' +
+      '- ISA 2025: advisor share issuances are private placements exempt from SEC registration provided the advisor is a sophisticated/qualified investor and no public offering has occurred.\n\n' +
+      'VESTING:\n' +
+      '- Include a monthly vesting schedule (no cliff is standard for advisors, but parties may agree a 3-month cliff).\n' +
+      '- State total shares, monthly vesting increment, and total vesting period (typically 2 years).\n' +
+      '- On termination, unvested shares lapse and the company may repurchase vested shares at fair market value within 90 days.\n\n' +
+      'SCOPE OF ADVISORY SERVICES:\n' +
+      '- Specify advisory hours per month and key deliverables.\n' +
+      '- Advisor has no authority to bind the company; all decisions require board approval.\n\n' +
+      'CONFIDENTIALITY & IP:\n' +
+      '- Advisor must maintain strict confidentiality of the company\'s confidential information.\n' +
+      '- All work product, inventions, and improvements created by the advisor in connection with the advisory services are assigned to the company.\n' +
+      '- Reference Copyright Act 2022 for copyright works.\n\n' +
+      'TERMINATION: Either party may terminate on 30 days\' written notice.\n\n' +
+      'GOVERNING LAW: Laws of the Federal Republic of Nigeria. Jurisdiction: Lagos State High Court or Federal High Court.\n' +
+      'STAMP DUTY: Dutiable under the Stamp Duties Act; stamp at FIRS within 30 days of execution.'
+    : ''
+
+  const nigeriaVestingAgreementClause = isVestingAgreementDoc && isIncorpNigeria
+    ? '\n\nIMPORTANT — NIGERIAN VESTING AGREEMENT (CAMA 2020 / ISA 2025):\n' +
+      'This is a Share Vesting Agreement for a Nigerian-incorporated company. Apply the following:\n\n' +
+      'SHARE GRANT:\n' +
+      '- Use CAMA 2020 terminology: "ordinary shares" — NEVER "common stock".\n' +
+      '- State total grant shares, current issued share capital, and the grantee\'s percentage post-grant.\n' +
+      '- Allotment of shares must comply with CAMA s.124 and be returned to CAC within 15 days (s.125).\n' +
+      '- ISA 2025: the grant is a private placement exempt from SEC registration (sophisticated/qualified investor, no public offering).\n\n' +
+      'VESTING SCHEDULE:\n' +
+      '- Include a 4-year vesting schedule with a 1-year cliff as the default.\n' +
+      '- State: vesting commencement date, cliff date, cliff vesting percentage (25%), and monthly/quarterly vesting cadence thereafter.\n' +
+      '- All unvested shares remain subject to a right of repurchase by the company.\n\n' +
+      'ACCELERATION:\n' +
+      '- Single-trigger: full accelerated vesting on a Change of Control if the grantee\'s role is materially diminished or terminated.\n' +
+      '- Double-trigger (preferred): acceleration only if there is both a Change of Control AND an involuntary termination within 12 months.\n' +
+      '- Define "Change of Control" to include merger, acquisition, sale of substantially all assets.\n\n' +
+      'GOOD LEAVER / BAD LEAVER:\n' +
+      '- Good leaver (redundancy, ill health, death): vested shares retained; unvested shares subject to repurchase at fair market value.\n' +
+      '- Bad leaver (resignation, termination for cause, breach): all unvested shares forfeited; vested shares subject to repurchase at nominal value (or lower of cost/FMV).\n\n' +
+      'FORFEITURE: Unvested shares that lapse on termination are automatically forfeited and returned to the company\'s unissued share pool without further action.\n\n' +
+      'GOVERNING LAW: Laws of the Federal Republic of Nigeria. Jurisdiction: Lagos State High Court or Federal High Court.\n' +
+      'STAMP DUTY: Dutiable under the Stamp Duties Act; stamp at FIRS within 30 days of execution.'
+    : ''
+
+  const nigeriaTermSheetClause = isTermSheetDoc && isIncorpNigeria
+    ? '\n\nIMPORTANT — NIGERIAN TERM SHEET (CAMA 2020 / ISA 2025):\n' +
+      'This is an Investment Term Sheet for a Nigerian-incorporated company. Apply the following:\n\n' +
+      'SHARE TERMINOLOGY:\n' +
+      '- Use CAMA 2020 terminology: "ordinary shares" and "preference shares" — NEVER "common stock" or "preferred stock".\n' +
+      '- New investors receive preference shares (Series A, A-1, etc.) per CAMA s.124. CAC filing within 15 days of allotment (s.125). Share capital increase per s.141 requires shareholder approval.\n\n' +
+      'INVESTMENT ECONOMICS:\n' +
+      '- State: investment amount (in ₦ or agreed currency), pre-money valuation, post-money valuation, and implied price per share.\n' +
+      '- Liquidation preference: typically 1× non-participating for Nigerian preference shares (consistent with international practice).\n' +
+      '- Anti-dilution: broad-based weighted-average is preferred; full-ratchet must be explicitly negotiated.\n\n' +
+      'INVESTOR PROTECTIONS:\n' +
+      '- Pre-emption rights: existing shareholders retain pre-emption on new share issuances (CAMA s.128).\n' +
+      '- Protective provisions: investor consent required for changes to authorised share capital, creation of senior classes of shares, related-party transactions above a threshold, and asset disposals above a threshold.\n' +
+      '- Information rights: annual audited accounts, quarterly management accounts, board representation or observer rights.\n\n' +
+      'SECURITIES LAW: ISA 2025 — the round is a private placement exempt from full SEC registration. Investor represents it is a sophisticated/qualified investor. No public offering or advertisement has occurred.\n\n' +
+      'EXCLUSIVITY & BINDING PROVISIONS:\n' +
+      '- Only the exclusivity, confidentiality, governing-law, and expenses clauses are binding; all other terms are non-binding subject to execution of definitive agreements.\n\n' +
+      'GOVERNING LAW: Laws of the Federal Republic of Nigeria. Disputes: Lagos or Abuja Judicial Division of the Federal High Court, or NCIA / LCA arbitration seated in Lagos.\n' +
+      'CURRENCY: Denominate in Naira (₦ / NGN); if USD amounts are agreed, include a CBN exchange-control note on repatriation and conversion.'
+    : ''
+
+  const nigeriaSafeAgreementClause = isSafeAgreementDoc && isIncorpNigeria
+    ? '\n\nIMPORTANT — NIGERIAN SAFE AGREEMENT (CAMA 2020 / ISA 2025):\n' +
+      'This is a Simple Agreement for Future Equity (SAFE) for a Nigerian-incorporated company. Apply the following:\n\n' +
+      'SHARE TERMINOLOGY:\n' +
+      '- Use CAMA 2020 terminology: "ordinary shares" and "preference shares" — NEVER "common stock" or "preferred stock".\n' +
+      '- On conversion, the SAFE converts into preference shares at the applicable conversion price. Allotment must comply with CAMA s.124; CAC return filed within 15 days (s.125); share capital increase via s.141 requires shareholder/board approval.\n\n' +
+      'ECONOMIC TERMS:\n' +
+      '- Valuation Cap: sets the maximum pre-money valuation at which the SAFE converts.\n' +
+      '- Discount Rate: investor receives shares at a discount to the price paid by new investors in the Qualified Financing (typically 80–90%, i.e., a 10–20% discount).\n' +
+      '- Conversion Price: the lower of (i) Cap Price = Valuation Cap ÷ Company Capitalisation, and (ii) Discount Price = lowest price per share in the Qualified Financing × Discount Rate.\n\n' +
+      'CONVERSION EVENTS:\n' +
+      '- Qualified Financing: automatic conversion on a priced equity round above a minimum amount.\n' +
+      '- Liquidity Event (acquisition / IPO): investor may elect cash repayment at 1× investment amount or conversion.\n' +
+      '- Dissolution Event: SAFE holder is repaid investment amount before ordinary shareholders.\n\n' +
+      'MOST-FAVOURED-NATION (MFN):\n' +
+      '- If the company issues subsequent SAFEs on more favourable economic terms, investor automatically receives those terms.\n\n' +
+      'SECURITIES LAW: ISA 2025 — the SAFE is a private placement exempt from full SEC registration under the private-placement provisions. Investor represents it is a sophisticated/qualified investor and acknowledges no public offering has been made.\n\n' +
+      'GOVERNING LAW: Laws of the Federal Republic of Nigeria. Disputes: courts of the Federal Republic of Nigeria (Lagos or Abuja Judicial Division) or arbitration under the Arbitration and Mediation Act 2023, seat in Lagos.\n' +
+      'CURRENCY: Denominate in Naira (₦ / NGN) or USD if the investment is in foreign currency; include CBN foreign-exchange controls note on repatriation.\n' +
+      'STAMP DUTY: Note that the SAFE is dutiable under the Stamp Duties Act and should be stamped at FIRS within 30 days of execution.'
     : ''
 
   // ────────────────────────────────────────────────────────────────────────
@@ -1202,6 +1367,7 @@ export default async function handler(req, res) {
       + 'You are an expert legal document drafter with deep knowledge of international law, including the common-law traditions of Nigeria, Kenya, Ghana, South Africa, Canada, the United States, the United Kingdom, and Commonwealth jurisdictions; the civil-law tradition of Quebec; and the statutory frameworks of each (CAMA 2020 & ISA 2025 for Nigeria; Lagos State Tenancy Law 2011; Labour Act & PRA 2014; Land Use Act 1978; Hire Purchase Act 1965; Companies Act 2015 for Kenya; Companies Act 2019 (Act 992) for Ghana; Companies Act 71 of 2008 for South Africa; Companies Act 2006 and FSMA 2000 for the UK; DGCL for Delaware; CBCA and provincial ESAs for Canada; PIPEDA, Quebec Law 25, CCPA/CPRA, UK GDPR, NDPA 2023, POPIA, Kenya DPA 2019 for data). Generate comprehensive, professional legal documents tailored precisely to the user details provided. Use formal legal language, clear numbered sections, and include all standard clauses. Use the spelling conventions of the governing jurisdiction (US English for US documents, British / Commonwealth English for UK / African / Commonwealth documents, Canadian English for Canadian documents). This is a premium paid document — make it exceptional. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.'
       + nigeriaClause + canadaClause + quebecClause + californiaClause + usaClause
       + nigeriaEquityClause + kenyaEquityClause + ghanaEquityClause + ukEquityClause + southAfricaEquityClause + usEquityClause + canadaEquityClause + equityCrossBorderNote
+      + nigeriaFoundersAgreementClause + nigeriaIpAssignmentClause + nigeriaAdvisoryBoardClause + nigeriaVestingAgreementClause + nigeriaTermSheetClause + nigeriaSafeAgreementClause
       + nigeriaTenancyClause + nigeriaDeedClause + nigeriaQuitNoticeClause + nigeriaPowerOfAttorneyClause + nigeriaLandlordAgentClause
       + nigeriaEmploymentClause + nigeriaNonCompeteClause
       + nigeriaLoanClause + nigeriaHirePurchaseClause + nigeriaCommercialClause

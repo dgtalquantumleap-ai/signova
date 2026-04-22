@@ -55,7 +55,7 @@ export default function BlogIndex() {
         {/* Footer CTA */}
         <div className="blog-footer-cta">
           <p>Ready to generate a document?</p>
-          <Link to="/" className="btn-blog-cta">See all 28 document types →</Link>
+          <Link to="/" className="btn-blog-cta">See all 34 document types →</Link>
         </div>
       </div>
     </>

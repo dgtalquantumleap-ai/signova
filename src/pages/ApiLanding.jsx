@@ -15,8 +15,8 @@ const API_CARDS = [
     id: 'documents',
     icon: <FileText size={24} weight="duotone" color="currentColor" />,
     title: 'Legal Documents API',
-    desc: 'Generate 28 document types across 18 jurisdictions. NDAs, contracts, tenancy agreements, and more.',
-    features: ['28 document types', '18 jurisdictions', 'AI-powered drafting'],
+    desc: 'Generate 34 document types across 18 jurisdictions. NDAs, contracts, tenancy agreements, and more.',
+    features: ['34 document types', '18 jurisdictions', 'AI-powered drafting'],
     endpoint: 'POST /v1/documents/generate',
     cta: 'Generate Document',
     link: '/docs#generate',
@@ -87,8 +87,8 @@ const API_CARDS = [
     id: 'templates',
     icon: <ClipboardText size={24} weight="duotone" color="currentColor" />,
     title: 'Document Templates API',
-    desc: 'Get field schemas for all 28 document types. Build dynamic forms, validate input, or understand requirements before generating.',
-    features: ['28 document schemas', 'Field types & validation', 'Zero AI cost'],
+    desc: 'Get field schemas for all 34 document types. Build dynamic forms, validate input, or understand requirements before generating.',
+    features: ['34 document schemas', 'Field types & validation', 'Zero AI cost'],
     endpoint: 'GET /v1/documents/templates',
     cta: 'View Templates',
     link: '/docs#templates',
@@ -322,7 +322,7 @@ export default function ApiLanding() {
               "@type": "SoftwareApplication",
               "name": "Ebenova API",
               "url": "https://www.ebenova.dev",
-              "description": "Developer-first API platform for legal document generation, invoices, contract enforcement, and Reddit monitoring. 28 document types. 18-jurisdiction Scope Guard. Africa-first coverage with global reach.",
+              "description": "Developer-first API platform for legal document generation, invoices, contract enforcement, and Reddit monitoring. 34 document types. 18-jurisdiction Scope Guard. Africa-first coverage with global reach.",
               "applicationCategory": "DeveloperApplication",
               "operatingSystem": "Web",
               "offers": [
@@ -384,7 +384,7 @@ export default function ApiLanding() {
 
           <p className="api-hero-sub">
             One API for contracts, invoices, fraud detection, and scope enforcement —
-            28 document types, 18 jurisdictions, MCP-native. Works wherever your
+            34 document types, 18 jurisdictions, MCP-native. Works wherever your
             business operates. Goes deeper where others don't.
           </p>
 

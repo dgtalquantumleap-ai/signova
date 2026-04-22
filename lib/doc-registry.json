@@ -65,7 +65,13 @@
     "supply_agreement_v1":         { "declared_title": "Supply Agreement" },
     "business_proposal_v1":        { "declared_title": "Business Proposal" },
     "purchase_agreement_v1":       { "declared_title": "Purchase Agreement" },
-    "data_processing_agreement_v1":{ "declared_title": "Data Processing Agreement" }
+    "data_processing_agreement_v1":{ "declared_title": "Data Processing Agreement" },
+    "founders_agreement_v1":        { "declared_title": "Founders Agreement" },
+    "ip_assignment_agreement_v1":   { "declared_title": "IP Assignment Agreement" },
+    "advisory_board_agreement_v1":  { "declared_title": "Advisory Board Agreement" },
+    "vesting_agreement_v1":         { "declared_title": "Vesting Agreement" },
+    "term_sheet_v1":                { "declared_title": "Term Sheet" },
+    "safe_agreement_v1":            { "declared_title": "SAFE Agreement" }
   },
   "docTypes": {
     "service-agreement": {
@@ -402,6 +408,111 @@
       "required_clauses": [],
       "max_tokens": null,
       "jurisdiction_variants": { "default": { "title": "Data Processing Agreement", "body_template_id": "data_processing_agreement_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "founders-agreement": {
+      "id": "founders-agreement",
+      "title": "Founders Agreement",
+      "body_template_id": "founders_agreement_v1",
+      "required_clauses": [
+        { "id": "equity-split",         "anyOf": ["equity split", "shareholding", "fifty per cent"] },
+        { "id": "vesting-schedule",     "anyOf": ["vesting schedule", "cliff date", "vesting commencement"] },
+        { "id": "ip-assignment",        "anyOf": ["intellectual property", "company ip"] },
+        { "id": "departure-provisions", "anyOf": ["good leaver", "bad leaver", "leaver status"] },
+        { "id": "non-compete",          "anyOf": ["non-compete", "non-competition", "restricted period"] },
+        { "id": "governing-law",        "anyOf": ["governing law", "laws of the federal republic of nigeria"] },
+        { "id": "signature",            "anyOf": ["signature", "in witness whereof", "signed by"] }
+      ],
+      "max_tokens": 16000,
+      "jurisdiction_variants": { "default": { "title": "Founders Agreement", "body_template_id": "founders_agreement_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "ip-assignment-agreement": {
+      "id": "ip-assignment-agreement",
+      "title": "IP Assignment Agreement",
+      "body_template_id": "ip_assignment_agreement_v1",
+      "required_clauses": [
+        { "id": "assignment",    "anyOf": ["hereby assigns", "absolute assignment", "irrevocably and unconditionally assigns"] },
+        { "id": "consideration", "anyOf": ["assignment consideration", "₦", "naira"] },
+        { "id": "warranties",    "anyOf": ["represents and warrants", "sole ownership", "no prior assignments"] },
+        { "id": "prior-works",   "anyOf": ["excluded prior works", "pre-existing materials"] },
+        { "id": "governing-law", "anyOf": ["governing law", "laws of the federal republic of nigeria"] },
+        { "id": "signature",     "anyOf": ["signature", "in witness whereof", "signed by"] }
+      ],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "IP Assignment Agreement", "body_template_id": "ip_assignment_agreement_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "advisory-board-agreement": {
+      "id": "advisory-board-agreement",
+      "title": "Advisory Board Agreement",
+      "body_template_id": "advisory_board_agreement_v1",
+      "required_clauses": [
+        { "id": "equity-compensation", "anyOf": ["equity compensation", "advisor shares", "0.5%"] },
+        { "id": "vesting-schedule",    "anyOf": ["vesting schedule", "monthly vesting"] },
+        { "id": "confidentiality",     "anyOf": ["confidential information"] },
+        { "id": "ip-assignment",       "anyOf": ["work product", "assigns to the company"] },
+        { "id": "termination",         "anyOf": ["termination", "30 days"] },
+        { "id": "governing-law",       "anyOf": ["governing law", "laws of the federal republic of nigeria"] },
+        { "id": "signature",           "anyOf": ["signature", "in witness whereof", "signed by"] }
+      ],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Advisory Board Agreement", "body_template_id": "advisory_board_agreement_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "vesting-agreement": {
+      "id": "vesting-agreement",
+      "title": "Vesting Agreement",
+      "body_template_id": "vesting_agreement_v1",
+      "required_clauses": [
+        { "id": "grant",          "anyOf": ["total grant shares", "200,000", "ordinary shares"] },
+        { "id": "vesting-schedule","anyOf": ["vesting schedule", "cliff date", "cliff vesting"] },
+        { "id": "acceleration",   "anyOf": ["acceleration", "change of control", "involuntary termination"] },
+        { "id": "good-bad-leaver","anyOf": ["good leaver", "bad leaver"] },
+        { "id": "forfeiture",     "anyOf": ["forfeiture", "forfeit", "unvested shares"] },
+        { "id": "governing-law",  "anyOf": ["governing law", "laws of the federal republic of nigeria"] },
+        { "id": "signature",      "anyOf": ["signature", "in witness whereof", "signed by"] }
+      ],
+      "max_tokens": null,
+      "jurisdiction_variants": { "default": { "title": "Vesting Agreement", "body_template_id": "vesting_agreement_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "term-sheet": {
+      "id": "term-sheet",
+      "title": "Term Sheet",
+      "body_template_id": "term_sheet_v1",
+      "required_clauses": [
+        { "id": "investment-terms",      "anyOf": ["investment amount", "pre-money valuation", "post-money valuation"] },
+        { "id": "security-type",         "anyOf": ["preference shares", "series a-1"] },
+        { "id": "liquidation-preference","anyOf": ["liquidation preference", "non-participating"] },
+        { "id": "anti-dilution",         "anyOf": ["anti-dilution", "weighted-average"] },
+        { "id": "protective-provisions", "anyOf": ["protective provisions", "investor consent"] },
+        { "id": "governing-law",         "anyOf": ["governing law", "laws of the federal republic of nigeria"] }
+      ],
+      "max_tokens": 12000,
+      "jurisdiction_variants": { "default": { "title": "Term Sheet", "body_template_id": "term_sheet_v1" } },
+      "worker_classification_modes": [],
+      "forbidden_titles": []
+    },
+    "safe-agreement": {
+      "id": "safe-agreement",
+      "title": "SAFE Agreement",
+      "body_template_id": "safe_agreement_v1",
+      "required_clauses": [
+        { "id": "valuation-cap",     "anyOf": ["valuation cap", "cap price"] },
+        { "id": "discount-rate",     "anyOf": ["discount rate", "discount price"] },
+        { "id": "mfn-provision",     "anyOf": ["most-favoured-nation", "mfn"] },
+        { "id": "conversion-events", "anyOf": ["conversion event", "qualified financing"] },
+        { "id": "governing-law",     "anyOf": ["governing law", "laws of the federal republic of nigeria"] },
+        { "id": "signature",         "anyOf": ["signature", "in witness whereof", "signed by"] }
+      ],
+      "max_tokens": 12000,
+      "jurisdiction_variants": { "default": { "title": "SAFE Agreement", "body_template_id": "safe_agreement_v1" } },
       "worker_classification_modes": [],
       "forbidden_titles": []
     }

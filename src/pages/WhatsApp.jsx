@@ -386,7 +386,7 @@ export default function WhatsApp() {
             ))}
           </div>
           <button className="wa-show-all" onClick={() => setShowAll(v => !v)}>
-            {showAll ? '↑ Show fewer' : '+ Show all 28 document types'}
+            {showAll ? '↑ Show fewer' : '+ Show all 34 document types'}
           </button>
         </div>
 

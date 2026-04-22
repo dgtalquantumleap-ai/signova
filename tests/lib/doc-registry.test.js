@@ -133,6 +133,82 @@ describe('lib/doc-registry.js — accessor behaviour', () => {
     expect(getRequiredClauses('purchase-agreement')).toEqual([])
   })
 
+  // ─── 6 new equity doc types ────────────────────────────────────────────
+
+  it.each([
+    ['founders-agreement',       'equity-split'],
+    ['founders-agreement',       'vesting-schedule'],
+    ['founders-agreement',       'ip-assignment'],
+    ['founders-agreement',       'departure-provisions'],
+    ['founders-agreement',       'non-compete'],
+    ['founders-agreement',       'governing-law'],
+    ['founders-agreement',       'signature'],
+    ['ip-assignment-agreement',  'assignment'],
+    ['ip-assignment-agreement',  'consideration'],
+    ['ip-assignment-agreement',  'warranties'],
+    ['ip-assignment-agreement',  'prior-works'],
+    ['ip-assignment-agreement',  'governing-law'],
+    ['ip-assignment-agreement',  'signature'],
+    ['advisory-board-agreement', 'equity-compensation'],
+    ['advisory-board-agreement', 'vesting-schedule'],
+    ['advisory-board-agreement', 'confidentiality'],
+    ['advisory-board-agreement', 'ip-assignment'],
+    ['advisory-board-agreement', 'termination'],
+    ['advisory-board-agreement', 'governing-law'],
+    ['advisory-board-agreement', 'signature'],
+    ['vesting-agreement',        'grant'],
+    ['vesting-agreement',        'vesting-schedule'],
+    ['vesting-agreement',        'acceleration'],
+    ['vesting-agreement',        'good-bad-leaver'],
+    ['vesting-agreement',        'forfeiture'],
+    ['vesting-agreement',        'governing-law'],
+    ['vesting-agreement',        'signature'],
+    ['term-sheet',               'investment-terms'],
+    ['term-sheet',               'security-type'],
+    ['term-sheet',               'liquidation-preference'],
+    ['term-sheet',               'anti-dilution'],
+    ['term-sheet',               'protective-provisions'],
+    ['term-sheet',               'governing-law'],
+    ['safe-agreement',           'valuation-cap'],
+    ['safe-agreement',           'discount-rate'],
+    ['safe-agreement',           'mfn-provision'],
+    ['safe-agreement',           'conversion-events'],
+    ['safe-agreement',           'governing-law'],
+    ['safe-agreement',           'signature'],
+  ])('getRequiredClauses(%s) includes clause %s', (docTypeId, clauseId) => {
+    const clauses = getRequiredClauses(docTypeId)
+    expect(Array.isArray(clauses)).toBe(true)
+    expect(clauses.length).toBeGreaterThan(0)
+    expect(clauses.find(c => c.id === clauseId), `expected clause "${clauseId}" in ${docTypeId}`).toBeTruthy()
+  })
+
+  it.each([
+    'founders-agreement',
+    'ip-assignment-agreement',
+    'advisory-board-agreement',
+    'vesting-agreement',
+    'term-sheet',
+    'safe-agreement',
+  ])('getBodyTemplateId(%s) returns a known body template', (docTypeId) => {
+    const tmplId = getBodyTemplateId(docTypeId)
+    expect(typeof tmplId).toBe('string')
+    expect(tmplId.length).toBeGreaterThan(0)
+    const tmpl = getBodyTemplate(docTypeId)
+    expect(tmpl, `body template for ${docTypeId} must exist`).toBeTruthy()
+    expect(typeof tmpl.declared_title).toBe('string')
+  })
+
+  it.each([
+    ['founders-agreement',       'Founders Agreement'],
+    ['ip-assignment-agreement',  'IP Assignment Agreement'],
+    ['advisory-board-agreement', 'Advisory Board Agreement'],
+    ['vesting-agreement',        'Vesting Agreement'],
+    ['term-sheet',               'Term Sheet'],
+    ['safe-agreement',           'SAFE Agreement'],
+  ])('getTitle(%s) returns "%s"', (docTypeId, expectedTitle) => {
+    expect(getTitle(docTypeId)).toBe(expectedTitle)
+  })
+
   // ─── Phase 5 accessors ─────────────────────────────────────────────────
 
   it('isWorkerClassificationRequired reflects whether the doc_type has registered modes', () => {
