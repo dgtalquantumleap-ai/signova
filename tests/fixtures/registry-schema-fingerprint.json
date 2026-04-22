@@ -1,0 +1,520 @@
+{
+  "_note": "Schema-drift fingerprint. Generated from lib/doc-registry.json. Records which optional fields each doc_type had at baseline. tests/lib/schema-drift.test.js fails when a previously-present field disappears. To intentionally remove a field across a doc_type, regenerate this file via: node tests/fixtures/regen-fingerprint.mjs",
+  "generatedAt": "2026-04-21",
+  "docTypes": {
+    "service-agreement": {
+      "fields": [
+        "body_template_id",
+        "forbidden_combinations",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes",
+        "worker_classification_prompts",
+        "worker_classification_rules"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ],
+        "nigeria": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "consulting-agreement": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "privacy-policy": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "terms-of-service": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "nda": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "freelance-contract": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "independent-contractor": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "hire-purchase": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "tenancy-agreement": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "quit-notice": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "deed-of-assignment": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "power-of-attorney": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "landlord-agent-agreement": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "facility-manager-agreement": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "employment-offer-letter": {
+      "fields": [
+        "body_template_id",
+        "forbidden_combinations",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes",
+        "worker_classification_prompts",
+        "worker_classification_rules"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "non-compete-agreement": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "payment-terms-agreement": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "business-partnership": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "joint-venture": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "loan-agreement": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "shareholder-agreement": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "mou": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "letter-of-intent": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "distribution-agreement": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "supply-agreement": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "business-proposal": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "purchase-agreement": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    },
+    "data-processing-agreement": {
+      "fields": [
+        "body_template_id",
+        "forbidden_titles",
+        "id",
+        "jurisdiction_variants",
+        "max_tokens",
+        "required_clauses",
+        "title",
+        "worker_classification_modes"
+      ],
+      "jurisdiction_variants": {
+        "default": [
+          "body_template_id",
+          "title"
+        ]
+      }
+    }
+  }
+}

@@ -4,9 +4,27 @@
 
 import { authenticate, recordUsage, buildUsageBlock } from '../../../lib/api-auth.js'
 import { DocumentGenerateSchema, formatValidationError } from '../../../lib/validators.js'
-import { logError, logRequest, logDetailedError } from '../../../lib/logger.js'
+import { logError, logWarn, logRequest, logDetailedError } from '../../../lib/logger.js'
 import { parseBody } from '../../../lib/parse-body.js'
 import { buildDpaSystemPrompt, buildKeyObligationsSummary, buildDataFlowMappingTemplate, getDpaClauses } from './clauses.js'
+import {
+  generateWithCompletenessCheck,
+  DOC_INCOMPLETE_AFTER_RETRY,
+  DOC_TITLE_BODY_MISMATCH,
+  DOC_FORBIDDEN_COMBINATION,
+} from '../../../lib/doc-completeness.js'
+import {
+  hasDocType,
+  isWorkerClassificationRequired,
+  getWorkerClassificationModes,
+} from '../../../lib/doc-registry.js'
+import {
+  validateWorkerClassification,
+  buildClassificationInstruction,
+  WORKER_CLASSIFICATION_REQUIRED,
+  WORKER_CLASSIFICATION_INVALID,
+} from '../../../lib/doc-classification.js'
+import { randomBytes } from 'node:crypto'
 
 const LEGAL_DISCLAIMER = {
   type: 'disclaimer',
@@ -104,8 +122,51 @@ export default async function handler(req, res) {
     })
   }
 
-  const { document_type, fields, jurisdiction } = validated
+  const { document_type, fields, jurisdiction, worker_classification } = validated
   const enrichedFields = { ...fields, jurisdiction }
+
+  // Phase 5 — worker_classification gate. REQUIRED when the doc_type has
+  // registered modes. Invalid when submitted but not in the allowed set.
+  // No silent default. Caller must supply an explicit value.
+  if (isWorkerClassificationRequired(document_type)) {
+    const validation = validateWorkerClassification(document_type, worker_classification)
+    if (validation) {
+      const refId = `ref_${randomBytes(4).toString('hex')}`
+      const modes = getWorkerClassificationModes(document_type)
+      logError('POST /v1/documents/generate', {
+        reference_id: refId,
+        code: validation.code,
+        document_type,
+        submitted_value: worker_classification || null,
+        valid_values: modes,
+        reason: validation.reason,
+      })
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: validation.code,
+          message: validation.code === WORKER_CLASSIFICATION_REQUIRED
+            ? `worker_classification is required for document_type="${document_type}"`
+            : `worker_classification "${worker_classification}" is not valid for document_type="${document_type}"`,
+          reference_id: refId,
+          valid_values: modes,
+        },
+      })
+    }
+  }
+
+  // Phase 4 — cross-check document_type against the registry. Zod has
+  // already validated it against validators.js SUPPORTED_TYPES, but the
+  // registry is the single source of truth for routing metadata. Log (do
+  // not reject) if a supported doc_type isn't registered — keeps the
+  // divergence observable while we migrate validators.js off its own list.
+  if (!hasDocType(document_type)) {
+    logWarn('POST /v1/documents/generate', {
+      event: 'doc_type_not_in_registry',
+      document_type,
+      message: 'document_type passed Zod enum but is not in the doc-registry — registry is out of sync with validators.js',
+    })
+  }
 
   // ── Generate ──────────────────────────────────────────────────────────────
   const anthropicKey = process.env.ANTHROPIC_API_KEY
@@ -156,34 +217,54 @@ export default async function handler(req, res) {
       ? buildDpaSystemPrompt(fields.jurisdiction) + '\n\nThis is a premium paid document — make it exceptional.'
       : 'You are an expert legal document drafter with deep knowledge of international law, including common-law (Canada, US, UK, Commonwealth), civil-law (Quebec), and the North American statutory privacy regimes (PIPEDA, Quebec Law 25, CCPA/CPRA). Generate comprehensive, professional legal documents tailored precisely to the details provided. Use formal legal language, clear numbered sections, and include all standard clauses. Use the spelling conventions of the governing jurisdiction. This is a premium paid document — make it exceptional. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.' + jurisdictionEnhancement
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': anthropicKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 8000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: prompt }],
-      }),
-      signal: controller.signal,
+    // Phase 3 — shared completeness-aware generator. Raises max_tokens
+    // per-doctype from the spec, validates required clauses, continues
+    // once if incomplete, fail-closes with DOC_INCOMPLETE_AFTER_RETRY
+    // when the retry still fails. Same module consumed by api/generate.js
+    // — no duplicated validator / continuation logic.
+    // Phase 5 — build the classification routing instruction and inject
+    // into the orchestrator. Empty string when the doc_type has no
+    // classification config — orchestrator handles that gracefully.
+    const classificationInstruction = buildClassificationInstruction(document_type, worker_classification)
+
+    const completion = await generateWithCompletenessCheck({
+      apiKey: anthropicKey,
+      model: 'claude-sonnet-4-6',
+      systemPrompt,
+      userPrompt: prompt,
+      docType: document_type,
+      jurisdiction: fields.jurisdiction || jurisdiction || null,
+      workerClassification: worker_classification || null,
+      classificationInstruction,
+      logger: { logWarn, logError },
+      abortSignal: controller.signal,
     })
     clearTimeout(timeoutId)
 
-    if (!response.ok) {
-      const err = await response.json()
-      logDetailedError('POST /v1/documents/generate', new Error('Anthropic API error'), { 
-        anthropic_response: err,
-        document_type,
-      })
-      return res.status(500).json({ success: false, error: { code: 'GENERATION_FAILED', message: 'Document generation failed' } })
+    if (!completion.ok) {
+      const errBody = {
+        code: completion.code,
+        reference_id: completion.referenceId,
+      }
+      if (completion.code === DOC_INCOMPLETE_AFTER_RETRY) {
+        errBody.message = 'Document generation did not produce a complete document after continuation retry.'
+        errBody.missing_clauses = completion.missingClauses
+      } else if (completion.code === DOC_TITLE_BODY_MISMATCH) {
+        errBody.message = 'Generated document body declares a different document type than requested.'
+        errBody.expected_title = completion.expectedTitle
+        errBody.conflicting_title = completion.conflictingTitle
+      } else if (completion.code === DOC_FORBIDDEN_COMBINATION) {
+        errBody.message = 'Generated document contains a legally incoherent combination of clauses (e.g. worker-exemption invoked alongside employee statutory deductions).'
+        errBody.combination_id = completion.combinationId
+        errBody.description = completion.description
+        errBody.anchor_hits = completion.anchorHits
+      } else {
+        errBody.message = 'Document generation failed.'
+      }
+      return res.status(502).json({ success: false, error: errBody })
     }
 
-    const data = await response.json()
-    const documentText = data.content[0]?.text || ''
+    const documentText = completion.text
 
     // Record usage only after successful generation
     await recordUsage(auth)
