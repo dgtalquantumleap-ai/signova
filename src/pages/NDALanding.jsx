@@ -85,7 +85,7 @@ export default function NDALanding() {
           {/* Trust row */}
           <div className="nda-trust">
             <span>✓ One-way &amp; mutual NDAs</span>
-            <span>✓ 8 jurisdictions verified</span>
+            <span>✓ 18-jurisdiction framework coverage</span>
             <span>✓ Instant download</span>
             <span>✓ AI-drafted by Claude</span>
           </div>

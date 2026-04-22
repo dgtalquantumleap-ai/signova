@@ -419,7 +419,7 @@ export default function Landing() {
     <div className="landing">
       <Helmet>
         <title>Signova — Professional Legal Documents for Freelancers, Landlords & Businesses | Free Preview</title>
-        <meta name="description" content="AI-drafted legal documents in minutes. 34 document types across Nigeria, UK, Kenya, Ghana, South Africa, US, Canada, and India. Free preview. 30-day refund." />
+        <meta name="description" content="Generate professional legal document templates in 3 minutes. 28 document types across global contexts. Free preview, tiered regional pricing, 30-day refund." />
         <meta name="keywords" content="legal document generator Nigeria, tenancy agreement Nigeria, NDA template, freelance contract, deed of assignment Nigeria, loan agreement template, business proposal template, MOU template, hire purchase agreement Nigeria, power of attorney Nigeria, employment offer letter, shareholder agreement, joint venture agreement, service agreement, distribution agreement, quit notice Nigeria, privacy policy generator, terms of service generator" />
         <link rel="canonical" href="https://www.getsignova.com/" />
         <link rel="alternate" hreflang="en" href="https://www.getsignova.com/" />
@@ -540,7 +540,7 @@ export default function Landing() {
                 lib/jurisdiction-context.js). */}
             <div className="hero-trust-below-cta">
               <div className="hero-proof-badge">
-                <FileText size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> {DOCS_GENERATED.toLocaleString()}+ documents signed · Nigerian, UK, Kenyan, Ghanaian, South African, US, Canadian, Indian law verified · 30-day refund
+                <FileText size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> {DOCS_GENERATED.toLocaleString()}+ documents signed · Nigerian, UK, Kenyan, Ghanaian, South African, US, Canadian, Indian law coverage · 30-day refund
               </div>
             </div>
 
@@ -607,7 +607,7 @@ export default function Landing() {
 
         {/* All documents — searchable grid */}
         <div className="hero-picks-row" id="documents">
-          <p className="all-docs-label">All 34 document types</p>
+          <p className="all-docs-label">All 28 document types</p>
 
           {/* Search input */}
           <div className="doc-search-wrapper">
@@ -942,9 +942,9 @@ export default function Landing() {
               <p className="price-desc">See your full document before paying anything. No account, no card required.</p>
               <ul className="price-list">
                 <li className="price-yes">Preview any document in full</li>
-                <li className="price-yes">34 document types</li>
+                <li className="price-yes">28 document types</li>
                 <li className="price-yes">WhatsApp extraction</li>
-                <li className="price-yes">8 jurisdictions verified</li>
+                <li className="price-yes">Jurisdiction-aware documents across 18 jurisdictions</li>
                 <li className="price-no">Download PDF</li>
                 <li className="price-no">Watermark-free version</li>
               </ul>
@@ -970,7 +970,7 @@ export default function Landing() {
               <ul className="price-list">
                 <li className="price-yes">Clean PDF — no watermark</li>
                 <li className="price-yes">Instant download</li>
-                <li className="price-yes">34 document types</li>
+                <li className="price-yes">28 document types</li>
                 <li className="price-yes">Jurisdiction-aware content</li>
                 <li className="price-yes">Pay by card or USDT crypto</li>
                 <li className="price-yes">30-day money-back guarantee</li>

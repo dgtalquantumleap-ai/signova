@@ -8,6 +8,8 @@ import { logError, logWarn, logInfo } from '../lib/logger.js'
 import { buildReceipt, renderProvenanceBlock, appendToAuditLog } from '../lib/doc-hash.js'
 import { getRedis } from '../lib/redis.js'
 import { buildDpaSystemPrompt } from './v1/documents/clauses.js'
+import { buildJurisdictionContext } from '../lib/jurisdiction-context.js'
+import { normalizeJurisdictionKey } from '../lib/jurisdiction-key-normalize.js'
 import {
   generateWithCompletenessCheck,
   DOC_INCOMPLETE_AFTER_RETRY,
@@ -366,6 +368,32 @@ export default async function handler(req, res) {
     /\b(alabama|alaska|arizona|arkansas|colorado|connecticut|delaware|florida|georgia|hawaii|idaho|illinois|indiana|iowa|kansas|kentucky|louisiana|maine|maryland|massachusetts|michigan|minnesota|mississippi|missouri|montana|nebraska|nevada|new hampshire|new jersey|new mexico|new york|north carolina|north dakota|ohio|oklahoma|oregon|pennsylvania|rhode island|south carolina|south dakota|tennessee|texas|utah|vermont|virginia|washington|west virginia|wisconsin|wyoming)\b/.test(jurisdictionScope) ||
     /\b(nyc|new york city|chicago|houston|phoenix|philadelphia|dallas|austin|seattle|boston|miami|atlanta|denver|detroit|minneapolis|las vegas)\b/.test(jurisdictionScope)
   )
+
+  // ── Library-based jurisdiction framework block ────────────────────────────
+  // Derives the canonical key from the already-scoped boolean detectors so the
+  // scoping logic is not duplicated. Falls back to normalizeJurisdictionKey on
+  // the scoped text to catch gap jurisdictions (India, UAE, Singapore, EU) that
+  // have no dedicated boolean. Skipped entirely for DPA docs (buildDpaSystemPrompt
+  // handles those with dedicated jurisdiction routing).
+  const normalizedJurKey = isDpa ? null
+    : isNigeria ? 'nigeria'
+    : isKenya ? 'kenya'
+    : isGhana ? 'ghana'
+    : isSouthAfrica ? 'south_africa'
+    : isUK ? 'uk'
+    : isQuebec ? 'canada_quebec'
+    : isCanada ? 'canada_federal'
+    : isCalifornia ? 'usa_california'
+    : isUsStateNY ? 'usa_new_york'
+    : isUsStateTX ? 'usa_texas'
+    : isUsStateFL ? 'usa_florida'
+    : isUSA ? 'usa_federal'
+    : normalizeJurisdictionKey(jurisdictionScope)
+
+  const libraryJurContext = normalizedJurKey
+    ? buildJurisdictionContext(normalizedJurKey)
+      + '\n\nWhen drafting this document, apply the jurisdiction framework above: cite the statutes listed where they bear on the document type; use the governing-law clause structure from the framework; use the forum/venue from the framework; use the currency from the framework for monetary references; do not invoke statutes from other jurisdictions.'
+    : ''
 
   // ── Jurisdiction-specific enhancement clauses (for non-DPA docs) ──────────
   const nigeriaClause = isNigeria && !isDpa
@@ -1170,7 +1198,8 @@ export default async function handler(req, res) {
         : isNigeria ? 'Nigeria — NDPA 2023'
         : 'Commonwealth common-law privacy baseline'
       ) + '\n\nThis is a premium paid document — make it exceptional.'
-    : 'You are an expert legal document drafter with deep knowledge of international law, including the common-law traditions of Nigeria, Kenya, Ghana, South Africa, Canada, the United States, the United Kingdom, and Commonwealth jurisdictions; the civil-law tradition of Quebec; and the statutory frameworks of each (CAMA 2020 & ISA 2025 for Nigeria; Lagos State Tenancy Law 2011; Labour Act & PRA 2014; Land Use Act 1978; Hire Purchase Act 1965; Companies Act 2015 for Kenya; Companies Act 2019 (Act 992) for Ghana; Companies Act 71 of 2008 for South Africa; Companies Act 2006 and FSMA 2000 for the UK; DGCL for Delaware; CBCA and provincial ESAs for Canada; PIPEDA, Quebec Law 25, CCPA/CPRA, UK GDPR, NDPA 2023, POPIA, Kenya DPA 2019 for data). Generate comprehensive, professional legal documents tailored precisely to the user details provided. Use formal legal language, clear numbered sections, and include all standard clauses. Use the spelling conventions of the governing jurisdiction (US English for US documents, British / Commonwealth English for UK / African / Commonwealth documents, Canadian English for Canadian documents). This is a premium paid document — make it exceptional. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.'
+    : (libraryJurContext ? libraryJurContext + '\n\n' : '')
+      + 'You are an expert legal document drafter with deep knowledge of international law, including the common-law traditions of Nigeria, Kenya, Ghana, South Africa, Canada, the United States, the United Kingdom, and Commonwealth jurisdictions; the civil-law tradition of Quebec; and the statutory frameworks of each (CAMA 2020 & ISA 2025 for Nigeria; Lagos State Tenancy Law 2011; Labour Act & PRA 2014; Land Use Act 1978; Hire Purchase Act 1965; Companies Act 2015 for Kenya; Companies Act 2019 (Act 992) for Ghana; Companies Act 71 of 2008 for South Africa; Companies Act 2006 and FSMA 2000 for the UK; DGCL for Delaware; CBCA and provincial ESAs for Canada; PIPEDA, Quebec Law 25, CCPA/CPRA, UK GDPR, NDPA 2023, POPIA, Kenya DPA 2019 for data). Generate comprehensive, professional legal documents tailored precisely to the user details provided. Use formal legal language, clear numbered sections, and include all standard clauses. Use the spelling conventions of the governing jurisdiction (US English for US documents, British / Commonwealth English for UK / African / Commonwealth documents, Canadian English for Canadian documents). This is a premium paid document — make it exceptional. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.'
       + nigeriaClause + canadaClause + quebecClause + californiaClause + usaClause
       + nigeriaEquityClause + kenyaEquityClause + ghanaEquityClause + ukEquityClause + southAfricaEquityClause + usEquityClause + canadaEquityClause + equityCrossBorderNote
       + nigeriaTenancyClause + nigeriaDeedClause + nigeriaQuitNoticeClause + nigeriaPowerOfAttorneyClause + nigeriaLandlordAgentClause
