@@ -1,5 +1,5 @@
 // api/generate-preview.js
-// Uses Groq (fast + near free) for server-gated previews.
+// Uses Claude Haiku 4.5 for server-gated previews.
 // Rate limiting: Upstash Redis, 5 previews per IP per calendar month.
 // Content gating: server truncates to first 40% before responding —
 // locked body text never reaches the client.
@@ -76,16 +76,15 @@ export default async function handler(req, res) {
   const { prompt } = body
   if (!prompt) return res.status(400).json({ error: 'Missing prompt' })
 
-  const apiKey = process.env.GROQ_API_KEY
-  if (!apiKey) return res.status(500).json({ error: 'Server misconfigured — missing GROQ key' })
+  const apiKey = process.env.ANTHROPIC_API_KEY
+  if (!apiKey) return res.status(500).json({ error: 'Server misconfigured — missing Anthropic key' })
 
   const lower = prompt.toLowerCase()
   const isDpa = lower.includes('data processing agreement') || lower.includes('dpa')
 
   // Equity-instrument detector — see api/generate.js for the rationale. The
-  // preview uses shorter versions of the equity clauses but keeps the same
-  // triggering logic so the free preview is directionally accurate before
-  // the user pays for the Claude Sonnet premium version.
+  // preview uses the same triggering logic so the free preview is directionally
+  // accurate before the user pays for the Claude Sonnet premium version.
   const isEquityDoc = lower.includes('safe agreement') || lower.includes('simple agreement for future equity')
     || lower.includes('term sheet') || lower.includes('shareholder agreement')
     || lower.includes('shareholders agreement') || lower.includes("shareholders' agreement")
@@ -93,8 +92,8 @@ export default async function handler(req, res) {
     || lower.includes('founders agreement') || lower.includes('ip assignment')
     || lower.includes('advisory board agreement') || lower.includes('convertible note')
 
-  // Doc-type detectors (parity with generate.js — short preview uses the
-  // same triggers but emits shorter clauses since Groq/Llama cap is tighter).
+  // Doc-type detectors (parity with generate.js — preview uses the same
+  // triggers so jurisdiction routing is consistent with the paid version).
   const isTenancyDoc = lower.includes('tenancy agreement') || lower.includes('rental agreement') || lower.includes('lease agreement')
   const isQuitNoticeDoc = lower.includes('quit notice') || lower.includes('notice to vacate') || lower.includes('notice to quit')
   const isDeedOfAssignmentDoc = lower.includes('deed of assignment')
@@ -404,19 +403,18 @@ export default async function handler(req, res) {
       + antiUsDefaultClause + executionFormalitiesClause
 
   try {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 6000,
-        messages: [
-          { role: 'system', content: systemContent },
-          { role: 'user', content: prompt },
-        ],
+        system: systemContent,
+        messages: [{ role: 'user', content: prompt }],
       }),
     })
 
@@ -433,7 +431,7 @@ export default async function handler(req, res) {
     }
 
     const data = await response.json()
-    const text = data.choices?.[0]?.message?.content || ''
+    const text = data?.content?.[0]?.text || ''
     if (!text) return res.status(500).json({ error: 'Preview generation failed. Please try again.' })
 
     // Server-side content gating — truncate at 40% before responding.

@@ -1,7 +1,7 @@
 // api/scope-guard-analyze.js
 // POST /api/scope-guard-analyze
 // Consumer-facing Scope Guard — no auth required
-// Uses Groq for free tier (3 analyses per IP per 24h)
+// Uses Claude Haiku 4.5 for free tier (3 analyses per IP per 24h)
 // Rate limiting is Redis-backed (fixes per-serverless-instance memory leak)
 // Separate from /api/v1/scope/analyze which requires API key auth
 
@@ -47,9 +47,8 @@ async function parseBody(req) {
 }
 
 function buildAnalysisPrompt(contractText, clientMessage, channel, jurisdiction) {
-  // Same jurisdiction context as the Pro endpoint. Groq's Llama 3.3 70B has
-  // ample context budget (128k tokens) so the full block fits even with the
-  // longest contract; no truncation needed.
+  // Same jurisdiction context as the Pro endpoint. The full block fits
+  // within Claude Haiku's context window even with the longest contracts.
   const jurisdictionContext = buildJurisdictionContext(jurisdiction)
   const jurisdictionLabel = jurisdictionDisplayName(jurisdiction)
   return `${jurisdictionContext}
@@ -168,33 +167,37 @@ export default async function handler(req, res) {
     })
   }
 
-  const groqKey = process.env.GROQ_API_KEY
-  if (!groqKey) {
+  const anthropicKey = process.env.ANTHROPIC_API_KEY
+  if (!anthropicKey) {
     return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: 'AI service not configured' } })
   }
 
   try {
     const prompt = buildAnalysisPrompt(contract_text, client_message, communication_channel, jurisdiction)
 
-    const aiRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const aiRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${groqKey}`,
+        'x-api-key': anthropicKey,
+        'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [
-          { role: 'system', content: 'You are a contract enforcement AI. Always respond with valid JSON only. No markdown, no backticks, no explanation.' },
-          { role: 'user', content: prompt },
-        ],
-        temperature: 0.3,
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 2000,
+        temperature: 0.3,
+        system: 'You are a contract enforcement AI. Always respond with valid JSON only. No markdown, no backticks, no explanation.',
+        messages: [{ role: 'user', content: prompt }],
       }),
     })
 
+    if (!aiRes.ok) {
+      const errBody = await aiRes.json().catch(() => ({}))
+      throw new Error(errBody?.error?.message || `Anthropic returned ${aiRes.status}`)
+    }
+
     const aiData = await aiRes.json()
-    const rawText = aiData.choices?.[0]?.message?.content
+    const rawText = aiData?.content?.[0]?.text
     if (!rawText) throw new Error('No AI response')
 
     let result

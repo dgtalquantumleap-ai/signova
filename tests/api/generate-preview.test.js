@@ -5,7 +5,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest'
 // runtime (inside the function body), so they can also be mutated per-test.
 process.env.UPSTASH_REDIS_REST_URL = 'https://test.upstash.io'
 process.env.UPSTASH_REDIS_REST_TOKEN = 'test-token'
-process.env.GROQ_API_KEY = 'test-groq-key'
+process.env.ANTHROPIC_API_KEY = 'test-anthropic-key'
 
 const mockFetch = vi.fn()
 global.fetch = mockFetch
@@ -45,12 +45,12 @@ function redisExpireResponse() {
   })
 }
 
-function groqSuccess(text) {
+function anthropicSuccess(text) {
   return Promise.resolve({
     ok: true,
     status: 200,
     json: () => Promise.resolve({
-      choices: [{ message: { content: text } }],
+      content: [{ type: 'text', text }],
     }),
   })
 }
@@ -58,11 +58,11 @@ function groqSuccess(text) {
 const DEFAULT_TEXT = Array.from({ length: 10 }, (_, i) => `Line ${i}`).join('\n')
 
 // Routes fetch calls to the correct mock response based on URL pattern.
-function setupFetch({ incrCount = 2 } = {}, groqText = DEFAULT_TEXT) {
+function setupFetch({ incrCount = 2 } = {}, previewText = DEFAULT_TEXT) {
   mockFetch.mockImplementation((url) => {
     if (url.includes('/incr/')) return redisIncrResponse(incrCount)
     if (url.includes('/expire/')) return redisExpireResponse()
-    if (url.includes('api.groq.com')) return groqSuccess(groqText)
+    if (url.includes('api.anthropic.com')) return anthropicSuccess(previewText)
     return Promise.reject(new Error(`Unexpected fetch to: ${url}`))
   })
 }
@@ -287,21 +287,21 @@ describe('generate-preview API', () => {
       expect(resetDate > new Date()).toBe(true)
     })
 
-    it('does NOT call Groq when rate limit is exceeded', async () => {
+    it('does NOT call Anthropic API when rate limit is exceeded', async () => {
       setupFetch({ incrCount: 6 })
 
       const req = mockReq({ prompt: 'NDA' })
       const res = mockRes()
       await handler(req, res)
 
-      const groqCall = mockFetch.mock.calls.find(([url]) => url.includes('api.groq.com'))
-      expect(groqCall).toBeUndefined()
+      const anthropicCall = mockFetch.mock.calls.find(([url]) => url.includes('api.anthropic.com'))
+      expect(anthropicCall).toBeUndefined()
     })
 
     it('fails open when Redis INCR throws — allows the preview through', async () => {
       mockFetch.mockImplementation((url) => {
         if (url.includes('/incr/')) return Promise.reject(new Error('Redis connection refused'))
-        if (url.includes('api.groq.com')) return groqSuccess(DEFAULT_TEXT)
+        if (url.includes('api.anthropic.com')) return anthropicSuccess(DEFAULT_TEXT)
         return Promise.reject(new Error(`Unexpected fetch to: ${url}`))
       })
 
@@ -315,7 +315,7 @@ describe('generate-preview API', () => {
     it('fails open when Redis returns a non-ok HTTP response', async () => {
       mockFetch.mockImplementation((url) => {
         if (url.includes('/incr/')) return Promise.resolve({ ok: false, status: 503 })
-        if (url.includes('api.groq.com')) return groqSuccess(DEFAULT_TEXT)
+        if (url.includes('api.anthropic.com')) return anthropicSuccess(DEFAULT_TEXT)
         return Promise.reject(new Error(`Unexpected fetch to: ${url}`))
       })
 
@@ -334,7 +334,7 @@ describe('generate-preview API', () => {
         delete process.env.UPSTASH_REDIS_REST_TOKEN
 
         mockFetch.mockImplementation((url) => {
-          if (url.includes('api.groq.com')) return groqSuccess(DEFAULT_TEXT)
+          if (url.includes('api.anthropic.com')) return anthropicSuccess(DEFAULT_TEXT)
           return Promise.reject(new Error(`Unexpected fetch to: ${url}`))
         })
 
@@ -373,15 +373,15 @@ describe('generate-preview API', () => {
       expect(res.body.error).toContain('Missing prompt')
     })
 
-    it('returns 500 when Groq returns a non-ok response', async () => {
+    it('returns 500 when Anthropic returns a non-ok response', async () => {
       mockFetch.mockImplementation((url) => {
         if (url.includes('/incr/')) return redisIncrResponse(2)
         if (url.includes('/expire/')) return redisExpireResponse()
-        if (url.includes('api.groq.com')) return Promise.resolve({
+        if (url.includes('api.anthropic.com')) return Promise.resolve({
           ok: false,
           status: 500,
-          json: () => Promise.resolve({ error: { message: 'Groq error' } }),
-          text: () => Promise.resolve('Groq error'),
+          json: () => Promise.resolve({ error: { message: 'Anthropic error' } }),
+          text: () => Promise.resolve('Anthropic error'),
         })
         return Promise.reject(new Error(`Unexpected: ${url}`))
       })

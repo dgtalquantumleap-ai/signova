@@ -1,7 +1,7 @@
 // api/v1/insights/matches/draft.js
 // POST /v1/insights/matches/draft
 // Regenerates an AI reply draft for a specific Reddit match.
-// Uses Groq (Llama 3.3 70b) for starter plan, Claude Haiku for growth/scale.
+// Uses Claude Haiku 4.5 for all plans.
 //
 // Body: { matchId, monitorId }
 
@@ -41,29 +41,9 @@ TASK: Write a helpful Reddit reply. Strict rules:
 Reply text only. No labels, no explanation.`
 }
 
-async function generateWithGroq(match, productContext) {
-  const key = process.env.GROQ_API_KEY
-  if (!key) return null
-  try {
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        max_tokens: 300,
-        messages: [{ role: 'user', content: buildPrompt(match, productContext) }],
-      }),
-    })
-    if (!res.ok) return null
-    const data = await res.json()
-    const text = data.choices?.[0]?.message?.content?.trim() || null
-    return text === 'SKIP' ? null : text
-  } catch { return null }
-}
-
-async function generateWithClaude(match, productContext) {
+async function generateDraft(match, productContext) {
   const key = process.env.ANTHROPIC_API_KEY
-  if (!key) return generateWithGroq(match, productContext) // graceful fallback
+  if (!key) return null
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -80,7 +60,7 @@ async function generateWithClaude(match, productContext) {
     })
     if (!res.ok) return null
     const data = await res.json()
-    const text = data.content?.[0]?.text?.trim() || null
+    const text = data?.content?.[0]?.text?.trim() || null
     return text === 'SKIP' ? null : text
   } catch { return null }
 }
@@ -152,17 +132,11 @@ export default async function handler(req, res) {
   }
   const match = typeof matchRaw === 'string' ? JSON.parse(matchRaw) : matchRaw
 
-  // Groq for starter, Claude Haiku for growth/scale
-  const insightsPlan = auth.keyData.insightsPlan || 'starter'
-  const useClaude = insightsPlan === 'growth' || insightsPlan === 'scale'
-
-  const draft = useClaude
-    ? await generateWithClaude(match, monitor.productContext)
-    : await generateWithGroq(match, monitor.productContext)
+  const draft = await generateDraft(match, monitor.productContext)
 
   match.draft = draft
   match.draftGeneratedAt = new Date().toISOString()
-  match.draftModel = useClaude ? 'claude-haiku' : 'groq-llama-3.3-70b'
+  match.draftModel = 'claude-haiku-4-5-20251001'
   await redis.set(`insights:match:${monitorId}:${matchId}`, JSON.stringify(match))
 
   return res.status(200).json({
