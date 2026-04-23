@@ -23,6 +23,21 @@ This file tracks open items arising from the Rosemary Onu-Okeke NDPA 2023 / GAID
 
 ---
 
+## Medium-term (next 4-8 weeks)
+
+- [ ] Preview latency optimization. Post-Haiku migration, cold-start
+      previews take ~30-40s (warm: ~15-25s). Options to reduce perceived
+      latency:
+      (a) Stream preview generation to client (SSE or chunked response)
+          — feels fast within 2-3s
+      (b) Pre-warm preview function via Vercel cron on a 10-minute interval
+      (c) Lower preview max_tokens from 6000 to 4000 — faster generation,
+          preview already truncated server-side by 40%
+      Recommended: (a) streaming, then measure real-user conversion
+      impact before optimizing further.
+
+---
+
 ## A — Rosemary Onu-Okeke Review Playbook
 
 **Reviewer:** Barrister Rosemary Onu-Okeke (Esq. LL.B, B.L, MSc)  
@@ -151,4 +166,4 @@ Files to update after verification:
 
 ---
 
-_Last updated: 2026-04-22 | Author: Claude (supervised by Olumide Akinsola)_
+Last updated: 2026-04-23 | Author: Claude (supervised by Olumide Akinsola)
