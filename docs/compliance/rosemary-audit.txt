@@ -1,0 +1,102 @@
+--- BEGIN ROSEMARY AUDIT ---
+DATALEX CONSULTING
+Data Protection Law · NDPA 2023 · GAID 2025
+
+NDPA / GAID Compliance Review — NDA Document
+Document Reviewed: Non-Disclosure Agreement (Signova Generated)
+Framework: Nigeria Data Protection Act 2023 & GAID 2025
+
+This Non-Disclosure Agreement provides a structured framework and includes references to NDPA compliance.
+
+However, from a data protection and audit perspective, the document currently reflects baseline compliance awareness, not operational compliance readiness.
+
+Key gaps exist in:
+- lawful basis definition
+- data lifecycle management
+- enforceability of obligations
+- the absence of Data Processing Agreement provisions
+- inadequate cross-border transfer framework
+
+These gaps could expose users to compliance risks in real-world implementation. These deficiencies are not technical oversights — they represent fundamental gaps in the data protection architecture of the agreement that expose both parties to regulatory penalty under Section 48 NDPA 2023 of up to ₦10,000,000 or 2% of annual gross revenue, whichever is greater.
+
+Key Compliance Gaps & Recommendations
+
+2.1 Lawful Basis for Processing
+Observation: The agreement defines personal data but does not specify the lawful basis for processing.
+Risk: Processing personal data without a defined lawful basis is non-compliant under NDPA and would not withstand regulatory review.
+Recommendation:
+- Expand personal data definition to include full Section 65 NDPA 2023 definition and sensitive data category
+- Include a clause requiring each party to establish and document a valid lawful basis (e.g., consent, contract, legitimate interest) before processing personal data.
+
+2.2 Data Minimisation
+Observation: There is no restriction on the scope of personal data that may be shared.
+Risk: Over-collection of data increases exposure and violates NDPA principles.
+Recommendation: Add a clause limiting data sharing to only what is necessary for the defined purpose.
+
+2.3 Data Retention & Deletion
+Observation: The NDA does not define retention timelines or deletion obligations.
+Risk: Indefinite data retention is a key compliance failure under GAID 2025.
+Recommendation: Include clear provisions requiring:
+- defined retention periods
+- secure deletion or anonymization after purpose is fulfilled
+
+2.4 Security Measures (Technical & Organisational)
+Observation: The clause references "appropriate security measures" but lacks specificity.
+Risk: Vague security language does not meet regulatory expectations.
+Recommendation: Strengthen to include:
+- encryption
+- access controls
+- internal data governance processes
+
+2.5 Data Subject Rights
+Observation: No provision addressing data subject rights.
+Risk: Failure to support rights (access, rectification, erasure) creates direct NDPA exposure.
+Recommendation: Include a clause requiring mechanisms to support data subject rights.
+
+2.6 Audit & Compliance Verification
+Observation: No audit or verification rights are included.
+Risk: Lack of oversight reduces enforceability, especially in vendor relationships.
+Recommendation: Include a clause allowing parties to request evidence of compliance or conduct audits where necessary.
+
+2.7 Cross-Border Data Transfer
+Observation: Clause exists but is high-level and non-specific.
+Risk: Does not fully address GAID 2025 safeguards for international transfers.
+Recommendation: Expand to include:
+- approved transfer mechanisms
+- contractual safeguards
+- adequacy considerations
+
+2.8 Breach Notification Structure
+Observation: 72-hour notification is included (aligned with NDPA).
+Gap: No clear internal notification hierarchy between parties.
+Recommendation: Clarify immediate notification to the other party before regulatory escalation.
+
+2.9 Duration of Confidentiality
+Observation: Confidentiality period non-existent.
+Risk: May be insufficient for personal data obligations.
+Recommendation: Specify that data protection obligations survive termination where applicable.
+
+3. Strategic Insight
+The document demonstrates strong legal drafting capability, but like most generated agreements, it operates at a template level.
+
+The key compliance risk for users is not the absence of documentation but the gap between what is documented and how data is actually handled in practice.
+
+Update compliance clause to explicitly reference GAID 2025 as primary binding directive.
+
+4. Conclusion
+This NDA can be strengthened into an audit-ready document with targeted improvements.
+
+More importantly, aligning these clauses with actual data flows and operational practices will be critical to ensuring real compliance under NDPA and GAID 2025.
+
+5. Next Step (Optional)
+If needed: I can support a deeper review to align the document with actual data handling processes and ensure it reflects real compliance, not just documented intent.
+
+Reviewer:
+Rosemary Onu, Esq. LL.B, B.L, MSc
+Joint Heirs Chambers / DataLex Consulting
+2 Mambolo Close, Wuse Zone 2, FCT, Abuja, Nigeria
+Phone: +234 803 088 2398
+Web: www.legalstartupguides.com
+Audit date: 2026-04-20
+Delivered: 2026-04-22
+--- END ROSEMARY AUDIT ---

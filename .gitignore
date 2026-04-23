@@ -48,3 +48,7 @@ temp_url.txt
 # (tests/scripts/regen-sig-cbdb6556.mjs writes tmp/SIG-CBDB6556-regenerated.txt).
 # Intentionally NOT /tmp/ so the script is cross-platform.
 tmp/
+
+# Audit test outputs (may contain test fixture PII)
+.audit-outputs/*
+!.audit-outputs/.gitkeep

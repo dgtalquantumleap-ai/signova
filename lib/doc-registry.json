@@ -165,7 +165,7 @@
       "title": "Non-Disclosure Agreement",
       "body_template_id": "nda_v1",
       "required_clauses": [],
-      "max_tokens": null,
+      "max_tokens": 20000,
       "jurisdiction_variants": { "default": { "title": "Non-Disclosure Agreement", "body_template_id": "nda_v1" } },
       "worker_classification_modes": [],
       "forbidden_titles": ["Service Agreement", "Contract of Employment"]
