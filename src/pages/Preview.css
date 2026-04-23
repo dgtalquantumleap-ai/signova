@@ -755,16 +755,6 @@
   padding-top: var(--space-5);
 }
 
-.locked-blur {
-  filter: blur(6px);
-  opacity: 0.5;
-  user-select: none;
-  pointer-events: none;
-  max-height: 200px;
-  overflow: hidden;
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
-}
 
 .locked-overlay {
   position: absolute;

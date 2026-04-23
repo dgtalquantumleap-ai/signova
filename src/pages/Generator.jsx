@@ -992,7 +992,7 @@ Output the complete document only, no preamble, explanation, or closing notes.`
         const err = await response.json()
         // Handle rate limiting gracefully
         if (response.status === 429) {
-          throw new Error(`You have used your 3 free previews this hour. Pay ${pricing.display} to generate and download your document directly.`)
+          throw new Error(`You have used your 5 free previews this month. Pay ${pricing.display} to generate and download your document directly.`)
         }
         throw new Error(err.error || 'Generation failed')
       }
@@ -1000,11 +1000,16 @@ Output the complete document only, no preamble, explanation, or closing notes.`
       const data = await response.json()
       const text = data.text || ''
 
-      // Store and navigate to preview
+      // Store and navigate to preview. lockedSectionTitles / lockedLineCount
+      // come from the server-side gating in api/generate-preview.js and are
+      // used by the Preview page to populate the locked-section overlay
+      // without needing any locked body text in the client.
       sessionStorage.setItem('signova_doc', JSON.stringify({
         docType,
         docName: config.name,
         content: text,
+        lockedSectionTitles: data.lockedSectionTitles ?? [],
+        lockedLineCount: data.lockedLineCount ?? 0,
         answers,
         prompt,
         generatedAt: new Date().toISOString(),

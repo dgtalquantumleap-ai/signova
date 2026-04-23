@@ -38,6 +38,10 @@ export const trackGenerateCompleted = (docType) =>
 export const trackPreviewLoaded = (docType) =>
   track('preview_loaded', { doc_type: docType })
 
+// Preview — paywall hit on first render (locked content present)
+export const trackPaywallHit = (docType, lockedSections = 0) =>
+  track('paywall_hit', { doc_type: docType, locked_sections: lockedSections })
+
 // Preview — user clicked Pay by Card
 export const trackPaymentAttempted = (docType, method = 'card') =>
   track('payment_attempted', { doc_type: docType, method })

@@ -1,28 +1,52 @@
 // api/generate-preview.js
-// Uses Groq (fast + near free) for watermarked previews
-// Rate limiting: simple token bucket per IP, resets on cold start
-// At current scale this is sufficient — add Redis when abuse is detected
+// Uses Groq (fast + near free) for server-gated previews.
+// Rate limiting: Upstash Redis, 5 previews per IP per calendar month.
+// Content gating: server truncates to first 40% before responding —
+// locked body text never reaches the client.
 
 import { parseBody } from '../lib/parse-body.js'
 import { logError, logInfo } from '../lib/logger.js'
 import { buildReceipt } from '../lib/doc-hash.js'
 import { buildDpaSystemPrompt } from './v1/documents/clauses.js'
 
-const WINDOW_MS = 60 * 60 * 1000 // 1 hour
-const MAX_PER_WINDOW = 3
+const MONTHLY_PREVIEW_LIMIT = 5
 
-const ipStore = new Map()
+// Returns { count, limitResetAt } where limitResetAt is ISO string of
+// start-of-next-month (UTC). Fails open on Redis error so a Redis outage
+// never blocks preview generation.
+async function checkRateLimit(ip, redisUrl, redisToken) {
+  const now = new Date()
+  const yearMonth = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}`
+  const key = `preview:ratelimit:${ip}:${yearMonth}`
 
-function isRateLimited(ip) {
-  const now = Date.now()
-  const entry = ipStore.get(ip)
-  if (!entry || now > entry.resetAt) {
-    ipStore.set(ip, { count: 1, resetAt: now + WINDOW_MS })
-    return false
+  let count
+  try {
+    const incrRes = await fetch(`${redisUrl}/incr/${encodeURIComponent(key)}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${redisToken}` },
+    })
+    if (!incrRes.ok) return { count: 0, limitResetAt: null }
+    const data = await incrRes.json()
+    count = data.result
+  } catch {
+    return { count: 0, limitResetAt: null }
   }
-  if (entry.count >= MAX_PER_WINDOW) return true
-  entry.count++
-  return false
+
+  if (count === 1) {
+    // First request this month — set TTL so the key auto-expires at midnight UTC
+    // on the first day of next month. Fire-and-forget; a missed EXPIRE just
+    // means the key lingers a bit; it cannot over-count because the key name
+    // contains the month.
+    const endOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1))
+    const ttl = Math.ceil((endOfMonth - now) / 1000)
+    await fetch(`${redisUrl}/expire/${encodeURIComponent(key)}/${ttl}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${redisToken}` },
+    }).catch(() => null)
+  }
+
+  const endOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1))
+  return { count, limitResetAt: endOfMonth.toISOString() }
 }
 
 export default async function handler(req, res) {
@@ -33,11 +57,19 @@ export default async function handler(req, res) {
     req.headers['x-real-ip'] ||
     'unknown'
 
-  if (isRateLimited(ip)) {
-    return res.status(429).json({
-      error: 'You have used your 3 free previews for this hour. Pay $4.99 to generate and download your document.',
-      rateLimited: true,
-    })
+  const redisUrl = process.env.UPSTASH_REDIS_REST_URL
+  const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN
+
+  if (redisUrl && redisToken) {
+    const { count, limitResetAt } = await checkRateLimit(ip, redisUrl, redisToken)
+    if (count > MONTHLY_PREVIEW_LIMIT) {
+      return res.status(429).json({
+        error: `You have used your ${MONTHLY_PREVIEW_LIMIT} free previews for this month.`,
+        rateLimited: true,
+        limitResetAt,
+        upgradeUrl: '/',
+      })
+    }
   }
 
   const body = await parseBody(req)
@@ -404,13 +436,23 @@ export default async function handler(req, res) {
     const text = data.choices?.[0]?.message?.content || ''
     if (!text) return res.status(500).json({ error: 'Preview generation failed. Please try again.' })
 
-    // Advisory receipt for previews — the preview itself is not the final
-    // document (that comes from /api/generate after payment), but returning
-    // a hash lets clients show "fingerprint so far" in the UI and proves the
-    // preview isn't mutated in transit.
+    // Server-side content gating — truncate at 40% before responding.
+    // The locked body text never leaves the server; only section headings
+    // from the locked portion are sent so the overlay UI can list them.
+    const allLines = text.split('\n')
+    const cutoff = Math.floor(allLines.length * 0.4)
+    const visibleText = allLines.slice(0, cutoff).join('\n')
+    const lockedLines = allLines.slice(cutoff)
+    const lockedSectionTitles = lockedLines
+      .filter(l => l.startsWith('## ') || l.startsWith('### '))
+      .map(l => l.replace(/^#{2,3}\s+/, '').trim())
+    const lockedLineCount = lockedLines.length
+
+    // Receipt hashes the full text (pre-truncation) so the paid regeneration
+    // can be compared to the same fingerprint for audit purposes.
     const receipt = buildReceipt(text, { doc_tier: 'preview' })
-    logInfo('/generate-preview', { success: true, text_length: text.length, hash: receipt.fingerprint })
-    return res.status(200).json({ text, isPreview: true, receipt })
+    logInfo('/generate-preview', { success: true, text_length: text.length, locked_count: lockedLineCount, hash: receipt.fingerprint })
+    return res.status(200).json({ text: visibleText, lockedSectionTitles, lockedLineCount, isPreview: true, receipt })
   } catch (err) {
     logError('/generate-preview', { message: err.message, stack: err.stack })
     return res.status(500).json({ error: 'Preview generation failed. Please try again.' })

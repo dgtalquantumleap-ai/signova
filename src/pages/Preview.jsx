@@ -11,6 +11,7 @@ import {
 const CICON = { size: 18, weight: 'duotone', color: 'currentColor' }
 import {
   trackPreviewLoaded,
+  trackPaywallHit,
   trackPaymentAttempted,
   trackPaymentSuccess,
   trackCompanionClicked,
@@ -105,6 +106,9 @@ export default function Preview() {
     const parsed = JSON.parse(raw)
     setDoc(parsed)
     trackPreviewLoaded(parsed.docType)
+    if ((parsed.lockedLineCount ?? 0) > 0) {
+      trackPaywallHit(parsed.docType, parsed.lockedSectionTitles?.length ?? 0)
+    }
     window.scrollTo(0, 0)
 
     // Promo code carry-through: accept ?promo=XXX in the URL (or picked up
@@ -901,12 +905,11 @@ export default function Preview() {
   )
 
   const lines = doc.content.split('\n')
-  
-  // Show only 40% of lines in preview, blur the rest
-  const previewCutoff = paid ? lines.length : Math.floor(lines.length * 0.4)
-  const visibleLines = lines.slice(0, previewCutoff)
-  const hiddenLines = paid ? [] : lines.slice(previewCutoff)
-  const hiddenSectionCount = hiddenLines.filter(l => l.startsWith('## ')).length
+  // doc.content is already server-truncated to 40% for previews;
+  // after payment it is replaced with the full paid document.
+  const lockedSectionTitles = paid ? [] : (doc.lockedSectionTitles ?? [])
+  const lockedLineCount = paid ? 0 : (doc.lockedLineCount ?? 0)
+  const hiddenSectionCount = lockedSectionTitles.length
 
   return (
     <div className="preview-page">
@@ -951,8 +954,8 @@ export default function Preview() {
 
           <div className={`preview-doc ${!paid ? 'watermarked' : ''}`} ref={contentRef}>
             <div className="doc-content">
-              {/* Visible portion */}
-              {visibleLines.map((line, i) => {
+              {/* All lines — content is already server-truncated for previews */}
+              {lines.map((line, i) => {
                 if (!line.trim()) return <br key={i} />
                 const formatted = DOMPurify.sanitize(line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'), { ALLOWED_TAGS: ['strong', 'em', 'br'], ALLOWED_ATTR: [] })
                 if (line.startsWith('# ')) return <h1 key={i} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatted.slice(2)) }} />
@@ -960,30 +963,25 @@ export default function Preview() {
                 if (line.startsWith('### ')) return <h3 key={i} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatted.slice(4)) }} />
                 return <p key={i} dangerouslySetInnerHTML={{ __html: formatted }} />
               })}
-              
-              {/* Blurred/hidden portion with unlock CTA */}
-              {!paid && hiddenLines.length > 0 && (
+
+              {/* Locked-section indicator — no body text is rendered here;
+                  the server never sent it. Overlay lists real section titles. */}
+              {!paid && lockedLineCount > 0 && (
                 <div className="preview-locked-section">
-                  <div className="locked-blur">
-                    {hiddenLines.slice(0, 15).map((line, i) => {
-                      if (!line.trim()) return <br key={`blur-${i}`} />
-                      const formatted = DOMPurify.sanitize(line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'), { ALLOWED_TAGS: ['strong', 'em', 'br'], ALLOWED_ATTR: [] })
-                      if (line.startsWith('## ')) return <h2 key={`blur-${i}`} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatted.slice(3)) }} />
-                      if (line.startsWith('### ')) return <h3 key={`blur-${i}`} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatted.slice(4)) }} />
-                      return <p key={`blur-${i}`} dangerouslySetInnerHTML={{ __html: formatted }} />
-                    })}
-                  </div>
                   <div className="locked-overlay">
                     <div className="locked-content">
                       <div className="locked-icon"><Lock size={32} weight="duotone" /></div>
                       <h3 className="locked-title">
-                        {hiddenSectionCount > 0 
+                        {hiddenSectionCount > 0
                           ? `${hiddenSectionCount} more section${hiddenSectionCount > 1 ? 's' : ''} hidden`
                           : 'Document continues below'
                         }
                       </h3>
                       <p className="locked-desc">
-                        The hidden sections contain the obligations, payment terms, termination clauses, dispute resolution, governing law, and the signature block — the parts that actually protect you.
+                        {lockedSectionTitles.length > 0
+                          ? `Hidden sections: ${lockedSectionTitles.join(' · ')}`
+                          : 'The hidden sections contain the obligations, payment terms, termination clauses, dispute resolution, governing law, and the signature block — the parts that actually protect you.'
+                        }
                       </p>
                       <button 
                         className="locked-cta" 
