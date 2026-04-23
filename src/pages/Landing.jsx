@@ -939,14 +939,15 @@ export default function Landing() {
             <div className="price-card">
               <div className="price-tier">Free Preview</div>
               <div className="price-amount">$0</div>
-              <p className="price-desc">See your full document before paying anything. No account, no card required.</p>
+              <p className="price-desc">Try before you pay. No account, no card required.</p>
               <ul className="price-list">
-                <li className="price-yes">Preview any document in full</li>
+                <li className="price-yes">5 free previews per month</li>
+                <li className="price-yes">First 40% of document visible</li>
                 <li className="price-yes">34 document types</li>
                 <li className="price-yes">WhatsApp extraction</li>
                 <li className="price-yes">Jurisdiction-aware documents across 18 jurisdictions</li>
                 <li className="price-no">Download PDF</li>
-                <li className="price-no">Watermark-free version</li>
+                <li className="price-no">Full document visible</li>
               </ul>
               <button className="btn-outline" onClick={() => navigate('/generate/freelance-contract')}>
                 Try free →
