@@ -4,10 +4,12 @@
 // Content gating: server truncates to first 40% before responding —
 // locked body text never reaches the client.
 
+import { createHash } from 'node:crypto'
 import { parseBody } from '../lib/parse-body.js'
 import { logError, logInfo } from '../lib/logger.js'
 import { buildReceipt } from '../lib/doc-hash.js'
 import { buildDpaSystemPrompt } from './v1/documents/clauses.js'
+import { VALID_CODES } from './promo-redeem.js'
 
 const MONTHLY_PREVIEW_LIMIT = 5
 
@@ -57,24 +59,55 @@ export default async function handler(req, res) {
     req.headers['x-real-ip'] ||
     'unknown'
 
+  // Parse body early so we can read email + promoCode for bypass checks
+  // before touching Redis.
+  const body = await parseBody(req)
+  const { prompt, promoCode, email } = body
+  if (!prompt) return res.status(400).json({ error: 'Missing prompt' })
+
   const redisUrl = process.env.UPSTASH_REDIS_REST_URL
   const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN
 
-  if (redisUrl && redisToken) {
+  // ── Bypass checks (cheapest first, no Redis hit) ──────────────────────────
+  const founderEmails = (process.env.FOUNDER_BYPASS_EMAILS || '')
+    .split(',').map(e => e.toLowerCase().trim()).filter(Boolean)
+  const normalizedEmail = (email || '').toLowerCase().trim()
+  const isFounder = normalizedEmail && founderEmails.includes(normalizedEmail)
+
+  if (isFounder) {
+    const emailHash = createHash('sha256').update(normalizedEmail).digest('hex').slice(0, 8)
+    logInfo('/generate-preview', { bypass: 'founder', email_hash: emailHash })
+  }
+
+  // Promo bypass: any valid, non-expired promo code skips the IP rate limit.
+  // We check validity here without consuming the use count — that happens
+  // separately in /api/promo-redeem when the user downloads.
+  let isPromoBypass = false
+  if (!isFounder && promoCode) {
+    const upperCode = (promoCode || '').toUpperCase().trim()
+    const promo = VALID_CODES[upperCode]
+    if (promo && new Date() <= promo.expiresAt) {
+      isPromoBypass = true
+      logInfo('/generate-preview', { bypass: 'promo', code: upperCode })
+    }
+  }
+
+  if (!isFounder && !isPromoBypass && redisUrl && redisToken) {
     const { count, limitResetAt } = await checkRateLimit(ip, redisUrl, redisToken)
     if (count > MONTHLY_PREVIEW_LIMIT) {
       return res.status(429).json({
         error: `You have used your ${MONTHLY_PREVIEW_LIMIT} free previews for this month.`,
+        code: 'PREVIEW_CAP_REACHED',
         rateLimited: true,
+        requires_payment: true,
+        paid_generation_url: '/api/generate',
+        promo_code_field_visible: true,
+        retry_after_promo: true,
         limitResetAt,
         upgradeUrl: '/',
       })
     }
   }
-
-  const body = await parseBody(req)
-  const { prompt } = body
-  if (!prompt) return res.status(400).json({ error: 'Missing prompt' })
 
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) return res.status(500).json({ error: 'Server misconfigured — missing Anthropic key' })

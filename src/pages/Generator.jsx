@@ -723,6 +723,11 @@ export default function Generator() {
   const [extractMsg, setExtractMsg] = useState('')
   const [extractError, setExtractError] = useState('')
 
+  const [rateLimited, setRateLimited] = useState(false)
+  const [promoCodeInput, setPromoCodeInput] = useState(() => {
+    try { return sessionStorage.getItem('signova_promo') || '' } catch { return '' }
+  })
+
   // Region-detected price for rate-limit messaging. Western-tier fallback
   // during fetch; re-verified server-side on any actual checkout call.
   const [pricing, setPricing] = useState({ display: '$14.99', paystackAvailable: false })
@@ -910,9 +915,54 @@ export default function Generator() {
     }
   }
 
+  const buildPrompt = () => {
+    const fieldSummary = config.fields.map(f => {
+      const val = answers[f.id]
+      if (!val || (Array.isArray(val) && val.length === 0)) return null
+      const display = Array.isArray(val) ? val.join(', ') : val
+      return `${f.label}: ${display}`
+    }).filter(Boolean).join('\n')
+
+    const isDpa = config.id === 'data-processing-agreement'
+    return isDpa
+      ? `Generate a Data Processing Agreement (DPA) compliant with the ${answers.jurisdiction || 'Nigeria Data Protection Act 2023'} for the following:
+
+${fieldSummary}
+
+The DPA must include:
+1. A "Key Obligations Summary" at the top — 5 plain-language bullet points stating "Who must do What by When"
+2. The formal DPA with clear numbered sections covering: Controller/Processor roles, Data Subject Rights, Breach Notification (72h to regulator), Cross-Border Transfer restrictions, Security Measures, and Data Retention/Deletion
+3. A "Data Flow Mapping Template" at the end — a practical checklist for operational implementability
+
+Requirements:
+- Use formal legal language but prioritise clarity over complexity
+- Every obligation must have a clear "Who," "What," and "When"
+- Do not include any placeholder text like [INSERT NAME] — use the actual values provided
+- End the formal DPA with a signature block, then append the Data Flow Mapping Template
+- Do NOT add any disclaimers, footnotes, notes, or suggestions to seek legal advice
+
+Output the complete document only, no preamble, explanation, or closing notes.`
+      : `Generate a professional, comprehensive ${config.name} document for the following business:
+
+${fieldSummary}
+
+Requirements:
+- Write in formal legal language appropriate for the document type
+- Be specific and detailed, not generic
+- Structure with clear numbered sections and subsections
+- Include all standard clauses expected in a ${config.name}
+- Tailor the content to the specific business details provided
+- Do not include any placeholder text like [INSERT NAME] — use the actual values provided
+- End with a signature block
+- Do NOT add any disclaimers, footnotes, notes, or suggestions to seek legal advice at the end of the document. The document should end cleanly after the signature block.
+
+Output the complete document only, no preamble, explanation, or closing notes.`
+  }
+
   const handleGenerateClick = () => {
     if (!isValid()) { setError('Please fill in all required fields.'); return }
     setError('')
+    setRateLimited(false)
     trackGenerateStarted(docType)
     handleGenerate('')
   }
@@ -934,67 +984,77 @@ export default function Generator() {
     handleGenerate(_leadEmail)
   }
 
+  const handlePayAndGenerate = async () => {
+    try {
+      setLoading(true)
+      const prompt = buildPrompt()
+      // Pre-populate signova_doc so Preview.jsx can call /api/generate after
+      // Stripe redirects back. The content is empty here — premium generation
+      // happens server-side once payment is verified.
+      sessionStorage.setItem('signova_doc', JSON.stringify({
+        docType,
+        docName: config.name,
+        content: '',
+        lockedSectionTitles: [],
+        lockedLineCount: 0,
+        answers,
+        prompt,
+        generatedAt: new Date().toISOString(),
+      }))
+      const res = await fetch('/api/stripe-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ docType, docName: config.name }),
+      })
+      if (!res.ok) throw new Error('Could not start checkout. Please try again.')
+      const { url } = await res.json()
+      window.location.href = url
+    } catch (e) {
+      setError(e.message || 'Could not start checkout. Please try again.')
+      setLoading(false)
+    }
+  }
+
   const handleGenerate = async (_email) => {
     if (!isValid()) { setError('Please fill in all required fields.'); return }
     setError('')
     setLoading(true)
-    try {
-      // Build the prompt
-      const fieldSummary = config.fields.map(f => {
-        const val = answers[f.id]
-        if (!val || (Array.isArray(val) && val.length === 0)) return null
-        const display = Array.isArray(val) ? val.join(', ') : val
-        return `${f.label}: ${display}`
-      }).filter(Boolean).join('\n')
 
-      const isDpa = config.id === 'data-processing-agreement'
-      const prompt = isDpa
-        ? `Generate a Data Processing Agreement (DPA) compliant with the ${answers.jurisdiction || 'Nigeria Data Protection Act 2023'} for the following:
+    const prompt = buildPrompt()
+    const sessionEmail = _email || (() => {
+      try { return sessionStorage.getItem('signova_lead_email') || '' } catch { return '' }
+    })()
 
-${fieldSummary}
-
-The DPA must include:
-1. A "Key Obligations Summary" at the top — 5 plain-language bullet points stating "Who must do What by When"
-2. The formal DPA with clear numbered sections covering: Controller/Processor roles, Data Subject Rights, Breach Notification (72h to regulator), Cross-Border Transfer restrictions, Security Measures, and Data Retention/Deletion
-3. A "Data Flow Mapping Template" at the end — a practical checklist for operational implementability
-
-Requirements:
-- Use formal legal language but prioritise clarity over complexity
-- Every obligation must have a clear "Who," "What," and "When"
-- Do not include any placeholder text like [INSERT NAME] — use the actual values provided
-- End the formal DPA with a signature block, then append the Data Flow Mapping Template
-- Do NOT add any disclaimers, footnotes, notes, or suggestions to seek legal advice
-
-Output the complete document only, no preamble, explanation, or closing notes.`
-        : `Generate a professional, comprehensive ${config.name} document for the following business:
-
-${fieldSummary}
-
-Requirements:
-- Write in formal legal language appropriate for the document type
-- Be specific and detailed, not generic
-- Structure with clear numbered sections and subsections
-- Include all standard clauses expected in a ${config.name}
-- Tailor the content to the specific business details provided
-- Do not include any placeholder text like [INSERT NAME] — use the actual values provided
-- End with a signature block
-- Do NOT add any disclaimers, footnotes, notes, or suggestions to seek legal advice at the end of the document. The document should end cleanly after the signature block.
-
-Output the complete document only, no preamble, explanation, or closing notes.`
-
+    const doFetch = async (retrying = false) => {
       const response = await fetch('/api/generate-preview', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({
+          prompt,
+          ...(promoCodeInput.trim() ? { promoCode: promoCodeInput.trim() } : {}),
+          ...(sessionEmail ? { email: sessionEmail } : {}),
+        }),
       })
 
       if (!response.ok) {
-        const err = await response.json()
-        // Handle rate limiting gracefully
-        if (response.status === 429) {
-          throw new Error(`You have used your 5 free previews this month. Pay ${pricing.display} to generate and download your document directly.`)
+        // Retry once on 5xx before surfacing the error
+        if (response.status >= 500 && !retrying) {
+          await new Promise(r => setTimeout(r, 1000))
+          return doFetch(true)
         }
-        throw new Error(err.error || 'Generation failed')
+
+        if (response.status === 429) {
+          setRateLimited(true)
+          setLoading(false)
+          return
+        }
+
+        let errMsg = 'Generation failed'
+        try {
+          const errBody = await response.json()
+          errMsg = errBody.error || errMsg
+        } catch {}
+        throw new Error(errMsg)
       }
 
       const data = await response.json()
@@ -1016,9 +1076,12 @@ Output the complete document only, no preamble, explanation, or closing notes.`
       }))
       trackGenerateCompleted(docType)
       navigate('/preview')
+    }
+
+    try {
+      await doFetch()
     } catch (e) {
       setError(e.message || 'Something went wrong. Please try again.')
-    } finally {
       setLoading(false)
     }
   }
@@ -1192,6 +1255,36 @@ Output the complete document only, no preamble, explanation, or closing notes.`
           )}
 
           {error && <div className="gen-error">{error}</div>}
+
+          {rateLimited && !loading && (
+            <div className="gen-rate-limited">
+              <p className="gen-rate-msg">You&apos;ve used your 5 free previews this month.</p>
+              <p className="gen-rate-sub">Generate this document directly for {pricing.display}.</p>
+              <button className="gen-pay-btn" onClick={handlePayAndGenerate}>
+                Pay {pricing.display} &amp; Generate →
+              </button>
+              <div className="gen-promo-section">
+                <p className="gen-promo-label">Have a promo code?</p>
+                <div className="gen-promo-row">
+                  <input
+                    className="gen-promo-input"
+                    type="text"
+                    placeholder="Enter promo code"
+                    value={promoCodeInput}
+                    onChange={e => setPromoCodeInput(e.target.value.toUpperCase())}
+                    onKeyDown={e => e.key === 'Enter' && promoCodeInput.trim() && handleGenerate('')}
+                  />
+                  <button
+                    className="gen-promo-apply"
+                    onClick={() => handleGenerate('')}
+                    disabled={!promoCodeInput.trim()}
+                  >
+                    Apply &amp; Generate →
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {loading && (
             <div className="gen-loading">

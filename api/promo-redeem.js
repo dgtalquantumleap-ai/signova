@@ -201,7 +201,7 @@ async function atomicIncrementUseCount(code, maxUses) {
   }
 }
 
-const VALID_CODES = {
+export const VALID_CODES = {
   OLUMIDE: {
     expiresAt: new Date('2027-12-31T23:59:59Z'),
     maxUses: 50,
