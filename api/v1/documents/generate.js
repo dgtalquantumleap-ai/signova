@@ -27,6 +27,7 @@ import {
   WORKER_CLASSIFICATION_INVALID,
 } from '../../../lib/doc-classification.js'
 import { randomBytes } from 'node:crypto'
+import { EXECUTION_FORMALITIES_CLAUSE } from '../../../lib/execution-formalities.js'
 
 const LEGAL_DISCLAIMER = {
   type: 'disclaimer',
@@ -288,6 +289,7 @@ export default async function handler(req, res) {
         + 'You are an expert legal document drafter with deep knowledge of international law, including common-law (Canada, US, UK, Commonwealth), civil-law (Quebec), and the North American statutory privacy regimes (PIPEDA, Quebec Law 25, CCPA/CPRA). Generate comprehensive, professional legal documents tailored precisely to the details provided. Use formal legal language, clear numbered sections, and include all standard clauses. Use the spelling conventions of the governing jurisdiction. This is a premium paid document — make it exceptional. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.'
         + jurisdictionEnhancement
         + v1NigeriaNDAClause
+        + EXECUTION_FORMALITIES_CLAUSE
 
     // Phase 3 — shared completeness-aware generator. Raises max_tokens
     // per-doctype from the spec, validates required clauses, continues

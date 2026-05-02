@@ -164,7 +164,9 @@
       "id": "nda",
       "title": "Non-Disclosure Agreement",
       "body_template_id": "nda_v1",
-      "required_clauses": [],
+      "required_clauses": [
+        { "id": "execution-block", "anyOf": ["signed by", "in witness whereof", "witness name:", "witness signature:"] }
+      ],
       "max_tokens": 20000,
       "jurisdiction_variants": { "default": { "title": "Non-Disclosure Agreement", "body_template_id": "nda_v1" } },
       "worker_classification_modes": [],
@@ -345,8 +347,10 @@
       "id": "mou",
       "title": "Memorandum of Understanding",
       "body_template_id": "mou_v1",
-      "required_clauses": [],
-      "max_tokens": null,
+      "required_clauses": [
+        { "id": "execution-block", "anyOf": ["signed by", "in witness whereof", "witness name:", "witness signature:"] }
+      ],
+      "max_tokens": 16000,
       "jurisdiction_variants": { "default": { "title": "Memorandum of Understanding", "body_template_id": "mou_v1" } },
       "worker_classification_modes": [],
       "forbidden_titles": []
