@@ -216,6 +216,105 @@ For each entry, Olumide should confirm:
 
 ---
 
+## Day 4 additions — Entries 6, 7, 8
+
+Day 4 expanded the bundle with three federal whistleblower statutes after
+Day 3 smoke testing showed retrieval-ON omitted SOX/SEC content that
+Sonnet's training-memory output included. Closing this gap was the
+specific motivation: add the statutes to the verified bundle so the
+"cite only verified" instruction stops suppressing accurate content.
+
+### Entry 6 — SOX-806-whistleblower
+
+**Query:** Sarbanes-Oxley Act 18 USC 1514A whistleblower protection corporate fraud reporting publicly traded companies
+**Content length:** 1160 chars · **Sources:** 3
+**Olostep answer ID:** `answer_b9cfyylwlp`
+
+**Sources**
+- https://www.law.cornell.edu/uscode/text/18/1514A — *18 U.S. Code § 1514A — Civil action to protect against retaliation in...*
+- https://www.justia.com/employment/retaliation/sarbanes-oxley-act/ — *The Sarbanes-Oxley Act and Whistleblowers' Legal Rights — Justia*
+- https://www.govinfo.gov/link/uscode/18/1514A — *18 U.S.C. § 1514A — Civil action to protect against retaliation in fraud cases.*
+
+**Cached content**
+
+> Section 806 of the Sarbanes-Oxley Act, codified at 18 U.S.C. § 1514A, gives employees of publicly-traded companies a civil cause of action when they are retaliated against for reporting corporate fraud. The statute protects whistle-blowers who disclose violations of mail, wire, bank, or securities fraud (including violations of the Securities Exchange Act, the Federal Securities Laws, or any related SEC regulations). To invoke the protection, a whistle-blower must file a complaint in federal court within 180 days of the alleged retaliation. The law covers a range of fraudulent conduct — from accounting manipulation and false financial statements to insider trading and other securities violations — and requires employers not to discharge, demote, suspend, threaten, harass, or otherwise discriminate against an employee for making a protected disclosure. Remedies include reinstatement, back pay, compensatory damages, and attorney's fees. The statute is intended to break the "corporate code of silence" that contributed to major accounting scandals and to encourage reporting of corporate misconduct by providing robust anti-retaliation protections.
+
+**Verification**
+
+- **Verdict:** ✓ MATCH
+- **Confidence:** high
+- **Methodology:** primary-source comparison vs Cornell LII § 1514A
+- **Evidence:**
+    - Cached "publicly-traded companies" matches § 1514A(a): *"No company with a class of securities registered under section 12 of the Securities Exchange Act of 1934..."*
+    - Cached protected disclosures (mail/wire/bank/securities fraud + SEC regulations + federal fraud-against-shareholders law) matches § 1514A(a)(1): *"a violation of section 1341, 1343, 1344, or 1348, any rule or regulation of the Securities and Exchange Commission, or any provision of Federal law relating to fraud against shareholders"*
+    - Cached "180 days" filing deadline matches § 1514A(b)(2)(D): *"An action under paragraph (1) shall be commenced not later than 180 days after the date on which the violation occurs"*
+    - Cached prohibited conduct list ("discharge, demote, suspend, threaten, harass, or otherwise discriminate") is verbatim from § 1514A(a)
+    - Cached remedies (reinstatement, back pay, compensatory damages, attorney's fees) align with § 1514A(c): *"reinstatement with the same seniority status... back pay, with interest... compensation for any special damages... including litigation costs, expert witness fees, and reasonable attorney fees"*
+- **Notes:** None.
+
+---
+
+### Entry 7 — SEC-21F-whistleblower
+
+**Query:** Securities Exchange Act Section 21F 15 USC 78u-6 SEC whistleblower bounty program protection
+**Content length:** 1383 chars · **Sources:** 2
+**Olostep answer ID:** `answer_cl0bb8mipi`
+
+**Sources**
+- https://www.sec.gov/enforcement-litigation/whistleblower-program/whistleblower-protections — *Whistleblower Protections — SEC.gov*
+- https://www.law.cornell.edu/uscode/text/15/78u-6 — *15 U.S. Code § 78u-6 — Securities whistleblower incentives and protection*
+
+**Cached content**
+
+> Section 21F of the Securities Exchange Act of 1934 (codified at 15 U.S.C. § 78u-6) creates the SEC's whistleblower bounty program. It authorizes the Commission to award eligible whistleblowers a percentage (typically 10 %–30 %) of monetary sanctions collected in a covered action that exceeds $1 million. The statute also provides robust protections for whistleblowers:
+>
+> 1. **Anti-retaliation** — it is unlawful for any person to take adverse action against an employee for reporting a possible securities-law violation to the SEC (Rule 21F-17).
+> 2. **Confidentiality** — the SEC must keep the identity of the whistleblower confidential, except as required by law.
+> 3. **Eligibility and award criteria** — the whistleblower must provide original information that leads to a successful enforcement action; the award is calculated on penalties, fines, disgorgement, interest, and settlement payments, but excludes forfeiture, restitution, or victim compensation.
+> 4. **Procedural safeguards** — the whistleblower may receive a notice of eligibility, can request a hearing on the award, and may be protected from employer retaliation through the Commission's enforcement powers.
+
+**Verification**
+
+- **Verdict:** ⚠ PARTIAL
+- **Confidence:** high
+- **Methodology:** primary-source comparison vs Cornell LII § 78u-6
+- **Evidence (substance correct):**
+    - Cached award range (10–30%) matches § 78u-6(b)(1): *"not less than 10 percent... not more than 30 percent"*
+    - Cached threshold ($1M) matches § 78u-6(a)(1): *"monetary sanctions exceeding $1,000,000"*
+    - Cached confidentiality matches § 78u-6(h)(2)(A): *"the Commission... shall not disclose any information... which could reasonably be expected to reveal the identity of a whistleblower"*
+    - Cached anti-retaliation prohibition matches § 78u-6(h)(1)(A): *"No employer may discharge, demote, suspend, threaten, harass, directly or indirectly, or in any other manner discriminate against, a whistleblower"*
+- **Specific discrepancy (citation only):**
+    - Cached attributes anti-retaliation to *"(Rule 21F-17)"*. The correct citation is § 78u-6(h)(1) — Rule 21F-17 is the SEC anti-impedance rule (a related but distinct provision, covered separately as Entry 8).
+- **Severity:** Citation error, not a substantive error. The anti-retaliation explanation is correct; only the parenthetical citation is wrong.
+- **Action:** Bundle metadata records this as `partial` (high confidence). No reframing engine entry — the find term spans non-word characters (parens) which the current word-boundary regex can't match cleanly. If the smoke-test shows this propagating into generated NDAs, Day 5+ should refactor the engine OR re-seed with a refined query that doesn't trip this confusion. Day 4 brief explicitly anticipated ⚠ on SEC entries.
+
+---
+
+### Entry 8 — SEC-rule-21F-17-impedance
+
+**Query:** SEC Rule 21F-17 17 CFR 240.21F-17 anti-impedance rule whistleblower confidentiality clauses
+**Content length:** 797 chars · **Sources:** 1
+**Olostep answer ID:** `answer_mt3m8laom6`
+
+**Sources**
+- https://www.law.cornell.edu/cfr/text/17/240.21F-17 — *17 CFR § 240.21F-17 — Staff communications with individuals reporting possible securities law violations*
+
+**Cached content**
+
+> (a) No person may take any action to impede an individual from communicating directly with the Commission staff about a possible securities law violation, including enforcing, or threatening to enforce, a confidentiality agreement (other than agreements dealing with information covered by § 240.21F-4(b)(4)(i) and § 240.21F-4(b)(4)(ii) of this chapter related to the legal representation of a client) with respect to such communications.
+>
+> (b) If you are a director, officer, member, agent, or employee of an entity that has counsel, and you have initiated communication with the Commission relating to a possible securities law violation, the staff is authorized to communicate directly with you regarding the possible securities law violation without seeking the consent of the entity's counsel.
+
+**Verification**
+
+- **Verdict:** ✓ MATCH
+- **Confidence:** high
+- **Methodology:** primary-source comparison vs Cornell LII (eCFR-equivalent) 17 CFR § 240.21F-17
+- **Evidence:** Subsection (a) and subsection (b) are verbatim quotes from the regulation. The cross-reference to § 240.21F-4(b)(4)(i)/(ii) for legal-representation exceptions is preserved.
+- **Notes:** None. This entry directly enables generated NDAs to comply with the SEC anti-impedance rule by explicitly addressing the confidentiality-agreement carve-out.
+
+---
+
 ## Excluded from this bundle
 
 **Entry 6 — NDA-reasonable-restraint** was deferred from Day 2 and removed from
@@ -243,19 +342,24 @@ Run via Supabase SQL editor: https://supabase.com/dashboard/project/snqzmlctnlzk
 | Entry | Verdict | Confidence | Methodology | Key finding |
 |-------|---------|------------|-------------|-------------|
 | 1 — DTSA-trade-secret-definition | ✓ MATCH | high | primary-source vs Cornell § 1839 | Near-verbatim quote of statutory definition |
-| 2 — DTSA-misappropriation-remedies | ✓ MATCH | high | primary-source vs Cornell § 1836 | All listed remedies (injunction, damages, exemplary, fees, civil seizure, equitable) plus 3-year SoL and federal jurisdiction match the statute |
-| 3 — DTSA-whistleblower-immunity | ✓ MATCH | high | primary-source vs Cornell § 1833 | Notice requirement, immunity scope, sample language, and consequence (no exemplary/fees) all match. Minor "use or disclosure" stylistic expansion |
-| 4 — EEA-criminal-penalties | ⚠ PARTIAL | high | primary-source vs Cornell § 1832 | Penalty figures correct ($5M/3x, 10-year max). Mislabels organizational fine as "civil" — § 1832 is criminal. Day 3 prompt should reframe |
-| 5 — NDA-consideration-doctrine | ⚠ PARTIAL | medium | secondary-source consistency | Hanley source confirms; UBG (HTTP 403) and Thomson Reuters (blocked) unverifiable from this env. Substance is mainstream US contract-law doctrine |
-| 6 — NDA-reasonable-restraint | — | — | — | **Excluded from bundle. See "Excluded from this bundle" section.** |
+| 2 — DTSA-misappropriation-remedies | ✓ MATCH | high | primary-source vs Cornell § 1836 | All listed remedies + 3-year SoL + federal jurisdiction match |
+| 3 — DTSA-whistleblower-immunity | ✓ MATCH | high | primary-source vs Cornell § 1833 | Notice requirement, immunity scope, sample language all match |
+| 4 — EEA-criminal-penalties | ⚠ PARTIAL | high | primary-source vs Cornell § 1832 | Figures correct; mislabels organisational fine as "civil" — § 1832 is criminal. Reframing applied at injection |
+| 5 — NDA-consideration-doctrine | ⚠ PARTIAL | medium | secondary-source consistency | Hanley confirmed; UBG/Thomson Reuters unfetchable. Doctrine is mainstream US contract law |
+| 6 — SOX-806-whistleblower (Day 4) | ✓ MATCH | high | primary-source vs Cornell § 1514A | All key provisions (coverage, protected disclosures, 180-day deadline, remedies) match |
+| 7 — SEC-21F-whistleblower (Day 4) | ⚠ PARTIAL | high | primary-source vs Cornell § 78u-6 | Substance correct (10-30% range, $1M threshold, anti-retaliation). Citation error: anti-retaliation wrongly attributed to Rule 21F-17 — correct citation is § 78u-6(h)(1) |
+| 8 — SEC-rule-21F-17-impedance (Day 4) | ✓ MATCH | high | primary-source vs Cornell 17 CFR § 240.21F-17 | Verbatim quote of (a) and (b) |
+| 9 (formerly 6) — NDA-reasonable-restraint | — | — | — | **Excluded from bundle. See "Excluded from this bundle" section.** |
 
-**Counts (of seeded 5):** 3 ✓ MATCH · 2 ⚠ PARTIAL · 0 ✗ MISMATCH
+**Counts (of 8 seeded):** 5 ✓ MATCH · 3 ⚠ PARTIAL · 0 ✗ MISMATCH
 
-**Decision:** ✓ Bundle production-ready (no ✗ MISMATCH on primary-source entries).
-Proceeded with Part 7 (`_meta` block applied). Two ⚠ PARTIAL entries are
-recorded in `_meta.verification_results` with notes for Day 3 to consume.
+**Decision:** ✓ Bundle production-ready. The Day 4 additions close the SOX/SEC
+gap surfaced by Day 3 smoke testing. Three ⚠ PARTIAL entries are recorded
+in `_meta.verification_results` with detailed notes for the injection
+layer to consume. Reframing engine applied for Entry 4 (EEA civil/criminal);
+Entries 5 and 7 carry no reframing because their issues are non-mechanical.
 
-**Verifier signature:** Olumide (olumide@ebenova.net) — verified 2026-05-06
+**Verifier signature:** Olumide (olumide@ebenova.net) — verified 2026-05-06 (Day 2 entries 1-5) + 2026-05-06 (Day 4 entries 6-8)
 
 ---
 

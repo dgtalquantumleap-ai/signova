@@ -142,6 +142,22 @@ async function callOlostep(query) {
   }
 }
 
+// Idempotency check — return existing cache row if fresh (not expired),
+// otherwise null. Lets the seeding loop skip queries that are already
+// cached without burning Olostep credits.
+async function cacheLookup(statuteRef) {
+  const { data, error } = await supabase
+    .from('statute_cache')
+    .select('statute_ref, content, sources_json, expires_at, retrieved_at')
+    .eq('jurisdiction', jurisdiction)
+    .eq('doc_type', docType)
+    .eq('statute_ref', statuteRef)
+    .gt('expires_at', new Date().toISOString())
+    .maybeSingle()
+  if (error) return null
+  return data
+}
+
 async function cacheWrite(statuteRef, query, content, sources, answerId) {
   const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
   const { error } = await supabase.from('statute_cache').upsert(
@@ -163,12 +179,23 @@ async function cacheWrite(statuteRef, query, content, sources, answerId) {
 
 // ── Main loop ──────────────────────────────────────────────────────────────
 const results = []
+let skippedThisRun = 0
 for (let i = 0; i < bundle.length; i++) {
   const { statuteRef, query } = bundle[i]
   const idx = `[${i + 1}/${bundle.length}]`
   console.log(`\n${idx} ${statuteRef}`)
-  console.log(`${idx} query: ${query}`)
 
+  // Idempotency: skip if cached row exists and is not expired.
+  const existing = await cacheLookup(statuteRef)
+  if (existing) {
+    const sources = Array.isArray(existing.sources_json) ? existing.sources_json.length : 0
+    console.log(`${idx} SKIP (cached) — ${existing.content?.length ?? 0} chars, ${sources} sources, expires ${existing.expires_at?.slice(0, 10)}`)
+    results.push({ statuteRef, status: 'skipped_cached', contentLength: existing.content?.length ?? 0, sourceCount: sources })
+    skippedThisRun++
+    continue
+  }
+
+  console.log(`${idx} query: ${query}`)
   const t0 = Date.now()
   const olo = await callOlostep(query)
 
@@ -197,16 +224,21 @@ for (let i = 0; i < bundle.length; i++) {
 // ── Summary ────────────────────────────────────────────────────────────────
 console.log('\n──────── SUMMARY ────────')
 const ok = results.filter(r => r.status === 'ok')
-const failed = results.filter(r => r.status !== 'ok')
+const skipped = results.filter(r => r.status === 'skipped_cached')
+const failed = results.filter(r => r.status !== 'ok' && r.status !== 'skipped_cached')
 console.log(`Total: ${results.length}`)
-console.log(`Cached: ${ok.length}`)
+console.log(`Newly cached: ${ok.length}`)
+console.log(`Already cached (skipped): ${skipped.length}`)
 console.log(`Failed: ${failed.length}`)
 for (const r of results) {
   if (r.status === 'ok') {
     console.log(`  ✓ ${r.statuteRef} — ${r.contentLength} chars, ${r.sourceCount} sources`)
+  } else if (r.status === 'skipped_cached') {
+    console.log(`  · ${r.statuteRef} — already cached (${r.contentLength} chars, ${r.sourceCount} sources)`)
   } else {
     console.log(`  ✗ ${r.statuteRef} — ${r.status}: ${r.error}`)
   }
 }
+console.log(`\nOlostep credits used this run: ${ok.length + failed.length} (${skipped.length} skipped via idempotent cache lookup)`)
 
 process.exit(failed.length === 0 ? 0 : 1)

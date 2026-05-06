@@ -587,6 +587,66 @@ describe('Bundle registry (statute-bundles.js)', () => {
     expect(mod.getBundleMeta('nigeria', 'llc_operating_agreement')).toBeNull()
   })
 
+  // Day 4 expansion: usa_federal.nda grew from 5 to 8 queries
+  it('test 22c: usa_federal.nda contains 8 verified queries after Day 4 expansion (DTSA + EEA + NDA-doctrine + SOX + SEC × 2)', () => {
+    const queries = getBundleDefinition('usa_federal', 'nda')
+    expect(queries).toHaveLength(8)
+    const refs = queries.map(q => q.statuteRef).sort()
+    expect(refs).toEqual([
+      'DTSA-misappropriation-remedies',
+      'DTSA-trade-secret-definition',
+      'DTSA-whistleblower-immunity',
+      'EEA-criminal-penalties',
+      'NDA-consideration-doctrine',
+      'SEC-21F-whistleblower',
+      'SEC-rule-21F-17-impedance',
+      'SOX-806-whistleblower',
+    ])
+  })
+
+  it('test 22d: usa_federal.nda _meta has verification_results entries for all 8 queries', async () => {
+    const mod = await import('../../lib/statute-bundles.js')
+    const meta = mod.getBundleMeta('usa_federal', 'nda')
+    const queries = getBundleDefinition('usa_federal', 'nda')
+    for (const { statuteRef } of queries) {
+      expect(meta.verification_results[statuteRef]).toBeDefined()
+      expect(meta.verification_results[statuteRef]).toHaveProperty('verdict')
+      expect(meta.verification_results[statuteRef]).toHaveProperty('confidence')
+    }
+  })
+
+  // Day 4 addition: usa_delaware.nda bundle (DUTSA queries)
+  it('test 22e: usa_delaware.nda contains 4 verified DUTSA queries (Day 4 addition)', () => {
+    const queries = getBundleDefinition('usa_delaware', 'nda')
+    expect(queries).toHaveLength(4)
+    const refs = queries.map(q => q.statuteRef).sort()
+    expect(refs).toEqual([
+      'DUTSA-attorney-fees',
+      'DUTSA-damages',
+      'DUTSA-injunctive-relief',
+      'DUTSA-misappropriation',
+    ])
+  })
+
+  it('test 22f: usa_delaware.nda has _meta with cache_seeded:true and 4 verification results', async () => {
+    const mod = await import('../../lib/statute-bundles.js')
+    const meta = mod.getBundleMeta('usa_delaware', 'nda')
+    expect(meta).not.toBeNull()
+    expect(meta.cache_seeded).toBe(true)
+    expect(Object.keys(meta.verification_results).sort()).toEqual([
+      'DUTSA-attorney-fees',
+      'DUTSA-damages',
+      'DUTSA-injunctive-relief',
+      'DUTSA-misappropriation',
+    ])
+  })
+
+  it('test 22g: usa_delaware.llc_operating_agreement remains a bare-array (unverified) bundle', async () => {
+    const mod = await import('../../lib/statute-bundles.js')
+    expect(Array.isArray(getBundleDefinition('usa_delaware', 'llc_operating_agreement'))).toBe(true)
+    expect(mod.getBundleMeta('usa_delaware', 'llc_operating_agreement')).toBeNull()
+  })
+
   it('test 23: listJurisdictions returns exactly the 8 expected jurisdiction keys', () => {
     const expected = [
       'nigeria',
