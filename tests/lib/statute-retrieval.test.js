@@ -75,13 +75,21 @@ function makeCacheRow(overrides = {}) {
   }
 }
 
-/** Default Olostep API response body. */
-function olostepResponse(overrides = {}) {
+/** Default Olostep API response body — matches the real /v1/answers shape:
+ *  { id, result: { json_content: { content, sources } } }
+ *  Helper accepts content/sources/id overrides for ergonomic test setup.
+ */
+function olostepResponse({ content, sources, id, json_content, result } = {}) {
+  if (result !== undefined) return { id: id ?? 'olostep-id-42', result }
+  if (json_content !== undefined) return { id: id ?? 'olostep-id-42', result: { json_content } }
   return {
-    answer: 'Statute text from Olostep.',
-    sources: [{ url: 'https://olostep.com/source/1' }],
-    id: 'olostep-id-42',
-    ...overrides,
+    id: id ?? 'olostep-id-42',
+    result: {
+      json_content: {
+        content: content ?? 'Statute text from Olostep.',
+        sources: sources ?? [{ url: 'https://olostep.com/source/1' }],
+      },
+    },
   }
 }
 
@@ -268,19 +276,26 @@ describe('callOlostep — via retrieveStatute on cache miss', () => {
     expect(init.headers['Content-Type']).toBe('application/json')
   })
 
-  it('test 7: sends body: { question: query }', async () => {
+  it('test 7: sends body with task field and json_format schema', async () => {
     mockFetchOk(olostepResponse())
 
     await retrieveStatute('nigeria', 'nda', 'NDPA-2023-s25', 'my statute query')
 
     const [, init] = global.fetch.mock.calls[0]
-    expect(JSON.parse(init.body)).toEqual({ question: 'my statute query' })
+    const body = JSON.parse(init.body)
+    expect(body.task).toBe('my statute query')
+    expect(body.json_format).toMatchObject({
+      content: '',
+      sources: [{ url: '', title: '' }],
+    })
+    // No legacy 'question' field.
+    expect(body.question).toBeUndefined()
   })
 
-  it('test 8: parses response.answer → content, sources → sources, id → answerId; returns them', async () => {
+  it('test 8: parses result.json_content.content → content, .sources → sources, top-level id → answerId', async () => {
     const body = olostepResponse({
-      answer: 'Parsed statute content.',
-      sources: [{ url: 'https://source.example.com' }],
+      content: 'Parsed statute content.',
+      sources: [{ url: 'https://source.example.com', title: 'Source' }],
       id: 'parsed-id-99',
     })
     mockFetchOk(body)
@@ -289,7 +304,7 @@ describe('callOlostep — via retrieveStatute on cache miss', () => {
 
     expect(result).toMatchObject({
       content: 'Parsed statute content.',
-      sources: [{ url: 'https://source.example.com' }],
+      sources: [{ url: 'https://source.example.com', title: 'Source' }],
       fromCache: false,
     })
 
@@ -312,6 +327,42 @@ describe('callOlostep — via retrieveStatute on cache miss', () => {
     const result = await retrieveStatute('nigeria', 'nda', 'NDPA-2023-s25', 'query')
 
     expect(result).toBeNull()
+  })
+
+  it('test 11a: handles json_content returned as a JSON string (Olostep loose-schema edge case)', async () => {
+    const body = {
+      id: 'string-id-1',
+      result: {
+        json_content: JSON.stringify({
+          content: 'Stringified content.',
+          sources: [{ url: 'https://from-string.example.com', title: 'Stringified Source' }],
+        }),
+      },
+    }
+    mockFetchOk(body)
+
+    const result = await retrieveStatute('nigeria', 'nda', 'NDPA-2023-s25', 'query')
+
+    expect(result).toMatchObject({
+      content: 'Stringified content.',
+      sources: [{ url: 'https://from-string.example.com', title: 'Stringified Source' }],
+      fromCache: false,
+    })
+  })
+
+  it('test 11b: handles missing json_content gracefully — returns empty content + empty sources, no throw', async () => {
+    // Response missing result.json_content entirely.
+    const body = { id: 'no-content-id', result: {} }
+    mockFetchOk(body)
+
+    const result = await retrieveStatute('nigeria', 'nda', 'NDPA-2023-s25', 'query')
+
+    // Should not throw, returns object with empty content / sources.
+    expect(result).toMatchObject({
+      content: '',
+      sources: [],
+      fromCache: false,
+    })
   })
 
   it('test 11: respects 30-second timeout — AbortController signals abort → returns null', async () => {
@@ -379,7 +430,7 @@ describe('retrieveStatute', () => {
   it('test 14: calls Olostep on cache miss, writes to cache, returns { content, sources, fromCache: false, retrievedAt }', async () => {
     mockMaybeSingle.mockResolvedValue({ data: null, error: null })
     mockFetchOk(olostepResponse({
-      answer: 'Fresh statute text.',
+      content: 'Fresh statute text.',
       sources: [{ url: 'https://fresh.example.com' }],
       id: 'fresh-id-01',
     }))
@@ -452,7 +503,7 @@ describe('getStatuteBundle', () => {
     // We need gt() to return { data: [], error: null } for the bundle query.
     mockGt.mockResolvedValueOnce({ data: [], error: null })
 
-    const result = await getStatuteBundle('usa-de', 'llc-operating')
+    const result = await getStatuteBundle('usa_delaware', 'llc_operating_agreement')
 
     expect(result).toEqual([])
   })
@@ -464,7 +515,7 @@ describe('getStatuteBundle', () => {
     ]
     mockGt.mockResolvedValueOnce({ data: rows, error: null })
 
-    const result = await getStatuteBundle('canada-on', 'partnership-agreement')
+    const result = await getStatuteBundle('canada_ontario', 'partnership_agreement')
 
     expect(result).toEqual([
       { statuteRef: 'REF-A', content: 'Content A', sources: [{ url: 'https://a.com' }] },
@@ -504,26 +555,48 @@ describe('Bundle registry (statute-bundles.js)', () => {
 
   it('test 21: getBundleDefinition returns an array for known jurisdiction+docType combos', () => {
     expect(Array.isArray(getBundleDefinition('nigeria', 'nda'))).toBe(true)
-    expect(Array.isArray(getBundleDefinition('usa-de', 'llc-operating'))).toBe(true)
-    expect(Array.isArray(getBundleDefinition('canada-on', 'partnership-agreement'))).toBe(true)
+    expect(Array.isArray(getBundleDefinition('usa_delaware', 'llc_operating_agreement'))).toBe(true)
+    expect(Array.isArray(getBundleDefinition('canada_ontario', 'partnership_agreement'))).toBe(true)
   })
 
   it('test 22: getBundleDefinition returns null for unknown combos', () => {
     expect(getBundleDefinition('atlantis', 'nda')).toBeNull()
-    // nigeria has no llc-operating entry.
-    expect(getBundleDefinition('nigeria', 'llc-operating')).toBeNull()
+    // nigeria has no llc_operating_agreement entry.
+    expect(getBundleDefinition('nigeria', 'llc_operating_agreement')).toBeNull()
+  })
+
+  it('test 22a: getBundleMeta returns _meta block for verified bundles ({_meta, queries} shape)', async () => {
+    const mod = await import('../../lib/statute-bundles.js')
+    const meta = mod.getBundleMeta('usa_federal', 'nda')
+    expect(meta).not.toBeNull()
+    expect(meta).toMatchObject({
+      cache_seeded: true,
+      verified_by: expect.any(String),
+    })
+    expect(meta.verification_results).toBeDefined()
+    expect(meta.excluded_from_bundle).toBeDefined()
+  })
+
+  it('test 22b: getBundleMeta returns null for unverified bundles (bare-array shape) and unknown combos', async () => {
+    const mod = await import('../../lib/statute-bundles.js')
+    // Bare-array (unverified) bundle.
+    expect(mod.getBundleMeta('nigeria', 'nda')).toBeNull()
+    // Unknown jurisdiction.
+    expect(mod.getBundleMeta('atlantis', 'nda')).toBeNull()
+    // Known jurisdiction, unknown docType.
+    expect(mod.getBundleMeta('nigeria', 'llc_operating_agreement')).toBeNull()
   })
 
   it('test 23: listJurisdictions returns exactly the 8 expected jurisdiction keys', () => {
     const expected = [
       'nigeria',
-      'usa-federal',
-      'usa-ca',
-      'usa-de',
-      'usa-ny',
-      'usa-tx',
-      'canada-federal',
-      'canada-on',
+      'usa_federal',
+      'usa_california',
+      'usa_delaware',
+      'usa_new_york',
+      'usa_texas',
+      'canada_federal',
+      'canada_ontario',
     ]
     expect(listJurisdictions()).toEqual(expected)
     expect(listJurisdictions()).toHaveLength(8)
