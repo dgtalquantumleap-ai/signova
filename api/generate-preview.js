@@ -6,11 +6,12 @@
 
 import { createHash } from 'node:crypto'
 import { parseBody } from '../lib/parse-body.js'
-import { logError, logInfo } from '../lib/logger.js'
+import { logError, logInfo, logWarn } from '../lib/logger.js'
 import { buildReceipt } from '../lib/doc-hash.js'
 import { buildDpaSystemPrompt } from './v1/documents/clauses.js'
 import { VALID_CODES } from './promo-redeem.js'
 import { EXECUTION_FORMALITIES_CLAUSE } from '../lib/execution-formalities.js'
+import { buildStatuteContext } from '../lib/statute-injection.js'
 
 const MONTHLY_PREVIEW_LIMIT = 5
 
@@ -411,7 +412,11 @@ export default async function handler(req, res) {
     : isNigeria ? 'Nigeria — NDPA 2023'
     : 'Commonwealth common-law privacy baseline'
 
-  const systemContent = isDpa
+  // systemContent is built WITHOUT executionFormalitiesClause so the Day 3
+  // statute-retrieval injection can slot in between jurisdiction context and
+  // execution formalities — same pattern as api/generate.js + v1/documents.
+  // Variable is `let` for that reason.
+  let systemContent = isDpa
     ? buildDpaSystemPrompt(dpaJurisdiction)
     : 'You are a legal document drafting assistant with deep knowledge of common-law (Nigeria, Kenya, Ghana, South Africa, Canada, US, UK), civil-law (Quebec), and the statutory regimes of each. Generate professional, comprehensive legal documents based on the user details provided. Use formal legal language with clear numbered sections. Use the spelling conventions of the governing jurisdiction. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.'
       + nigeriaClause + canadaClause + quebecClause + californiaClause + usaClause
@@ -426,7 +431,49 @@ export default async function handler(req, res) {
       + nigeriaNDAClause + nigeriaCommercialGeneralClause
       + usEmploymentClause + canadaEmploymentClause + usCanadaPropertyClause
       + genericFallbackClause
-      + antiUsDefaultClause + executionFormalitiesClause
+      + antiUsDefaultClause
+
+  // Phase 1 Day 3 — statute retrieval injection (gated by feature flag).
+  // Preview-side parity with api/generate.js: the prompt fed to Haiku must
+  // match what Sonnet sees, so the preview reflects the paid output.
+  // Preview lacks state-level US detection; isUSA and isCalifornia map
+  // to usa_federal / usa_california. Other doctypes besides NDA produce
+  // null bundles → injection is a no-op for them.
+  const previewJurKey = isDpa ? null
+    : isNigeria ? 'nigeria'
+    : isKenya ? 'kenya'
+    : isGhana ? 'ghana'
+    : isSouthAfrica ? 'south_africa'
+    : isUK ? 'uk'
+    : isQuebec ? 'canada_quebec'
+    : isCanada ? 'canada_federal'
+    : isCalifornia ? 'usa_california'
+    : isUSA ? 'usa_federal'
+    : null
+  const previewDocType = isNdaDoc ? 'nda' : null
+  let statuteContext = null
+  if (!isDpa && previewJurKey && previewDocType) {
+    try {
+      statuteContext = await buildStatuteContext(previewJurKey, previewDocType)
+    } catch (err) {
+      logWarn('/generate-preview', {
+        event: 'statute_retrieval_failed',
+        jurisdiction: previewJurKey,
+        docType: previewDocType,
+        error: err?.message ?? String(err),
+      })
+    }
+  }
+  if (statuteContext) {
+    systemContent += '\n\n' + statuteContext
+    logInfo('/generate-preview', {
+      event: 'statute_context_injected',
+      jurisdiction: previewJurKey,
+      docType: previewDocType,
+      contextLength: statuteContext.length,
+    })
+  }
+  systemContent += executionFormalitiesClause
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {

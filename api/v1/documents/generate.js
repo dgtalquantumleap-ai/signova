@@ -4,7 +4,7 @@
 
 import { authenticate, recordUsage, buildUsageBlock } from '../../../lib/api-auth.js'
 import { DocumentGenerateSchema, formatValidationError } from '../../../lib/validators.js'
-import { logError, logWarn, logRequest, logDetailedError } from '../../../lib/logger.js'
+import { logError, logWarn, logInfo, logRequest, logDetailedError } from '../../../lib/logger.js'
 import { parseBody } from '../../../lib/parse-body.js'
 import { buildDpaSystemPrompt, buildKeyObligationsSummary, buildDataFlowMappingTemplate, getDpaClauses } from './clauses.js'
 import { buildJurisdictionContext } from '../../../lib/jurisdiction-context.js'
@@ -28,6 +28,7 @@ import {
 } from '../../../lib/doc-classification.js'
 import { randomBytes } from 'node:crypto'
 import { EXECUTION_FORMALITIES_CLAUSE } from '../../../lib/execution-formalities.js'
+import { buildStatuteContext } from '../../../lib/statute-injection.js'
 
 const LEGAL_DISCLAIMER = {
   type: 'disclaimer',
@@ -283,13 +284,48 @@ export default async function handler(req, res) {
       ? buildJurisdictionContext(normalizedJurKey) + '\n\nWhen drafting this document, apply the jurisdiction framework above: cite the statutes listed where they bear on the document type; use the governing-law clause structure from the framework; use the forum/venue from the framework; use the currency from the framework for monetary references; do not invoke statutes from other jurisdictions.'
       : ''
 
-    const systemPrompt = document_type === 'data-processing-agreement'
+    // systemPrompt is built WITHOUT EXECUTION_FORMALITIES_CLAUSE so the
+    // Day 3 statute-retrieval injection can slot context after jurisdiction
+    // material but before execution formalities. The trailing exec clause is
+    // appended below, after the optional injection. Variable is `let` for
+    // that reason.
+    let systemPrompt = document_type === 'data-processing-agreement'
       ? buildDpaSystemPrompt(fields.jurisdiction) + '\n\nThis is a premium paid document — make it exceptional.'
       : (libraryJurContext ? libraryJurContext + '\n\n' : '')
         + 'You are an expert legal document drafter with deep knowledge of international law, including common-law (Canada, US, UK, Commonwealth), civil-law (Quebec), and the North American statutory privacy regimes (PIPEDA, Quebec Law 25, CCPA/CPRA). Generate comprehensive, professional legal documents tailored precisely to the details provided. Use formal legal language, clear numbered sections, and include all standard clauses. Use the spelling conventions of the governing jurisdiction. This is a premium paid document — make it exceptional. Never add disclaimers, footnotes, notes, or suggestions to consult a lawyer at the end of the document. The document ends cleanly after the signature block with no additional commentary.'
         + jurisdictionEnhancement
         + v1NigeriaNDAClause
-        + EXECUTION_FORMALITIES_CLAUSE
+
+    // Phase 1 Day 3 — statute retrieval injection (gated by feature flag).
+    // No-op when STATUTE_RETRIEVAL_ENABLED!=='true' or per-jurisdiction flag
+    // is off. Graceful fallback on any retrieval error: log and proceed
+    // without injection — generation must NEVER fail due to retrieval.
+    const isDpaV1 = document_type === 'data-processing-agreement'
+    let statuteContext = null
+    if (!isDpaV1 && normalizedJurKey && document_type) {
+      try {
+        statuteContext = await buildStatuteContext(normalizedJurKey, document_type)
+      } catch (err) {
+        logWarn('/v1/documents/generate', {
+          event: 'statute_retrieval_failed',
+          jurisdiction: normalizedJurKey,
+          docType: document_type,
+          error: err?.message ?? String(err),
+        })
+      }
+    }
+    if (statuteContext) {
+      systemPrompt += '\n\n' + statuteContext
+      logInfo('/v1/documents/generate', {
+        event: 'statute_context_injected',
+        jurisdiction: normalizedJurKey,
+        docType: document_type,
+        contextLength: statuteContext.length,
+      })
+    }
+    if (!isDpaV1) {
+      systemPrompt += EXECUTION_FORMALITIES_CLAUSE
+    }
 
     // Phase 3 — shared completeness-aware generator. Raises max_tokens
     // per-doctype from the spec, validates required clauses, continues

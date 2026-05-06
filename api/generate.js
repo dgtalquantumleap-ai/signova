@@ -28,6 +28,7 @@ import {
 } from '../lib/doc-classification.js'
 import { randomBytes } from 'node:crypto'
 import { EXECUTION_FORMALITIES_CLAUSE } from '../lib/execution-formalities.js'
+import { buildStatuteContext } from '../lib/statute-injection.js'
 
 // Phase 4 — consumer doc_type resolution.
 //
@@ -1360,7 +1361,12 @@ export default async function handler(req, res) {
   // a UK data controller got a Nigerian-flavoured DPA with NDPC referral.
   // Now: dedicated routing for UK / SA / KE / GH (all already in CLAUSE_REGISTRY)
   // + a Commonwealth fallback for fully unmapped jurisdictions.
-  const systemPrompt = isDpa
+  // systemPrompt is built WITHOUT executionFormalitiesClause so the Day 3
+  // retrieval injection can slot statute context AFTER jurisdiction context
+  // but BEFORE execution formalities. The trailing exec clause is appended
+  // below, after the optional statute injection. Variable is `let` (not
+  // `const`) for that reason.
+  let systemPrompt = isDpa
     ? buildDpaSystemPrompt(
         isUK ? 'United Kingdom — UK GDPR / DPA 2018'
         : isCalifornia ? 'United States — CCPA/CPRA'
@@ -1390,7 +1396,7 @@ export default async function handler(req, res) {
       + californiaEmploymentClause + newYorkEmploymentClause + texasEmploymentClause
       + floridaEmploymentClause + illinoisEmploymentClause + washingtonEmploymentClause
       + genericFallbackClause
-      + antiUsDefaultClause + executionFormalitiesClause
+      + antiUsDefaultClause
 
   try {
     const controller = new AbortController()
@@ -1416,6 +1422,34 @@ export default async function handler(req, res) {
         message: 'Consumer request arrived without a registered doc_type_id; used regex fallback',
       })
     }
+
+    // Phase 1 Day 3 — statute retrieval injection (gated by feature flag).
+    // No-op when STATUTE_RETRIEVAL_ENABLED!=='true' or per-jurisdiction flag
+    // is off. Graceful fallback on any retrieval error: log and proceed
+    // without statute context — generation must NEVER fail due to retrieval.
+    let statuteContext = null
+    if (!isDpa && normalizedJurKey && docType) {
+      try {
+        statuteContext = await buildStatuteContext(normalizedJurKey, docType)
+      } catch (err) {
+        logWarn('/generate', {
+          event: 'statute_retrieval_failed',
+          jurisdiction: normalizedJurKey,
+          docType,
+          error: err?.message ?? String(err),
+        })
+      }
+    }
+    if (statuteContext) {
+      systemPrompt += '\n\n' + statuteContext
+      logInfo('/generate', {
+        event: 'statute_context_injected',
+        jurisdiction: normalizedJurKey,
+        docType,
+        contextLength: statuteContext.length,
+      })
+    }
+    systemPrompt += executionFormalitiesClause
 
     const jurisdictionLog =
       (isNigeria && 'Nigeria') ||
