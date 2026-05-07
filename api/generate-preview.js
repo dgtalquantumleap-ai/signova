@@ -436,9 +436,15 @@ export default async function handler(req, res) {
   // Phase 1 Day 3 — statute retrieval injection (gated by feature flag).
   // Preview-side parity with api/generate.js: the prompt fed to Haiku must
   // match what Sonnet sees, so the preview reflects the paid output.
-  // Preview lacks state-level US detection; isUSA and isCalifornia map
-  // to usa_federal / usa_california. Other doctypes besides NDA produce
-  // null bundles → injection is a no-op for them.
+  //
+  // Day 5A intentional divergence: preview keeps country-level US detection
+  // only. isCalifornia gets dedicated routing; other US states (NY, TX, FL,
+  // and Delaware) all fall through to usa_federal here. The preview is a
+  // fast, free taste — a customer paying $14.99/$39 gets the full state-
+  // grounded document via the consumer (api/generate.js) or v1
+  // (api/v1/documents/generate.js) endpoints which DO route to the
+  // state-specific bundle. Adding a full state detection chain here would
+  // duplicate logic without proportional benefit on a Haiku preview.
   const previewJurKey = isDpa ? null
     : isNigeria ? 'nigeria'
     : isKenya ? 'kenya'

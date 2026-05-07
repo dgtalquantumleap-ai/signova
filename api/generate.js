@@ -371,13 +371,25 @@ export default async function handler(req, res) {
   const isUsStateFL = /\b(florida|miami|orlando|tampa|jacksonville|fla\.\s*stat\.)\b/.test(jurisdictionScope) && !isCalifornia
   const isUsStateIL = /\b(illinois|chicago|bipa|freedom to work act)\b/.test(jurisdictionScope) && !isCalifornia
   const isUsStateWA = /\b(washington state|seattle|spokane|tacoma|rcw 49\.62|rcw\s*49\.62)\b/.test(jurisdictionScope) && !isCalifornia
+  // Day 5A — Delaware detector. Routes Delaware-marked NDAs to the
+  // usa_delaware bundle (DUTSA queries) instead of falling through to
+  // usa_federal. Negative lookahead `(?!\s+county)` excludes "Delaware
+  // County" (which exists in PA, OH, IN, NY etc.) so a PA agreement that
+  // happens to mention Delaware County doesn't get state-of-Delaware law
+  // applied. Additional anchors (DGCL, Court of Chancery, 6 Del. C.) lock
+  // in Delaware-specific intent.
+  const isUsStateDE = (
+    /\bdelaware\b(?!\s+county)/i.test(jurisdictionScope) ||
+    /\bdgcl\b/i.test(jurisdictionScope) ||
+    /\bdelaware\s+court\s+of\s+chancery\b/i.test(jurisdictionScope) ||
+    /\b6\s*del\.?\s*c\.?\b/i.test(jurisdictionScope)
+  ) && !isCalifornia
 
   const isUSA = !isCalifornia && (
     /\bunited states\b/.test(jurisdictionScope) ||
     /\b(USA|U\.S\.A\.|U\.S\.)\b/.test(promptScopeRaw) ||  // original case — avoids pronoun "us"
-    /\bdelaware|dgcl\b/.test(jurisdictionScope) ||
-    isUsStateNY || isUsStateTX || isUsStateFL || isUsStateIL || isUsStateWA ||
-    /\b(alabama|alaska|arizona|arkansas|colorado|connecticut|delaware|florida|georgia|hawaii|idaho|illinois|indiana|iowa|kansas|kentucky|louisiana|maine|maryland|massachusetts|michigan|minnesota|mississippi|missouri|montana|nebraska|nevada|new hampshire|new jersey|new mexico|new york|north carolina|north dakota|ohio|oklahoma|oregon|pennsylvania|rhode island|south carolina|south dakota|tennessee|texas|utah|vermont|virginia|washington|west virginia|wisconsin|wyoming)\b/.test(jurisdictionScope) ||
+    isUsStateNY || isUsStateTX || isUsStateFL || isUsStateIL || isUsStateWA || isUsStateDE ||
+    /\b(alabama|alaska|arizona|arkansas|colorado|connecticut|georgia|hawaii|idaho|indiana|iowa|kansas|kentucky|louisiana|maine|maryland|massachusetts|michigan|minnesota|mississippi|missouri|montana|nebraska|nevada|new hampshire|new jersey|new mexico|north carolina|north dakota|ohio|oklahoma|oregon|pennsylvania|rhode island|south carolina|south dakota|tennessee|utah|vermont|virginia|west virginia|wisconsin|wyoming)\b/.test(jurisdictionScope) ||
     /\b(nyc|new york city|chicago|houston|phoenix|philadelphia|dallas|austin|seattle|boston|miami|atlanta|denver|detroit|minneapolis|las vegas)\b/.test(jurisdictionScope)
   )
 
@@ -399,6 +411,7 @@ export default async function handler(req, res) {
     : isUsStateNY ? 'usa_new_york'
     : isUsStateTX ? 'usa_texas'
     : isUsStateFL ? 'usa_florida'
+    : isUsStateDE ? 'usa_delaware'
     : isUSA ? 'usa_federal'
     : normalizeJurisdictionKey(jurisdictionScope)
 
