@@ -157,6 +157,213 @@ describe('hasExecutionBlock — true positive: Witness Signature: form field', (
 // Edge cases
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// SIG-57B913C5 regression — second customer report, 2026-05-08
+//
+// Customer regenerated their MOU after the cff74a3 fix shipped and got
+// another truncated doc stamped ok:true. Root cause: the multi-line
+// fallback (underscore + "Date:" within 3 lines) was matching body
+// content like "Section 7. Effective Date and Term — ... ____________ ...
+// Date: ____________" embedded in the tail. That body pattern looks
+// structurally identical to a minimal exec block but carries no
+// signature semantics.
+//
+// Fix tightens the multi-line fallback to require a strict form-field
+// marker (Title: / Print Name: / Printed Name: / Printed by: /
+// Signature:) within the 5-line window in addition to underscore + Date:.
+// Body date clauses don't carry these labels; real exec blocks routinely
+// do (EXECUTION_FORMALITIES_CLAUSE template instructs Sonnet to emit
+// them).
+// ---------------------------------------------------------------------------
+
+describe('hasExecutionBlock — SIG-57B913C5 regression (multi-line fallback false positive)', () => {
+  it('"Effective Date and Term" body clause with underscore + Date: in tail returns false', () => {
+    const headPad = (
+      'Body content covering substantive partnership obligations, equity allocation under CAMA 2020, ' +
+      'governance structure, revenue sharing arrangements, and confidentiality obligations. '
+    ).repeat(50)
+    const dateClauseInTail =
+      '\n\nSection 7. Effective Date and Term.\n\n' +
+      '7.1 The Effective Date of this Agreement shall be ________________________________\n\n' +
+      '7.2 The initial Term shall commence on the Effective Date and continue for three (3) years.\n\n' +
+      'Date: ________________________________\n\n' +
+      'The Parties acknowledge the obligations set forth herein.\n'
+    const trailingBody = ('Additional clauses covering brand identity. '.repeat(10))
+    const doc = headPad + dateClauseInTail + trailingBody
+    expect(hasExecutionBlock(doc)).toBe(false)
+  })
+
+  it('partial / aborted exec block (just underscore + Date:, no form fields) returns false (acceptable false-negative)', () => {
+    // Sonnet sometimes truncates while writing the exec block. If the
+    // partial output has only underscore + Date: with no Title/Print
+    // Name/Signature labels, the new detector rejects it, which causes
+    // the orchestrator's continuation retry to fire — that's the right
+    // failure mode (better false-negative than false-positive).
+    const headPad = ('Body content covering obligations. '.repeat(60))
+    const partialBlock =
+      '\n\nThe Parties have agreed:\n\n' +
+      '________________________________\n' +
+      'Date: 2026-05-08\n' +
+      '________________________________\n'
+    const doc = headPad + partialBlock
+    expect(hasExecutionBlock(doc)).toBe(false)
+  })
+
+  it('legitimate minimal exec block WITH form-field labels still detected', () => {
+    // Real exec blocks include Title:/Print Name:/Signature: per the
+    // EXECUTION_FORMALITIES_CLAUSE template. These must continue to pass.
+    const headPad = ('Body content covering obligations. '.repeat(60))
+    const realBlock =
+      '\n\nThe Parties have agreed:\n\n' +
+      'For Acme Corporation:\n' +
+      'Signature: ________________________________\n' +
+      'Print Name: ________________________________\n' +
+      'Title: ________________________________\n' +
+      'Date: ________________________________\n'
+    const doc = headPad + realBlock
+    expect(hasExecutionBlock(doc)).toBe(true)
+  })
+
+  it('"By: ___ / Title: ___ / Date: ___" labelled block still detected', () => {
+    // Common minimal-but-labelled style. Must still pass.
+    const headPad = ('Body content covering obligations. '.repeat(60))
+    const labelledBlock =
+      '\n\nFor Acme Corporation:\n' +
+      'By: ________________________________\n' +
+      'Print Name: _________________________\n' +
+      'Title: CEO\n' +
+      'Date: 2026-05-08\n'
+    const doc = headPad + labelledBlock
+    expect(hasExecutionBlock(doc)).toBe(true)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Layer 1 matrix — multi-line-fallback false-positive class across 8 doc types
+//
+// Each doc type gets a doc-type-specific trap clause with an "Effective
+// Date" / "Distribution Date" / similar body-prose date construction
+// (underscore + "Date:" in close proximity) embedded in the tail. Two
+// scenarios per doc type:
+//
+//   1. WITHOUT a strict form-field marker → expect false (would have been
+//      a false positive under the pre-2026-05-08 detector; SIG-57B913C5
+//      regression class)
+//   2. WITH a strict form-field marker (Print Name:/Title:/Signature:)
+//      adjacent → expect true (real execution block layout)
+//
+// Fixtures sized to ~10K chars matching SIG-57B913C5 length, where the
+// trap clause naturally falls inside the tail-30% window.
+// ---------------------------------------------------------------------------
+
+const MULTILINE_BODY_TRAPS = {
+  'mou': {
+    section: '7. EFFECTIVE DATE AND TERM',
+    trap:
+      '7.1 The Effective Date of this Agreement shall be ________________________________\n\n' +
+      '7.2 The initial Term shall commence on the Effective Date and continue for three (3) years.\n\n' +
+      'Date: ________________________________\n',
+  },
+  'partnership-agreement': {
+    section: '8. PROFIT DISTRIBUTION DATES',
+    trap:
+      '8.1 Each Quarterly Distribution Date shall be ________________________________\n\n' +
+      '8.2 Profits accrued through the relevant period shall be distributed to Partners on each Distribution Date.\n\n' +
+      'Date: ________________________________\n',
+  },
+  'service-agreement': {
+    section: '6. SERVICE COMMENCEMENT AND TERMINATION',
+    trap:
+      '6.1 The Service Commencement Date shall be ________________________________\n\n' +
+      '6.2 The Service Termination Date, unless earlier terminated, shall be the third anniversary of the Commencement Date.\n\n' +
+      'Date: ________________________________\n',
+  },
+  'nda': {
+    section: '9. DISCLOSURE PERIOD AND RECORDS',
+    trap:
+      '9.1 The Disclosure Period shall commence on ________________________________\n\n' +
+      '9.2 Each disclosure of Confidential Information shall be logged with the date of disclosure recorded contemporaneously.\n\n' +
+      'Date: ________________________________\n',
+  },
+  'asset-purchase-agreement': {
+    section: '11. CLOSING AND TITLE TRANSFER',
+    trap:
+      '11.1 The Closing Date shall be ________________________________\n\n' +
+      '11.2 The Date of Title Transfer of the Purchased Assets to the Purchaser shall coincide with the Closing Date.\n\n' +
+      'Date: ________________________________\n',
+  },
+  'employment-offer': {
+    section: '5. START DATE AND PROBATION',
+    trap:
+      '5.1 The Start Date of your employment shall be ________________________________\n\n' +
+      '5.2 The Probation End Date shall be the date six (6) months after the Start Date.\n\n' +
+      'Date: ________________________________\n',
+  },
+  'tenancy-agreement': {
+    section: '4. RENT PAYMENT DATES',
+    trap:
+      '4.1 Rent shall be payable on the first calendar day of each month, the first such Rent Due Date being ________________________________\n\n' +
+      '4.2 Late payment after fourteen (14) days of any Rent Due Date attracts the late-payment charge specified in Schedule 1.\n\n' +
+      'Date: ________________________________\n',
+  },
+  'llc-operating-agreement': {
+    section: '12. MEMBER DISTRIBUTIONS',
+    trap:
+      '12.1 The Effective Date of Membership for each new Member shall be ________________________________\n\n' +
+      '12.2 The Quarterly Distribution Date on which Members receive distributions in proportion to their Membership Interests shall be set by the Manager.\n\n' +
+      'Date: ________________________________\n',
+  },
+}
+
+function buildMultilineFixture(docType, { withFormField = false } = {}) {
+  const trap = MULTILINE_BODY_TRAPS[docType]
+  if (!trap) throw new Error(`No multi-line fixture for docType="${docType}"`)
+
+  // ~7K of head padding (sections 1 through N-1 of a normal doc body)
+  const headPad = (
+    'This Agreement contains substantive operative provisions covering the parties, the recitals, ' +
+    'the purpose of the engagement, the equity grant and vesting schedule, governance and decision-making ' +
+    'authority, and the right to strategic input and participation. '
+  ).repeat(20)
+
+  // Trap clause + a small amount of body after to keep the underscore line
+  // inside the tail-30% window (not at the very tail end where minimal-block
+  // heuristics would change behavior).
+  const formField = withFormField
+    ? '\nPrint Name: ________________________________\nTitle: ________________________________\n'
+    : '\n'
+  const trapClause = `\n\n${trap.section}\n\n${trap.trap}${formField}`
+
+  const trailingBody =
+    '\n\nNN. GENERAL PROVISIONS. The Parties acknowledge that this Agreement constitutes the ' +
+    'entire understanding between them and supersedes all prior negotiations, representations, ' +
+    'or agreements relating to its subject matter.\n'
+
+  return headPad + trapClause + trailingBody
+}
+
+describe('hasExecutionBlock — Layer 1 matrix: multi-line-fallback class (body-prose date constructions)', () => {
+  for (const docType of Object.keys(MULTILINE_BODY_TRAPS)) {
+    it(`${docType}: body-prose date clause (underscore + Date: in tail) WITHOUT form-field marker returns false`, () => {
+      const doc = buildMultilineFixture(docType, { withFormField: false })
+      // Sanity — the underscore + Date: trap must land in the last-30% tail
+      const tailStart = Math.floor(doc.length * 0.7)
+      const tail = doc.slice(tailStart)
+      expect(tail).toMatch(/_{8,}/)
+      expect(tail).toMatch(/\bdate\s*:/i)
+      // Old detector would have returned true; new detector returns false
+      expect(hasExecutionBlock(doc)).toBe(false)
+    })
+
+    it(`${docType}: body-prose date clause WITH form-field marker (Print Name:/Title:) returns true`, () => {
+      const doc = buildMultilineFixture(docType, { withFormField: true })
+      // Real-exec-block-shaped layout (underscore + Date: + Print Name:/Title:)
+      // is correctly identified as complete
+      expect(hasExecutionBlock(doc)).toBe(true)
+    })
+  }
+})
+
 describe('hasExecutionBlock — edge cases', () => {
   it('document under 100 chars returns false (too short to be a real document)', () => {
     expect(hasExecutionBlock('IN WITNESS WHEREOF')).toBe(false)

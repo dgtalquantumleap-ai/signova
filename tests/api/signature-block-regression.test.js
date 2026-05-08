@@ -210,8 +210,46 @@ This Agreement is governed by Nigerian law.
     expect(missing).toContain('execution-block')
   })
 
-  it('multi-line underscores + "Date:" within 3 lines triggers execution-block detection', () => {
-    const docWithUnderscore = `
+  it('multi-line underscores + "Date:" + form-field marker triggers execution-block detection', () => {
+    // Updated contract (2026-05-08, SIG-57B913C5 fix):
+    // The multi-line fallback no longer accepts a bare underscore + "Date:"
+    // pair. Body content like "Section 7. Effective Date — The Effective
+    // Date shall be ________________ ... Date: ________________" used to
+    // trip the original permissive form. The new rule requires a strict
+    // form-field marker (Title: / Print Name: / Signature:) within the
+    // 5-line window. Real exec blocks routinely emit these labels per the
+    // EXECUTION_FORMALITIES_CLAUSE template; body date clauses don't.
+    const headPad = 'Body section content covering substantive obligations and party-specific provisions. '.repeat(50)
+    const docWithUnderscore = headPad + `
+
+MEMORANDUM OF UNDERSTANDING
+
+1. PURPOSE
+
+2. OBLIGATIONS
+
+3. TERM
+
+The parties have agreed to the terms above.
+
+Party A:
+______________________________
+Print Name: _________________________
+Date: _________________________
+`
+    const missing = findMissingClauses(docWithUnderscore, 'mou')
+    expect(missing).not.toContain('execution-block')
+  })
+
+  it('multi-line underscores + "Date:" WITHOUT strict form-field marker is rejected (SIG-57B913C5 regression)', () => {
+    // The pre-2026-05-08 detector accepted this. The post-fix detector
+    // rejects it because body content (e.g. an "Effective Date" clause
+    // with embedded underscores) was producing false positives. Real
+    // execution blocks include Title: / Print Name: / Signature: labels
+    // and will not regress under this rule.
+    const headPad = 'Body section content covering substantive obligations and party-specific provisions. '.repeat(50)
+    const docBodyOnlyDateClause = headPad + `
+
 MEMORANDUM OF UNDERSTANDING
 
 1. PURPOSE
@@ -226,8 +264,8 @@ Party A:
 ______________________________
 Date: _________________________
 `
-    const missing = findMissingClauses(docWithUnderscore, 'mou')
-    expect(missing).not.toContain('execution-block')
+    const missing = findMissingClauses(docBodyOnlyDateClause, 'mou')
+    expect(missing).toContain('execution-block')
   })
 
   it('Witness Signature: line triggers execution-block detection', () => {
