@@ -505,7 +505,19 @@ export default async function handler(req, res) {
       } catch {
         try { errMsg = await response.text() } catch {}
       }
-      logError('/generate-preview', { status: response.status, message: errMsg })
+      // Phase 0 observability — added 2026-05-12. Parity with api/generate.js
+      // failure logs. stop_reason is null here because this is an HTTP-level
+      // Anthropic error, not a generation-stop condition.
+      logError('/generate-preview', {
+        success: false,
+        status: response.status,
+        message: errMsg,
+        stop_reason: null,
+        used_continuation: false,
+        doc_type: previewDocType ?? null,
+        jurisdiction: previewJurKey ?? null,
+        max_tokens_configured: 6000,
+      })
       return res.status(500).json({ error: 'Preview generation failed. Please try again.' })
     }
 
@@ -528,10 +540,34 @@ export default async function handler(req, res) {
     // Receipt hashes the full text (pre-truncation) so the paid regeneration
     // can be compared to the same fingerprint for audit purposes.
     const receipt = buildReceipt(text, { doc_tier: 'preview' })
-    logInfo('/generate-preview', { success: true, text_length: text.length, locked_count: lockedLineCount, hash: receipt.fingerprint })
+    logInfo('/generate-preview', {
+      success: true,
+      text_length: text.length,
+      locked_count: lockedLineCount,
+      hash: receipt.fingerprint,
+      // Phase 0 observability — added 2026-05-12. Parity with api/generate.js.
+      // Preview uses a single direct Haiku call (no orchestrator), so
+      // used_continuation is always false and max_tokens_configured is the
+      // preview's own hardcoded 6000 cap, not the registry value.
+      stop_reason: data?.stop_reason ?? null,
+      used_continuation: false,
+      doc_type: previewDocType ?? null,
+      jurisdiction: previewJurKey ?? null,
+      max_tokens_configured: 6000,
+    })
     return res.status(200).json({ text: visibleText, lockedSectionTitles, lockedLineCount, isPreview: true, receipt })
   } catch (err) {
-    logError('/generate-preview', { message: err.message, stack: err.stack })
+    // Phase 0 observability — added 2026-05-12. Parity with api/generate.js.
+    logError('/generate-preview', {
+      success: false,
+      message: err.message,
+      stack: err.stack,
+      stop_reason: null,
+      used_continuation: false,
+      doc_type: previewDocType ?? null,
+      jurisdiction: previewJurKey ?? null,
+      max_tokens_configured: 6000,
+    })
     return res.status(500).json({ error: 'Preview generation failed. Please try again.' })
   }
 }

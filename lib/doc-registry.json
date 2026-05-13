@@ -34,7 +34,7 @@
     "tightly — too many false positives will suppress valid output."
   ],
   "defaults": {
-    "max_tokens": 8000
+    "max_tokens": 21000
   },
   "bodyTemplates": {
     "service_agreement_v1":        { "declared_title": "Service Agreement" },
@@ -86,7 +86,7 @@
         { "id": "governing-law",  "anyOf": ["governing law", "jurisdiction and governing law"] },
         { "id": "signature",      "anyOf": ["signature", "signed", "in witness whereof", "executed"] }
       ],
-      "max_tokens": 16000,
+      "max_tokens": 21000,
       "jurisdiction_variants": {
         "default": { "title": "Service Agreement", "body_template_id": "service_agreement_v1" },
         "nigeria": { "title": "Service Agreement", "body_template_id": "service_agreement_ng_v1" }
@@ -133,7 +133,7 @@
         { "id": "governing-law", "anyOf": ["governing law"] },
         { "id": "signature",     "anyOf": ["signature", "signed", "in witness whereof", "executed"] }
       ],
-      "max_tokens": 16000,
+      "max_tokens": 21000,
       "jurisdiction_variants": {
         "default": { "title": "Consulting Agreement", "body_template_id": "consulting_agreement_v1" }
       },
@@ -167,7 +167,7 @@
       "required_clauses": [
         { "id": "execution-block", "anyOf": ["signed by", "in witness whereof", "witness name:", "witness signature:"] }
       ],
-      "max_tokens": 20000,
+      "max_tokens": 21000,
       "jurisdiction_variants": { "default": { "title": "Non-Disclosure Agreement", "body_template_id": "nda_v1" } },
       "worker_classification_modes": [],
       "forbidden_titles": ["Service Agreement", "Contract of Employment"]
@@ -350,7 +350,7 @@
       "required_clauses": [
         { "id": "execution-block", "anyOf": ["signed by", "in witness whereof", "witness name:", "witness signature:"] }
       ],
-      "max_tokens": 16000,
+      "max_tokens": 21000,
       "jurisdiction_variants": { "default": { "title": "Memorandum of Understanding", "body_template_id": "mou_v1" } },
       "worker_classification_modes": [],
       "forbidden_titles": []
@@ -428,7 +428,7 @@
         { "id": "governing-law",        "anyOf": ["governing law", "laws of the federal republic of nigeria"] },
         { "id": "signature",            "anyOf": ["signature", "in witness whereof", "signed by"] }
       ],
-      "max_tokens": 16000,
+      "max_tokens": 21000,
       "jurisdiction_variants": { "default": { "title": "Founders Agreement", "body_template_id": "founders_agreement_v1" } },
       "worker_classification_modes": [],
       "forbidden_titles": []
@@ -498,7 +498,7 @@
         { "id": "protective-provisions", "anyOf": ["protective provisions", "investor consent"] },
         { "id": "governing-law",         "anyOf": ["governing law", "laws of the federal republic of nigeria"] }
       ],
-      "max_tokens": 12000,
+      "max_tokens": 21000,
       "jurisdiction_variants": { "default": { "title": "Term Sheet", "body_template_id": "term_sheet_v1" } },
       "worker_classification_modes": [],
       "forbidden_titles": []
@@ -515,7 +515,7 @@
         { "id": "governing-law",     "anyOf": ["governing law", "laws of the federal republic of nigeria"] },
         { "id": "signature",         "anyOf": ["signature", "in witness whereof", "signed by"] }
       ],
-      "max_tokens": 12000,
+      "max_tokens": 21000,
       "jurisdiction_variants": { "default": { "title": "SAFE Agreement", "body_template_id": "safe_agreement_v1" } },
       "worker_classification_modes": [],
       "forbidden_titles": []

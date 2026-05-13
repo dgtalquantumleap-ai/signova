@@ -19,6 +19,7 @@ import {
   hasDocType,
   isWorkerClassificationRequired,
   getWorkerClassificationModes,
+  getMaxTokens,
 } from '../../../lib/doc-registry.js'
 import {
   validateWorkerClassification,
@@ -371,6 +372,18 @@ export default async function handler(req, res) {
       } else {
         errBody.message = 'Document generation failed.'
       }
+      // Phase 0 observability — added 2026-05-12. Parity with api/generate.js.
+      logError('POST /v1/documents/generate', {
+        success: false,
+        code: completion.code,
+        reference_id: completion.referenceId,
+        stop_reason: completion.firstStopReason ?? null,
+        used_continuation: completion.usedContinuation ?? false,
+        doc_type: document_type,
+        jurisdiction: normalizedJurKey ?? null,
+        max_tokens_configured: getMaxTokens(document_type),
+        missing_clauses: completion.missingClauses ?? null,
+      })
       return res.status(502).json({ success: false, error: errBody })
     }
 
@@ -379,9 +392,15 @@ export default async function handler(req, res) {
     // Record usage only after successful generation
     await recordUsage(auth)
 
-    logRequest('POST /v1/documents/generate', 'POST', 200, Date.now() - startTime, { 
+    logRequest('POST /v1/documents/generate', 'POST', 200, Date.now() - startTime, {
       document_type,
       tier: auth.keyData?.tier,
+      // Phase 0 observability — added 2026-05-12. Parity with api/generate.js.
+      stop_reason: completion.firstStopReason ?? null,
+      used_continuation: completion.usedContinuation ?? false,
+      doc_type: document_type,
+      jurisdiction: normalizedJurKey ?? null,
+      max_tokens_configured: getMaxTokens(document_type),
     })
 
     return res.status(200).json({

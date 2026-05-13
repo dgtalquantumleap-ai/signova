@@ -20,6 +20,7 @@ import {
   hasDocType,
   isWorkerClassificationRequired,
   getWorkerClassificationModes,
+  getMaxTokens,
 } from '../lib/doc-registry.js'
 import {
   inferWorkerClassification,
@@ -1553,6 +1554,20 @@ export default async function handler(req, res) {
         failurePayload.description = completion.description
         failurePayload.anchor_hits = completion.anchorHits
       }
+      // Phase 0 observability — added 2026-05-12. Capture why generation
+      // failed so log analysis can distinguish max_tokens truncation from
+      // routing mismatches without re-deriving from the error code alone.
+      logError('/generate', {
+        success: false,
+        code: completion.code,
+        reference_id: completion.referenceId,
+        stop_reason: completion.firstStopReason ?? null,
+        used_continuation: completion.usedContinuation ?? false,
+        doc_type: docType,
+        jurisdiction: normalizedJurKey ?? null,
+        max_tokens_configured: getMaxTokens(docType),
+        missing_clauses: completion.missingClauses ?? null,
+      })
       return res.status(502).json(failurePayload)
     }
 
@@ -1582,6 +1597,12 @@ export default async function handler(req, res) {
       text_length: text.length,
       hash: receipt.fingerprint,
       audit_sequence: auditEntry?.sequence ?? null,
+      // Phase 0 observability — added 2026-05-12
+      stop_reason: completion.firstStopReason ?? null,
+      used_continuation: completion.usedContinuation ?? false,
+      doc_type: docType,
+      jurisdiction: normalizedJurKey ?? null,
+      max_tokens_configured: getMaxTokens(docType),
     })
 
     // FIX 2: Mark payment credential as used AFTER successful generation

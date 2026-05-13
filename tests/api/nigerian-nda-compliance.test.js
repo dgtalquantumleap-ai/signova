@@ -270,14 +270,14 @@ describe('Scope guard — NDPA/GAID block must not fire outside Nigeria', () => 
   })
 })
 
-// ── SUITE 4: Registry — nda.max_tokens must be 16000 ─────────────────────────
+// ── SUITE 4: Registry — nda.max_tokens is the unified 21000 global cap ───────
 describe('doc-registry.json — NDA token budget', () => {
-  it('nda.max_tokens is 16000 to accommodate 9 NDPA/GAID compliance clauses without truncation', () => {
+  it('nda.max_tokens is the unified 21000 global cap (≥ the budget the 9 NDPA/GAID compliance clauses need)', () => {
     const registryPath = join(__dirname, '..', '..', 'lib', 'doc-registry.json')
     const registry = JSON.parse(readFileSync(registryPath, 'utf8'))
     expect(
       registry.docTypes?.nda?.max_tokens,
-      'docTypes.nda.max_tokens must be 20000 — bumped from null → 12000 → 16000 → 20000; 16000 truncated complex data-analytics NDAs before signature block'
-    ).toBe(20000)
+      'Phase 0 (2026-05-12) unified all doc-type max_tokens to the 21000 global cap (was null → 12000 → 16000 → 20000 → 21000). 21000 comfortably exceeds the budget the 9 NDPA/GAID clauses + execution block need.'
+    ).toBe(21000)
   })
 })

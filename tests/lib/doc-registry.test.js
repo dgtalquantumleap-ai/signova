@@ -113,9 +113,14 @@ describe('lib/doc-registry.js — accessor behaviour', () => {
   })
 
   it('getMaxTokens respects per-doctype override and falls back to default', () => {
-    expect(getMaxTokens('service-agreement')).toBe(16000)
-    // A doc type with max_tokens: null → falls back to defaults.max_tokens (8000)
-    expect(getMaxTokens('privacy-policy')).toBe(8000)
+    // Phase 0 (2026-05-12): all explicit doc-type values were unified to the
+    // 21000 global cap, and the registry default is also 21000. service-
+    // agreement carries an explicit 21000; privacy-policy carries null and
+    // therefore inherits the 21000 default. Both resolve to 21000 — the
+    // values coincide post-Phase-0, but the resolution paths still differ
+    // (explicit override vs. default fallback).
+    expect(getMaxTokens('service-agreement')).toBe(21000) // explicit override
+    expect(getMaxTokens('privacy-policy')).toBe(21000)    // null → defaults.max_tokens fallback
   })
 
   it('getForbiddenTitles and getWorkerClassificationModes return arrays (empty when unset)', () => {

@@ -155,17 +155,22 @@ describe('Bug 1 — isDpa word-boundary fix', () => {
   })
 })
 
-describe('Bug 2 — MOU max_tokens', () => {
-  it('mou max_tokens must be 16000 (not the 8000 default)', () => {
-    expect(getMaxTokens('mou')).toBe(16000)
+describe('Bug 2 — MOU max_tokens (Phase 0: unified 21000 global cap)', () => {
+  // Phase 0 stopgap (2026-05-12) replaced per-doc-type max_tokens with a
+  // single global 21000 cap (Vercel-300s-timeout-safe at Sonnet 4.6
+  // streaming rates). These assertions originally checked "MOU/NDA/service-
+  // agreement each have ENOUGH budget for a full execution block"; that
+  // intent is preserved — 21000 ≥ the historical 16000/20000 values.
+  it('mou max_tokens is the unified 21000 global cap', () => {
+    expect(getMaxTokens('mou')).toBe(21000)
   })
 
-  it('nda max_tokens must still be 20000', () => {
-    expect(getMaxTokens('nda')).toBe(20000)
+  it('nda max_tokens is the unified 21000 global cap', () => {
+    expect(getMaxTokens('nda')).toBe(21000)
   })
 
-  it('service-agreement max_tokens must still be 16000', () => {
-    expect(getMaxTokens('service-agreement')).toBe(16000)
+  it('service-agreement max_tokens is the unified 21000 global cap', () => {
+    expect(getMaxTokens('service-agreement')).toBe(21000)
   })
 })
 
