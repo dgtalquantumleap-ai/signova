@@ -435,6 +435,15 @@
 }
 .hero-demo-cta-link:hover { color: var(--gold-light); text-decoration: underline; }
 
+.hero-photo {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  object-fit: cover;
+  max-height: 220px;
+  display: block;
+  margin-bottom: 4px;
+}
+
 .hero-demo-label {
   font-size: 10px; color: var(--text3);
   text-transform: uppercase; letter-spacing: 0.1em;

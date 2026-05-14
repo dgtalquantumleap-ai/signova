@@ -90,6 +90,28 @@
 html { scroll-behavior: smooth; overflow-x: hidden; }
 body { overflow-x: hidden; }
 
+/* ── Light theme override (A/B test) ──────────────────────────────────────
+   Activated by: ?theme=light URL param (QA/dev) or Vercel middleware
+   (production split). To run an A/B test, enable the middleware in
+   middleware.js to set x-signova-theme=light on ~50% of requests, which
+   the ThemeProvider in App.jsx will read and apply here.
+   ───────────────────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg:     #ffffff;
+  --bg2:    #f8f7f4;
+  --bg3:    #f0ede6;
+  --border: #e0dbd0;
+  --text:   #181818;
+  --text2:  #4a4540;
+  --text3:  #8a8480;
+  --gold:   #b8922a;
+  --gold-light: #d4aa40;
+  --gold-dim: rgba(184,146,42,0.12);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow:    0 4px 24px rgba(0,0,0,0.12);
+  --shadow-lg: 0 8px 48px rgba(0,0,0,0.16);
+}
+
 /* Safari iOS fixes */
 @supports (-webkit-touch-callout: none) {
   /* Fix position:fixed on iOS Safari (address bar height issue) */

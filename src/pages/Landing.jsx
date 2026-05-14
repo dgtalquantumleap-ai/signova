@@ -439,22 +439,7 @@ export default function Landing() {
             <span className="logo-text">Signova</span>
           </a>
 
-          {/* Region-based price indicator. Static display, driven by the
-              server-detected tier from /api/v1/pricing/detect-region. No
-              currency switcher — Stripe charges USD regardless of the
-              visitor's currency, and showing a switchable non-USD amount
-              would drift from what the user actually pays. Nigerian
-              visitors additionally see ₦6,900 because Paystack charges
-              that amount directly. */}
-          <div className="currency-toggle" aria-label="Pricing for your region">
-            <span
-              className="currency-toggle-btn"
-              title="Price shown for your region"
-              aria-live="polite"
-            >
-              {navPriceLabel}
-            </span>
-          </div>
+          {/* Price display removed from nav — pricing lives in the #pricing section */}
 
           {/* Nav links — simplified */}
           <div className={`nav-links ${navOpen ? 'open' : ''}`} role="menubar">
@@ -480,7 +465,7 @@ export default function Landing() {
               </div>
             </div>
             <a href="#pricing" onClick={closeNav} role="menuitem" aria-label="Pricing">Pricing</a>
-            <a href="/trust" onClick={closeNav} role="menuitem" aria-label="Document trust and provenance">Trust</a>
+            <a href="/trust" onClick={closeNav} role="menuitem" aria-label="Document enforceability and provenance">Enforceability</a>
             <a href="#faq" onClick={closeNav} role="menuitem" aria-label="Frequently asked questions">FAQ</a>
             <a href="/whatsapp" onClick={closeNav} className="nav-cta-link" role="menuitem" aria-label="Preview a document for free">Preview Free →</a>
           </div>
@@ -514,7 +499,7 @@ export default function Landing() {
               <span className="hero-title-gold">until this is signed.</span>
             </h1>
             <p className="hero-sub">
-              Paste the WhatsApp chat. Get a contract both sides can sign in 2 minutes. Built for Nigerian, UK, Kenyan, Ghanaian, South African, US, Canadian, Indian, and Commonwealth law. Full refund if it doesn't hold up.
+              Paste the WhatsApp chat. Get a contract both sides can sign in 2 minutes. Jurisdiction-aware for Nigeria, UK, Canada, Kenya, and 4 more. Full refund if it doesn't hold up.
             </p>
 
             <p className="hero-support-line">
@@ -571,6 +556,15 @@ export default function Landing() {
             data-lazy-load
             aria-label="Live example: a WhatsApp chat becoming a contract"
           >
+            <img
+              src="/hero-freelancer.webp"
+              alt="Professionals sealing a business agreement"
+              className="hero-photo"
+              loading="eager"
+              fetchpriority="high"
+              width="800"
+              height="534"
+            />
             <div className="hero-demo-label" aria-hidden="true">Live example</div>
             <div className="hero-demo-phone">
               <div className="hero-demo-bar">
@@ -1066,7 +1060,7 @@ export default function Landing() {
               onClick={() => navigate('/generate/nda')}
               aria-label="Preview a document for free"
             >
-              Preview Free <span className="btn-arrow" aria-hidden="true">→</span>
+              See my contract (free) <span className="btn-arrow" aria-hidden="true">→</span>
             </button>
             <div className="cta-payment-badges">
               <span className="cta-payment-badge">Visa</span>

@@ -2,8 +2,7 @@
 import { Routes, Route } from 'react-router-dom'
 import { lazy, Suspense, useState, useEffect } from 'react'
 import ScrollToHash from './components/ScrollToHash'
-
-const Landing    = lazy(() => import('./pages/Landing'))
+import Landing from './pages/Landing'
 const ApiLanding = lazy(() => import('./pages/ApiLanding'))
 const Generator  = lazy(() => import('./pages/Generator'))
 const Preview    = lazy(() => import('./pages/Preview'))
@@ -92,7 +91,22 @@ function CookieConsent() {
   )
 }
 
+// A/B theme: reads ?theme=light URL param (QA) or x-signova-theme cookie
+// set by Vercel middleware (production split). Applies [data-theme] to <html>.
+function useThemeAB() {
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const urlTheme = params.get('theme')
+    const cookieTheme = document.cookie.split('; ').find(r => r.startsWith('x-signova-theme='))?.split('=')[1]
+    const theme = urlTheme || cookieTheme
+    if (theme === 'light' || theme === 'dark') {
+      document.documentElement.dataset.theme = theme
+    }
+  }, [])
+}
+
 export default function App() {
+  useThemeAB()
   return (
     <Suspense fallback={<SuspenseFallback />}>
       <ScrollToHash />
