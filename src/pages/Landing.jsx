@@ -565,15 +565,57 @@ export default function Landing() {
             data-lazy-load
             aria-label="Live example: a WhatsApp chat becoming a contract"
           >
-            <img
-              src="/hero-freelancer.webp"
-              alt="Professionals sealing a business agreement"
-              className="hero-photo"
-              loading="eager"
-              fetchpriority="high"
-              width="800"
-              height="534"
-            />
+            {/* Document preview card — replaces stock photo. Shows real contract
+                output in brand Cream White. The Sage archetype uses proof, not
+                photography of smiling professionals. */}
+            <div className="hero-doc-preview" aria-label="Sample contract output from Signova">
+              <div className="hdp-header">
+                <div className="hdp-logo-mark" aria-hidden="true">S</div>
+                <div className="hdp-doc-meta">
+                  <span className="hdp-doc-type">Freelance Contract</span>
+                  <span className="hdp-doc-status">● Ready to sign</span>
+                </div>
+              </div>
+              <div className="hdp-parties">
+                <div className="hdp-party">
+                  <span className="hdp-party-label">Client</span>
+                  <span className="hdp-party-name">Adaeze Holdings Ltd.</span>
+                </div>
+                <span className="hdp-party-divider" aria-hidden="true">↔</span>
+                <div className="hdp-party">
+                  <span className="hdp-party-label">Contractor</span>
+                  <span className="hdp-party-name">Tunde Adeyemi</span>
+                </div>
+              </div>
+              <div className="hdp-clauses">
+                <div className="hdp-clause">
+                  <span className="hdp-clause-n">1.</span>
+                  <span className="hdp-clause-text"><strong>Scope</strong> — Full website, 5 pages, blog &amp; contact form</span>
+                </div>
+                <div className="hdp-clause">
+                  <span className="hdp-clause-n">2.</span>
+                  <span className="hdp-clause-text"><strong>Payment</strong> — $2,500 · 50% upfront, 50% on delivery</span>
+                </div>
+                <div className="hdp-clause">
+                  <span className="hdp-clause-n">3.</span>
+                  <span className="hdp-clause-text"><strong>Timeline</strong> — 3 weeks · 2 revision rounds included</span>
+                </div>
+                <div className="hdp-clause hdp-clause--muted">
+                  <span className="hdp-clause-n">4.</span>
+                  <span className="hdp-clause-text">Governing Law — Federal Republic of Nigeria…</span>
+                </div>
+              </div>
+              <div className="hdp-footer">
+                <div className="hdp-sig-block">
+                  <span className="hdp-sig-label">Client signature</span>
+                  <span className="hdp-sig-rule" aria-hidden="true" />
+                </div>
+                <div className="hdp-sig-block">
+                  <span className="hdp-sig-label">Contractor signature</span>
+                  <span className="hdp-sig-rule" aria-hidden="true" />
+                </div>
+              </div>
+            </div>
             <div className="hero-demo-label" aria-hidden="true">Live example</div>
             <div className="hero-demo-phone">
               <div className="hero-demo-bar">

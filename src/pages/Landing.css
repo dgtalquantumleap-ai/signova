@@ -2278,7 +2278,100 @@ button, a, input, select, textarea {
   letter-spacing: 0.04em;
 }
 
-/* ── Hero eyebrow badge (brand tagline above H1) ── */
+/* ── Hero document preview card (replaces stock photo) ───────────────── */
+.hero-doc-preview {
+  background: #F0EFE3;
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 4px;
+  box-shadow: 0 6px 28px rgba(0,0,0,0.35);
+  color: #1a1a1a;
+}
+.hdp-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 11px;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+.hdp-logo-mark {
+  width: 22px; height: 22px; border-radius: 5px;
+  background: #1a1a1a;
+  color: #F0EFE3;
+  font-size: 11px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-family: var(--font-display);
+}
+.hdp-doc-meta {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.hdp-doc-type {
+  font-size: 11px; font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #1a1a1a;
+}
+.hdp-doc-status {
+  font-size: 10px; color: #36B151; font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.hdp-parties {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 13px; padding: 9px 11px;
+  background: rgba(0,0,0,0.06); border-radius: 6px;
+}
+.hdp-party {
+  display: flex; flex-direction: column; gap: 1px; flex: 1;
+}
+.hdp-party-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: #777;
+}
+.hdp-party-name {
+  font-size: 11px; font-weight: 700; color: #1a1a1a;
+}
+.hdp-party-divider {
+  font-size: 12px; color: #aaa; flex-shrink: 0;
+}
+.hdp-clauses {
+  display: flex; flex-direction: column; gap: 7px;
+  margin-bottom: 13px;
+}
+.hdp-clause {
+  display: flex; gap: 6px; align-items: flex-start;
+}
+.hdp-clause-n {
+  font-size: 10px; font-weight: 700; color: #999;
+  flex-shrink: 0; width: 14px; padding-top: 1px;
+}
+.hdp-clause-text {
+  font-size: 11px; color: #2a2a2a; line-height: 1.45;
+}
+.hdp-clause-text strong { font-weight: 700; }
+.hdp-clause--muted .hdp-clause-text { color: #aaa; }
+.hdp-footer {
+  display: flex; gap: 14px;
+  padding-top: 11px;
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+.hdp-sig-block {
+  flex: 1; display: flex; flex-direction: column; gap: 5px;
+}
+.hdp-sig-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 0.07em;
+  text-transform: uppercase; color: #aaa;
+}
+.hdp-sig-rule {
+  display: block; height: 1px;
+  background: rgba(0,0,0,0.18); border-radius: 1px;
+  margin-top: 2px;
+}
+
+/* ── Hero photo class kept for safety — hidden now card is in use ── */
+.hero-photo { display: none; }
+
+/* ── Hero document preview card (replaces stock photo) ───────────────── */
+
 .hero-eyebrow-badge {
   display: inline-flex;
   align-items: center;
