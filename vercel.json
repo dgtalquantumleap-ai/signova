@@ -1,10 +1,6 @@
 {
   "crons": [
     {
-      "path": "/v1/insights/poll",
-      "schedule": "*/15 * * * *"
-    },
-    {
       "path": "/api/cron/ots-upgrade",
       "schedule": "17 */2 * * *"
     }

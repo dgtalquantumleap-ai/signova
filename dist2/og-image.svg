@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0e0e0e"/>
+
+  <!-- Gold glow -->
+  <radialGradient id="glow" cx="50%" cy="45%" r="50%">
+    <stop offset="0%" stop-color="#c9a84c" stop-opacity="0.15"/>
+    <stop offset="100%" stop-color="#0e0e0e" stop-opacity="0"/>
+  </radialGradient>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Logo mark -->
+  <rect x="88" y="80" width="64" height="64" rx="16" fill="#c9a84c"/>
+  <text x="120" y="125" font-family="Georgia, serif" font-size="40" font-weight="700" fill="#0e0e0e" text-anchor="middle">S</text>
+
+  <!-- Logo text -->
+  <text x="172" y="124" font-family="Georgia, serif" font-size="36" font-weight="700" fill="#f0ece4">Signova</text>
+
+  <!-- Main headline -->
+  <text x="88" y="260" font-family="Georgia, serif" font-size="72" font-weight="700" fill="#f0ece4">Legal documents,</text>
+  <text x="88" y="350" font-family="Georgia, serif" font-size="72" font-weight="700" fill="#c9a84c">instantly.</text>
+
+  <!-- Subheadline -->
+  <text x="88" y="430" font-family="Arial, sans-serif" font-size="28" fill="#c8c4bc">Privacy policies · NDAs · Contracts · Terms of Service</text>
+
+  <!-- CTA pill -->
+  <rect x="88" y="480" width="340" height="60" rx="30" fill="#c9a84c"/>
+  <text x="258" y="518" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#0e0e0e" text-anchor="middle">Preview free · $4.99 to download</text>
+
+  <!-- URL -->
+  <text x="1112" y="590" font-family="Arial, sans-serif" font-size="22" fill="#5a5754" text-anchor="end">getsignova.com</text>
+</svg>

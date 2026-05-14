@@ -1,0 +1,18 @@
+{
+  "name": "ebenova-fieldops",
+  "version": "1.0.0",
+  "description": "WhatsApp-native field service booking, staff coordination, and revenue recovery. Book jobs, assign staff, send payment links, and recover unpaid invoices via AI agent.",
+  "vendor": "Ebenova Solutions",
+  "homepage": "https://ebenova.dev",
+  "license": "MIT",
+  "tools": [
+    { "name": "create_booking", "description": "Create a new field service booking with auto staff assignment" },
+    { "name": "get_booking", "description": "Get booking details and current status" },
+    { "name": "check_availability", "description": "Check available slots for a given date" },
+    { "name": "list_services", "description": "List all available services and pricing" },
+    { "name": "list_staff", "description": "List staff members and their availability" },
+    { "name": "send_staff_briefing", "description": "Send a WhatsApp job briefing to assigned staff" },
+    { "name": "get_unpaid_invoices", "description": "Get list of unpaid invoices for follow-up" },
+    { "name": "recover_invoice", "description": "Send WhatsApp payment recovery sequence to a customer" }
+  ]
+}

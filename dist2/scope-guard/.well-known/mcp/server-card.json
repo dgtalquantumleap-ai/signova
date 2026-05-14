@@ -1,0 +1,14 @@
+{
+  "serverInfo": { "name": "ebenova-scope-guard", "version": "1.0.0" },
+  "authentication": { "required": true, "schemes": ["apiKey"] },
+  "tools": [
+    { "name": "analyze_scope_creep", "description": "Analyze a client message for scope violations against original contract terms", "inputSchema": { "type": "object", "properties": { "client_message": { "type": "string" }, "contract_scope": { "type": "string" } }, "required": ["client_message", "contract_scope"] } },
+    { "name": "generate_change_order", "description": "Generate a formal change order document for out-of-scope work", "inputSchema": { "type": "object", "properties": { "project_name": { "type": "string" }, "out_of_scope_items": { "type": "string" }, "additional_cost": { "type": "number" } }, "required": ["project_name", "out_of_scope_items"] } },
+    { "name": "generate_legal_document", "description": "Generate a professional legal document (NDA, contract, agreement)", "inputSchema": { "type": "object", "properties": { "document_type": { "type": "string" }, "party_a": { "type": "string" }, "party_b": { "type": "string" }, "details": { "type": "string" } }, "required": ["document_type", "party_a", "party_b"] } },
+    { "name": "generate_invoice", "description": "Generate a professional invoice", "inputSchema": { "type": "object", "properties": { "client_name": { "type": "string" }, "services": { "type": "array" }, "total_amount": { "type": "number" }, "currency": { "type": "string" } }, "required": ["client_name", "services", "total_amount"] } },
+    { "name": "extract_from_conversation", "description": "Extract project requirements and scope from a conversation thread", "inputSchema": { "type": "object", "properties": { "conversation": { "type": "string" } }, "required": ["conversation"] } },
+    { "name": "check_usage", "description": "Check your API key usage and remaining quota", "inputSchema": { "type": "object", "properties": {} } }
+  ],
+  "resources": [],
+  "prompts": []
+}

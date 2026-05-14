@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0",
+  "name": "@ebenova/insights-mcp",
+  "version": "1.0.2",
+  "displayName": "Ebenova Insights",
+  "description": "Monitor Reddit and Nairaland for keywords about your product. Get email alerts with AI-drafted replies every 15 minutes.",
+  "homepage": "https://ebenova.dev/insights",
+  "license": "MIT",
+  "url": "https://www.getsignova.com/mcp",
+  "runtime": "node",
+  "command": "npx",
+  "args": ["-y", "@ebenova/insights-mcp"],
+  "configSchema": {
+    "type": "object",
+    "required": ["EBENOVA_API_KEY"],
+    "properties": {
+      "EBENOVA_API_KEY": {
+        "type": "string",
+        "description": "Your Ebenova API key with Insights access. Get one at https://ebenova.dev/insights",
+        "secret": true
+      },
+      "INSIGHTS_API_BASE": {
+        "type": "string",
+        "description": "Insights API base URL (optional, defaults to https://api.ebenova.dev)",
+        "default": "https://api.ebenova.dev"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "list_monitors",
+      "description": "List all your Reddit/Nairaland keyword monitors"
+    },
+    {
+      "name": "create_monitor",
+      "description": "Create a new keyword monitor with subreddit targeting and product context"
+    },
+    {
+      "name": "delete_monitor",
+      "description": "Deactivate a monitor"
+    },
+    {
+      "name": "get_matches",
+      "description": "Fetch recent Reddit/Nairaland posts that matched your keywords"
+    },
+    {
+      "name": "regenerate_draft",
+      "description": "Re-generate the AI reply draft for a specific match"
+    },
+    {
+      "name": "rate_draft",
+      "description": "Rate a draft thumbs up or down to improve quality over time"
+    }
+  ]
+}

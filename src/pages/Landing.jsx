@@ -376,10 +376,7 @@ export default function Landing() {
   const [docSearch, setDocSearch] = useState('')
   const [showAllDocs, setShowAllDocs] = useState(false)
   const [productsOpen, setProductsOpen] = useState(false)
-  const [openDocCategories, setOpenDocCategories] = useState([true, false, false, false]) // First category open by default on mobile
-
-  // Scope Guard mini-demo
-  const [scopeInput, setScopeInput] = useState('')
+  const [openDocCategories, setOpenDocCategories] = useState([false, false, false, false]) // All closed by default — quick-picks handle the 80% case
 
   // Lock body scroll when mobile nav is open
   useEffect(() => {
@@ -465,9 +462,9 @@ export default function Landing() {
               </div>
             </div>
             <a href="#pricing" onClick={closeNav} role="menuitem" aria-label="Pricing">Pricing</a>
-            <a href="/trust" onClick={closeNav} role="menuitem" aria-label="Document enforceability and provenance">Enforceability</a>
+            <a href="/trust" onClick={closeNav} role="menuitem" aria-label="How Signova documents hold up legally">Will it hold up?</a>
             <a href="#faq" onClick={closeNav} role="menuitem" aria-label="Frequently asked questions">FAQ</a>
-            <a href="/whatsapp" onClick={closeNav} className="nav-cta-link" role="menuitem" aria-label="Preview a document for free">Preview Free →</a>
+            <a href="/whatsapp" onClick={closeNav} className="nav-cta-link" role="menuitem" aria-label="Start generating your document for free">Start free →</a>
           </div>
 
           <button
@@ -494,6 +491,9 @@ export default function Landing() {
         <div className="hero-two-col">
           {/* LEFT: headline + CTA */}
           <div className="hero-left">
+          <div className="hero-eyebrow-badge" aria-hidden="true">
+              THE DEAL'S DONE. INSTANTLY.
+            </div>
             <h1 className="hero-title" fetchpriority="high">
               Don't start the work<br />
               <span className="hero-title-gold">until this is signed.</span>
@@ -527,6 +527,15 @@ export default function Landing() {
               <div className="hero-proof-badge">
                 <FileText size={14} weight="duotone" color="currentColor" style={{ verticalAlign: 'middle', marginRight: 4 }} /> {DOCS_GENERATED.toLocaleString()}+ documents signed · Nigerian, UK, Kenyan, Ghanaian, South African, US, Canadian, Indian law coverage · 30-day refund
               </div>
+            </div>
+
+            {/* Trust signals — Sage archetype: answer the 'will it hold up?' fear */}
+            <div className="hero-trust-signals" role="list" aria-label="Trust signals">
+              <span role="listitem">🔒 256-bit encrypted</span>
+              <span className="trust-sig-dot" aria-hidden="true">·</span>
+              <span role="listitem">⚖️ Jurisdiction-specific clauses</span>
+              <span className="trust-sig-dot" aria-hidden="true">·</span>
+              <span role="listitem">✓ No account to preview</span>
             </div>
 
             {/* Top 3 quick picks */}
@@ -850,20 +859,16 @@ export default function Landing() {
               <a href="/scope-guard" className="scope-guard-btn">Try Scope Guard free →</a>
             </div>
             <div className="scope-guard-right">
-              <label htmlFor="scope-guard-input" className="scope-guard-demo-label">Paste a client message to see Scope Guard in action</label>
-              <textarea
-                id="scope-guard-input"
-                className="scope-guard-demo-input"
-                placeholder={'"Can you also add a blog section? Should be quick."'}
-                value={scopeInput}
-                onChange={e => setScopeInput(e.target.value)}
-                rows={3}
-                aria-label="Paste a client message here"
-              />
-              <div className="scope-guard-demo-result">
-                <div className="scope-example-msg" aria-hidden="true">"Can you also add a blog section? Should be quick."</div>
-                <div className="scope-example-arrow" aria-hidden="true">↓ Scope Guard detects: <strong>scope creep</strong></div>
-                <div className="scope-example-response" aria-hidden="true">Auto-drafts a change order with estimated hours and cost.</div>
+              <div className="scope-guard-static-demo" aria-label="Scope Guard example">
+                <div className="scope-demo-before-label">CLIENT MESSAGE</div>
+                <div className="scope-example-msg">"Can you also add a blog section? Should be quick."</div>
+                <div className="scope-example-arrow">↓ Scope Guard detects: <strong>scope creep</strong></div>
+                <div className="scope-demo-after-label">AUTO-DRAFTED CHANGE ORDER</div>
+                <div className="scope-example-response">
+                  <span style={{ display: 'block', marginBottom: 4 }}>✓ Out-of-scope: Blog section not in original contract</span>
+                  <span style={{ display: 'block', marginBottom: 4 }}>✓ Estimated: 8–12 hrs additional work</span>
+                  <span style={{ display: 'block' }}>✓ Change order drafted — ready to send</span>
+                </div>
               </div>
             </div>
           </div>
@@ -1057,8 +1062,8 @@ export default function Landing() {
             </div>
             <button
               className="btn-primary btn-large"
-              onClick={() => navigate('/generate/nda')}
-              aria-label="Preview a document for free"
+              onClick={() => navigate('/whatsapp')}
+              aria-label="Paste your chat to generate a free contract"
             >
               See my contract (free) <span className="btn-arrow" aria-hidden="true">→</span>
             </button>

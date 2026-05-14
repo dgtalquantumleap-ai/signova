@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Disallow API routes from indexing
+Disallow: /api/
+
+# Sitemaps
+# getsignova.com — Consumer document generation tool
+Sitemap: https://www.getsignova.com/sitemap.xml
+
+# ebenova.dev — Developer API platform
+Sitemap: https://www.ebenova.dev/sitemap-ebenova.xml

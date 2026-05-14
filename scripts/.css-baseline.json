@@ -33,7 +33,7 @@
   },
   "src/pages/Landing.css": {
     "hex": 37,
-    "px": 560
+    "px": 569
   },
   "src/pages/LegalPage.css": {
     "hex": 0,
@@ -45,7 +45,7 @@
   },
   "src/pages/Preview.css": {
     "hex": 54,
-    "px": 247
+    "px": 237
   },
   "src/pages/ScopeGuard.css": {
     "hex": 25,

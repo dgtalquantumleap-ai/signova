@@ -50,14 +50,14 @@
   width: 28px;
   height: 28px;
   border-radius: 7px;
-  background: linear-gradient(135deg, #c9a84c, #b09238);
+  background: linear-gradient(135deg, var(--gold, #FDCB25), #e6b820);
   color: #0e0e0e;
   font-weight: 800;
   font-size: 13px;
 }
 
 .sn-logo-mark--ebenova {
-  background: linear-gradient(135deg, #c9a84c, #8b6e1a);
+  background: linear-gradient(135deg, var(--gold, #FDCB25), #c97e10);
 }
 
 .sn-logo-text {
@@ -109,7 +109,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #c9a84c;
+  background: var(--gold, #FDCB25);
   color: #0e0e0e;
   padding: 9px 18px;
   border-radius: 8px;
@@ -120,7 +120,7 @@
 }
 
 .site-nav-cta:hover {
-  background: #d6b55a;
+  background: var(--gold-light, #FED84D);
   transform: translateY(-1px);
 }
 

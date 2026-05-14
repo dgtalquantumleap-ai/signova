@@ -36,7 +36,7 @@ const SIGNOVA_LINKS = [
   { label: 'Blog',         href: '/blog' },
 ]
 
-const SIGNOVA_CTA = { label: 'Start a Document →', href: '/' }
+const SIGNOVA_CTA = { label: 'Secure My Deal →', href: '/whatsapp' }
 
 function Logo({ variant }) {
   if (variant === 'ebenova') {

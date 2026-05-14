@@ -1,0 +1,18 @@
+{
+  "name": "ebenova-vigil-fraud-alert",
+  "version": "1.2.0",
+  "description": "Proximity-based card fraud detection via GPS. Authorize transactions, manage cards, submit GPS, compute risk scores, run AI fraud analysis (Claude Haiku), and generate AML compliance reports (Claude Sonnet).",
+  "vendor": "Ebenova Solutions",
+  "homepage": "https://ebenova.dev/vigil",
+  "license": "MIT",
+  "tools": [
+    { "name": "vigil_authorize", "description": "Authorize a card transaction using GPS proximity engine. Returns approve/decline with reason code and distance." },
+    { "name": "vigil_register_card", "description": "Register a card for proximity monitoring. Set home location, radius, and mode." },
+    { "name": "vigil_update_card", "description": "Update card settings — mode (normal/travel/lockdown), radius, travel plans." },
+    { "name": "vigil_submit_gps", "description": "Submit device GPS location for a card. Powers proximity-based authorization." },
+    { "name": "vigil_get_risk_score", "description": "Get live risk score (0–1.0) with contributing factors breakdown." },
+    { "name": "vigil_analyze_transaction", "description": "AI fraud pattern analysis using Claude Haiku. Returns risk level and indicators." },
+    { "name": "vigil_generate_aml_report", "description": "Generate AML compliance report using Claude Sonnet. Scale+ plan required." },
+    { "name": "vigil_emergency_lockdown", "description": "Immediately lock a card — blocks all transactions until manually unlocked." }
+  ]
+}
