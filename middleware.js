@@ -11,6 +11,10 @@
 //
 // Measurement: track `theme=light|dark` query param via Vercel Analytics
 // events on preview_started and purchase_completed in the app.
+//
+// IMPORTANT: In Vercel Edge Middleware, returning `undefined` (bare `return`)
+// passes through to the origin. Returning `new Response(null, ...)` serves
+// an EMPTY body — which causes a blank page. Never use Response as pass-through.
 
 export const config = {
   matcher: '/',
@@ -19,18 +23,17 @@ export const config = {
 export default function middleware(req) {
   // Gate — only run when explicitly enabled
   if (process.env.AB_TEST_THEME_ENABLED !== 'true') {
-    return new Response(null, { status: 200 })
+    return // pass through to origin
   }
 
   // Skip if visitor already has a theme assigned
   const cookie = req.headers.get('cookie') || ''
   if (cookie.includes('x-signova-theme=')) {
-    return new Response(null, { status: 200 })
+    return // pass through to origin
   }
 
-  // 50/50 random split
+  // 50/50 random split — set cookie and pass through
   const theme = Math.random() < 0.5 ? 'light' : 'dark'
-
   const res = new Response(null, { status: 200 })
   res.headers.set(
     'Set-Cookie',
