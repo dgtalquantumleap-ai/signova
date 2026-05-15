@@ -194,4 +194,6 @@
 @media (max-width: 700px) {
   .nda-steps, .nda-types { grid-template-columns: 1fr; }
   .nda-trust { gap: var(--space-3) 20px; font-size: 13px; }
+  .nda-hero { padding: 100px 20px 60px; }
+  .nda-cta { width: 100%; padding: var(--space-4) 20px; }
 }

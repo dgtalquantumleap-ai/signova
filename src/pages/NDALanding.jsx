@@ -60,7 +60,23 @@ export default function NDALanding() {
         />
         <meta property="og:title" content="Free NDA Generator | Signova" />
         <meta property="og:description" content="Create a legally sound NDA in minutes. Free preview — pay only to download." />
+        <meta property="og:image" content="https://www.getsignova.com/og-image.png" />
+        <meta property="og:url" content="https://www.getsignova.com/nda-generator" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Free NDA Generator | Signova" />
+        <meta name="twitter:description" content="Create a legally sound NDA in minutes. Free preview — pay only to download." />
+        <meta name="twitter:image" content="https://www.getsignova.com/og-image.png" />
         <link rel="canonical" href="https://www.getsignova.com/nda-generator" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": FAQS.map(f => ({
+            "@type": "Question",
+            "name": f.q,
+            "acceptedAnswer": { "@type": "Answer", "text": f.a }
+          }))
+        })}</script>
       </Helmet>
 
       <SiteNav variant="signova" />

@@ -297,5 +297,9 @@
 @media (max-width: 600px) {
   .vigil-steps-grid { grid-template-columns: 1fr; }
   .vigil-hero { padding: 72px 20px 60px; }
+  .vigil-hero-title { font-size: 28px; }
+  .vigil-hero-sub { font-size: 15px; }
+  .vigil-hero-actions { flex-direction: column; align-items: center; }
+  .vigil-btn-primary, .vigil-btn-outline { width: 100%; justify-content: center; }
   .vigil-nav-links a:not(.vigil-nav-cta) { display: none; }
 }

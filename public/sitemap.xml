@@ -1,324 +1,187 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <!-- Homepage -->
+  <!-- ═══════════════════════════════════════════
+       CORE PAGES
+       ═══════════════════════════════════════════ -->
   <url>
     <loc>https://www.getsignova.com/</loc>
+    <lastmod>2026-04-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.getsignova.com/about</loc>
+    <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://www.getsignova.com/contact</loc>
+    <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-
-  <!-- WhatsApp landing page -->
+  <url>
+    <loc>https://www.getsignova.com/pricing</loc>
+    <lastmod>2026-04-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
   <url>
     <loc>https://www.getsignova.com/whatsapp</loc>
+    <lastmod>2026-03-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.95</priority>
   </url>
 
-  <!-- SEO Landing Pages -->
-  <url><loc>https://www.getsignova.com/nda-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/tenancy-agreement-nigeria</loc><changefreq>monthly</changefreq><priority>0.95</priority></url>
-  <url><loc>https://www.getsignova.com/privacy-policy-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/terms-of-service-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/freelance-contract-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/independent-contractor-agreement-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/hire-purchase-agreement-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/purchase-agreement-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/service-agreement-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/consulting-agreement-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/employment-offer-letter-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/non-compete-agreement-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/payment-terms-agreement-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/business-partnership-agreement-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/joint-venture-agreement-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/loan-agreement-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/shareholder-agreement-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/mou-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/letter-of-intent-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/distribution-agreement-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/supply-agreement-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/business-proposal-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/tenancy-agreement-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/quit-notice-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/deed-of-assignment-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/power-of-attorney-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/landlord-agent-agreement-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.getsignova.com/facility-manager-agreement-generator</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <!-- ═══════════════════════════════════════════
+       SEO LANDING PAGES
+       ═══════════════════════════════════════════ -->
+  <url><loc>https://www.getsignova.com/nda-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/tenancy-agreement-nigeria</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.95</priority></url>
+  <url><loc>https://www.getsignova.com/privacy-policy-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/terms-of-service-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/freelance-contract-generator</loc><lastmod>2026-03-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/independent-contractor-agreement-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/hire-purchase-agreement-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/purchase-agreement-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/service-agreement-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/consulting-agreement-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/employment-offer-letter-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/non-compete-agreement-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/payment-terms-agreement-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/business-partnership-agreement-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/joint-venture-agreement-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/loan-agreement-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/shareholder-agreement-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/mou-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/letter-of-intent-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/distribution-agreement-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/supply-agreement-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/business-proposal-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/tenancy-agreement-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/quit-notice-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/deed-of-assignment-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/power-of-attorney-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/landlord-agent-agreement-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/facility-manager-agreement-generator</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
 
-  <!-- Core Legal Documents -->
-  <url>
-    <loc>https://www.getsignova.com/generate/privacy-policy</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/terms-of-service</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/nda</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/freelance-contract</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/independent-contractor</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/purchase-agreement</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
+  <!-- ═══════════════════════════════════════════
+       DOCUMENT GENERATOR ROUTES
+       ═══════════════════════════════════════════ -->
+  <url><loc>https://www.getsignova.com/generate/privacy-policy</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/generate/terms-of-service</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/generate/nda</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/generate/freelance-contract</loc><lastmod>2026-03-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/generate/independent-contractor</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.getsignova.com/generate/purchase-agreement</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.getsignova.com/generate/service-agreement</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/generate/consulting-agreement</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.getsignova.com/generate/employment-offer-letter</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/generate/non-compete-agreement</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.getsignova.com/generate/payment-terms-agreement</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.getsignova.com/generate/business-partnership</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/generate/joint-venture</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.getsignova.com/generate/loan-agreement</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/generate/shareholder-agreement</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.getsignova.com/generate/hire-purchase</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/generate/mou</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/generate/letter-of-intent</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.getsignova.com/generate/distribution-agreement</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.getsignova.com/generate/supply-agreement</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.getsignova.com/generate/business-proposal</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/generate/tenancy-agreement</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/generate/quit-notice</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.getsignova.com/generate/deed-of-assignment</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/generate/power-of-attorney</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.getsignova.com/generate/landlord-agent-agreement</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.getsignova.com/generate/facility-manager-agreement</loc><lastmod>2026-03-20</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 
-  <!-- Tier 1 — Universal Business -->
-  <url>
-    <loc>https://www.getsignova.com/generate/service-agreement</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/consulting-agreement</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/employment-offer-letter</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/non-compete-agreement</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/payment-terms-agreement</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Tier 2 — Africa + Global Finance -->
-  <url>
-    <loc>https://www.getsignova.com/generate/business-partnership</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/joint-venture</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/loan-agreement</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/shareholder-agreement</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/hire-purchase</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <!-- Tier 3 — Asia + Global Trade + Proposal -->
-  <url>
-    <loc>https://www.getsignova.com/generate/mou</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/letter-of-intent</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/distribution-agreement</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/supply-agreement</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/business-proposal</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <!-- Real Estate -->
-  <url>
-    <loc>https://www.getsignova.com/generate/tenancy-agreement</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/quit-notice</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/deed-of-assignment</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/power-of-attorney</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/landlord-agent-agreement</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/generate/facility-manager-agreement</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- Scope Guard -->
+  <!-- ═══════════════════════════════════════════
+       PRODUCTS
+       ═══════════════════════════════════════════ -->
   <url>
     <loc>https://www.getsignova.com/scope-guard</loc>
+    <lastmod>2026-03-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
-
-  <!-- Insights -->
-  <url>
-    <loc>https://www.getsignova.com/insights</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Blog -->
   <url>
     <loc>https://www.getsignova.com/blog</loc>
+    <lastmod>2026-03-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/tenancy-agreement-template-nigeria</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/deed-of-assignment-nigeria</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/nda-template-free</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/freelance-contract-template-nigeria</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/service-agreement-template-free</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/freelance-contract-template-free</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/nda-template-free-download</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/independent-contractor-agreement-template</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/nda-generator-nigeria-freelancers</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/whatsapp-tenancy-agreement-nigeria</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/loan-agreement-template-nigeria</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/business-proposal-template-nigeria</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/privacy-policy-generator-free</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/employment-contract-template-nigeria</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/how-to-write-nda-nigeria</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/tenancy-agreement-lagos-landlord-guide</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/partnership-agreement-template-nigeria</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/caution-fee-nigeria-tenancy</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/invoice-vs-contract-nigeria</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.getsignova.com/blog/how-to-write-freelance-contract-nigeria</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
+
+  <!-- ═══════════════════════════════════════════
+       BLOG — Nigeria & Africa (56 posts)
+       ═══════════════════════════════════════════ -->
+  <url><loc>https://www.getsignova.com/blog/tenancy-agreement-template-nigeria</loc><lastmod>2026-03-01</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/deed-of-assignment-nigeria</loc><lastmod>2026-03-03</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/nda-template-free</loc><lastmod>2026-03-05</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/freelance-contract-template-nigeria</loc><lastmod>2026-03-23</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/service-agreement-template-free</loc><lastmod>2026-03-11</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/freelance-contract-template-free</loc><lastmod>2026-03-11</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/nda-template-free-download</loc><lastmod>2026-03-12</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/independent-contractor-agreement-template</loc><lastmod>2026-03-12</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/nda-generator-nigeria-freelancers</loc><lastmod>2026-03-12</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/whatsapp-tenancy-agreement-nigeria</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/loan-agreement-template-nigeria</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/business-proposal-template-nigeria</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/privacy-policy-generator-free</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/employment-contract-template-nigeria</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/how-to-write-nda-nigeria</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/tenancy-agreement-lagos-landlord-guide</loc><lastmod>2026-03-19</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/partnership-agreement-template-nigeria</loc><lastmod>2026-03-19</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/caution-fee-nigeria-tenancy</loc><lastmod>2026-03-19</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/invoice-vs-contract-nigeria</loc><lastmod>2026-03-19</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/how-to-write-freelance-contract-nigeria</loc><lastmod>2026-03-19</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/terms-of-service-template-free</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/hire-purchase-agreement-template</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/consulting-agreement-template-free</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/non-compete-agreement-template</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/mou-template-free</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/shareholder-agreement-template</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/letter-of-intent-template-free</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/quit-notice-template-nigeria</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/power-of-attorney-template-free</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/joint-venture-agreement-template</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/payment-terms-agreement-template</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/distribution-agreement-template-free</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/supply-agreement-template-free</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/landlord-agent-agreement-nigeria</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/purchase-agreement-template-free</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/facility-management-agreement-template</loc><lastmod>2026-03-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <!-- Lagos Tenancy Bill 2025 — topical authority -->
+  <url><loc>https://www.getsignova.com/blog/lagos-tenancy-bill-2025-landlord-guide</loc><lastmod>2026-03-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <!-- Country-specific freelance contract posts -->
+  <url><loc>https://www.getsignova.com/blog/freelance-contract-nigeria-guide-2025</loc><lastmod>2026-03-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/freelance-contract-uk</loc><lastmod>2026-03-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/freelance-contract-canada</loc><lastmod>2026-03-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/freelance-contract-australia</loc><lastmod>2026-03-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/freelance-contract-india</loc><lastmod>2026-03-22</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.getsignova.com/blog/freelance-contract-philippines</loc><lastmod>2026-03-22</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.getsignova.com/blog/freelance-contract-pakistan</loc><lastmod>2026-03-22</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.getsignova.com/blog/freelance-contract-nigeria-upwork-international</loc><lastmod>2026-03-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <!-- Country-specific tenancy posts -->
+  <url><loc>https://www.getsignova.com/blog/tenancy-agreement-kenya</loc><lastmod>2026-03-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/tenancy-agreement-ghana</loc><lastmod>2026-03-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/tenancy-agreement-south-africa</loc><lastmod>2026-03-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/tenancy-agreement-uae-dubai</loc><lastmod>2026-03-22</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <!-- Country-specific NDA posts -->
+  <url><loc>https://www.getsignova.com/blog/nda-template-canada</loc><lastmod>2026-03-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/nda-template-south-africa</loc><lastmod>2026-03-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/nda-template-india</loc><lastmod>2026-03-22</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <!-- Conversion & Scope Guard posts -->
+  <url><loc>https://www.getsignova.com/blog/scope-guard-ai-contract-enforcement</loc><lastmod>2026-03-29</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/how-to-stop-scope-creep-freelance</loc><lastmod>2026-03-29</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/client-wont-pay-freelancer</loc><lastmod>2026-03-23</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/affidavit-generator</loc><lastmod>2026-05-01</lastmod><changefreq>monthly</changefreq><priority>0.95</priority></url>
+  <url><loc>https://www.getsignova.com/generate/affidavit</loc><lastmod>2026-05-01</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/resignation-letter-generator</loc><lastmod>2026-05-01</lastmod><changefreq>monthly</changefreq><priority>0.95</priority></url>
+  <url><loc>https://www.getsignova.com/generate/resignation-letter</loc><lastmod>2026-05-01</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.getsignova.com/blog/affidavit-template-nigeria</loc><lastmod>2026-05-01</lastmod><changefreq>monthly</changefreq><priority>0.95</priority></url>
+  <url><loc>https://www.getsignova.com/blog/resignation-letter-template</loc><lastmod>2026-05-01</lastmod><changefreq>monthly</changefreq><priority>0.95</priority></url>
 
 </urlset>

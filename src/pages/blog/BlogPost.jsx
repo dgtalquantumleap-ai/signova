@@ -51,9 +51,36 @@ export default function BlogPost() {
         <meta property="og:description" content={post.description} />
         <meta property="og:url" content={`https://www.getsignova.com/blog/${post.slug}`} />
         <meta property="og:type" content="article" />
-        <meta name="twitter:card" content="summary" />
+        <meta property="og:image" content="https://www.getsignova.com/og-image.png" />
+        <meta property="article:published_time" content={post.date} />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={post.title} />
         <meta name="twitter:description" content={post.description} />
+        <meta name="twitter:image" content="https://www.getsignova.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": post.title,
+          "description": post.description,
+          "datePublished": post.date,
+          "dateModified": post.date,
+          "author": {
+            "@type": "Organization",
+            "name": "Signova",
+            "url": "https://www.getsignova.com"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Signova",
+            "url": "https://www.getsignova.com",
+            "logo": { "@type": "ImageObject", "url": "https://www.getsignova.com/favicon.svg" }
+          },
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": `https://www.getsignova.com/blog/${post.slug}`
+          },
+          "image": "https://www.getsignova.com/og-image.png"
+        })}</script>
       </Helmet>
 
       <div className="blog-page">

@@ -33,7 +33,7 @@
   },
   "src/pages/Landing.css": {
     "hex": 50,
-    "px": 609
+    "px": 625
   },
   "src/pages/LegalPage.css": {
     "hex": 0,
@@ -41,7 +41,7 @@
   },
   "src/pages/NDALanding.css": {
     "hex": 5,
-    "px": 48
+    "px": 52
   },
   "src/pages/Preview.css": {
     "hex": 54,
@@ -61,7 +61,7 @@
   },
   "src/pages/VigilLanding.css": {
     "hex": 13,
-    "px": 113
+    "px": 115
   },
   "src/pages/WhatsApp.css": {
     "hex": 4,

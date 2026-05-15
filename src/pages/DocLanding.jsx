@@ -57,7 +57,23 @@ export default function DocLanding() {
         <meta name="description" content={metaDesc} />
         <meta property="og:title" content={titleTag} />
         <meta property="og:description" content={metaDesc} />
+        <meta property="og:image" content="https://www.getsignova.com/og-image.png" />
+        <meta property="og:url" content={`https://www.getsignova.com/${slug}`} />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={titleTag} />
+        <meta name="twitter:description" content={metaDesc} />
+        <meta name="twitter:image" content="https://www.getsignova.com/og-image.png" />
         <link rel="canonical" href={`https://www.getsignova.com/${slug}`} />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": faqs.map(f => ({
+            "@type": "Question",
+            "name": f.q,
+            "acceptedAnswer": { "@type": "Answer", "text": f.a }
+          }))
+        })}</script>
       </Helmet>
 
       <SiteNav variant="signova" />

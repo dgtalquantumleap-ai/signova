@@ -1545,6 +1545,175 @@ export const BLOG_POSTS = [
     cta: { label: 'Generate Freelance Contract Free →', href: '/generate/freelance-contract' }
   },
 
+  {
+    slug: 'affidavit-template-nigeria',
+    title: 'Free Affidavit Template Nigeria 2026 — Sworn Declaration for Banks, Courts & NYSC',
+    description: 'Need an affidavit for bank KYC, name correction, NYSC, or lost documents in Nigeria? Here is exactly what it should include, plus a free generator that produces a commissioner-ready affidavit in minutes.',
+    date: '2026-05-01',
+    readTime: '6 min read',
+    category: 'Nigeria Legal',
+    keywords: 'affidavit Nigeria, affidavit template Nigeria, sworn affidavit Nigeria, affidavit for bank, affidavit name correction Nigeria, affidavit NYSC, affidavit lost document Nigeria, commissioner for oaths Nigeria',
+    cta: { label: 'Generate My Affidavit Free →', href: '/generate/affidavit' },
+    sections: [
+      {
+        heading: 'What is an affidavit and why do you need one in Nigeria?',
+        body: `An affidavit is a written sworn statement of fact that carries legal weight once signed before a commissioner for oaths. Banks, courts, NYSC, JAMB, embassies, and virtually every government agency in Nigeria require them at some point.
+
+The most common reasons Nigerians need an affidavit: your name on your WAEC or JAMB result differs from your BVN (extremely common); you have lost a document and need to declare it lost; you changed your name after marriage; you need to confirm your address for a bank KYC exercise; or NYSC is requesting a correction to your name or date of birth.
+
+Without the right affidavit, institutions will stall your request indefinitely.`,
+      },
+      {
+        heading: 'What must a valid Nigerian affidavit include?',
+        body: `Every affidavit sworn in Nigeria must contain these elements to be accepted by banks, courts, and government agencies:
+
+1. Title — stating the type of affidavit (e.g. "Affidavit of Name Correction").
+2. Deponent's full name, address, and occupation — the person making the sworn statement.
+3. The sworn facts — written in numbered paragraphs, each stating one fact clearly and specifically.
+4. The reason for the affidavit — why you are swearing to these facts and which institution requires it.
+5. A declaration clause — "I make this affidavit in good faith believing the contents to be true and correct to the best of my knowledge."
+6. Signature line for the deponent.
+7. Sworn-before section — space for the commissioner for oaths to stamp, sign, and date.
+
+The deponent must appear in person before the commissioner for oaths. The commissioner will verify your ID, administer the oath, and stamp the document. The fee at most High Courts and magistrate courts is between ₦500 and ₦2,000.`,
+      },
+      {
+        heading: 'Common affidavit types in Nigeria — and exactly what each one says',
+        body: `Bank KYC / Name Discrepancy Affidavit
+Used when your name on an academic certificate, WAEC, JAMB, or birth certificate differs from your BVN or NIN. The affidavit swears that both names refer to the same person. Required by GTBank, Access, Zenith, UBA, and most other Nigerian commercial banks.
+
+Change of Name Affidavit
+Used after marriage, divorce, or voluntary name change. States your former name, your new name, the date of change, and declares that you are henceforth known by the new name. Usually accompanied by a newspaper publication of the change.
+
+Loss of Document Affidavit
+Declares that a specific document (national ID, international passport, birth certificate, academic certificate, title document) was lost and has not been found. Required before most issuing authorities will produce a replacement.
+
+NYSC / Academic Correction Affidavit
+Corrects a discrepancy in your name, date of birth, or state of origin on NYSC, JAMB, or university records. NYSC accepts these at state secretariats.
+
+Address Confirmation Affidavit
+Confirms your residential address for bank KYC, property transactions, or immigration purposes. States the address, how long you have lived there, and that the address is your correct current address.`,
+      },
+      {
+        heading: 'Where to swear your affidavit in Nigeria',
+        body: `Take the printed affidavit (Signova's generator produces a ready-to-print PDF) to any of the following:
+
+High Court registry — most reliable and widely accepted by all institutions. Found in every state capital. Fee: typically ₦1,000–₦2,000.
+
+Magistrate court — slightly cheaper, faster queues. Accepted by most banks and government agencies. Fee: typically ₦500–₦1,500.
+
+Notary Public — more formal, required for affidavits that will be used internationally or apostilled. Higher fee (typically ₦3,000–₦10,000).
+
+You must bring a valid government-issued ID (NIN slip, voter's card, or international passport) and sign the affidavit in front of the commissioner for oaths — not before.`,
+      },
+      {
+        heading: 'Frequently asked questions',
+        body: `Can I write my own affidavit?
+Yes — there is no requirement to hire a lawyer to draft an affidavit. The commissioner for oaths administers the oath and stamps the document; they do not draft it. Signova generates the correct text based on your specific situation.
+
+How long does an affidavit last?
+Most affidavits do not expire. However, some institutions (particularly banks and NYSC) may require the affidavit to be recently sworn — typically within the last three to six months. Check with the institution before swearing.
+
+Is a Nigerian affidavit valid in the UK, US, or Canada?
+Not automatically. For use abroad, you typically need a statutory declaration or an affidavit that has been apostilled. Signova can generate the appropriate document for your destination country.`,
+      },
+    ],
+  },
+
+  {
+    slug: 'resignation-letter-template',
+    title: 'Free Resignation Letter Template 2026 — Professional, Works in Nigeria, Canada & UK',
+    description: 'Writing a resignation letter? Here is exactly what to include, what not to write, and a free generator that produces a print-ready resignation letter in under 3 minutes.',
+    date: '2026-05-01',
+    readTime: '5 min read',
+    category: 'Employment',
+    keywords: 'resignation letter Nigeria, resignation letter template, resignation letter format, how to write resignation letter, resignation letter sample Nigeria, professional resignation letter, two weeks notice letter',
+    cta: { label: 'Generate My Resignation Letter →', href: '/generate/resignation-letter' },
+    sections: [
+      {
+        heading: 'Why a written resignation letter matters more than you think',
+        body: `In Nigeria, Canada, the UK, and the US, resigning verbally or over WhatsApp without a written letter creates real risks: your employer may dispute your last working day, withhold your final salary, delay your clearance certificate, or refuse to provide a reference.
+
+A formal written resignation letter creates a timestamped record that you served the required notice, protects you legally if a dispute arises, and signals professionalism — which matters for the reference you will eventually need.
+
+It takes three minutes to generate one. There is no reason to resign without one.`,
+      },
+      {
+        heading: 'What a resignation letter must include (and what to leave out)',
+        body: `What to include:
+
+Your intention to resign — stated clearly in the first sentence. No preamble.
+Your last working day — calculated from today plus your notice period. Confirm this against your contract before writing.
+A brief expression of gratitude — one sentence is enough. It costs nothing and protects the relationship.
+An offer to assist with handover — optional but almost always appreciated. Shows professionalism.
+Your signature and date.
+
+What to leave out:
+
+Complaints about management, colleagues, or the company — these end up in your HR file and can be referenced in reference checks.
+Explanations of where you are going — you are not required to say.
+Emotional language — keep it neutral and forward-looking.
+Anything you would not want read aloud in a tribunal.
+
+The goal is a letter that is professional, clear, and gives the reader nothing to use against you.`,
+      },
+      {
+        heading: 'Notice periods by country — what your contract actually requires',
+        body: `Nigeria: Employment contracts typically specify one month's notice for most employees, three months for senior or management roles. The Employees Compensation Act does not set a statutory notice period — your contract governs. If your contract is silent, reasonable notice (usually one month) applies.
+
+United Kingdom: The Employment Rights Act 1996 sets statutory minimums — one week per year of continuous service, capped at 12 weeks. Your contractual notice period is what usually governs in practice, and is often longer.
+
+Canada: The Canada Labour Code requires two weeks minimum for federally regulated employees. Provincially regulated employees are covered by provincial ESA legislation — Ontario requires one week per year of service, capped at eight weeks. Contractual notice may be longer.
+
+United States: The US has no statutory notice period requirement — employment is typically at-will. Two weeks is a professional convention, not a legal requirement. Your contract may specify otherwise.
+
+Signova asks for your contractual notice period during generation and calculates your last working day automatically.`,
+      },
+      {
+        heading: 'Resignation letter template — what it looks like',
+        body: `[Date]
+
+[Your Name]
+[Your Job Title]
+[Your Department]
+
+[Manager's Name]
+[Manager's Title]
+[Company Name]
+
+Dear [Manager's Name],
+
+I am writing to formally notify you of my resignation from my position as [Job Title] at [Company Name], effective [Last Working Day — date calculated from today plus notice period].
+
+I am grateful for the opportunities I have had to grow professionally during my time here. Working with [team / project / aspect of role] has been particularly valuable, and I appreciate the support of the team.
+
+I am committed to ensuring a smooth transition and am happy to assist with handover during my notice period — including completing outstanding work, documenting processes, and briefing a successor.
+
+Please let me know how I can make this transition as smooth as possible.
+
+Yours sincerely,
+[Your Name]
+[Your Signature]
+
+Note: Signova's generator fills all of this in automatically based on your inputs — no editing required.`,
+      },
+      {
+        heading: 'Frequently asked questions',
+        body: `Can I resign by email?
+Yes — email resignation is legally valid. A Signova-generated PDF attached to an email is even better, as it creates both a timestamped email record and a formal signed document.
+
+What if I cannot serve my full notice period?
+You can negotiate a shorter notice period with your employer. If they agree, get the agreement in writing. If you leave early without agreement, your employer may deduct salary or pursue damages — though this is rare in practice.
+
+What if my employer asks me to leave early?
+If your employer wants you to leave before your notice period ends, they must pay you in lieu of notice (PILON) — you cannot be forced to leave without pay for the remaining notice period.
+
+Do I need to give a reason for leaving?
+No. You are legally entitled to resign without giving a reason. If you do give a reason, keep it neutral.`,
+      },
+    ],
+  },
+
 ]
 
 export function getPostBySlug(slug) {

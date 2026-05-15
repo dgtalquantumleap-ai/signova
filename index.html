@@ -24,6 +24,8 @@
     <meta name="description" content="Generate professional legal document templates in 3 minutes. 34 document types across global contexts. Free preview, tiered pricing." />
     <meta name="keywords" content="legal document generator Nigeria, tenancy agreement Nigeria, NDA template, freelance contract, deed of assignment Nigeria, loan agreement template, business proposal template, MOU template, hire purchase agreement Nigeria, power of attorney Nigeria, employment offer letter, shareholder agreement, joint venture agreement, service agreement, distribution agreement, quit notice Nigeria, privacy policy generator, terms of service generator" />
     <meta name="author" content="Signova — Ebenova Solutions" />
+    <!-- Google Search Console — uncomment and replace content value with token from: GSC → Add Property → HTML tag method -->
+    <!-- <meta name="google-site-verification" content="REPLACE_WITH_GSC_TOKEN" /> -->
     <!-- canonical set per-page by react-helmet -->
 
     <!-- Open Graph — shared default (overridden by react-helmet per domain) -->
@@ -115,160 +117,57 @@
 
     <!-- ══════════════════════════════════════════════════════════════════════
          CRITICAL CSS — Inlined for instant LCP (targets <2.5s)
-         Renders nav + hero title + CTA + top 3 cards before any external CSS loads
          ══════════════════════════════════════════════════════════════════════ -->
     <style>
-      /* Critical variables */
       :root {
-        --bg: #181818;
-        --bg2: #212121;
-        --gold: #FDCB25;
-        --text: #ffffff;
-        --text2: #a0a0a0;
-        --text3: #666666;
-        --border: rgba(255,255,255,0.1);
-        --font-display: 'Playfair Display', Georgia, serif;
-        --radius: 12px;
+        --bg: #181818; --bg2: #212121; --gold: #FDCB25; --text: #ffffff;
+        --text2: #a0a0a0; --text3: #666666; --border: rgba(255,255,255,0.1);
+        --font-display: 'Playfair Display', Georgia, serif; --radius: 12px;
       }
-
-      /* Reset */
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-      body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        background: var(--bg);
-        color: var(--text);
-        -webkit-font-smoothing: antialiased;
-        line-height: 1.5;
-      }
-
-      /* Nav — critical for layout shift prevention */
-      .nav {
-        position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-        padding: 0 24px;
-        background: rgba(14,14,14,0.85);
-        backdrop-filter: blur(12px);
-        border-bottom: 1px solid var(--border);
-        height: 64px;
-      }
-      .nav-inner {
-        max-width: 1100px; margin: 0 auto;
-        display: flex; align-items: center; justify-content: space-between;
-        height: 64px;
-      }
+      body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; line-height: 1.5; }
+      .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 24px; background: rgba(14,14,14,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); height: 64px; }
+      .nav-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 64px; }
       .logo { display: flex; align-items: center; gap: 10px; }
-      .logo-mark {
-        width: 32px; height: 32px; border-radius: 8px;
-        background: var(--gold); color: #0e0e0e;
-        font-family: var(--font-display); font-size: 18px; font-weight: 700;
-        display: flex; align-items: center; justify-content: center;
-      }
+      .logo-mark { width: 32px; height: 32px; border-radius: 8px; background: var(--gold); color: #0e0e0e; font-family: var(--font-display); font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
       .logo-text { font-family: var(--font-display); font-size: 20px; font-weight: 600; color: var(--text); }
       .nav-links { display: flex; gap: 32px; }
       .nav-links a { font-size: 14px; color: var(--text2); text-decoration: none; transition: color 0.2s; }
       .nav-links a:hover { color: var(--text); }
       .nav-cta-link { color: var(--gold) !important; font-weight: 600; }
       .hamburger { display: none; background: none; border: none; cursor: pointer; }
-
-      /* Hero — critical for LCP */
-      .hero {
-        position: relative;
-        padding: 160px 24px 100px;
-        text-align: center;
-        min-height: 100vh;
-        contain: layout style;
-      }
-      .hero-glow {
-        position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
-        width: 800px; height: 600px; border-radius: 50%;
-        background: radial-gradient(ellipse, rgba(201,168,76,0.12) 0%, transparent 70%);
-        pointer-events: none; z-index: 0;
-        will-change: transform;
-      }
+      .hero { position: relative; padding: 160px 24px 100px; text-align: center; min-height: 100vh; contain: layout style; }
+      .hero-glow { position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 800px; height: 600px; border-radius: 50%; background: radial-gradient(ellipse, rgba(201,168,76,0.12) 0%, transparent 70%); pointer-events: none; z-index: 0; will-change: transform; }
       .hero-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
-      
-      .hero-title {
-        font-family: var(--font-display);
-        font-size: clamp(36px, 6vw, 64px);
-        font-weight: 700;
-        line-height: 1.15;
-        color: var(--text);
-        margin-bottom: 24px;
-        /* LCP FIX: Prevent font swap flash */
-        font-display: optional;
-      }
+      .hero-title { font-family: var(--font-display); font-size: clamp(36px, 6vw, 64px); font-weight: 700; line-height: 1.15; color: var(--text); margin-bottom: 24px; font-display: optional; }
       .hero-title-gold { color: var(--gold); }
-      
-      .hero-sub {
-        font-size: 18px;
-        color: var(--text2);
-        line-height: 1.6;
-        margin-bottom: 32px;
-        max-width: 640px;
-        margin-left: auto;
-        margin-right: auto;
-      }
-      
-      .hero-jurisdictions {
-        display: flex; align-items: center; justify-content: center; gap: 12px;
-        font-size: 14px; color: var(--text2); margin-bottom: 32px; flex-wrap: wrap;
-      }
+      .hero-sub { font-size: 18px; color: var(--text2); line-height: 1.6; margin-bottom: 32px; max-width: 640px; margin-left: auto; margin-right: auto; }
+      .hero-jurisdictions { display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 14px; color: var(--text2); margin-bottom: 32px; flex-wrap: wrap; }
       .jurisdiction-divider { color: var(--border); }
       .jurisdiction-more { color: var(--gold); }
-
-      /* Buttons — critical for CLS prevention */
-      .btn-primary {
-        background: var(--gold); color: #0e0e0e;
-        border: none; border-radius: var(--radius);
-        padding: 16px 32px; font-size: 16px; font-weight: 600;
-        cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
-        display: inline-flex; align-items: center; gap: 8px;
-      }
+      .btn-primary { background: var(--gold); color: #0e0e0e; border: none; border-radius: var(--radius); padding: 16px 32px; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; display: inline-flex; align-items: center; gap: 8px; }
       .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,0.3); }
       .btn-large { padding: 18px 40px; font-size: 18px; }
       .btn-arrow { font-size: 20px; }
-
-      /* Top 3 cards — above the fold */
-      .hero-top3 {
-        display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
-        margin-top: 48px;
-      }
-      .top3-card {
-        background: var(--bg2); border: 1px solid var(--border);
-        border-radius: var(--radius); padding: 24px;
-        display: flex; flex-direction: column; align-items: center; gap: 12px;
-        cursor: pointer; transition: border-color 0.2s;
-      }
+      .hero-top3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 48px; }
+      .top3-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; transition: border-color 0.2s; }
       .top3-card:hover { border-color: rgba(201,168,76,0.4); }
       .top3-icon { font-size: 32px; }
       .top3-name { font-size: 15px; font-weight: 600; color: var(--text); }
       .top3-go { font-size: 13px; color: var(--gold); font-weight: 600; }
-      
-      .more-docs-link {
-        background: none; border: none; color: var(--text2);
-        font-size: 14px; cursor: pointer; margin-top: 24px;
-        text-decoration: underline; text-underline-offset: 4px;
-      }
+      .more-docs-link { background: none; border: none; color: var(--text2); font-size: 14px; cursor: pointer; margin-top: 24px; text-decoration: underline; text-underline-offset: 4px; }
       .more-docs-link:hover { color: var(--text); }
-
-      /* Mobile critical overrides */
       @media (max-width: 768px) {
         .nav-links { display: none; }
         .hamburger { display: block; width: 24px; height: 24px; position: relative; }
-        .ham-line {
-          position: absolute; width: 100%; height: 2px; background: var(--text);
-          transition: transform 0.3s;
-        }
-        .ham-line:nth-child(1) { top: 4px; }
-        .ham-line:nth-child(2) { top: 11px; }
-        .ham-line:nth-child(3) { top: 18px; }
+        .ham-line { position: absolute; width: 100%; height: 2px; background: var(--text); transition: transform 0.3s; }
+        .ham-line:nth-child(1) { top: 4px; } .ham-line:nth-child(2) { top: 11px; } .ham-line:nth-child(3) { top: 18px; }
         .hero { padding: 80px 16px 24px; min-height: auto; }
         .hero-title { font-size: 28px !important; line-height: 1.2 !important; margin-bottom: 16px !important; }
         .hero-sub { font-size: 15px !important; line-height: 1.5 !important; }
         .hero-top3 { grid-template-columns: 1fr; gap: 12px; margin-top: 32px; }
         .btn-large { padding: 16px 24px; font-size: 16px; width: 100%; justify-content: center; }
       }
-
       @media (max-width: 380px) {
         .hero { padding: 76px 12px 20px; }
         .hero-title { font-size: 24px !important; }
@@ -276,26 +175,20 @@
       }
     </style>
 
-    <!-- Fonts — optimized for LCP (font-display: optional, preload critical) -->
+    <!-- Fonts — optimized for LCP -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Load full font stylesheet non-blocking -->
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=optional" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&family=Inter:wght@400;500;600&display=optional"></noscript>
-    <!-- Inline @font-face for critical Playfair Display 700 — prevents layout shift -->
     <style>
       @font-face {
         font-family: 'Playfair Display';
-        font-style: normal;
-        font-weight: 700;
-        font-display: optional;
+        font-style: normal; font-weight: 700; font-display: optional;
         src: local('Playfair Display Bold'), local('PlayfairDisplay-Bold');
       }
     </style>
   </head>
   <body>
-    <!-- Critical inline shell — renders instantly before JS loads, eliminates blank LCP -->
-    <!-- Static HTML hero — renders instantly, React hydrates over it -->
     <div id="root">
       <div style="min-height:100vh;background:#0e0e0e;display:flex;align-items:center;justify-content:center;">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -305,11 +198,7 @@
       </div>
     </div>
     <script type="module" src="/src/main.jsx"></script>
-
-    <!-- Email obfuscation — external to satisfy CSP no-unsafe-inline -->
     <script defer src="/email-obfuscate.js"></script>
-
-    <!-- Google Analytics GA4 — deferred until idle, external for CSP compliance -->
     <script defer src="/ga4-loader.js"></script>
   </body>
 </html>

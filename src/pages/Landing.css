@@ -315,11 +315,15 @@
 }
 
 /* Hide nav links on mobile — hamburger takes over */
+/* Default must come BEFORE the media query or cascade kills the flex override */
+.hamburger { display: none; }
+
 @media (max-width: 768px) {
+  .hamburger { display: flex; }
   .nav-links:not(.open) { display: none; }
   .nav-links.open {
     display: flex; flex-direction: column;
-    position: absolute; top: var(--space-8); left: 0; right: 0;
+    position: absolute; top: 64px; left: 0; right: 0;
     background: rgba(14,14,14,0.98);
     border-bottom: 1px solid var(--border);
     padding: var(--space-4) var(--space-5) 20px;
@@ -544,6 +548,12 @@
   .hero-sub { margin: 0 auto 24px; }
 }
 @media (max-width: 640px) {
+.hero-whatsapp-demo { display: none; }
+.hero-demo-label { display: none; }
+.hero-right { max-width: 100%; }
+.hero-trust-signals { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .trust-sig-dot { display: none; }
+  .hero-eyebrow-badge { font-size: 9px; padding: 4px 10px; margin-bottom: 12px; }
   .hero { padding: 100px 20px 60px; }
   .cta-box { padding: var(--space-6) 20px; }
   .all-docs-grid { grid-template-columns: 1fr; }
@@ -1329,8 +1339,8 @@
 .footer-copy { font-size: var(--text-xs); color: var(--text3); cursor: default; user-select: none; }
 
 /* ── Hamburger ── */
+/* ── Hamburger shape & animation — display managed above nav section ── */
 .hamburger {
-  display: none;
   flex-direction: column; justify-content: center; gap: 5px;
   width: 36px; height: 36px;
   background: none; border: none; cursor: pointer; padding: var(--space-1);
@@ -1727,10 +1737,11 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 
-/* Touch-friendly: min 44x44px touch targets */
-button, a, input, select, textarea {
-  min-height: 44px;
-}
+/* Touch-friendly: min 44x44px touch targets — scoped to interactive elements only */
+button, input, select, textarea { min-height: 44px; }
+.btn-primary, .btn-outline, .btn-large, .btn-sticky,
+.btn-pay, .btn-download, .btn-pay-full, .btn-download-full,
+.nav-cta-link, .all-doc-btn, .quickpick-btn, .top3-card { min-height: 44px; }
 
 /* ══════════════════════════════════════════════════════════════════════════
    MOBILE OPTIMIZATIONS — Document cards above fold, faster LCP
@@ -2369,6 +2380,32 @@ button, a, input, select, textarea {
 
 /* ── Hero photo class kept for safety — hidden now card is in use ── */
 .hero-photo { display: none; }
+
+/* ── Contract card mobile ── */
+@media (max-width: 480px) {
+  .hero-doc-preview {
+    padding: 14px 14px;
+  }
+  .hdp-party-name {
+    font-size: 10px;
+  }
+  .hdp-clause-text {
+    font-size: 10px;
+  }
+  .hdp-parties {
+    gap: 6px;
+    padding: 7px 8px;
+  }
+  .hdp-party-divider {
+    display: none;
+  }
+  .hdp-parties {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
+
 
 /* ── Hero document preview card (replaces stock photo) ───────────────── */
 
