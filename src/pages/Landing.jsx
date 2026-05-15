@@ -579,12 +579,12 @@ export default function Landing() {
               <div className="hdp-parties">
                 <div className="hdp-party">
                   <span className="hdp-party-label">Client</span>
-                  <span className="hdp-party-name">Adaeze Holdings Ltd.</span>
+                  <span className="hdp-party-name">Meridian Creative Co.</span>
                 </div>
                 <span className="hdp-party-divider" aria-hidden="true">↔</span>
                 <div className="hdp-party">
                   <span className="hdp-party-label">Contractor</span>
-                  <span className="hdp-party-name">Tunde Adeyemi</span>
+                  <span className="hdp-party-name">Alex Morgan</span>
                 </div>
               </div>
               <div className="hdp-clauses">
@@ -1134,3 +1134,5 @@ export default function Landing() {
     </div>
   )
 }
+
+
