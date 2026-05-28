@@ -63,6 +63,7 @@ export default function VigilLanding() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          demo: true,
           card_id: selectedCard.id,
           merchant_name: selectedMerchant.name,
           merchant_city: selectedMerchant.city,
@@ -76,9 +77,11 @@ export default function VigilLanding() {
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error?.message || 'Request failed'); return }
-      setResult(data)
+      // Normalise response shape (demo returns data.authorization, live returns top-level)
+      const auth = data.authorization || data
+      setResult({ ...data, approved: auth.approved, reason_code: auth.reason_code, distance_km: auth.distance_km })
     } catch {
-      setError('Demo requires an API key. Sign up free at ebenova.dev/dashboard to test live.')
+      setError('Could not reach the demo endpoint. Please try again.')
     } finally {
       setLoading(false)
     }
