@@ -36,6 +36,14 @@ const TIER_FEATURES = [
   { tier: 'Scale', price: '$199/mo', features: ['Everything in Growth', 'AML compliance reports (Claude Sonnet)', '10,000 authorizations/month', 'SLA + dedicated support'] },
 ]
 
+const ROADMAP = [
+  { what: 'Per-card transaction history + velocity scoring', impact: 'High', impactNote: 'Directly lifts Claude risk score accuracy', effort: 'Medium', effortLevel: 2 },
+  { what: 'Soft-decline path (40–70 score = challenge)', impact: 'High', impactNote: 'Reduces false declines, improves merchant trust', effort: 'Low', effortLevel: 1 },
+  { what: 'Authorization receipt (chargeback defense)', impact: 'High', impactNote: 'Unique, saleable, no direct competitor', effort: 'Low', effortLevel: 1 },
+  { what: 'Cross-card fraud signal table', impact: 'Medium', impactNote: 'Network value compounds with scale', effort: 'Medium', effortLevel: 2 },
+  { what: 'Agent delegation verification tool', impact: 'High', impactNote: 'Early mover, agentic commerce frontier', effort: 'High', effortLevel: 3 },
+]
+
 export default function VigilLanding() {
   const navigate = useNavigate()
   const [selectedCard, setSelectedCard] = useState(DEMO_CARDS[0])
@@ -275,6 +283,37 @@ export default function VigilLanding() {
                 >
                   Get started →
                 </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Roadmap */}
+      <section className="vigil-roadmap-section">
+        <div className="vigil-section-inner">
+          <div className="vigil-section-header">
+            <p className="vigil-label">What&apos;s next</p>
+            <h2 className="vigil-section-title">Build priority</h2>
+            <p className="vigil-section-sub">Ranked by impact vs. effort. First two ship this sprint.</p>
+          </div>
+          <div className="vigil-roadmap-table">
+            <div className="vigil-roadmap-header">
+              <span>Feature</span><span>Impact</span><span>Effort</span>
+            </div>
+            {ROADMAP.map((row, i) => (
+              <div key={i} className="vigil-roadmap-row">
+                <span className="vigil-roadmap-what">
+                  {i < 3 && <span className="vigil-roadmap-sprint">This sprint</span>}
+                  {row.what}
+                </span>
+                <span className={`vigil-roadmap-impact vigil-impact-${row.impact.toLowerCase()}`}>
+                  {row.impact}
+                  <span className="vigil-roadmap-note">{row.impactNote}</span>
+                </span>
+                <span className={`vigil-roadmap-effort vigil-effort-${row.effortLevel}`}>
+                  {'●'.repeat(row.effortLevel)}{'○'.repeat(3 - row.effortLevel)}
+                </span>
               </div>
             ))}
           </div>

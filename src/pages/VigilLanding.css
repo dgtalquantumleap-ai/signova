@@ -303,3 +303,58 @@
   .vigil-btn-primary, .vigil-btn-outline { width: 100%; justify-content: center; }
   .vigil-nav-links a:not(.vigil-nav-cta) { display: none; }
 }
+
+/* ── Roadmap Table ── */
+.vigil-roadmap-section { padding: 80px 0; border-top: 1px solid var(--v-border); }
+.vigil-roadmap-table {
+  border: 1px solid var(--v-border); border-radius: 12px; overflow: hidden;
+}
+.vigil-roadmap-header {
+  display: grid; grid-template-columns: 1fr 220px 100px;
+  padding: 12px 24px;
+  background: var(--v-bg3); border-bottom: 1px solid var(--v-border);
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--v-text3);
+}
+.vigil-roadmap-row {
+  display: grid; grid-template-columns: 1fr 220px 100px;
+  padding: 18px 24px; border-bottom: 1px solid var(--v-border);
+  background: var(--v-bg2); align-items: start;
+  transition: background 0.15s;
+}
+.vigil-roadmap-row:last-child { border-bottom: none; }
+.vigil-roadmap-row:hover { background: var(--v-bg3); }
+.vigil-roadmap-what {
+  display: flex; flex-direction: column; gap: 6px;
+  font-size: 14px; font-weight: 600; color: var(--v-text);
+}
+.vigil-roadmap-sprint {
+  display: inline-block; width: fit-content;
+  padding: 2px 8px; border-radius: 4px;
+  background: rgba(229,75,75,0.12); border: 1px solid rgba(229,75,75,0.25);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--v-red);
+}
+.vigil-roadmap-impact {
+  display: flex; flex-direction: column; gap: 4px;
+  font-size: 13px; font-weight: 700;
+}
+.vigil-impact-high { color: var(--v-green); }
+.vigil-impact-medium { color: var(--v-amber); }
+.vigil-roadmap-note {
+  font-size: 12px; font-weight: 400; color: var(--v-text3); line-height: 1.4;
+}
+.vigil-roadmap-effort {
+  font-size: 14px; letter-spacing: 2px;
+}
+.vigil-effort-1 { color: var(--v-green); }
+.vigil-effort-2 { color: var(--v-amber); }
+.vigil-effort-3 { color: var(--v-red); }
+
+@media (max-width: 700px) {
+  .vigil-roadmap-header { grid-template-columns: 1fr 80px; }
+  .vigil-roadmap-header span:last-child { display: none; }
+  .vigil-roadmap-row { grid-template-columns: 1fr 80px; }
+  .vigil-roadmap-row > span:last-child { display: none; }
+  .vigil-roadmap-note { display: none; }
+}
